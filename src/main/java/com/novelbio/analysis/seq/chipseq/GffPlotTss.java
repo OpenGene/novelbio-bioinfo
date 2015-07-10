@@ -3,9 +3,18 @@ package com.novelbio.analysis.seq.chipseq;
 import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYSplineRenderer;
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
+import org.jfree.ui.RectangleInsets;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
@@ -16,7 +25,9 @@ import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo.RegionInfoComp
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.DotStyle;
+import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.heatmap.Gradient;
 import com.novelbio.base.plot.heatmap.PlotHeatMap;
@@ -31,14 +42,16 @@ public class GffPlotTss {
 
 	GffChrAbs gffChrAbs;
 	
-	int[] tsstesRange = new int[]{-2000, 2000};
+	int[] tsstesRange = new int[]{-5000, 5000};
+	/** 仅绘制指定区间。譬如马红要求仅看0-500的图 */
+	double[] xStartEnd;
 	GeneStructure geneStructure = GeneStructure.TSS;
 
 	MapReads mapReads;
 	EnumMapNormalizeType mapNormType = EnumMapNormalizeType.allreads;
 
 	/** 绘制图片的区域 */
-	List<RegionInfo> lsMapInfos;
+	List<RegionInfo> lsRegions;
 	/** 绘制图片的gene */
 	List<Gene2Value> lsGeneID2Value;
 	
@@ -49,6 +62,19 @@ public class GffPlotTss {
 	int splitNum = 1001;
 	/**  tss或tes的扩展绘图区域，默认哺乳动物为 -5000到5000 */
 	int[] plotTssTesRange = new int[]{-5000, 5000};
+	
+	/** 给定iso和所需要的exonNum的区间，返回该iso是否满足条件
+	 * @param iso
+	 * @param exonNumRegion int[2]<br>
+	 *  0：至少多少exon 小于0表示最小1个exon即可<br>
+	 *  1：至多多少exon 小于0表示最多可以无限个exon<br>
+	 *  <br>
+	 *  int[]{2,3}表示本iso的exon数量必须在2-3之间<br>
+	 *  int[]{-1,3}表示本iso的exon数量必须小于等于3个<br>
+	 *  int[]{2,-1}表示本iso的exon数量必须大于等于2个<br>
+	 * @return
+	 */
+	int[] exonNumRegion;
 	
 	//=================== heatmap参数 ================================
 	/** heatmap最浅颜色的值 */
@@ -72,11 +98,21 @@ public class GffPlotTss {
 	/** 对于lsExonIntronNumGetOrExclude选择include还是exclude，true为include，false为exclude */
 	boolean getOrExclude = true;
 	
+	String sampleName;
 	
 	public GffPlotTss() { }
 	
 	public GffPlotTss(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
+	}
+	/** 样本名 */
+	public void setSampleName(String sampleName) {
+		this.sampleName = sampleName;
+	}
+	
+	/** 仅绘制指定区间。譬如马红要求仅看0-500的图 */
+	public void setxStartEnd(double[] xStartEnd) {
+		this.xStartEnd = xStartEnd;
 	}
 	
 	/**
@@ -92,23 +128,22 @@ public class GffPlotTss {
 		}
 		this.gffChrAbs = gffChrAbs;
 	}
+	
 	/** 设定需要提取，或不提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron
-	 * null 就不分析
+	 * @param lsExonIntronNumGetOrExclude null 就不分析
 	 * 为实际数量
 	 * -1为倒数第一个
 	 * -2为倒数第二个
+	 * @param isGetOrExclude 对于lsExonIntronNumGetOrExclude选择get还是exclude，true为get，false为exclude
 	 */
 	public void setLsExonIntronNumGetOrExclude(
-			ArrayList<Integer> lsExonIntronNumGetOrExclude) {
+			ArrayList<Integer> lsExonIntronNumGetOrExclude, boolean isGetOrExclude) {
 		this.lsExonIntronNumGetOrExclude = lsExonIntronNumGetOrExclude;
+		this.getOrExclude = isGetOrExclude;
 	}
 	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
 	public void setPileupExonIntron(boolean pileupExonIntron) {
 		this.pileupExonIntron = pileupExonIntron;
-	}
-	/** 对于lsExonIntronNumGetOrExclude选择get还是exclude，true为get，false为exclude */
-	public void setGetOrExclude(boolean getOrExclude) {
-		this.getOrExclude = getOrExclude;
 	}
 	
 	/** 设定切割分数，默认为1000 
@@ -120,7 +155,7 @@ public class GffPlotTss {
 	}
 	/**
 	 * 务必最早设定，在查看peak是否覆盖某个基因的tss时使用
-	 * 默认 -2000 2000
+	 * 默认 -5000 5000
 	 * @param tsstesRange
 	 */
 	public void setTsstesRange(int[] tsstesRange) {
@@ -139,16 +174,6 @@ public class GffPlotTss {
 
 	public void setMapReads(MapReads mapReads) {
 		this.mapReads = mapReads;
-	}
-	
-	/**
-	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
-	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
-	 * @param booUniqueMapping 重复的reads是否只选择一条
-	 * @param cis5to3 是否仅选取某一方向的reads，null不考虑
-	 */
-	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean cis5to3) {
-		mapReads.setFilter(uniqReads, startCod, booUniqueMapping, cis5to3);
 	}
 	
 	/** 设定heatmap最浅颜色以及最深颜色所对应的值 */
@@ -178,20 +203,37 @@ public class GffPlotTss {
 		return mapReads;
 	}
 	
+	/**
+	 * <b>在最开始设定</b><br><br>
+	 * 给定iso和所需要的exonNum的区间，返回该iso是否满足条件
+	 * @param iso
+	 * @param exonNumRegion int[2]<br>
+	 *  0：至少多少exon 小于0表示最小1个exon即可<br>
+	 *  1：至多多少exon 小于0表示最多可以无限个exon<br>
+	 *  <br>
+	 *  int[]{2,3}表示本iso的exon数量必须在2-3之间<br>
+	 *  int[]{-1,3}表示本iso的exon数量必须小于等于3个<br>
+	 *  int[]{2,-1}表示本iso的exon数量必须大于等于2个<br>
+	 * @return
+	 */
+	public void setExonNumRegion(int[] exonNumRegion) {
+	    this.exonNumRegion = exonNumRegion;
+    }
+	
 	/** 
 	 * 设定本方法后<b>不需要</b>运行{@link #fillLsMapInfos()}<br>
 	 * 用来做给定区域的图。mapinfo中设定坐标位点和value
 	 * 这个和输入gene，2选1。谁先设定选谁
 	 *  */
 	public void setSiteRegion(List<RegionInfo> lsMapInfos) {
-		this.lsMapInfos = RegionInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
+		this.lsRegions = RegionInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
 	}
 	
 	/** 
 	 * 设定本方法后需要运行{@link #fillLsMapInfos()}<br>
 	 * 设定为全基因组 */
 	public void setGeneIDGenome() {
-		lsGeneID2Value = Gene2Value.readGeneMapInfoAll(gffChrAbs);
+		lsGeneID2Value = Gene2Value.readGeneMapInfoAll(gffChrAbs, exonNumRegion);
 	}
 	
 	/**
@@ -207,7 +249,7 @@ public class GffPlotTss {
 	 * @return
 	 */
 	public void setGeneID2ValueLs(List<String[]> lsGeneValue) {
-		lsGeneID2Value = Gene2Value.getLsGene2Vale(gffChrAbs, lsGeneValue);
+		lsGeneID2Value = Gene2Value.getLsGene2Vale(gffChrAbs, lsGeneValue, exonNumRegion);
 	}
 
 	/**
@@ -218,11 +260,7 @@ public class GffPlotTss {
 	 * @param geneStructure
 	 */
 	public void setSiteCoveredGene(List<RegionInfo> lsPeakInfo, GeneStructure geneStructure) {
-		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsPeakInfo, geneStructure);
-	}
-	
-	public PlotScatter plotLine(DotStyle dotStyle) {
-		return plotLine(dotStyle, null);
+		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsPeakInfo, geneStructure, exonNumRegion);
 	}
 	
 	/**
@@ -231,8 +269,8 @@ public class GffPlotTss {
 	 * null 表示没有这个限制
 	 * @return
 	 */
-	public PlotScatter plotLine(DotStyle dotStyle, double[] xStartEnd) {
-		ArrayList<double[]> lsXY = getLsXYtsstes(xStartEnd);
+	public PlotScatter plotLine(DotStyle dotStyle) {
+		ArrayList<double[]> lsXY = getLsXYtsstes();
 		double[] yInfo = new double[lsXY.size()];
 		for (int i = 0; i < yInfo.length; i++) {
 			yInfo[i] = lsXY.get(i)[1];
@@ -258,19 +296,28 @@ public class GffPlotTss {
 	}
 	
 	/**
-	 * 提取前务必设定{@link #fillLsMapInfos()}
 	 * @param xStartEnd 仅绘制指定区间。譬如马红要求仅看0-500的图
+	 * @return jfreechart 可以使用的对象
+	 */
+	public XYSeries getXySeries() {
+		ArrayList<double[]> lsXY = getLsXYtsstes();
+		XYSeries xySeries = new XYSeries(sampleName);
+		for (double[] ds : lsXY) {
+			xySeries.add(ds[0], ds[1]);
+		}
+		return xySeries;
+	}
+	/**
+	 * 提取前务必设定{@link #fillLsMapInfos()}
 	 * @return
 	 */
-	public ArrayList<double[]> getLsXYtsstes(double[] xStartEnd) {
+	public ArrayList<double[]> getLsXYtsstes() {
 		ArrayList<double[]> lsResult = new ArrayList<double[]>();
-		double[] yvalue = RegionInfo.getCombLsMapInfo(lsMapInfos);
-		List<Integer> lsCoverage = getLsGeneCoverage(lsMapInfos);
+		double[] yvalue = RegionInfo.getCombLsMapInfo(lsRegions);
+		//如果lsRegion是不等长的，coverage就是每个位点region的数量
+		List<Integer> lsCoverage = getLsGeneCoverage(lsRegions);
 		
 		double[] xvalue = getXvalue(yvalue.length);
-		if (xvalue.length != yvalue.length) {
-			logger.error("xvalue 和 yvalue 的长度不一致，请检查");
-		}
 		
 		double yStartValue = Double.MAX_VALUE;
 		double yEndValue = Double.MAX_VALUE;
@@ -291,16 +338,18 @@ public class GffPlotTss {
 			tmpResult[1] = yvalue[i] / coverage;
 			lsResult.add(tmpResult);
 		}
-		
-		/** 将结果的头尾设定为输入的头尾 */
-		if (lsResult.get(0)[0] > xStartEnd[0]) {
-			double[] start = new double[]{xStartEnd[0], yStartValue};
-			lsResult.add(0, start);
+		if (xStartEnd != null) {
+			/** 将结果的头尾设定为输入的头尾 */
+			if (lsResult.get(0)[0] > xStartEnd[0]) {
+				double[] start = new double[]{xStartEnd[0], yStartValue};
+				lsResult.add(0, start);
+			}
+			if (lsResult.get(lsResult.size() - 1)[0] < xStartEnd[1]) {
+				double[] end = new double[]{xStartEnd[1], yEndValue};
+				lsResult.add(end);
+			}
 		}
-		if (lsResult.get(lsResult.size() - 1)[0] < xStartEnd[1]) {
-			double[] end = new double[]{xStartEnd[1], yEndValue};
-			lsResult.add(end);
-		}
+
 		return lsResult;
 	}
 	/**
@@ -321,6 +370,7 @@ public class GffPlotTss {
 				xResult[i] = (int)xResult[i];
 			}
 		} else if(splitNum > 0) {
+			//不是 tss，则用小数形式来表示x轴，如 0 0.1 0.2 0.3....1
 			for (int i = 0; i < xResult.length; i++) {
 				xResult[i] = (double)i/(length - 1); 
 			}
@@ -332,30 +382,12 @@ public class GffPlotTss {
 		return xResult;
 	}
 	
-	/** 首先要设定好lsMapInfos */
-	public PlotHeatMap plotHeatMap() {
-		if (heatmapMax <= heatmapMin) {
-			heatmapMax = getMaxData(lsMapInfos, 99);
-		}
-		
-		RegionInfoComparator regionInfoComparator = new RegionInfoComparator();
-		regionInfoComparator.setMin2max(heatmapSortS2M);
-		regionInfoComparator.setCompareType(RegionInfoComparator.COMPARE_SCORE);
-		Collections.sort(lsMapInfos, regionInfoComparator);
-		
-		Color[] gradientColors = new Color[] {heatmapColorMin, heatmapColorMax};
-		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
-		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfos,  customGradient);
-		heatMap.setRange(heatmapMin, heatmapMax);
-		return heatMap;
-	}
-	
 	/** 将lsGeneID2Value中的信息填充到 lsMapInfos 中去 */
 	public void fillLsMapInfos() {
 		if (lsGeneID2Value == null || lsGeneID2Value.size() == 0) {
 			return;
 		}
-		lsMapInfos = new ArrayList<RegionInfo>();
+		lsRegions = new ArrayList<RegionInfo>();
 		for (Gene2Value gene2Value : lsGeneID2Value) {
 			gene2Value.setPlotTssTesRegion(plotTssTesRange);
 			gene2Value.setExonIntronPileUp(pileupExonIntron);
@@ -363,24 +395,48 @@ public class GffPlotTss {
 			gene2Value.setSplitNum(splitNum);
 			RegionInfo mapInfo = gene2Value.getRegionInfo(mapReads, geneStructure);
 			if (mapInfo != null) {
-				lsMapInfos.add(mapInfo);
+				lsRegions.add(mapInfo);
 			}
 		}
+		
+		RegionInfoComparator regionInfoComparator = new RegionInfoComparator();
+		regionInfoComparator.setMin2max(heatmapSortS2M);
+		regionInfoComparator.setCompareType(RegionInfoComparator.COMPARE_SCORE);
+		Collections.sort(lsRegions, regionInfoComparator);
+		
 		logger.debug("finished reading");
 	}
 	
-	public void writeLsMapInfoToFile(String filename) {
+	/** 将每个基因的覆盖信息写入文本，每行一个基因 */
+	public void writeLsReadsInfoToFile(String filename) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(filename, true);
-		for (RegionInfo mapInfo : lsMapInfos) {
-			txtWrite.writefileln(mapInfo.getName());
-			double[] value = mapInfo.getDouble();
-			String[] info = new String[value.length];
-			for (int i = 0; i < info.length; i++) {
-				info[i] = value[i] + "";
-			}
-			txtWrite.writefileln(info);
+		for (RegionInfo regionInfo : lsRegions) {
+			txtWrite.writefileln(regionInfo.toString());
 		}
 		txtWrite.close();
+	}
+	
+	/** 将总的覆盖信息写入文本，第一列为坐标，第二列为具体的值 */
+	public void writeReadsPileupToFile(String filename) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(filename, true);
+		txtWrite.writefileln(new String[]{"Distance to " + geneStructure, "Normalized Reads"});
+		List<double[]> lsInfo = getLsXYtsstes();
+		for (double[] ds : lsInfo) {
+			txtWrite.writefileln(ds[0] + "\t" + ds[1]);
+		}
+		txtWrite.close();
+	}
+	
+	/** 首先要设定好lsMapInfos */
+	public PlotHeatMap plotHeatMap() {
+		if (heatmapMax <= heatmapMin) {
+			heatmapMax = getMaxData(lsRegions, 99);
+		}
+		Color[] gradientColors = new Color[] {heatmapColorMin, heatmapColorMax};
+		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
+		PlotHeatMap heatMap = new PlotHeatMap(lsRegions,  customGradient);
+		heatMap.setRange(heatmapMin, heatmapMax);
+		return heatMap;
 	}
 	
 	/**
@@ -401,17 +457,17 @@ public class GffPlotTss {
 	}
 	
 	/**
-	 * 根据给定的List-MapInfo lsMapInfos<br>
-	 * 获得从第一个碱基开始，含有该位点的基因数量。也就是覆盖度<br>
+	 * 根据给定的List-MapInfo lsRegionInfos<br>
+	 * 获得从第一个碱基开始，含有该位点的Region数量。也就是覆盖度<br>
 	 * 譬如总共3个mapinfos<br>
 	 * 1:4bp长   2:3bp长   3:1bp长<br>
-	 * 那么第一位有3个基因，第二位有2个基因，第三位有2个基因，第四位有1个基因<br>
+	 * 那么第一位有3个Region，第二位有2个Region，第三位有2个Region，第四位有1个Region<br>
 	 * 则返回 3-2-2-1<br>
 	 * @return
 	 */
-	private List<Integer> getLsGeneCoverage(List<RegionInfo> lsMapInfos) {
+	private List<Integer> getLsGeneCoverage(List<RegionInfo> lsRegionInfos) {
 		List<double[]> lsDouble = new ArrayList<double[]>();
-		for (RegionInfo mapInfo : lsMapInfos) {
+		for (RegionInfo mapInfo : lsRegionInfos) {
 			lsDouble.add(mapInfo.getDouble());
 		}
 		return ArrayOperate.getLsCoverage(lsDouble);
@@ -427,10 +483,23 @@ public class GffPlotTss {
 		<b>执行该方法后需重新设定 {@link  #setGeneIDGenome()} 等方法</b>
 	 */
 	public void clearCollectionInfo() {
-		try { lsMapInfos.clear(); } catch (Exception e) { }
+		try { lsRegions.clear(); } catch (Exception e) { }
 		try { lsGeneID2Value.clear(); } catch (Exception e) { }
 		try { lsExonIntronNumGetOrExclude.clear(); } catch (Exception e) { }
 	}
+	
+	public void readLsRegionInfoFromFile(String regionFile) {
+		List<RegionInfo> lsRegion = new ArrayList<>();
+		TxtReadandWrite txtRead = new TxtReadandWrite(regionFile);
+		for (String content : txtRead.readlines()) {
+			RegionInfo regionInfo = new RegionInfo();
+			regionInfo.readFromStr(content);
+			lsRegion.add(regionInfo);
+		}
+		txtRead.close();
+		this.lsRegions = lsRegion;
+	}
+	
 	/**
 	 * @param lsMapInfo1
 	 * @param lsMapInfo2
@@ -439,8 +508,7 @@ public class GffPlotTss {
 	 * @param maxdata1 热图上的所能显示最深颜色的最大值
 	 */
 	public static void plotHeatMapMinus(ArrayList<RegionInfo> lsMapInfo1,
-			ArrayList<RegionInfo> lsMapInfo2, String outFile, double mindata1,
-			double maxdata1) {
+			ArrayList<RegionInfo> lsMapInfo2, String outFile, double mindata, double maxdata) {
 		ArrayList<RegionInfo> lsMapInfoFinal = RegionInfo.minusListMapInfo(
 				lsMapInfo1, lsMapInfo2);
 		Color colorgreen = new Color(0, 255, 0, 255);
@@ -451,7 +519,7 @@ public class GffPlotTss {
 		Color[] customGradient = Gradient.createMultiGradient(gradientColors, 250);
 
 		PlotHeatMap heatMap = new PlotHeatMap(lsMapInfoFinal, customGradient);
-		heatMap.setRange(mindata1, maxdata1);
+		heatMap.setRange(mindata, maxdata);
 		heatMap.saveToFile(outFile, 6000, 1000);
 	}
 	
@@ -482,6 +550,77 @@ public class GffPlotTss {
 				customGradient, customGradient2);
 		heatMap.setRange(mindata1, maxdata1, mindata2, maxdata2);
 		heatMap.saveToFile(outFile, 4000, 1000);
+	}
+	
+	public static void drawImageFromFile(Map<String, Color> mapFile2Color, GeneStructure geneStructure, String savePath, int[] width2Height) {
+		Map<XYSeries, Color> mapData2Color = new HashMap<>();
+		for (String tssFile : mapFile2Color.keySet()) {
+			XYSeries xySeries = new XYSeries(FileOperate.getFileNameSep(tssFile)[0].replace("_" + geneStructure, ""));
+			TxtReadandWrite txtRead = new TxtReadandWrite(tssFile);
+			for (String content : txtRead.readlines(2)) {
+				String[] ss = content.split("\t");
+				xySeries.add(Double.parseDouble(ss[0]), Double.parseDouble(ss[1]));
+			}
+			txtRead.close();
+			mapData2Color.put(xySeries, mapFile2Color.get(tssFile));
+		}
+		drawImage(mapData2Color, geneStructure, savePath, width2Height);
+	}
+	
+	/**
+	 * 给定一系列坐标，来画图
+	 * @param xySeriesCollection
+	 */
+	public static void drawImage(Map<XYSeries, Color> mapData2Color, GeneStructure geneStructure, String savePath, int[] width2Height) {
+		XYSeriesCollection xySeriesCollection = new XYSeriesCollection();
+		XYSplineRenderer renderer = new XYSplineRenderer();
+		
+		int i = 0;
+		double maxY = Double.MIN_VALUE;
+		double minX = Double.MAX_VALUE, maxX = Double.MIN_VALUE;
+		for (XYSeries xySeries : mapData2Color.keySet()) {
+			xySeriesCollection.addSeries(xySeries);
+			renderer.setSeriesPaint(i++, mapData2Color.get(xySeries)); //设置0号数据的颜色。如果一个图中绘制多条曲线，可以手工设置颜色
+			maxY = Math.max(maxY, xySeries.getMaxY());
+			minX = Math.min(minX, xySeries.getMinX());
+			maxX = Math.max(maxX, xySeries.getMaxX());
+		}
+		
+		renderer.setBaseShapesVisible(false); //绘制的线条上不显示图例，如果显示的话，会使图片变得很丑陋
+		renderer.setPrecision(1); //设置精度，大概就是在源数据两个点之间插入5个点以拟合出一条平滑曲线
+		renderer.setSeriesShapesVisible(0, false);//设置三条线是否显示 点 的形状
+		//create plot
+		NumberAxis xAxis = new NumberAxis("Distance to " + geneStructure);		
+		xAxis.setAutoRangeIncludesZero(false);
+		xAxis.setLowerBound(minX);
+		xAxis.setUpperBound(maxX);
+		
+		NumberAxis yAxis = new NumberAxis("Normalized Reads");
+    		yAxis.setAutoRangeIncludesZero(false);
+    		yAxis.setUpperMargin(0.35);
+    		//设置最低的一个 Item 与图片底端的距离
+    		yAxis.setLowerMargin(0.45);
+    		//设置Y轴的最小值
+    		yAxis.setLowerBound(0);
+    		//设置Y轴的最大值
+    		yAxis.setUpperBound(maxY * 1.2);
+    		
+    		XYPlot plot = new XYPlot(xySeriesCollection, xAxis, yAxis, renderer);
+    		plot.setBackgroundPaint(Color.white);
+    		plot.setDomainGridlinePaint(Color.white);
+    		plot.setRangeGridlinePaint(Color.white);
+    		plot.setAxisOffset(new RectangleInsets(4, 4, 4, 4)); //设置坐标轴与绘图区域的距离
+//    		ValueAxis xAxis = plot.getDomainAxis();
+//    		
+//    		ValueAxis yAxis = plot.getRangeAxis();
+    		//设置最高的一个 Item 与图片顶端的距离
+
+    		JFreeChart chart = new JFreeChart(geneStructure + " Plot", //标题
+    				JFreeChart.DEFAULT_TITLE_FONT, //标题的字体，这样就可以解决中文乱码的问题
+    				plot,
+    				true //不在图片底部显示图例
+    				);
+    		ImageUtils.saveBufferedImage(chart.createBufferedImage(width2Height[0], width2Height[1]), savePath);
 	}
 }
 

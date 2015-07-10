@@ -30,11 +30,7 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 	
 	private double[] value = null;
 	
-	/**
-	 * 是否用cis5to3的信息来翻转Value的double[]
-	 * 默认翻转
-	 */
-	boolean correctUseCis5to3ToConvertValue = true;
+	public RegionInfo() {}
 	
 	/**
 	 * @param chrID
@@ -48,15 +44,6 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 		super(chrID, startLoc, endLoc);
 		this.score = score;
 		this.name = title;
-	}
-	
-	/**
-	 * 是否用cis5to3的信息来翻转Value的double[]
-	 * 默认翻转
-	 * @param correct
-	 */
-	public void setCorrectUseCis5to3(boolean correctUseCis5to3ToConvertValue) {
-		this.correctUseCis5to3ToConvertValue = correctUseCis5to3ToConvertValue;
 	}
 	
 	/**
@@ -100,6 +87,11 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 		setChrID(chrID);
 		this.score = score;
 		this.name = title;
+	}
+	
+	/** 设定该region所对应的基因名 */
+	public void setName(String name) {
+		this.name = name;
 	}
 	
 	/** 最高点等指向性的位点，必须在start和end之间 */
@@ -158,16 +150,20 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 	@Override
 	public double[] getDouble() {
 		if (value == null) {
-			return null;
+			return new double[0];
 		}
 		double[] valueTmp = new double[value.length];
 		for (int i = 0; i < valueTmp.length; i++) {
 			valueTmp[i] = value[i];
 		}
-		if (isCis5to3() != null && !isCis5to3() && correctUseCis5to3ToConvertValue) {
+		if (isCis5to3() != null && !isCis5to3()) {
 			ArrayOperate.convertArray(valueTmp);
 		}
 		return valueTmp;
+	}
+	
+	public double[] getDoubleRaw() {
+		return value;
 	}
 
 	public RegionInfo clone() {
@@ -179,7 +175,6 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 			e.printStackTrace();
 			throw new RuntimeException("MapInfo clone error", e);
 		}
-		mapInfo.correctUseCis5to3ToConvertValue = correctUseCis5to3ToConvertValue;
 		double[] value2 = null;
 		if (value != null) {
 			value2 = new double[value.length];
@@ -206,8 +201,17 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 				&& getStartCis() == otherObj.getStartCis()
 				&& getEndCis() == otherObj.getEndCis()
 				&& score == otherObj.score
+				&& summit == otherObj.summit
 			)
 		{
+			if ((getName() == null && otherObj.getName() != null) || (getName() != null && !getName().equals(otherObj.getName()))) {
+				return false;
+			}
+			for (int i = 0; i < value.length; i++) {
+				if (value[i] != otherObj.value[i]) {
+					return false;
+				}
+			}
 			return true;
 		}
 		return false;
@@ -423,6 +427,63 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 		return name;
 	}
 	
+	public void readFromStr(String info) {
+		String[] ss = info.split("\t");
+		if (ss[0] != null && !"null".equalsIgnoreCase(ss[0])) {
+			name = ss[0];
+		}
+		if (ss[1] != null && !"null".equalsIgnoreCase(ss[1])) {
+			setChrID(ss[1]);
+		}
+		
+		setStart(Integer.parseInt(ss[2]));
+		setEnd(Integer.parseInt(ss[3]));
+		if (ss[4] != null && !"null".equalsIgnoreCase(ss[4])) {
+			setCis5to3(Boolean.parseBoolean(ss[4]));
+		}
+		score = Double.parseDouble(ss[5]);
+		summit = Integer.parseInt(ss[6]);
+		
+		int infoLen = 7;
+		double[] value = new double[ss.length - infoLen];
+		for (int i = infoLen; i < ss.length; i++) {
+			value[i - infoLen] = Double.parseDouble(ss[i]);
+		}
+		setDoubleByStrand(value);
+	}
+	
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(name);
+		
+		stringBuilder.append("\t");
+		stringBuilder.append(getRefID());
+		
+		stringBuilder.append("\t");
+		stringBuilder.append(getStartAbs());
+		
+		stringBuilder.append("\t");
+		stringBuilder.append(getEndAbs());
+		
+		stringBuilder.append("\t");
+		if (isCis5to3() == null) {
+			stringBuilder.append("null");
+		} else {
+			stringBuilder.append(isCis5to3());
+		}
+		
+		stringBuilder.append("\t");
+		stringBuilder.append(score);
+		stringBuilder.append("\t");
+		stringBuilder.append(summit);
+		
+		for (double d : getDouble()) {
+			stringBuilder.append("\t");
+			stringBuilder.append(d+"");
+		}
+		return stringBuilder.toString();
+	}
+	
 	public static class RegionInfoComparator implements Comparator<RegionInfo> {
 		/** 比较mapinfo的起点终点 */
 		public static final int COMPARE_LOCSITE = 100;
@@ -474,10 +535,6 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 			}
 			return result;
 		}
-		
-		
-		
-		
 	}
 
 

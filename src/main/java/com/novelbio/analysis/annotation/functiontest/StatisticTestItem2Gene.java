@@ -13,21 +13,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
  *
  */
 public class StatisticTestItem2Gene {
-	public static final String titleGO = "GO2Gene";
-	public static final String titlePath = "Path2Gene";
-	public static final String titleCOG = "COG2Gene";
 	
 	public static String getTitle(TestType testType) {
-		switch (testType) {
-		case GO :
-			return titleGO;
-		case Pathway :
-			return titlePath;
-		case COG :
-			return titleCOG;
-		default:
-			return null;
-		}
+		return testType + "2Gene";
 	}
 	
 	StatisticTestResult statisticTestResult;

@@ -10,8 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
+import com.novelbio.analysis.annotation.cog.EnumCogType;
 import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -74,7 +76,7 @@ public class CogFunTest extends FunctionTest {
 		Map<String, StatisticTestResult> mapItem2StatictResult = getMapItemID2StatisticsResult();
 		Set<String> setAccID = new HashSet<String>();//用来去重复的
 		for (GeneID2LsItem geneID2LsItem : lsTest) {
-			for (GeneID geneID : mapGeneUniID2LsGeneID.get(geneID2LsItem.getGeneUniID())) {
+			for (GeneID geneID : mapGeneUniID2LsGeneID.get(geneID2LsItem.getGeneUniID().toLowerCase())) {
 				if (setAccID.contains(geneID.getAccID())) continue;
 				
 				setAccID.add(geneID.getAccID());
@@ -112,6 +114,23 @@ public class CogFunTest extends FunctionTest {
 			statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemID()));
 		}
 		return lsTestResult;
+	}
+	
+	protected ArrayListMultimap<String, GeneID> getGo2GeneUniID() {
+		ArrayListMultimap<String, GeneID> hashGo2LsGene = ArrayListMultimap.create();
+		ArrayList<StatisticTestGene2Item> lsStatisticTestGene2Items = getGene2ItemPvalue();
+		for (StatisticTestGene2Item statisticTestGene2Item : lsStatisticTestGene2Items) {
+			GeneID2LsItem geneID2LsItem = convert2ItemFromBG(statisticTestGene2Item.getGeneID(), false);
+			if (geneID2LsItem == null) {
+				continue;
+			}
+			GeneID2LsCog geneID2LsCog = (GeneID2LsCog)geneID2LsItem;
+			geneID2LsCog = geneID2LsCog.convert2Abbr(cogAnno);
+			for (String goid : geneID2LsCog.getSetItemID()) {
+				hashGo2LsGene.put(goid, statisticTestGene2Item.getGeneID());
+			}
+		}
+		return hashGo2LsGene;
 	}
 	
 	private List<GeneID2LsItem> convertLsGeneId2Cog(List<GeneID2LsItem> lsGeneID2LsItems) {
@@ -172,7 +191,12 @@ public class CogFunTest extends FunctionTest {
 	
 	@Override
 	protected TestType getTestType() {
-		return TestType.COG;
+		if (cogAnno.getCogType() == EnumCogType.COG) {
+			return TestType.COG;
+		} else {
+			return TestType.KOG;
+		}
+		
 	}
 
 

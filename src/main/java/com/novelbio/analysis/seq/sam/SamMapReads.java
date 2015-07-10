@@ -24,10 +24,8 @@ public class SamMapReads extends MapReadsAbs {
 	Map<String, Long> mapChrIDlowcase2Length;
 	
 	SamFile samFile;
-	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	/** 缓存 */
-	double[] cacheValueCis5to3;
-	double[] cacheValueTrans;
+	double[] cacheValue;
 	String chrIDCach= ""; int start = 0, end = 0;
 	/** 输入的samFile必须是排序并且有索引的 */
 	public SamMapReads(SamFile samFile, StrandSpecific strandSpecific) {
@@ -36,10 +34,7 @@ public class SamMapReads extends MapReadsAbs {
 		}
 		this.samFile = samFile;
 		mapChrIDlowcase2Length = samFile.getMapChrIDLowcase2Length();
-		cacheValueCis5to3 = new double[cacheNum];
-		if (strandSpecific != StrandSpecific.NONE) {
-			cacheValueTrans = new double[cacheNum];
-		}
+		cacheValue = new double[cacheNum];
 	}
 	
 	/** catchNum不能大于5000000 */
@@ -47,10 +42,7 @@ public class SamMapReads extends MapReadsAbs {
 		if (cacheNum > 5000000) return;
 		
 		this.cacheNum = cacheNum;
-		cacheValueCis5to3 = new double[cacheNum];
-		if (strandSpecific != StrandSpecific.NONE) {
-			cacheValueTrans = new double[cacheNum];
-		}
+		cacheValue = new double[cacheNum];
 	}
 	
 	/**
@@ -121,14 +113,14 @@ public class SamMapReads extends MapReadsAbs {
 		}
 		double[] result = new double[startEnd[1] - startEnd[0] + 1];
 		if (!chrID.toLowerCase().equals(chrIDCach) || startEnd[1] > end || startEnd[0] < start) {
-			cacheValueCis5to3 = new double[cacheNum];
+			cacheValue = new double[cacheNum];
 			if (startEnd[1] - startEnd[0] < cacheNum - 100) {
 				int media = (startEnd[1] + startEnd[0])/2;
 				int range = cacheNum/2;
 				int[] startEndFinal = MapReadsAbs.correctStartEnd(mapChrIDlowcase2Length, chrID,  media - range, media + range);
 				chrIDCach = chrID.toLowerCase();
 				start = startEndFinal[0]; end = startEndFinal[1];
-				cacheValueCis5to3 = getRangeValueFromSam(chrID, start, end);
+				cacheValue = getRangeValueFromSam(chrID, start, end);
 			} else {
 				return getRangeValueFromSam(chrID, startEnd[0], startEnd[1]);
 			}
@@ -137,7 +129,7 @@ public class SamMapReads extends MapReadsAbs {
 		int endReal = startEnd[1] - start;
 		int m = 0;
 		for (int i = startReal; i <= endReal; i++) {
-			result[m] = cacheValueCis5to3[i];
+			result[m] = cacheValue[i];
 			m++;
 		}
 		return result;

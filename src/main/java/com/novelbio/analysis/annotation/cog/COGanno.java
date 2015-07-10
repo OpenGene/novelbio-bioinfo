@@ -100,7 +100,6 @@ public class COGanno {
 	}
 	
 	public void initial() {
-		System.out.println();
 		String cogFile = getCOGFile();
 		if (!FileOperate.isFileExistAndBigThanSize(cogFile, 0)) {
 			String blastFile = blastSeqToCOG();

@@ -210,7 +210,7 @@ class GeneID2LsCog extends GeneID2LsItem {
 		for (String cogId : getSetItemID()) {
 			String abbr = coGanno.queryCogInfoFromCogId(cogId).getCogAbbr();
 			for (char charCog : abbr.toCharArray()) {
-				geneID2LsCog.addItemID("COG:" + charCog);
+				geneID2LsCog.addItemID(coGanno.getCogType().toString() + ":" + charCog);
 			}
 		}
 		return geneID2LsCog;

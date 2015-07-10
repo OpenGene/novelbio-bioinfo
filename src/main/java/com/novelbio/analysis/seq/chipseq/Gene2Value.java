@@ -4,10 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -19,9 +17,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -88,6 +85,7 @@ public class Gene2Value {
 	public void setExonIntronPileUp(boolean pileupExonIntron) {
 		this.pileupExonIntron = pileupExonIntron;
 	}
+	
 	/** 设定需要提取的exon或intron的个数，譬如杨红星要求仅分析第一位的intron 
 	 * 输入的是实际数量，譬如1表示第一个exon或intron
 	 * @param lsExonIntronNumGetOrExclude 是提取想要的exon，intron还是不提去想要的exon，intron
@@ -122,7 +120,7 @@ public class Gene2Value {
 	 * @param geneStructure
 	 * @return
 	 */
-	public RegionInfo getRegionInfo(MapReads mapReads, GeneStructure geneStructure) {
+	public RegionInfo getRegionInfo(MapReadsAbs mapReads, GeneStructure geneStructure) {
 		boolean sucess = true;
 		RegionInfo regionInfo = new RegionInfo(gffGeneIsoInfo.getRefIDlowcase(), score, gffGeneIsoInfo.getName());
 		regionInfo.setCis5to3(gffGeneIsoInfo.isCis5to3());
@@ -175,24 +173,20 @@ public class Gene2Value {
 	/**
 	 * 根据指定的lsExonInfos信息，设定mapInfo的value<br>
 	 * 会根据splitNum的数量对结果进行标准化
-	 * @param mapInfo
+	 * @param regionInfo
 	 * @param mapReads
 	 * @param lsExonInfos
 	 * @return
 	 */
-	private boolean setMapInfo(RegionInfo mapInfo, MapReads mapReads, List<ExonInfo> lsExonInfos) {
-		if (!isCanGetExon(lsExonInfos)) {
-			return false;
-		}
-		
+	private boolean setMapInfo(RegionInfo regionInfo, MapReadsAbs mapReads, List<ExonInfo> lsExonInfos) {
 		double[] result = null;
 		List<ExonInfo> lsNew = getSelectLsExonInfo(lsExonInfos);
-		if (lsNew.size() == 0) {
+		if (lsNew.isEmpty()) {
 			return false;
 		}
 		List<Integer> lsCoverage = new ArrayList<Integer>();
 		if (pileupExonIntron) {
-			List<double[]> lsInfo = mapReads.getRangeInfoLs(mapInfo.getRefID(), lsNew);
+			List<double[]> lsInfo = mapReads.getRangeInfoLs(regionInfo.getRefID(), lsNew);
 			List<double[]> lsResult = new ArrayList<double[]>();
 			for (double[] info : lsInfo) {
 				if (info == null || info.length < 5) {
@@ -209,7 +203,7 @@ public class Gene2Value {
 			}
 			lsCoverage = ArrayOperate.getLsCoverage(lsResult);
 		} else {
-			result = mapReads.getRangeInfo(mapInfo.getRefID(), lsNew);
+			result = mapReads.getRangeInfo(regionInfo.getRefID(), lsNew);
 			if (result == null || result.length < 10) {
 				return false;
 			}
@@ -219,39 +213,18 @@ public class Gene2Value {
 			lsCoverage = getLsCoverage(result.length, 1);
 		}
 		result = getNormalizedValue(result, lsCoverage);
-		mapInfo.setDouble(result);
+		regionInfo.setDouble(result);
 		return true;
-	}
-	
-	/**
-	 * 是否能提取所需的exon和intron
-	 * 如果提取第一位的exon，而本list中只有一位，则不提去
-	 * @return
-	 */
-	private boolean isCanGetExon(List<ExonInfo> lsExonInfos) {
-		if (lsExonInfos.size() < 3) {
-			return false;
-		}
-		return true;
-		
-		
-//		if (lsExonIntronNumGetOrExclude.size() == 1 && lsExonIntronNumGetOrExclude.get(0) == 1 && lsExonInfos.size() == 1) {
-//			return false;
-//		} else if (lsExonIntronNumGetOrExclude.size() == 1 && lsExonIntronNumGetOrExclude.get(0) == -1 && lsExonInfos.size() == 1) {
-//			return false;
-//		} else if (lsExonIntronNumGetOrExclude.size() == 2 
-//				&& lsExonIntronNumGetOrExclude.get(0) == 1 && lsExonIntronNumGetOrExclude.get(0) == -1
-//				&& lsExonInfos.size() == 2) {
-//			return false;
-//		}
-//		return true;
 	}
 	
 	/** 根据设定的lsExonIntronNumGetOrExclude信息，返回选择的exoninfo
 	 * <b>暴露出来仅供测试</b>
 	 * @param lsExonInfos 输入的exon信息
 	 */
-	public List<ExonInfo> getSelectLsExonInfo(List<ExonInfo> lsExonInfos) {
+	protected List<ExonInfo> getSelectLsExonInfo(List<ExonInfo> lsExonInfos) {
+		if (lsExonInfos.isEmpty()) {
+			return new ArrayList<>();
+        }
 		HashSet<ExonInfo> setLocation = new HashSet<ExonInfo>();//去重复用的，防止lsSelect里面有重复的exoninfo
 		List<ExonInfo> lsSelect = new ArrayList<ExonInfo>();
 		if (lsExonIntronNumGetOrExclude == null || lsExonIntronNumGetOrExclude.size() == 0) {
@@ -302,20 +275,21 @@ public class Gene2Value {
 	 * 会根据MapInfo.isMin2max()的标签来确定遇到重复项选择大的还是小的
 	 * @param tssTesRange
 	 * @param gffChrAbs
-	 * @param colSiteInfo
+	 * @param colRegionInfo
 	 * @param geneStructure
 	 * @return
 	 */
-	public static List<Gene2Value> getLsGene2Vale(int[] tssTesRange, GffChrAbs gffChrAbs, Collection<RegionInfo> colSiteInfo, GeneStructure geneStructure) {
+	public static List<Gene2Value> getLsGene2Vale(int[] tssTesRange, GffChrAbs gffChrAbs, 
+			Collection<RegionInfo> colRegionInfo, GeneStructure geneStructure, int[] exonNumRegion) {
 		//存储最后的基因和权重
 		ArrayListMultimap<GffDetailGene, Double> mapGene2LsValue = ArrayListMultimap.create();		
-		for (RegionInfo mapInfo : colSiteInfo) {
+		for (RegionInfo mapInfo : colRegionInfo) {
 			Set<GffDetailGene> setGffDetailGene = getPeakStructureGene(tssTesRange, gffChrAbs, mapInfo, geneStructure );
 			for (GffDetailGene gffDetailGene : setGffDetailGene) {
 				mapGene2LsValue.put(gffDetailGene, mapInfo.getScore());
 			}
 		}
-		return combineMapGene2LsValue(mapGene2LsValue);
+		return combineMapGene2LsValue(mapGene2LsValue, exonNumRegion);
 	}
 	
 	/**
@@ -327,7 +301,7 @@ public class Gene2Value {
 	 * @param geneStructure
 	 * @return
 	 */
-	public static List<Gene2Value> getLsGene2Vale(GffChrAbs gffChrAbs, List<String[]> lsGeneValue) {		//有权重的就使用这个hash
+	public static List<Gene2Value> getLsGene2Vale(GffChrAbs gffChrAbs, List<String[]> lsGeneValue, int[] exonNumRegion) {		//有权重的就使用这个hash
 		ArrayListMultimap<GffDetailGene, Double> mapGene2LsValue = ArrayListMultimap.create();		
 		for (String[] strings : lsGeneValue) {
 			GffDetailGene gffDetailGene = gffChrAbs.getGffHashGene().searchLOC(strings[0]);
@@ -345,13 +319,17 @@ public class Gene2Value {
 			}
 		}
 		
-		return combineMapGene2LsValue(mapGene2LsValue);
+		return combineMapGene2LsValue(mapGene2LsValue, exonNumRegion);
 	}
 	
-	private static List<Gene2Value> combineMapGene2LsValue(ArrayListMultimap<GffDetailGene, Double> mapGene2LsValue) {
+	private static List<Gene2Value> combineMapGene2LsValue(ArrayListMultimap<GffDetailGene, Double> mapGene2LsValue, int[] exonNumRegion) {
 		List<Gene2Value> lsGene2Values = new ArrayList<Gene2Value>();
 		for (GffDetailGene gffDetailGene : mapGene2LsValue.keySet()) {
-			Gene2Value gene2Value = new Gene2Value(gffDetailGene.getLongestSplitMrna());
+			GffGeneIsoInfo iso = gffDetailGene.getLongestSplitMrna();
+			if (!isMatchExonNum(iso, exonNumRegion)) {
+	            	continue;
+            }
+			Gene2Value gene2Value = new Gene2Value(iso);
 			List<Double> lsValues = mapGene2LsValue.get(gffDetailGene);
 			gene2Value.setScore(MathComput.mean(lsValues));
 			lsGene2Values.add(gene2Value);
@@ -368,7 +346,8 @@ public class Gene2Value {
 	 * @param structure GffDetailGene.TSS等。如果是gene body区域，就返回整个基因
 	 * @return
 	 */
-	private static Set<GffDetailGene> getPeakStructureGene(int[] tssTesRange, GffChrAbs gffChrAbs, RegionInfo siteInfo, GeneStructure structure) {
+	private static Set<GffDetailGene> getPeakStructureGene(int[] tssTesRange, GffChrAbs gffChrAbs,
+			RegionInfo siteInfo, GeneStructure structure) {
 		GffCodGeneDU gffCodGeneDU = gffChrAbs.getGffHashGene().searchLocation(siteInfo);
 		if (gffCodGeneDU == null) {
 			return new HashSet<GffDetailGene>();
@@ -391,10 +370,13 @@ public class Gene2Value {
 	 * @param gffChrAbs
 	 * @return
 	 */
-	public static ArrayList<Gene2Value> readGeneMapInfoAll(GffChrAbs gffChrAbs) {
+	public static ArrayList<Gene2Value> readGeneMapInfoAll(GffChrAbs gffChrAbs, int[] exonNumRegion) {
 		ArrayList<Gene2Value> lsGene2Value = new ArrayList<Gene2Value>();
 		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getGffDetailAll()) {
 			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
+			if (!isMatchExonNum(gffGeneIsoInfo, exonNumRegion)) {
+	            	continue;
+            }
 			Gene2Value gene2Value = new Gene2Value(gffGeneIsoInfo);
 			lsGene2Value.add(gene2Value);
 		}
@@ -415,5 +397,35 @@ public class Gene2Value {
 			result[i] = value[i]/lsCoverage.get(i);
 		}
 		return result;
+	}
+	
+	/** 给定iso和所需要的exonNum的区间，返回该iso是否满足条件
+	 * @param iso
+	 * @param exonNumRegion int[2]<br>
+	 *  0：至少多少exon 小于0表示最小1个exon即可<br>
+	 *  1：至多多少exon 小于0表示最多可以无限个exon<br>
+	 *  <br>
+	 *  int[]{2,3}表示本iso的exon数量必须在2-3之间<br>
+	 *  int[]{-1,3}表示本iso的exon数量必须小于等于3个<br>
+	 *  int[]{2,-1}表示本iso的exon数量必须大于等于2个<br>
+	 * @return
+	 */
+	private static boolean isMatchExonNum(GffGeneIsoInfo iso, int[] exonNumRegion) {
+		if (iso == null || iso.getLsElement().isEmpty()) {
+			return false;
+		}
+		return isMatchExonNum(iso.getLsElement().size(), exonNumRegion);
+	}
+	
+	protected static boolean isMatchExonNum(int exonNum, int[] exonNumRegion) {
+		if (exonNumRegion == null) return true;
+		
+		if (exonNumRegion[0] > 0 && exonNum < exonNumRegion[0] ) {
+			return false;
+        }
+		if (exonNumRegion[1] > 0 && exonNum > exonNumRegion[1]) {
+			return false;
+        }
+		return true;
 	}
 }
