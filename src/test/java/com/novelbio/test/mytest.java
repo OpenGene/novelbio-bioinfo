@@ -91,22 +91,22 @@ public class mytest {
 //		}
 //		txtWrite.close();
 		
-		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/genes.gtf");
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/id_convert.txt", true);
-		for (String content : txtRead.readlines()) {
-			if (content.startsWith("#")) {
-				continue;
+		TxtReadandWrite txtRead = new TxtReadandWrite("e:\\上海烈冰\\数据库\\Nr所有蛋白序列\\nr.gz");
+		TxtReadandWrite txtWrite = new TxtReadandWrite("e:\\上海烈冰\\数据库\\Nr所有蛋白序列\\nr_sub_id.txt", true);
+		int i  = 0;
+		for (String string : txtRead.readlines()) {			
+			if (string.startsWith(">")) {
+				i++;
+				String subId =  string.split(" ")[0];
+				txtWrite.writefileln(subId);
 			}
-			String[] ss = content.split("\t");
-			String[] idss = ss[8].split("\t");
-			for (String info : idss) {
-				
-			}
-			txtWrite.writefileln(content);
+//			if (i >10) {
+//				break;
+//			}
+			
 		}
 		txtRead.close();
 		txtWrite.close();
-		
 //		GffIDconvert gffIDconvert = new GffIDconvert();
 //		gffIDconvert.setGffHashGeneQuery(new GffHashGene("/home/novelbio/genes.gtf"));
 //		gffIDconvert.setGffHashGeneSub(new GffHashGene(""));
