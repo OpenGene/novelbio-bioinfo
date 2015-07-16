@@ -129,8 +129,11 @@ public class SamToBamSort {
 				}
 			} catch (Throwable e) {
 				isCollapse[0] = true;
-				runProcess.threadStop();
 				throw e;
+			} finally{
+				if (runProcess != null) {
+					runProcess.threadStop();
+				}
 			}
 			
 			//意思是在AddMultiFlag线程中报错的，就把这个异常抛出
