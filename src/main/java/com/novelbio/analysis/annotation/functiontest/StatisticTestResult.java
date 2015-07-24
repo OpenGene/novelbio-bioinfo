@@ -157,38 +157,13 @@ public class StatisticTestResult {
 		}
 	}
 	
-	public static String[] getTitleGo() {
+	public static String[] getTitleExcel(TestType testType) {
 		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.GOID.toString());
-		lsTitle.add(TitleFormatNBC.GOTerm.toString());
+		lsTitle.add(testType.toString() + TitleFormatNBC.ID.toString());
+		lsTitle.add(testType.toString() + TitleFormatNBC.Term.toString());
 		lsTitle.add("DifGene");
 		lsTitle.add("AllDifGene");
 		lsTitle.add("GeneInGOID");
-		lsTitle.add("AllGene");
-		
-		addTitle(lsTitle);
-		return lsTitle.toArray(new String[0]);
-	}
-	public static String[] getTitlePath() {
-		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.PathwayID.toString());
-		lsTitle.add(TitleFormatNBC.PathwayTerm.toString());
-		lsTitle.add("DifGene");
-		lsTitle.add("AllDifGene");
-		lsTitle.add("GeneInPathwayID");
-		lsTitle.add("AllGene");
-		
-		addTitle(lsTitle);
-		return lsTitle.toArray(new String[0]);
-	}
-	
-	public static String[] getTitleCOG() {
-		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.COGID.toString());
-		lsTitle.add(TitleFormatNBC.COGTerm.toString());
-		lsTitle.add("DifGene");
-		lsTitle.add("AllDifGene");
-		lsTitle.add("GeneInCOGID");
 		lsTitle.add("AllGene");
 		
 		addTitle(lsTitle);
@@ -212,13 +187,7 @@ public class StatisticTestResult {
 			return new ArrayList<String[]>();
 		}
 		List<String[]> lsResult = new ArrayList<String[]>();
-		if (testType == TestType.GO) {
-			lsResult.add(StatisticTestResult.getTitleGo());
-		} else if(testType == TestType.Pathway) {
-			lsResult.add(StatisticTestResult.getTitlePath());
-		} else if (testType == TestType.COG) {
-			lsResult.add(StatisticTestResult.getTitleCOG());
-		}
+		lsResult.add(StatisticTestResult.getTitleExcel(testType));
 		
 		for (StatisticTestResult statisticTestResult : lsStatisticTestResults) {
 			lsResult.add(statisticTestResult.toStringArray());

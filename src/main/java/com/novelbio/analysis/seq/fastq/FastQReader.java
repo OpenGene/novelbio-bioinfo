@@ -12,6 +12,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.hg.doc.fa;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 /**
@@ -37,7 +38,7 @@ class FastQReader implements Closeable {
 	FastQReader fastQReadMate;
 	boolean isCheckFormat = true;
 	int readsLenAvg = 0;
-
+	boolean isInterleaved = false;
 	/** 标准文件名的话，自动判断是否为gz压缩 */
 	public FastQReader(File seqFile) {
 		txtSeqFile = new TxtReadandWrite(seqFile, false);
@@ -57,7 +58,10 @@ class FastQReader implements Closeable {
 		setFastQFormatLen();
 		return offset;
 	}
-	
+	public int getIsInterval() {
+		setFastQFormatLen();
+		return offset;
+	}
 	/** 返回文件名 */
 	public String getFileName() {
 		return txtSeqFile.getFileName();
@@ -325,9 +329,8 @@ class FastQReader implements Closeable {
 		setFastQFormatLen();
 		return readsLenAvg;
 	}
-	/**
-	 * 如果FastQ格式没有设定好，通过该方法设定FastQ格式
-	 */
+	
+	/** 如果FastQ格式没有设定好，通过该方法设定FastQ格式 */
 	private void setFastQFormatLen() {
 		if (offset != 0) {
 			return;
@@ -335,6 +338,7 @@ class FastQReader implements Closeable {
 		ArrayList<FastQRecord> lsFastQRecordsTop1000 = getLsFastQSeq(1000);
 		offset = guessFastOFormat(lsFastQRecordsTop1000);
 		readsLenAvg = getReadsLenAvg(lsFastQRecordsTop1000);
+		isInterleaved = isInterleaved(lsFastQRecordsTop1000);
 	}
 	
 	/**
@@ -456,6 +460,35 @@ class FastQReader implements Closeable {
 			readsLenSum = readsLenSum + fastQRecord.getLength();
 		}
 		return readsLenSum/lsFastqRecord.size();
+	}
+	
+	/**
+	 * 给定一系列的fastQ格式，获得平均reads长度
+	 * @param lsFastQ
+	 *            :每一个string 就是一个fastQ
+	 * @return 平均reads长度
+	 */
+	private boolean isInterleaved(ArrayList<FastQRecord> lsFastqRecord) {
+		if (lsFastqRecord.size() == 0) {
+			return false;
+		}
+		boolean isInterleaved = true;
+		boolean first = true;
+		FastQRecord fastqLast = null;
+		for (FastQRecord fastQRecord : lsFastqRecord) {
+			if (first) {
+				fastqLast = fastQRecord;
+				first = false;
+				continue;
+			} else {
+				first = true;
+				if (!fastQRecord.getName().split(" ")[0].equals(fastqLast.getName().split(" ")[0])) {
+					isInterleaved = false;
+					break;
+				}
+			}
+		}
+		return isInterleaved;
 	}
 	
 	public void close() {

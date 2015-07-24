@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
@@ -16,8 +17,9 @@ import org.apache.log4j.Logger;
 public class SamAddMultiFlag {
 	private static final Logger logger = Logger.getLogger(SamAddMultiFlag.class);
 	
+	int capacity = 50000;
 	/** 读完的reads放在这里 */
-	Queue<SamRecord> queueSamRecords = new LinkedBlockingQueue<>();
+	ArrayBlockingQueue<SamRecord> queueSamRecords = new ArrayBlockingQueue<>(capacity);
 	boolean isFinished = false;
 	
 	boolean isPairend;
@@ -71,6 +73,17 @@ public class SamAddMultiFlag {
 				if (samRecord != null) {
 					samRecord.setMultiHitNum(multiHitNum);
 					samRecord.setMapIndexNum(i);
+					
+					while (queueSamRecords.remainingCapacity() < capacity/200) {
+						try {
+							logger.info(queueSamRecords.size());
+							Thread.sleep(50);
+							logger.info(queueSamRecords.size());
+						} catch (Exception e) {
+							// TODO: handle exception
+						}
+						
+					}
 					queueSamRecords.add(samRecord);
 				}
 			}

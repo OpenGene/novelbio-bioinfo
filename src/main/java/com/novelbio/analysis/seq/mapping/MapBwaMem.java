@@ -76,7 +76,7 @@ public class MapBwaMem extends MapDNA {
 	
 	/** 临时文件 */
 	String tmpPath;
-	
+	CmdOperate cmdOperate;
 	public MapBwaMem() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_mem);
 		softWare = SoftWare.bwa_mem;
@@ -416,7 +416,7 @@ public class MapBwaMem extends MapDNA {
 		combSeq();
 		List<String> lsCmd = getLsCmd();
 		
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setGetCmdInStdStream(true);
 		cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_mappingStderrInfo", "txt"), false, true);
 		cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runInfo", "txt"));
@@ -463,6 +463,12 @@ public class MapBwaMem extends MapDNA {
 	}
 	
 	private void combSeq() {
+		//左右两端都为空，说明需要输入std信息了
+		if (lsLeftFq.isEmpty() && lsRightFq.isEmpty()) {
+			leftCombFq = null;
+			rightCombFq = null;
+			return;
+		}
 		boolean singleEnd = (lsLeftFq.size() > 0 && lsRightFq.size() > 0) ? false : true;
 		if ( leftCombFq != null && (singleEnd || (!singleEnd && rightCombFq != null))) {
 			return;

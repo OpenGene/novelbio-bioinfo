@@ -18,8 +18,11 @@ public class FastQ {
 	public static final int FASTQ_SANGER_OFFSET = 33;
 	public static final int FASTQ_ILLUMINA_OFFSET = 64;
 	
+	/** 双端fastq合并为一个时的文件名后缀 */
+	public static final String FASTQ_Interleaved_Suffix = "_Interleaved";
 	/** 和 path.properties 文件中的 change to best 一样 */
 	static final String FASTQ_QUALITY_CHANGE_TO_BEST = "ChangeToBest";
+
 //	
 //	public static final int QUALITY_LOW = 10;
 //	public static final int QUALITY_MIDIAN = 20;

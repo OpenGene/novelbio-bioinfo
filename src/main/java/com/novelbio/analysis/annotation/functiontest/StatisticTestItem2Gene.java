@@ -63,40 +63,10 @@ public class StatisticTestItem2Gene {
 		return lsResult;
 	}
 	
-	public static String[] getTitleGO() {
+	public static String[] getTitleExcel(TestType testType) {
 		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.GOID.toString());
-		lsTitle.add(TitleFormatNBC.GOTerm.toString());
-		lsTitle.add(TitleFormatNBC.QueryID.toString());
-		lsTitle.add(TitleFormatNBC.Symbol.toString());
-		lsTitle.add(TitleFormatNBC.Description.toString());
-		lsTitle.add(TitleFormatNBC.Pvalue.toString());
-		lsTitle.add(TitleFormatNBC.FDR.toString());
-		lsTitle.add(TitleFormatNBC.Enrichment.toString());
-//		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
-		
-		return lsTitle.toArray(new String[0]);
-	}
-	
-	public static String[] getTitlePath() {
-		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.PathwayID.toString());
-		lsTitle.add(TitleFormatNBC.PathwayTerm.toString());
-		lsTitle.add(TitleFormatNBC.QueryID.toString());
-		lsTitle.add(TitleFormatNBC.Symbol.toString());
-		lsTitle.add(TitleFormatNBC.Description.toString());
-		lsTitle.add(TitleFormatNBC.Pvalue.toString());
-		lsTitle.add(TitleFormatNBC.FDR.toString());
-		lsTitle.add(TitleFormatNBC.Enrichment.toString());
-//		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());
-		
-		return lsTitle.toArray(new String[0]);
-	}
-	
-	public static String[] getTitleCOG() {
-		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.COGID.toString());
-		lsTitle.add(TitleFormatNBC.COGTerm.toString());
+		lsTitle.add(testType.toString() + TitleFormatNBC.ID.toString());
+		lsTitle.add(testType.toString() + TitleFormatNBC.Term.toString());
 		lsTitle.add(TitleFormatNBC.QueryID.toString());
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());
@@ -118,13 +88,7 @@ public class StatisticTestItem2Gene {
 			return new ArrayList<String[]>();
 		}
 		List<String[]> lsGo2GeneResult = new ArrayList<String[]>();
-		if (testType == TestType.GO) {
-			lsGo2GeneResult.add(StatisticTestItem2Gene.getTitleGO());
-		} else if(testType == TestType.Pathway) {
-			lsGo2GeneResult.add(StatisticTestItem2Gene.getTitlePath());
-		} else if (testType == TestType.COG) {
-			lsGo2GeneResult.add(StatisticTestItem2Gene.getTitleCOG());
-		}
+		lsGo2GeneResult.add(StatisticTestItem2Gene.getTitleExcel(testType));
 	
 		for (StatisticTestItem2Gene statisticTestItem2GeneElimGo : lsItem2Gene) {
 			lsGo2GeneResult.addAll(statisticTestItem2GeneElimGo.toStringsLs());

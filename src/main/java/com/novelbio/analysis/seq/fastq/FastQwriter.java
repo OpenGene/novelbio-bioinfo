@@ -171,8 +171,12 @@ class FastQwriter extends RunProcess<Integer> {
 		if (fastQRecord1 == null || fastQRecord1.equals("")) return;
 		
 		txtSeqFile.writefileln(fastQRecord1);
-		if (fastQwriteMate != null && fastQRecord2 != null && !fastQRecord2.equals("")) {
-			fastQwriteMate.txtSeqFile.writefileln(fastQRecord2);
+		if (fastQRecord2 != null && !fastQRecord2.equals("")) {
+			if (fastQwriteMate != null) {
+				fastQwriteMate.txtSeqFile.writefileln(fastQRecord2);
+			} else {
+				txtSeqFile.writefileln(fastQRecord2);
+			}
 		}
 	}
 }

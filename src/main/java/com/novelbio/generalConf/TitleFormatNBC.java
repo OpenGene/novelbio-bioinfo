@@ -3,6 +3,8 @@ package com.novelbio.generalConf;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.sun.xml.internal.xsom.impl.Ref.Term;
+
 
 public enum TitleFormatNBC {
 	/** 公司名缩写 */
@@ -33,11 +35,13 @@ public enum TitleFormatNBC {
 	
 	RepeatName("RepeatName"), RepeatFamily("RepeatFamily"),
 	
-	Energy("Energy"), Score("Score"), 
-	GOID("GOID"), GOTerm("GOTerm"),
-	KEGGID("KeggID"), KEGGTerm("KeggTerm"),
-	PathwayID("PathwayID"), PathwayTerm("PathwayTerm"),
-	COGAbbr("COGFunction"), COGID("COGID"), COGTerm("COGTerm"), COGTermDetail("COGTermDetail"),
+	Energy("Energy"), Score("Score"),
+	
+	//GO Pathway等
+	 KEGGID("KeggID"),
+	ID("ID"),
+	Term("Term"),
+	Function("Function"),TermDetail("TermDetail"),
 	/** mapping的临时文件夹 */
 	TmpMapping("TmpMapping"),
 	/** 样本文件夹 */

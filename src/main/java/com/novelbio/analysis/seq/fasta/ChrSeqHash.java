@@ -376,17 +376,17 @@ public class ChrSeqHash extends SeqHashAbs {
 		public int compare(String o1, String o2) {
 			String chrID1 = patChrID.getPatFirst(o1);
 			String chrID2 = patChrID.getPatFirst(o2);
-			if (chrID1 == null || chrID2 == null) {
-				if (o1.equalsIgnoreCase("chrm") ) {
-					return 1;
-				} else if (o2.equalsIgnoreCase("chrm")) {
-					return -1;
-				} else if (o1.equalsIgnoreCase("chrc")) {
-					return 1;
-				} else if (o2.equalsIgnoreCase("chrc")) {
-					return -1;
-				}
+
+			if (chrID1 == null && chrID2 == null) {
 				return o1.compareTo(o2);
+			}
+			
+			if (chrID1 == null || chrID2 == null) {	
+				if (chrID1 != null) {
+					return -1;
+				} else {
+					return 1;
+				}
 			}
 			Long chr1 = Long.parseLong(chrID1);
 			Long chr2 = Long.parseLong(chrID2);

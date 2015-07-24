@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
+import com.novelbio.analysis.annotation.cog.EnumCogType;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
@@ -166,9 +167,8 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 			lsTitle.add(TitleFormatNBC.Description.toString());
 		}
 		
-		lsTitle.add(TitleFormatNBC.GOID.toString());
-		lsTitle.add(TitleFormatNBC.GOTerm.toString());
-		
+		lsTitle.add(TestType.GO + TitleFormatNBC.ID.toString());
+		lsTitle.add(TestType.GO + TitleFormatNBC.Term.toString());
 //		lsTitle.add("DifGene");
 //		lsTitle.add("AllDifGene");
 //		lsTitle.add("GeneInGOID");
@@ -248,8 +248,8 @@ class StatisticTestGene2Path extends StatisticTestGene2Item {
 			lsTitle.add(TitleFormatNBC.Description.toString());
 		}
 		
-		lsTitle.add(TitleFormatNBC.PathwayID.toString());
-		lsTitle.add(TitleFormatNBC.PathwayTerm.toString());
+		lsTitle.add(TestType.Pathway + TitleFormatNBC.ID.toString());
+		lsTitle.add(TestType.Pathway + TitleFormatNBC.Term.toString());
 		
 //		lsTitle.add("DifGene");
 //		lsTitle.add("AllDifGene");
@@ -309,13 +309,14 @@ class StatisticTestGene2Cog extends StatisticTestGene2Item {
 	}
 	
 	public String[] getTitle() {
+		String cogType = cogAnno.getCogType().toString();
 		List<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.QueryID.toString());
 		lsTitle.add(TitleFormatNBC.BlastEvalue.toString());
-		lsTitle.add(TitleFormatNBC.COGAbbr.toString());
-		lsTitle.add(TitleFormatNBC.COGTerm.toString());
-		lsTitle.add(TitleFormatNBC.COGID.toString());
-		lsTitle.add(TitleFormatNBC.COGTermDetail.toString());
+		lsTitle.add(cogType + TitleFormatNBC.Function.toString());
+		lsTitle.add(cogType + TitleFormatNBC.Term.toString());
+		lsTitle.add(cogType + TitleFormatNBC.ID.toString());
+		lsTitle.add(cogType + TitleFormatNBC.TermDetail.toString());
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.Enrichment.toString());		
 		return lsTitle.toArray(new String[0]);

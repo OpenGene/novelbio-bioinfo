@@ -79,8 +79,8 @@ public class SamWriter {
 	public void close() {
 		try {
 			samFileWriter.close();
-		} catch (Exception e) {
-			// TODO: handle exception
+		} catch (Throwable e) {
+			e.printStackTrace();
 		}
 	}
 }
