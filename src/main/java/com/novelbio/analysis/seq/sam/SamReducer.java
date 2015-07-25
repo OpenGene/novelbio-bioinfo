@@ -93,7 +93,7 @@ public class SamReducer {
 					readInStreamExp(refseq, pgLine, rgLine, is);
 				} catch (Exception e) {
 					samAddMultiFlag.finish();
-					throw new SamErrorException(e);
+					throw new ExceptionSamError(e);
 				}
 			}
 		});

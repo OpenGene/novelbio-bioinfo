@@ -414,9 +414,9 @@ class ReadSamIterator implements Iterator<SamRecord> {
 	@Override
 	public boolean hasNext() {
 		if ((errorFormateLineNum > 500 && correctLineNum < 5)) {
-			throw new SamErrorException("sam file has too many error formate lines" + fileName);
+			throw new ExceptionSamError("sam file has too many error formate lines" + fileName);
 		} else if (errorContinueNum > errorLinNum) {
-			throw new SamErrorException("sam file is not end normally:\n" + fileName);
+			throw new ExceptionSamError("sam file is not end normally:\n" + fileName);
 		}
 		return samRecordIterator.hasNext();
 	}

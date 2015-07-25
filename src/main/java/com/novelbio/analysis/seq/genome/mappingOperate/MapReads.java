@@ -2,10 +2,12 @@ package com.novelbio.analysis.seq.genome.mappingOperate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -17,6 +19,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
+import com.novelbio.analysis.seq.sam.ExceptionSequenceFileNotSorted;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
@@ -153,23 +156,6 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	
 	protected boolean isUniqueMapping() {
 		return booUniqueMapping;
-	}
-	 
-	private void setChrLenFromReadBed() {
-		if (mapChrID2Len.size() > 0)
-			return;
-		
-		String chrID = ""; AlignRecord lastAlignRecord = null;
-		for (AlignRecord alignRecord : alignSeqReader.readLines()) {
-			if (!alignRecord.getRefID().equals(chrID)) {
-				if (lastAlignRecord != null) {
-					mapChrID2Len.put(chrID.toLowerCase(), (long)lastAlignRecord.getEndAbs());
-				}
-				chrID = alignRecord.getRefID();
-			}
-			lastAlignRecord = alignRecord;
-		}
-		mapChrID2Len.put(lastAlignRecord.getRefID().toLowerCase(), (long)lastAlignRecord.getEndAbs());
 	}
 	
 	 /**
@@ -497,13 +483,37 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 */
 	protected void ReadMapFileExp() throws Exception {
 		allReadsNum = 0;
-		setChrLenFromReadBed();
 		AlignRecord alignRecordFirst = alignSeqReader.readFirstLine();
 		if (!prepareAlignRecord(alignRecordFirst)) {
 			return;
 		}
 		int readsNum = 0;
+		
+		AlignRecord lastAlignRecord = null;
+		boolean isNeedSetChrLen = mapChrID2Len.isEmpty();
+		String chrIdLast = ""; Set<String> setChrId = new HashSet<>();
 		for (AlignRecord alignRecord : alignSeqReader.readLines()) {
+			
+			//判定是否按照染色体顺序进行排序
+			if (!alignRecord.getRefID().equals(chrIdLast)) {
+				if (lastAlignRecord != null) {
+					if (setChrId.contains(chrIdLast)) {
+						throw new ExceptionSequenceFileNotSorted("file isn't being sorted: "+ alignSeqReader.getFileName());
+					}
+					setChrId.add(chrIdLast);
+					if (isNeedSetChrLen) {
+						mapChrID2Len.put(chrIdLast, (long)lastAlignRecord.getEndAbs());
+					}
+				}
+			}
+			lastAlignRecord = alignRecord;
+			chrIdLast = lastAlignRecord.getRefID().toLowerCase();
+			
+			if (booUniqueMapping && !alignRecord.isUniqueMapping()) {
+				continue;
+			}
+			
+			//添加序列
 			mapReadsAddAlignRecord.addAlignRecord(alignRecord);
 			readsNum++;
 			suspendCheck();
@@ -515,6 +525,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 				setRunInfo(mapReadsProcessInfo);
 			}
 		}
+		mapChrID2Len.put(chrIdLast, (long)lastAlignRecord.getEndAbs());
 		mapReadsAddAlignRecord.summary();
 	}
 	
@@ -713,6 +724,7 @@ class MapReadsAddAlignRecord {
 					Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - StartCodLen + 1, alignment.getEndAbs());
 					align.setCis5to3(alignment.isCis5to3());
 					lsResult.add(0,align);
+					break;
 				}
 			}
 		}

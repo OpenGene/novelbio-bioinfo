@@ -519,7 +519,7 @@ public class SamRecord implements AlignRecord {
 		} else if (strandSpecific == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
 			cis5to3 = !readsStrand;
 		} else {
-			throw new SamErrorException("Find No StrandSpecific Type: " + strandSpecific.toString());
+			throw new ExceptionSamError("Find No StrandSpecific Type: " + strandSpecific.toString());
 		}
 		return cis5to3;
 	}

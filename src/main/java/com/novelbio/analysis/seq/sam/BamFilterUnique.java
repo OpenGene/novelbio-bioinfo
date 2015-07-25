@@ -23,13 +23,13 @@ public class BamFilterUnique {
 	
 	public SamFile filterUniqueReads() {
 		if (samFile == null) {
-			throw new SamErrorException("no outfile name exist!");
+			throw new ExceptionSamError("no outfile name exist!");
 		}
 		String outResult = outFile;
 		if (outFile == null) {
 			outResult = samFile.getFileName();
 			if (outResult == null) {
-				throw new SamErrorException("no outfile name exist!");
+				throw new ExceptionSamError("no outfile name exist!");
 			}
 			outResult = FileOperate.changeFileSuffix(outResult, suffix, null);
 		}

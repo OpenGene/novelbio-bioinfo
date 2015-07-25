@@ -804,7 +804,6 @@ public class SamFile implements AlignSeq {
 	/**
 	 * 从含有序列的bed文件获得fastQ文件，<b>注意如果是bowtie的结果，bam文件务必没有排过序</b><br>
 	 * @param outFileName fastQ文件全名（包括路径）
-	 * @throws Exception
 	 */
 	public FastQ getFastQ() {
 		String outFileName = FileOperate.changeFileSuffix(getFileName(), "", "fastq.gz");

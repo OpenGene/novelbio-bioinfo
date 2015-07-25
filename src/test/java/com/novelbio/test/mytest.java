@@ -1,6 +1,8 @@
 package com.novelbio.test;
 
-import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -8,45 +10,29 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.hadoop.fs.FileUtil;
-import org.springframework.data.mongodb.MongoDbFactory;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
-import org.springframework.data.mongodb.core.query.Query;
-
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FQrecordFilter;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.sam.BamRemoveDuplicate;
+import com.novelbio.analysis.seq.mapping.MapBwaMem;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.CmdPath;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.domain.geneanno.TaxInfo;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.kegg.KGIDgen2Keg;
-import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.mongorepo.geneanno.RepoNCBIID;
 import com.novelbio.database.mongorepo.kegg.RepoKEntry;
 import com.novelbio.database.mongorepo.kegg.RepoKIDKeg2Ko;
 import com.novelbio.database.mongorepo.kegg.RepoKIDgen2Keg;
@@ -58,8 +44,6 @@ import com.novelbio.database.mongorepo.kegg.RepoKReaction;
 import com.novelbio.database.mongorepo.kegg.RepoKRelation;
 import com.novelbio.database.mongorepo.kegg.RepoKSubstrate;
 import com.novelbio.database.service.SpringFactoryBioinfo;
-import com.novelbio.database.updatedb.database.GffIDconvert;
-import com.novelbio.database.updatedb.database.IDconvertEnsembl2NCBI;
 
 
 public class mytest {
@@ -67,49 +51,89 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-//		String path = "/home/novelbio/下载/hnscc gene expression classificaiton paper/hnscc gene expression classificaiton paper/HNSCC分为四类的文章 plus one 重点/";
-//		TxtReadandWrite txtRead = new TxtReadandWrite(path + "gse_classification.txt");
-//		ArrayList<String> lsInfo = txtRead.readFirstLines(4);
-//		String[] id = lsInfo.get(0).split("\t");
-//		String[] type = lsInfo.get(1).split("\t");
-//		String[] gse = lsInfo.get(3).split("\t");
-//		
-//		List<String> lsResult = new ArrayList<>();
-//		for (int i = 0; i < id.length; i++) {
-//			String tmpResult = gse[i] + "_" + id[i] + "_" + type[i];
-//			lsResult.add(tmpResult);
-//		}
-//		TxtReadandWrite txtWrite = new TxtReadandWrite(path + "gse_classification_result.txt",true);
-//		String[] result = lsResult.toArray(new String[0]);
-//		txtWrite.writefileln(result);
-//		txtWrite.close();
 		
-//		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/hg19_gene2Len.txt", true);
-//		GffHashGene gffHashGene = new GffHashGene("/media/nbfs/nbCloud/public/nbcplatform/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
-//		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
-//			txtWrite.writefileln(gffDetailGene.getNameSingle() + "\t" + gffDetailGene.getLongestSplitMrna().getLenExon(0));
-//		}
-//		txtWrite.close();
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("bwa");
+		lsCmd.add("mem");
+		lsCmd.add("-t");
+		lsCmd.add("4");
+		lsCmd.add("/media/nbfs/nbCloud/public/nbcplatform/genome/index/bwa/3702/tair10/Chr_Index/chrAll.fa");
+		lsCmd.add("-");
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setGetCmdInStdStream(true);
+		cmdOperate.setGetCmdInErrStream(true);
+		Thread thread = new Thread(cmdOperate);
+		thread.start();
+		final OutputStream out = cmdOperate.getStdin();
 		
-		TxtReadandWrite txtRead = new TxtReadandWrite("e:\\上海烈冰\\数据库\\Nr所有蛋白序列\\nr.gz");
-		TxtReadandWrite txtWrite = new TxtReadandWrite("e:\\上海烈冰\\数据库\\Nr所有蛋白序列\\nr_sub_id.txt", true);
-		int i  = 0;
-		for (String string : txtRead.readlines()) {			
-			if (string.startsWith(">")) {
-				i++;
-				String subId =  string.split(" ")[0];
-				txtWrite.writefileln(subId);
-			}
-//			if (i >10) {
-//				break;
-//			}
+		
+		Thread threadIn = new Thread(new Runnable() {
 			
-		}
-		txtRead.close();
-		txtWrite.close();
-//		GffIDconvert gffIDconvert = new GffIDconvert();
-//		gffIDconvert.setGffHashGeneQuery(new GffHashGene("/home/novelbio/genes.gtf"));
-//		gffIDconvert.setGffHashGeneSub(new GffHashGene(""));
+			@Override
+			public void run() {
+				TxtReadandWrite txtRead = new TxtReadandWrite("/media/nbfs/nbCloud/public/AllProject/project_54d9c2eee4b05fbe04b74aa6/task_54d9e385e4b05fbe04b74abd/QualityControl_result/testout96_filtered332.fq");
+				for (String content : txtRead.readlines()) {
+					try {
+						out.write((content + TxtReadandWrite.ENTER_LINUX).getBytes());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+				try {
+					out.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		});
+		
+		threadIn.start();
+
+		InputStream inErr = cmdOperate.getStreamErr();
+		InputStream inStd = cmdOperate.getStreamStd();
+		
+		final TxtReadandWrite txtReadErr = new TxtReadandWrite(inErr);
+		Thread threadErr = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				for (String content : txtReadErr.readlines()) {
+					try {
+						System.err.write((content + TxtReadandWrite.ENTER_LINUX).getBytes());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		threadErr.start();
+		
+		final TxtReadandWrite txtReadStd = new TxtReadandWrite(inStd);
+		Thread threadStd = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				for (String content : txtReadStd.readlines()) {
+					try {
+						System.out.write((content + TxtReadandWrite.ENTER_LINUX).getBytes());
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		threadStd.start();
+
+		
+		threadErr.join();
+		threadStd.join();
+		
+		txtReadStd.close();
+		txtReadErr.close();
+		
+
 		
 	}
 	

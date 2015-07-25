@@ -13,7 +13,7 @@ import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
-import com.novelbio.analysis.seq.sam.SamErrorException;
+import com.novelbio.analysis.seq.sam.ExceptionSamError;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.analysis.seq.sam.SamToBamSort;
@@ -239,7 +239,7 @@ public class RefSeqCounts implements AlignmentRecorder {
 		}
 		String geneName = mapIso2Gene.get(samRecord.getRefID().toLowerCase());
 		if (geneName == null) {
-			throw new SamErrorException("cannot find iso in gene: " + samRecord.getRefID());
+			throw new ExceptionSamError("cannot find iso in gene: " + samRecord.getRefID());
 		}
 		return geneName;
 	}

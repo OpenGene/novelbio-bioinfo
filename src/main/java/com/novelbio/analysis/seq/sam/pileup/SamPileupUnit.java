@@ -9,7 +9,7 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfoFactory;
-import com.novelbio.analysis.seq.sam.SamErrorException;
+import com.novelbio.analysis.seq.sam.ExceptionSamError;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
@@ -34,7 +34,7 @@ public class SamPileupUnit {
 	
 	private void checkRegion(int site) {
 		if (site < startRegion || site > endRegion) {
-			throw new SamErrorException("site out of region:" + site + " " + startRegion + " " + endRegion);
+			throw new ExceptionSamError("site out of region:" + site + " " + startRegion + " " + endRegion);
 		}
 	}
 	

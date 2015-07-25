@@ -83,7 +83,7 @@ public class BamMergeJava implements BamMergeInt {
 	merge(outFileTmp, outInfo);
 	FileOperate.DeleteFileFolder(outInfo);
     	if (!FileOperate.isFileExistAndBigThanSize(outFileTmp, 0)) {
-			throw new SamErrorException("cannot merge file: " + outFileName);
+			throw new ExceptionSamError("cannot merge file: " + outFileName);
 		}
     	FileOperate.moveFile(true, outFileTmp, outFileName);
     	SamFile samFile = new SamFile(outFileName);

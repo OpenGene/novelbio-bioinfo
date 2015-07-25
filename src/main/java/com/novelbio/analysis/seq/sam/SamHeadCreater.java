@@ -25,7 +25,7 @@ public class SamHeadCreater {
 	public void setAttr(String attrLine) {
 		//headline, 仅包含 VN项目和SO项目
 		if (!attrLine.startsWith("@HD")) {
-			throw new SamErrorException("attrLine error, no @HD flag: " + attrLine);
+			throw new ExceptionSamError("attrLine error, no @HD flag: " + attrLine);
 		}
 		String[] ss = attrLine.split("\t");
 		addAttr(samFileHeader, ss);
@@ -39,7 +39,7 @@ public class SamHeadCreater {
 		if (rgLine == null) return;
 		
 		if (!rgLine.startsWith("@RG")) {
-			throw new SamErrorException("attrLine error, no @RG flag: " + rgLine);
+			throw new ExceptionSamError("attrLine error, no @RG flag: " + rgLine);
 		}
 		String[] ss = rgLine.split("\t");
 		SAMReadGroupRecord samReadGroupRecord = new SAMReadGroupRecord(getId(ss));
@@ -55,7 +55,7 @@ public class SamHeadCreater {
 		if (pgLine == null) return;
 		
 		if (!pgLine.startsWith("@PG")) {
-			throw new SamErrorException("attrLine error, no @RG flag: " + pgLine);
+			throw new ExceptionSamError("attrLine error, no @RG flag: " + pgLine);
 		}
 		String[] ss = pgLine.split("\t");
 		SAMProgramRecord samProgramRecord = new SAMProgramRecord(getId(ss));
@@ -77,7 +77,7 @@ public class SamHeadCreater {
 			}
 		}
 		if (id == null) {
-			throw new SamErrorException("attrLine error, no ID tag: " + ArrayOperate.cmbString(ss, "\t"));
+			throw new ExceptionSamError("attrLine error, no ID tag: " + ArrayOperate.cmbString(ss, "\t"));
 		}
 		return id;
 	}
