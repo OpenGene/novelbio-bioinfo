@@ -221,6 +221,7 @@ public class BlastNBC implements IntCmdSoft {
 			}
 		}
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdBlast());
+		cmdOperate.setInputFile(queryFasta);
 		cmdOperate.run();
 		if (deleteQueryFasta) {
 			FileOperate.DeleteFileFolder(queryFasta);
@@ -237,12 +238,13 @@ public class BlastNBC implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getDB());
 		ArrayOperate.addArrayToList(lsCmd, getBlastStrand());
 		ArrayOperate.addArrayToList(lsCmd, getQuery());
-		ArrayOperate.addArrayToList(lsCmd, getOut());
 		ArrayOperate.addArrayToList(lsCmd, getThread());
 		ArrayOperate.addArrayToList(lsCmd, getEvalue());
 		ArrayOperate.addArrayToList(lsCmd, getBlastTask());
 		ArrayOperate.addArrayToList(lsCmd, getResultTypeCmd());
 		ArrayOperate.addArrayToList(lsCmd, getBlastNum());
+		lsCmd.add(">");
+		lsCmd.add(resultFile);
 		return lsCmd;
 	}
 	
@@ -286,11 +288,9 @@ public class BlastNBC implements IntCmdSoft {
 		return new String[]{ "-db", databaseSeq};
 	}
 	private String[] getQuery() {
-		return new String[]{"-query", queryFasta};
+		return new String[]{"-query", "-"};
 	}
-	private String[] getOut() {
-		return new String[]{"-out", resultFile};
-	}
+
 	private String[] getThread() {
 		return new String[]{"-num_threads", cpuNum+""};
 	}

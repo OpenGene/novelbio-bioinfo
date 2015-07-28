@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -19,8 +20,7 @@ public class BamPileup implements IntCmdSoft {
 	String referenceFile;
 	int mapQuality = 13;
 	boolean realign = false;
-	
-	List<String> lsCmdInfo = new ArrayList<>();
+	String outPathName;
 	
 	public BamPileup() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
@@ -36,6 +36,11 @@ public class BamPileup implements IntCmdSoft {
 		else
 			this.ExePath = FileOperate.addSep(exePath);
 	}
+	
+	public void setOutPathName(String outPathName) {
+		this.outPathName = outPathName;
+	}
+	
 	public void setBamFile(String bamFile) {
 		this.bamFile = bamFile;
 	}
@@ -58,23 +63,26 @@ public class BamPileup implements IntCmdSoft {
 	}
 	
 	public String pileup() {
-		String pileupFile = FileOperate.changeFileSuffix(bamFile, "_pileup", "gz");
-		return pileup(pileupFile, false);
+		if (StringOperate.isRealNull(outPathName)) {
+			outPathName = FileOperate.changeFileSuffix(bamFile, "_pileup", "gz");
+		}
+		return pileup(outPathName, false);
 	}
+	
 	/** 直接压缩 */
 	public String pileup(String outFile, boolean isCover) {
-		lsCmdInfo.clear();
 		if (!isCover && FileOperate.isFileExistAndBigThanSize(outFile, 0)) {
 			return outFile;
 		}
+		outPathName = outFile;
 		String outFileTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd(outFileTmp));
+		cmdOperate.setInputFile(bamFile);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("pileup error:\n" + cmdOperate.getCmdExeStrReal());
 		}
 		FileOperate.moveFile(true, outFileTmp, outFile);
-		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		return bamFile;
 	}
 	
@@ -86,21 +94,22 @@ public class BamPileup implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getIsRealign());
 		ArrayOperate.addArrayToList(lsCmd, getMapQuality());
 		ArrayOperate.addArrayToList(lsCmd, getReferenceFile());
-		lsCmd.add(bamFile);
+		lsCmd.add("-");
+		
 		lsCmd.add(">");
 		lsCmd.add(outFile);
 		return lsCmd;
 	}
 	
 	private String[] getParam() {
-		return new String[]{"-E", "-C50"};
+		return new String[]{"-E", "-C50", "-A"};
 	}
 	
 	private String[] getReferenceFile() {
 		return new String[]{"-f", referenceFile};
 	}
 	private String[] getMapQuality() {
-		return new String[]{"-Q " + mapQuality};
+		return new String[]{"-Q", mapQuality + ""};
 	}
 	private String[] getIsRealign() {
 		if (realign) {
@@ -110,8 +119,13 @@ public class BamPileup implements IntCmdSoft {
 			return new String[]{"-B"};
 		}
 	}
+	
 	@Override
 	public List<String> getCmdExeStr() {
-		return lsCmdInfo;
+		String pileupFile = FileOperate.changeFileSuffix(bamFile, "_pileup", "gz");
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd(pileupFile));
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(cmdOperate.getCmdExeStr());
+		return lsCmd;
 	}
 }
