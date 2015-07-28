@@ -19,7 +19,6 @@ public class SplitNrByDiv {
 		String path = args[0];
 		String resultpath = args[1];
 		String node = args[2];
-		
 //		String divisionFile =  path + "division.dmp";
 		String giToTaxIdFile =  path + "parGiToTax_" + node + ".txt.gz";
 		String taxNodeFile =  path + node+  ".nodes.txt";
@@ -48,7 +47,6 @@ public class SplitNrByDiv {
 //		txtGiWrite.close();
 		SplitNrByDiv splitNrByDiv = new SplitNrByDiv();
 		splitNrByDiv.SplitNrByDiv(nrFile,resultpath,node);
-		System.out.println("finished! ");
 	}
 	
 	private int getDiv(Integer gi) {
@@ -64,12 +62,11 @@ public class SplitNrByDiv {
 	}
 
 	public static void SplitNrByDiv (String NrFile,String resultpath,String node) {
-		System.out.println("start!");
 		TxtReadandWrite txtNrRead = new TxtReadandWrite(NrFile);
 		String txtWriteFile = resultpath + node+".fa";
 		TxtReadandWrite txtWrite = new TxtReadandWrite(txtWriteFile,true);
 		String seq = "";
-		String id = "";
+		String id = ">";
 		boolean flag = false;
 		for (String string : txtNrRead.readlines()) {		
 			if (string.startsWith(">")) {
@@ -78,23 +75,28 @@ public class SplitNrByDiv {
 				}
 				seq = "";
 				flag = false;
-				ArrayList<Integer> giList = SplitNrByDiv.SplitNrID(string.substring(1));		
-				id = ">gi";
-				for (Integer integer : giList) {
-					id += "_" + integer;
+				HashMap<Integer, String> mapGI2Name = SplitNrByDiv.SplitNrID(string.substring(1));
+				id = ">";
+				Iterator iterator = mapGI2Name.keySet().iterator();
+				while (iterator.hasNext()) {
+					int gi = (int) iterator.next();
+					if (id.equals(">")) {
+						id += mapGI2Name.get(gi);
+					} else {
+						id += "@" + mapGI2Name.get(gi);
+					}
 					SplitNrByDiv splitNrByDiv = new SplitNrByDiv();
-					int gi = splitNrByDiv.getDiv(integer);
-					if (gi>-1) {
+					int div = splitNrByDiv.getDiv(gi);
+					if (div>-1) {
 						flag = true;
 					}
 				}
-		
 			} else {
-				if (!((id.equals("")) || (id ==null))) {
+				if (!((id.equals(">")) || (id ==null))) {
 					if (flag) {
 						txtWrite.writefileln(id);
 					}
-					id ="";
+					id =">";
 				}
 				if (seq.equals("")) {
 					seq +=  string;
@@ -109,18 +111,20 @@ public class SplitNrByDiv {
 		txtNrRead.close();
 		txtWrite.close();
 	}
-	public static ArrayList<Integer> SplitNrID(String faId) {
-		ArrayList<Integer> giList = new ArrayList<>();
+	
+	public static HashMap<Integer, String> SplitNrID(String faId) {
+		HashMap<Integer, String> mapGI2Name = new HashMap<>(); 
 		String[] idInfo =  faId.split("gi");
 		for (int i = 1; i < idInfo.length; i++) {			
 			if (idInfo[i].indexOf("|")>-1) {
-				String id =  idInfo[i].split("\\|")[1];
-				if (isNum(id)) {
-					giList.add(Integer.parseInt(id));
-				}	
+				String[] arrNrID= idInfo[i].split("\\|");
+				if ((arrNrID.length>3) && (isNum(arrNrID[1]) && (!arrNrID[3].equals("")) && (!(arrNrID[3]=="")))) {
+					mapGI2Name.put(Integer.parseInt(arrNrID[1]), arrNrID[3]);
+				}
+				
 			}	
 		}
-		return giList;
+		return mapGI2Name;
 	}
 
 	public static boolean isNum(String str) {
