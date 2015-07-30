@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.fastq;
 
 import java.io.File;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -76,6 +77,11 @@ public class FastQ {
 			fastQRead = new FastQReader(fastqFile);
 			read = true;
 		}
+	}
+	
+	public FastQ(InputStream inputStream) {
+		fastQRead = new FastQReader(inputStream);
+		read = true;
 	}
 	
 	public FastQReader getFastQRead() {

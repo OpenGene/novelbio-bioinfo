@@ -120,7 +120,7 @@ public abstract class MapDNA implements MapDNAint {
 		IndexMake();
 		
 		SamFile samFile = mapping();
-		if (!writeToBam) {
+		if (!writeToBam || samFile == null) {
 			return null;
 		}
 		String fileNameFinal = getOutNameCope();		

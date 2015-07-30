@@ -87,7 +87,7 @@ public class MapBwaMem extends MapDNA {
 	public void setThreadNum(int nThreads) {
 		this.nThreads = nThreads;
 	}
-	private String[] getThreadNum() {
+	protected String[] getThreadNum() {
 		if (nThreads <= 0) {
 			return null;
 		}
@@ -98,7 +98,7 @@ public class MapBwaMem extends MapDNA {
 	public void setOutputSingleReads(boolean isOutputSingleReads) {
 		this.isOutputSingleReads = isOutputSingleReads;
 	}
-	private String getIsOutputSingleReads() {
+	protected String getIsOutputSingleReads() {
 		if (isOutputSingleReads) {
 			return "-a";
 		} else {
@@ -110,7 +110,7 @@ public class MapBwaMem extends MapDNA {
 	public void setMinSeedLen(int minSeedLen) {
 		this.minSeedLen = minSeedLen;
 	}
-	private String[] getMinSeedLenParam() {
+	protected String[] getMinSeedLenParam() {
 		if (minSeedLen <= 15) {
 			return null;
 		}
@@ -121,7 +121,7 @@ public class MapBwaMem extends MapDNA {
 	public void setGapBandWidth(int bandWidth) {
 		this.bandWidth = bandWidth;
 	}
-	private String[] getBandWidthParam() {
+	protected String[] getBandWidthParam() {
 		if (bandWidth <= 0) {
 			return null;
 		}
@@ -137,7 +137,7 @@ public class MapBwaMem extends MapDNA {
 	public void setzDropoff(int zDropoff) {
 		this.zDropoff = zDropoff;
 	}
-	private String[] getzDropoffParam() {
+	protected String[] getzDropoffParam() {
 		if (zDropoff <= 0) {
 			return null;
 		}
@@ -153,7 +153,7 @@ public class MapBwaMem extends MapDNA {
 	public void setSeedSplitRatio(double seedSplitRatio) {
 		this.seedSplitRatio = seedSplitRatio;
 	}
-	private String[] getSeedSplitRatioParam() {
+	protected String[] getSeedSplitRatioParam() {
 		if (seedSplitRatio <= 0 || seedSplitRatio > 10) {
 			return null;
 		}
@@ -165,7 +165,7 @@ public class MapBwaMem extends MapDNA {
 	public void setMaxOcc(int maxOcc) {
 		this.maxOcc = maxOcc;
 	}
-	private String[] getMaxOccParam() {
+	protected String[] getMaxOccParam() {
 		if (maxOcc <= 0) {
 			return null;
 		}
@@ -179,7 +179,7 @@ public class MapBwaMem extends MapDNA {
 	public void setSwData(boolean swData) {
 		this.swData = swData;
 	}
-	private String getSwDataParam(){
+	protected String getSwDataParam(){
 		if (swData) {
 			return "-P";
 		}
@@ -190,7 +190,7 @@ public class MapBwaMem extends MapDNA {
 	public void setMatchScore(int matchScore) {
 		this.matchScore = matchScore;
 	}
-	private String[] getMatchScoreParam() {
+	protected String[] getMatchScoreParam() {
 		if (matchScore <= 0) {
 			return null;
 		}
@@ -201,7 +201,7 @@ public class MapBwaMem extends MapDNA {
 	public void setMmPenalty(int mmPenalty) {
 		this.mmPenalty = mmPenalty;
 	}
-	private String[] getMmPenaltyParam() {
+	protected String[] getMmPenaltyParam() {
 		if (mmPenalty <= 0) {
 			return null;
 		}
@@ -212,7 +212,7 @@ public class MapBwaMem extends MapDNA {
 	public void setGapOpenPen(int gapOpenPen) {
 		this.gapOpenPen = gapOpenPen;
 	}
-	private String[] getGapOpenPenParam() {
+	protected String[] getGapOpenPenParam() {
 		if (gapOpenPen <= 0) {
 			return null;
 		}
@@ -223,7 +223,7 @@ public class MapBwaMem extends MapDNA {
 	public void setGapExtPen(int gapExtPen) {
 		this.gapExtPen = gapExtPen;
 	}
-	private String[] getGapExtPenParam() {
+	protected String[] getGapExtPenParam() {
 		if (gapExtPen <= 0) {
 			return null;
 		}
@@ -237,7 +237,7 @@ public class MapBwaMem extends MapDNA {
 	public void setClipPen(int clipPen) {
 		this.clipPen = clipPen;
 	}
-	private String[] getClipPenParam() {
+	protected String[] getClipPenParam() {
 		if (clipPen <= 0) {
 			return null;
 		}
@@ -250,7 +250,7 @@ public class MapBwaMem extends MapDNA {
 	public void setUnpairPen(int unpairPen) {
 		this.unpairPen = unpairPen;
 	}
-	private String[] getUnpairPenParam() {
+	protected String[] getUnpairPenParam() {
 		if (unpairPen <= 0) {
 			return null;
 		}
@@ -261,7 +261,8 @@ public class MapBwaMem extends MapDNA {
 	public void setStaggeredPairingFQ(boolean staggeredPairingFQ) {
 		this.staggeredPairingFQ = staggeredPairingFQ;
 	}
-	private String getStaggeredPairingFQParam(){
+	/** 设定读入的第一个fq文件是交错的配对数据 */
+	protected String getStaggeredPairingFQParam(){
 		if (staggeredPairingFQ) {
 			return "-p";
 		}
@@ -281,7 +282,7 @@ public class MapBwaMem extends MapDNA {
 	 *  attached to every read in the output. An example is ’@RG\tID:foo\tSM:bar’.
 	 * @param rGline
 	 */
-	private String[] getRGlineParam() {
+	protected String[] getRGlineParam() {
 		if (StringOperate.isRealNull(RGline)) {
 			return null;
 		}
@@ -292,7 +293,7 @@ public class MapBwaMem extends MapDNA {
 	public void setMinMapQuality(int minMapQuality) {
 		this.minMapQuality = minMapQuality;
 	}
-	private String[] getMinMapQuality() {
+	protected String[] getMinMapQuality() {
 		if (minMapQuality <= 0) {
 			return null;
 		}
@@ -303,7 +304,7 @@ public class MapBwaMem extends MapDNA {
 	public void setHardClipping(boolean hardClipping) {
 		this.hardClipping = hardClipping;
 	}
-	private String getHardClippingParam(){
+	protected String getHardClippingParam(){
 		if (hardClipping) {
 			return "-H";
 		}
@@ -321,7 +322,7 @@ public class MapBwaMem extends MapDNA {
 	public void setMarkShorterSplitAsSecondary(boolean markShorterSplitAsSecondary) {
 		this.markShorterSplitAsSecondary = markShorterSplitAsSecondary;
 	}
-	private String getMarkShorterSplitAsSecondary(){
+	protected String getMarkShorterSplitAsSecondary(){
 		if (markShorterSplitAsSecondary) {
 			return "-M";
 		}
@@ -359,7 +360,7 @@ public class MapBwaMem extends MapDNA {
 	 * 返回输入的文件，根据是否为pairend，调整返回的结果
 	 * @return
 	 */
-	private List<String> getLsFqFile() {
+	protected List<String> getLsFqFile() {
 		List<String> lsOut = new ArrayList<>();
 		if (leftCombFq != null) {
 			lsOut.add(leftCombFq);
@@ -401,7 +402,7 @@ public class MapBwaMem extends MapDNA {
 		return lsCmd;
 	}
 	
-	private void addStringParam(List<String> lsCmd, String param) {
+	protected void addStringParam(List<String> lsCmd, String param) {
 		if (StringOperate.isRealNull(param)) {
 			return;
 		}
@@ -437,7 +438,7 @@ public class MapBwaMem extends MapDNA {
 		}
 	}
 	
-	private void generateTmpPath() {
+	protected void generateTmpPath() {
 		if (tmpPath == null) {
 			tmpPath = FileOperate.addSep(CmdOperate.getCmdTmpPath()) + DateUtil.getDateAndRandom() + FileOperate.getSepPath();
 			FileOperate.createFolders(tmpPath);
@@ -462,7 +463,7 @@ public class MapBwaMem extends MapDNA {
 		return lsCmdResult;
 	}
 	
-	private void combSeq() {
+	protected void combSeq() {
 		//左右两端都为空，说明需要输入std信息了
 		if (lsLeftFq.isEmpty() && lsRightFq.isEmpty()) {
 			leftCombFq = null;

@@ -181,7 +181,6 @@ public class SamReader {
 		}
 	}
 	
-	
 	protected SAMFileHeader getSamFileHead() {
 		return samFileHeader;
 	}
@@ -374,7 +373,19 @@ public class SamReader {
 			// TODO: handle exception
 		}
 	}
-	
+
+	/** 从samFileHeader中获取染色体长度
+	 * @param samFileHeader
+	 * @return key为实际染色体名，没有小写
+	 */
+	public static Map<String, Long> getMapChrId2Len(SAMFileHeader samFileHeader) {
+		Map<String, Long> mapChrId2Length = new LinkedHashMap<String, Long>();
+		List<SAMSequenceRecord> lsSamSequenceRecords = samFileHeader.getSequenceDictionary().getSequences();
+		for (SAMSequenceRecord samSequenceRecord : lsSamSequenceRecords) {
+			mapChrId2Length.put(samSequenceRecord.getSequenceName(), (long) samSequenceRecord.getSequenceLength());
+		}
+		return mapChrId2Length;
+	}
 }
 
 class ReadSamIterable implements Iterable<SamRecord> {

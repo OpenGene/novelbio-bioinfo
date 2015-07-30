@@ -41,7 +41,6 @@ public class SamAddMultiFlag {
 			if (i++%1000000 == 0) {
 				logger.info("read lines: " + i);
 				logger.info("mapMateInfo2pairReads.size: " + mapMateInfo2pairReads.size());
-				System.gc();
 			}
 			if ((!isPairend) || (isPairend && samRecord.isFirstRead())
 					) {
@@ -76,7 +75,6 @@ public class SamAddMultiFlag {
 					
 					while (queueSamRecords.remainingCapacity() < capacity/200) {
 						try {
-							logger.info(queueSamRecords.size());
 							Thread.sleep(50);
 							logger.info(queueSamRecords.size());
 						} catch (Exception e) {

@@ -9,6 +9,10 @@ public class ExceptionFastq extends RuntimeException {
 		super(msg, e);
 	}
 	
+	public ExceptionFastq(Exception e) {
+		super(e);
+	}
+	
 	public ExceptionFastq(String msg, Throwable e) {
 		super(msg, e);
 	}

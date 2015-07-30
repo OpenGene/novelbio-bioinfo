@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -50,6 +51,12 @@ class FastQReader implements Closeable {
 		txtSeqFile = new TxtReadandWrite(seqFile, false);
 		getOffset();
 	}
+	
+	/** 标准文件名的话，自动判断是否为gz压缩 */
+	public FastQReader(InputStream inStream) {
+		txtSeqFile = new TxtReadandWrite(inStream);
+	}
+	
 	/** 是否检查文件格式，true检查，false不检查 */
 	public void setCheckFormat(boolean isCheckFormat) {
 		this.isCheckFormat = isCheckFormat;
@@ -190,8 +197,11 @@ class FastQReader implements Closeable {
 							if (isCheckFormat) {
 								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4);
 							} else {
-								logger.error("fastq file error on line: " + lineNum[0]/4 + "\n" + 
-										txtSeqFile.getFileName() );
+								String errMsg = "fastq file error on line: " + lineNum[0]/4;
+								if (txtSeqFile.getFileName() != null) {
+									errMsg += " fileName: " + txtSeqFile.getFileName(); 
+								}
+								logger.error(errMsg);
 								while (true) {
 									String next = null;
 									try {
