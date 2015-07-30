@@ -32,7 +32,7 @@ public class MapBwaMemMR extends MapBwaMem {
 	public static void main(String[] args) throws IOException {
 		MapBwaMemMR mapBwaMemMR = new MapBwaMemMR();
 		mapBwaMemMR.setChrIndex("/media/nbfs/nbCloud/public/nbcplatform/testhadoop/chrAll.fa");
-		mapBwaMemMR.setStaggeredPairingFQ(false);
+		mapBwaMemMR.setStaggeredPairingFQ(true);
 		
 		mapBwaMemMR.setIns(FileOperate.getInputStream("/media/winE/test/96_filtered_2.fq_sub_test.fastq"));
 		mapBwaMemMR.setOuts(System.out);
