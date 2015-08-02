@@ -149,16 +149,14 @@ public abstract class MapDNA implements MapDNAint {
 	 * @return null表示运行失败，失败了也不删除文件
 	 */
 	protected SamFile copeSamStream(boolean isSetMulitFlag, InputStream inputStream, boolean isNeedSort) {
-		SamFile samFileIn = new SamFile(inputStream);
 		String fileNameFinal = getOutNameCope();
 		String fileNameTmp = FileOperate.changeFileSuffix(fileNameFinal, "_TmpMap", null);
-		SamToBamSort samToBamSort = new SamToBamSort(fileNameTmp, samFileIn, isPairEnd());
+		SamToBamSort samToBamSort = new SamToBamSort(fileNameTmp, inputStream, isPairEnd());
 		samToBamSort.setWriteToBam(writeToBam);
 		samToBamSort.setNeedSort(isNeedSort);
 		samToBamSort.setAddMultiHitFlag(isSetMulitFlag);
 		samToBamSort.setLsAlignmentRecorders(lsAlignmentRecorders);
 		samToBamSort.convert();
-		samFileIn.close();
 		return samToBamSort.getSamFileBam();
 	}
 	/** 运行失败后删除文件 */

@@ -101,12 +101,12 @@ public class BamIndex {
             if (allRecordsNum % 1000000 == 0) {
             	logger.info(allRecordsNum + " reads processed ...");
             }
-            try {
-            	 indexer.processAlignment(rec.samRecord);
-			} catch (Exception e) {
-				logger.error(rec.toString(), e);
-			}
-           
+//            try {
+//            	
+//			} catch (Exception e) {
+//				logger.error(rec.toString(), e);
+//			}
+            indexer.processAlignment(rec.samRecord);
             allRecordsNum ++;
         }
 

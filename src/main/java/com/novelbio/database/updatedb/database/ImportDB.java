@@ -51,11 +51,10 @@ public class ImportDB {
 //			ImportPerLine.addTaxId(taxIdint);
 //		}
 		
-		
-		List<TaxInfo> lsInfos = ManageSpecies.getInstance().getLsAllTaxID();
-		for (TaxInfo taxInfo : lsInfos) {
-			ImportPerLine.addTaxId(taxInfo.getTaxID());
-		}
+//		List<TaxInfo> lsInfos = ManageSpecies.getInstance().getLsAllTaxID();
+//		for (TaxInfo taxInfo : lsInfos) {
+//			ImportPerLine.addTaxId(taxInfo.getTaxID());
+//		}
 		
 		String downloadPath = "/home/novelbio/NBCsource/biodb/database20150530/";
 		String softToolsFile = "/home/novelbio/NBCsource/SoftwareInfo.txt";
@@ -63,9 +62,9 @@ public class ImportDB {
 //		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
 		String GOPath = downloadPath + "GO/";
 		String speciesFile = "";
-//		ImportPerLine.addTaxId(4932);
+		ImportPerLine.addTaxId(4577);
 		ImportDB importDB = new ImportDB();
-//		importDB.setDownloadPath(downloadPath);
+		importDB.setDownloadPath(downloadPath);
 //		importDB.setSoftToolsFile(softToolsFile);
 //		importDB.setSpeciesFile(speciesFile);
 //		importDB.setGOPath(GOPath);
@@ -74,7 +73,7 @@ public class ImportDB {
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateGODB();
 		
-//		importDB.updateNCBIID();
+		importDB.updateNCBIID();
 //		importDB.updateUniprotID();
 		
 //		importDB.updateZeaMaize();
@@ -85,7 +84,7 @@ public class ImportDB {
 //		importDB.updateYeast();
 //		importDB.updateMicroarray();
 
-		importDB.updateSoyBean();
+//		importDB.updateSoyBean();
 //		importDB.updateZeaMaize();
 //		importDB.updateBlast();
 //		importDB.updateAffy();

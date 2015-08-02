@@ -201,7 +201,7 @@ public class SamReader {
 	 * @return
 	 */
 	public Map<String, Long> getMapChrID2Length() {
-		Map<String, Long> mapChrID2Length = new HashMap<>();
+		Map<String, Long> mapChrID2Length = new LinkedHashMap<>();
 		for (String chrID : mapChrIDlowCase2Length.keySet()) {
 			long length = mapChrIDlowCase2Length.get(chrID);
 			String chrIDNorm = mapChrIDlowCase2ChrID.get(chrID);

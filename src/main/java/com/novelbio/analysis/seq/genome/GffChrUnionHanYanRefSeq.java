@@ -26,7 +26,7 @@ import com.novelbio.base.fileOperate.FileOperate;
  * @author zong0jie
  * 
  */
-public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
+public class GffChrUnionHanYanRefSeq extends GffChrHanYan {
 	private static Logger logger = Logger.getLogger(GffChrUnionHanYanRefSeq.class);
 	
 	SeqFastaHash seqFastaHash;
@@ -56,13 +56,14 @@ public class GffChrUnionHanYanRefSeq extends GffChrHanYan{
 	}
 	/////////////////////////////////////   韩燕的项目   //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-	public void loadMap(String mapFile, int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping) {
+	public void loadMap(String mapFile, int tagLength, boolean uniqReads, int startCod, boolean uniqMapping) {
 		mapReads = new MapReads();
 		mapReads.setMapChrID2Len(seqFastaHash.getMapChrLength());
 		mapReads.setBedSeq(mapFile);
 		mapReads.setInvNum(1);
 		mapReads.setNormalType(EnumMapNormalizeType.per_gene);
-		mapReads.setFilter(uniqReads, startCod, uniqMapping, cis5To3);
+		mapReads.setFilter(uniqReads, startCod);
+		mapReads.setisUniqueMapping(uniqMapping);
 		if (tagLength > 20) {
 			mapReads.setTagLength(tagLength);
 		}

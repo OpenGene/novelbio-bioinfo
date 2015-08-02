@@ -59,7 +59,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		GffChrAbs gffChrAbs = new GffChrAbs(10090);
 		gffChrHanYan.setGffChrAbs(gffChrAbs);
 		gffChrHanYan.setRefSeq("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
-		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, true, false);
+		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, false);
 		gffChrHanYan.drawAtgPlot(resultFileOut);
 		FileOperate.createFolders("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotRAP3h_300-3000");
 		gffChrHanYan.drawGeneAll("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotRAP3h_300-3000/RAP3h_");
@@ -69,7 +69,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		gffChrHanYan = new GffChrUnionHanYanRefSeq();
 		gffChrHanYan.setGffChrAbs(gffChrAbs);
 		gffChrHanYan.setRefSeq("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
-		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, true, false);
+		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, false);
 		gffChrHanYan.drawAtgPlot(resultFileOut);
 		FileOperate.createFolders("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plot20PBS_300-3000");
 		gffChrHanYan.drawGeneAll("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plot20PBS_300-3000/20PBS_");
@@ -79,7 +79,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		gffChrHanYan = new GffChrUnionHanYanRefSeq();
 		gffChrHanYan.setGffChrAbs(gffChrAbs);
 		gffChrHanYan.setRefSeq("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
-		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, true, false);
+		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, false);
 		gffChrHanYan.drawAtgPlot(resultFileOut);
 		FileOperate.createFolders("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotLY3h_300-3000");
 		gffChrHanYan.drawGeneAll("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotLY3h_300-3000/LY3h_");
@@ -89,7 +89,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		gffChrHanYan = new GffChrUnionHanYanRefSeq();
 		gffChrHanYan.setGffChrAbs(gffChrAbs);
 		gffChrHanYan.setRefSeq("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
-		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, true, false);
+		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, false);
 		gffChrHanYan.drawAtgPlot(resultFileOut);
 		FileOperate.createFolders("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotTSC2_KO_300-3000");
 		gffChrHanYan.drawGeneAll("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotTSC2_KO_300-3000/TSC2_KO_");
@@ -99,7 +99,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		gffChrHanYan = new GffChrUnionHanYanRefSeq();
 		gffChrHanYan.setGffChrAbs(gffChrAbs);
 		gffChrHanYan.setRefSeq("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/refseq/refMRNA.fa");
-		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, true, false);
+		gffChrHanYan.loadMapFile(mapFile, 200, false, 3, false);
 		gffChrHanYan.drawAtgPlot(resultFileOut);
 		FileOperate.createFolders("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotTSC2_WT_300-3000");
 		gffChrHanYan.drawGeneAll("/media/winF/NBC/Project/Project_HY/TSC2_2nd_Seq/mapping/plotTSC2_WT_300-3000/TSC2_WT_");
@@ -137,10 +137,10 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 		this.atgDown = atgDown;
 	}
 	
-	public void loadMapFile(String mapFile, int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping) {
+	public void loadMapFile(String mapFile, int tagLength, boolean uniqReads, int startCod, boolean uniqMapping) {
 		mapGeneID2AccID = null;
 		mapAccID2SeqInfo = null;
-		loadMap(mapFile, tagLength, uniqReads, startCod, cis5To3, uniqMapping);
+		loadMap(mapFile, tagLength, uniqReads, startCod, uniqMapping);
 	}
 	/**
 	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。
@@ -148,10 +148,9 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 	 * @param tagLength 设定双端readsTag拼起来后长度的估算值，大于20才会进行设置。目前solexa双端送样长度大概是200-400bp，不用太精确 ,默认是400
 	 * @param uniqReads 同一位点的重复是否仅保留一个
 	 * @param startCod 开头保留几位，韩燕是3位
-	 * @param cis5To3 是否挑选某一个方向的reads
 	 * @param uniqMapping 是否挑选唯一比对的 
 	 */
-	protected abstract void loadMap(String mapFile, int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping);
+	protected abstract void loadMap(String mapFile, int tagLength, boolean uniqReads, int startCod, boolean uniqMapping);
 	
 	public void drawGeneAll(String outPrefix) {
 		ArrayList<String> lsgenID = getAllGeneName();

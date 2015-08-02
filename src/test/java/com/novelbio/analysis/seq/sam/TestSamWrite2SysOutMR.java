@@ -1,25 +1,39 @@
 package com.novelbio.analysis.seq.sam;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.io.File;
 import java.util.Iterator;
+import java.util.List;
 
 import org.junit.Test;
 
+import com.novelbio.analysis.seq.sam.SamToBam.SamToBamOutMR;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
-public class TestSam2SysOutMR {
+public class TestSamWrite2SysOutMR {
+	
 	@Test
-	public void testInStream() throws Exception {
-		Sam2SysOutMR sam2SysOutMR = new Sam2SysOutMR();
+	public void testInStreamNumber() throws Exception {
+		SamToBam sam2SysOutMR = new SamToBam();
 		sam2SysOutMR.setIsPairend(true);
-		sam2SysOutMR.setInStream(FileOperate.getInputStream("src/main/resources/Test/test.sam"));
+		//TODO 写一个配置文件来保存测试文件的路径
+		sam2SysOutMR.setInStream(FileOperate.getInputStream("src/test/resources/test_file/sam/test.sam"));
 		sam2SysOutMR.readInputStream();
-		Iterable<String> it = sam2SysOutMR.readLines();
-		Iterator<String> itor = it.iterator();
+		SamToBamOutMR samWrite2SysOutMR = new SamToBamOutMR();
 		
+		String outputTest = "src/test/resources/test_file/sam/test_cope.sam";
+		samWrite2SysOutMR.setOutputStream(FileOperate.getOutputStream(outputTest));
+		sam2SysOutMR.setSamWriteTo(samWrite2SysOutMR);
+		
+		sam2SysOutMR.writeToOs();
+		
+		TxtReadandWrite txtRead = new TxtReadandWrite(outputTest);
+		List<String> lsRecord = txtRead.readfileLs();
+		txtRead.close();
+		Iterator<String> itor = lsRecord.iterator();
+
+		assertEquals("@HD	VN:1.4", itor.next());
 		assertEquals("@SQ	SN:chr1	LN:30427671", itor.next());
 		assertEquals("@SQ	SN:chr2	LN:19698289", itor.next());
 		assertEquals("@SQ	SN:chr3	LN:23459830", itor.next());
@@ -31,22 +45,16 @@ public class TestSam2SysOutMR {
 		assertEquals("mchrc_@_23104_@_HWI-D00175:261:C6L59ANXX:7:1101:1181:2181\t" + "HWI-D00175:261:C6L59ANXX:7:1101:1181:2181	83	chrc	23104	42	75S50M	=	22664	-490	AACGAGTCCAATTTGAAGTTGTTGATGTTTATATTGGTCAATCATAAAATAGAAATAAGAAAAGAATTTATATTTATTCCGATCAAACTTCTTCCCTATTAACCTGGAAGTTCTTCTGAGATACA	FGGGGGFEEGGFGGGGGGGGGGGGGGGGGGGGEGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGCCBCB	MD:Z:8T7C1T8T6A7C7	NH:i:1	HI:i:1	NM:i:6	AS:i:20	XS:i:0", itor.next());
 		assertEquals("mchrc_@_22664_@_HWI-D00175:261:C6L59ANXX:7:1101:1181:2181\t" + "HWI-D00175:261:C6L59ANXX:7:1101:1181:2181	163	chrc	22664	60	125M	=	23104	490	CTAGGCCCTCCAATTTCTTAAGGGGTTTATCTAAAAGATTCGCGATATAACTAGGAAGACCTTTTAAATACCACACATGAGTCACGGGACATGCGAGTTTGATGTATCCCATTTGATATCTTCGT	BBCBCGGGGGGGGGGGGGGGGGCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGDGGGGGFGGGGGGGGGGGFGGGGGGGGGGGGGGGGGEG	MD:Z:7T2T4C0T5A20A16G3C8T8T2A7T0C5T24	NH:i:1	HI:i:1	NM:i:14	AS:i:58	XS:i:0", itor.next());
 		assertEquals("mchr3_@_14197997_@_HWI-D00175:261:C6L59ANXX:7:1101:8758:67282	HWI-D00175:261:C6L59ANXX:7:1101:8758:67282	99	chr3	14197997	0	125M	=	14198376	439	CTTTCGATGGTAGGATAGGGGCCTACCATGGTGGTGACGGGTGACGGAGAATTAGGGTTCGATTCCGGAGAGGGAGCCTGAGAAACGGCTACCACATCCAAGGAAGGCAGCAGGCGCGCAAATTA	CCCCCGEFGGGGGGGGGGGFGGGGGGGEGGGGGGGGFGDGGGGGGGGFGGGGGGGGGB>>CBFFFGGGECBFGGGG@GBFBGGD0FGGGGGGEGGG=DFGGGGGGGGGDGC@8EGGGGDGGGGBG	MD:Z:18T16A89	NH:i:1	HI:i:1	NM:i:2	AS:i:115	XS:i:115", itor.next());
-	}
-	
-	@Test
-	public void testInStreamNumber() throws Exception {
-		Sam2SysOutMR sam2SysOutMR = new Sam2SysOutMR();
-		sam2SysOutMR.setIsPairend(true);
-		sam2SysOutMR.setInStream(FileOperate.getInputStream("src/main/resources/Test/test.sam"));
-		sam2SysOutMR.readInputStream();
+		
+		//测试record数量
 		int i = 0;
-		for (String content : sam2SysOutMR.readLines()) {
-			if (content.startsWith("@")) {
+		for (String string : lsRecord) {
+			if (string.startsWith("@")) {
 				continue;
 			}
 			i++;
 		}
-		
 		assertEquals(16, i);
+		FileOperate.DeleteFileFolder(outputTest);
 	}
 }

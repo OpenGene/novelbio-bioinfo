@@ -550,19 +550,18 @@ public class SamFile implements AlignSeq {
 		if (!outFile.endsWith(".bam")) {
 			FileOperate.changeFileSuffix(outFile, "", ".bam");
 		}
-		SamToBamSort samToBam = new SamToBamSort(outFile, this);
+		SamToBamSort samToBam = new SamToBamSort(outFile, this, isPairend());
 		samToBam.setAddMultiHitFlag(addMultiHitFlag);
 		samToBam.setLsAlignmentRecorders(lsAlignmentRecorders);
 		samToBam.convert();
-		close();
 		return samToBam.getSamFileBam();
 	}
 	/**
 	 * 待检查
 	 */
-	public void indexMake() {
+	public String indexMake() {
 		if (FileOperate.isFileExistAndBigThanSize(getFileName() + ".bai",10)) {
-			return;
+			return getFileName() + ".bai";
 		}
 		BamIndex bamIndex = new BamIndex(this);
 //		bamIndex.setExePath(softWareInfoSamtools.getExePath());
@@ -573,6 +572,7 @@ public class SamFile implements AlignSeq {
 		}
 		setSamFileRead(formatSeq, getFileName(), index);
 		bamIndex = null;
+		return index;
 	}
 	public SamFile realign() {
 		String outFile = FileOperate.changeFileSuffix(getFileName(), "_realign", "bam");

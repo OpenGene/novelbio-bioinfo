@@ -36,12 +36,13 @@ public class GffChrHanYanChrom extends GffChrHanYan{
 	 * @param cis5To3 是否挑选某一个方向的reads
 	 * @param uniqMapping 是否挑选唯一比对的 
 	 */
-	public void loadMap(String mapFile,int tagLength, boolean uniqReads, int startCod, Boolean cis5To3, boolean uniqMapping) {
+	public void loadMap(String mapFile,int tagLength, boolean uniqReads, int startCod, boolean uniqMapping) {
 		mapReads=new MapReadsHanyanChrom();
 		mapReads.setBedSeq(mapFile);
 		mapReads.setInvNum(1);
 		mapReads.setMapChrID2Len(gffChrAbs.getSpecies().getMapChromInfo());
-		mapReads.setFilter(uniqReads, startCod, uniqMapping, cis5To3);
+		mapReads.setFilter(uniqReads, startCod);
+		mapReads.setisUniqueMapping(uniqMapping);
 		if (tagLength > 20) {
 			mapReads.setTagLength(tagLength);
 		}

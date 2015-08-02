@@ -13,8 +13,9 @@ import org.springframework.stereotype.Component;
 import com.novelbio.analysis.seq.fastq.ExceptionFastq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.sam.Sam2SysOutMR;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamToBam;
+import com.novelbio.analysis.seq.sam.SamToBam.SamToBamOutMR;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.StreamIn;
@@ -32,7 +33,7 @@ public class MapBwaMemMR extends MapBwaMem {
 	public static void main(String[] args) throws IOException {
 		MapBwaMemMR mapBwaMemMR = new MapBwaMemMR();
 		mapBwaMemMR.setChrIndex("/media/nbfs/nbCloud/public/nbcplatform/testhadoop/chrAll.fa");
-		mapBwaMemMR.setStaggeredPairingFQ(true);
+		mapBwaMemMR.setStaggeredPairingFQ(false);
 		
 		mapBwaMemMR.setIns(FileOperate.getInputStream("/media/winE/test/96_filtered_2.fq_sub_test.fastq"));
 		mapBwaMemMR.setOuts(System.out);
@@ -93,9 +94,13 @@ public class MapBwaMemMR extends MapBwaMem {
 		thread.start();
 		InputStream inputStream = cmdOperate.getStreamStd();
 		
-		Sam2SysOutMR sam2SysOutMR = new Sam2SysOutMR();
+		SamToBam sam2SysOutMR = new SamToBam();		
 		sam2SysOutMR.setInStream(inputStream);
-		sam2SysOutMR.setOutputStream(outs);
+		
+		SamToBamOutMR samWrite2SysOutMR = new SamToBamOutMR();
+		samWrite2SysOutMR.setOutputStream(outs);
+		sam2SysOutMR.setSamWriteTo(samWrite2SysOutMR);
+		
 		sam2SysOutMR.setIsPairend(isPairend);
 		sam2SysOutMR.readInputStream();
 		sam2SysOutMR.writeToOs();
