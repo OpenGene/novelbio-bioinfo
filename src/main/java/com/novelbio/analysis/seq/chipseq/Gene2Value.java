@@ -310,7 +310,11 @@ public class Gene2Value {
 			}
 			//have gene score, using the score as value, when the gene is same, add the score bigger one
 			if (strings.length > 1) {
-				double score = Double.parseDouble(strings[1]);
+				double score = 0;
+				try {
+					score = Double.parseDouble(strings[1]);
+				} catch (Exception e) {
+				}
 				mapGene2LsValue.put(gffDetailGene, score);
 			}
 			//dosen't have score

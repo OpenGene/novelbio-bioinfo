@@ -6,6 +6,7 @@ import htsjdk.samtools.SAMSequenceRecord;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -14,6 +15,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SeqHash implements SeqHashInt {
@@ -231,6 +233,44 @@ public class SeqHash implements SeqHashInt {
 		SAMSequenceDictionary samSequenceDictionary = new SAMSequenceDictionary();
 		for (String chrId : getLsSeqName()) {
 			SAMSequenceRecord samSequenceRecord = new SAMSequenceRecord(chrId, getChrLength(chrId).intValue());
+			samSequenceDictionary.addSequence(samSequenceRecord);
+		}
+		return samSequenceDictionary;
+	}
+	
+	public static SAMSequenceDictionary getDictionary(String seqFai) {
+		return getDictionary(seqFai, " ");
+	}
+	
+	public static SAMSequenceDictionary getDictionary(String seqFai, String regx) {
+		Map<String, Long> mapChrId2Len = new LinkedHashMap<>();
+		PatternOperate patternOperate = null;
+		if (regx != null && !regx.equals("") && !regx.equals(" ")) {
+			patternOperate = new PatternOperate(regx, false);
+		}
+		
+		TxtReadandWrite txtRead = new TxtReadandWrite(seqFai);
+		for (String string : txtRead.readlines()) {
+			String[] ss = string.split("\t");
+			String chrID = null;
+			if (" ".equals(regx)) {
+				chrID = ss[0].split(" ")[0];
+			} else if (patternOperate != null) {
+				chrID = patternOperate.getPatFirst(ss[0]);
+				if (chrID == null) {
+					chrID = ss[0];
+				}
+			} else {
+				chrID = ss[0];
+			}
+			long length = Long.parseLong(ss[1].trim());
+			mapChrId2Len.put(chrID, length);
+		}
+		txtRead.close();
+		
+		SAMSequenceDictionary samSequenceDictionary = new SAMSequenceDictionary();
+		for (String chrId : mapChrId2Len.keySet()) {
+			SAMSequenceRecord samSequenceRecord = new SAMSequenceRecord(chrId, mapChrId2Len.get(chrId).intValue());
 			samSequenceDictionary.addSequence(samSequenceRecord);
 		}
 		return samSequenceDictionary;

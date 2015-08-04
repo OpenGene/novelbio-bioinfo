@@ -232,6 +232,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	}
 	
 	/**
+	 * <b>还没做好</b><br><br>
 	 * 给定需要计算的区域，装在ArrayList-ExonInfo里面，返回仅仅考虑这些区域的基因组分布密度图<br>
 	 * 给马红那边的杨红星开发的。他提出想看全基因组上tss区域的甲基化分布情况，exon区域的甲基化分布情况。<br>
 	 * 他的思路是用一定长度的slide window划过基因组然后看该位点内有甲基化的基因的表达情况。<br>

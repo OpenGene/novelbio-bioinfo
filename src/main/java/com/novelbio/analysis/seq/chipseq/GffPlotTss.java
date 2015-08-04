@@ -253,13 +253,14 @@ public class GffPlotTss {
 	}
 
 	/**
+	 * <b>首先设定GeneStructure</b><br><br>
 	 * 设定本方法后需要运行{@link #fillLsMapInfos()}<br>
 	 * <b>如果genestructure设定为tss或tes，那么务必首先设定tsstesRange</b><br>
 	 * 给定区域，获得被该区域覆盖的基因然后再做图。mapinfo中设定坐标位点和value
 	 * @param lsPeakInfo 给定的区域
 	 * @param geneStructure
 	 */
-	public void setSiteCoveredGene(List<RegionInfo> lsPeakInfo, GeneStructure geneStructure) {
+	public void setSiteCoveredGene(List<RegionInfo> lsPeakInfo) {
 		this.lsGeneID2Value = Gene2Value.getLsGene2Vale(tsstesRange, gffChrAbs, lsPeakInfo, geneStructure, exonNumRegion);
 	}
 	
@@ -550,6 +551,13 @@ public class GffPlotTss {
 				customGradient, customGradient2);
 		heatMap.setRange(mindata1, maxdata1, mindata2, maxdata2);
 		heatMap.saveToFile(outFile, 4000, 1000);
+	}
+	
+	public void drawImage(String savePath, int[] width2Height) {
+		XYSeries xySeries = getXySeries();
+		Map<XYSeries, Color> mapXy2Color = new HashMap<>();
+		mapXy2Color.put(xySeries, Color.blue);
+		drawImage(mapXy2Color, geneStructure, savePath, width2Height);
 	}
 	
 	public static void drawImageFromFile(Map<String, Color> mapFile2Color, GeneStructure geneStructure, String savePath, int[] width2Height) {

@@ -66,7 +66,9 @@ public class MapBwaMem extends MapDNA {
 	/**设定读入的第一个fq文件是交错的配对数据。**/
 	boolean staggeredPairingFQ = false;
 	
-	/**在双端模式中，使用SW(Smith-Waterman algorithm)来检测没有回帖的数据，而不会尝试去找到更适合的位点。*/
+	/**在双端模式中，使用SW(Smith-Waterman algorithm)来检测没有回帖的数据，而不会尝试去找到适合双端的匹配形式
+	 * In the paired-end mode, perform SW to rescue missing hits only but do not try to find hits that fit a proper pair.
+	 */
 	boolean swData = true;
 	
 	String leftCombFq;
@@ -94,7 +96,7 @@ public class MapBwaMem extends MapDNA {
 		return new String[]{"-t" ,nThreads + "" };
 	}
 	
-	/**输出所有找到比对的单端和不配对的双端的读长，应该是仅双端起作用，默认是true **/
+	/**输出所有找到比对的单端和不配对的双端的读长，应该是仅双端起作用，默认是false **/
 	public void setOutputSingleReads(boolean isOutputSingleReads) {
 		this.isOutputSingleReads = isOutputSingleReads;
 	}
@@ -459,7 +461,8 @@ public class MapBwaMem extends MapDNA {
 		combSeq();
 		List<String> lsCmdResult = new ArrayList<>();
 		lsCmdResult.add("bwa version: " + MapBwaAln.getVersion(this.exePath));
-		lsCmdResult.addAll(getLsCmd());
+		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+		lsCmdResult.add(cmdOperate.getCmdExeStr());
 		return lsCmdResult;
 	}
 	

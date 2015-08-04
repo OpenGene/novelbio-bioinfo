@@ -320,10 +320,34 @@ public class SamToBam {
 		public void write(SamRecord samRecord) throws UnsupportedEncodingException, IOException {
 			String record = samRecord.toString();
 			String[] ss = record.split("\t");
-			String key = ss[2] + "_@_" + ss[3] + "_@_" + ss[0];
+			String key = ss[2] + "_@_" + fillBy0(ss[3]) + "_@_" + ss[0];
 			record = key + "\t" + record;
-			record = samRecord.isMapped()? "m" + record : "u" + record;
+			boolean isMapped = samRecord.isMapped();
+			if (!isMapped && (!samRecord.getRefID().equals("*") || samRecord.getStartAbs() > 0)) {
+				isMapped = true;
+			}
+			record = isMapped ? "m" + record : "u" + record;
 			outputStream.write((record + TxtReadandWrite.ENTER_LINUX).getBytes("UTF-8"));
+		}
+		
+		int maxLen = 15;
+		/** 因为hadoop的key是按照字符串排列的，所以会出现 1234 排在 234 的后面
+		 * 目前我想到的解决方案是将数字前面用0填充，改称 00001234 00000234 这种
+		 * @param location
+		 * @return
+		 */
+		private String fillBy0(String location) {
+			int len = location.length();
+			if (maxLen < len) {
+				throw new ExceptionSamError("very long chromosome: " + len);
+			}
+			int num0 = maxLen - len;
+			StringBuilder builder = new StringBuilder();
+			for (int i = 0; i < num0; i++) {
+				builder.append("0");
+			}
+			builder.append(location);
+			return builder.toString();
 		}
 		
 		/** 不用收尾 */

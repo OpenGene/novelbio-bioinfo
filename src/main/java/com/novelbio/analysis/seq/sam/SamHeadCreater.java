@@ -6,16 +6,22 @@ import htsjdk.samtools.SAMProgramRecord;
 import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.SAMSequenceDictionary;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 public class SamHeadCreater {
 	SAMFileHeader samFileHeader = new SAMFileHeader();
+	Set<String> setProgramId = new HashSet<>();
+	
 	public void setRefSeq(String refseq) {
-		SeqHash seqHash = new SeqHash(refseq);
-		SAMSequenceDictionary samSequenceDictionary = seqHash.getDictionary();
+		if (!refseq.endsWith(".fai")) {
+			refseq = refseq + ".fai";
+		}
+		SAMSequenceDictionary samSequenceDictionary = SeqHash.getDictionary(refseq);
 		samFileHeader.setSequenceDictionary(samSequenceDictionary);
-		seqHash.close();
 	}
 	
 	/**
@@ -24,9 +30,6 @@ public class SamHeadCreater {
 	 */
 	public void setAttr(String attrLine) {
 		//headline, 仅包含 VN项目和SO项目
-		if (!attrLine.startsWith("@HD")) {
-			throw new ExceptionSamError("attrLine error, no @HD flag: " + attrLine);
-		}
 		String[] ss = attrLine.split("\t");
 		addAttr(samFileHeader, ss);
 	}
@@ -57,8 +60,14 @@ public class SamHeadCreater {
 		if (!pgLine.startsWith("@PG")) {
 			throw new ExceptionSamError("attrLine error, no @RG flag: " + pgLine);
 		}
+		
 		String[] ss = pgLine.split("\t");
 		SAMProgramRecord samProgramRecord = new SAMProgramRecord(getId(ss));
+		if (setProgramId.contains(samProgramRecord.getId())) {
+			return;
+		} else {
+			setProgramId.add(samProgramRecord.getId());
+		}		
 		addAttr(samProgramRecord, ss);
 		samFileHeader.addProgramRecord(samProgramRecord);
 	}

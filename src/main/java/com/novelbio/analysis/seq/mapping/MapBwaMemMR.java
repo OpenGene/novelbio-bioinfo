@@ -7,13 +7,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import com.novelbio.analysis.seq.fastq.ExceptionFastq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamToBam;
 import com.novelbio.analysis.seq.sam.SamToBam.SamToBamOutMR;
 import com.novelbio.base.StringOperate;
@@ -21,24 +21,25 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.StreamIn;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.fileOperate.FileOperate;
 
 @Component
 @Scope("prototype")
-public class MapBwaMemMR extends MapBwaMem {
+public class MapBwaMemMR {
+	private static final Logger logger = Logger.getLogger(MapBwaMemMR.class);
 	boolean isPairend = false;
 	InputStream ins;
 	OutputStream outs;
-	
+	String[] cmds;
 	public static void main(String[] args) throws IOException {
 		MapBwaMemMR mapBwaMemMR = new MapBwaMemMR();
-		mapBwaMemMR.setChrIndex("/media/nbfs/nbCloud/public/nbcplatform/testhadoop/chrAll.fa");
-		mapBwaMemMR.setStaggeredPairingFQ(false);
+		logger.info(ArrayOperate.cmbString(args, " "));
+//		String ss = "bwa mem -t 8 -a -p  /media/nbfs/nbCloud/public/nbcplatform/genome/index/bwa/3702/tair10/Chr_Index/chrAll.fa -";
+//		args = ss.split(" ");
+		mapBwaMemMR.setCmds(args);
 		
-		mapBwaMemMR.setIns(FileOperate.getInputStream("/media/winE/test/96_filtered_2.fq_sub_test.fastq"));
+		mapBwaMemMR.setIns(System.in);
 		mapBwaMemMR.setOuts(System.out);
-		
-		mapBwaMemMR.mapReads();
+		mapBwaMemMR.mapping();
 	}
 	
 	public void setIns(InputStream ins) {
@@ -47,47 +48,31 @@ public class MapBwaMemMR extends MapBwaMem {
 	public void setOuts(OutputStream outs) {
 		this.outs = outs;
 	}
-	protected List<String> getLsCmd() {
-		if (!StringOperate.isRealNull(getStaggeredPairingFQParam())) {
-			isPairend = true;
+	
+	public void setCmds(String[] cmds) {
+		this.cmds = cmds;
+	}
+	
+	private List<String> getCmds() {
+		List<String> lsCmd = new ArrayList<>();
+		for (String param : cmds) {
+			if (StringOperate.isRealNull(param)) continue;
+			if (param.equals("-p")) {
+				isPairend = true;
+			}
+			lsCmd.add(param);
 		}
-		
-		List<String> lsCmd = new ArrayList<String>();
-		lsCmd.add(exePath + "bwa");
-		lsCmd.add("mem");
-		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
-		addStringParam(lsCmd, getIsOutputSingleReads());
-		ArrayOperate.addArrayToList(lsCmd, getMinSeedLenParam());
-		ArrayOperate.addArrayToList(lsCmd, getBandWidthParam());
-		ArrayOperate.addArrayToList(lsCmd, getzDropoffParam());
-		ArrayOperate.addArrayToList(lsCmd, getSeedSplitRatioParam());
-		ArrayOperate.addArrayToList(lsCmd, getMaxOccParam());
-		ArrayOperate.addArrayToList(lsCmd, getMatchScoreParam());
-		ArrayOperate.addArrayToList(lsCmd, getMmPenaltyParam());
-		ArrayOperate.addArrayToList(lsCmd, getGapOpenPenParam());
-		ArrayOperate.addArrayToList(lsCmd, getGapExtPenParam());
-		ArrayOperate.addArrayToList(lsCmd, getClipPenParam());
-		ArrayOperate.addArrayToList(lsCmd, getUnpairPenParam());
-		ArrayOperate.addArrayToList(lsCmd, getRGlineParam());
-		ArrayOperate.addArrayToList(lsCmd, getMinMapQuality());
-		addStringParam(lsCmd, getMarkShorterSplitAsSecondary());
-		addStringParam(lsCmd, getHardClippingParam());
-		addStringParam(lsCmd, getStaggeredPairingFQParam());
-		addStringParam(lsCmd, getSwDataParam());
-		lsCmd.add(chrFile);
-		lsCmd.add("-");
 		return lsCmd;
 	}
 	
-	@Override
-	protected SamFile mapping() {
-		List<String> lsCmd = getLsCmd();
+	private void mapping() {
+		List<String> lsCmd = getCmds();
 		
 		BamStreamIn bamStreamIn = new BamStreamIn();
 		bamStreamIn.setInStream(ins);
 		bamStreamIn.setPairend(isPairend);
 		
-		cmdOperate = new CmdOperate(lsCmd);
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setGetCmdInStdStream(true);
 		cmdOperate.setInputStream(bamStreamIn);
 		Thread thread = new Thread(cmdOperate);
@@ -96,6 +81,7 @@ public class MapBwaMemMR extends MapBwaMem {
 		
 		SamToBam sam2SysOutMR = new SamToBam();		
 		sam2SysOutMR.setInStream(inputStream);
+		sam2SysOutMR.setIsAddMultiFlag(true);
 		
 		SamToBamOutMR samWrite2SysOutMR = new SamToBamOutMR();
 		samWrite2SysOutMR.setOutputStream(outs);
@@ -104,14 +90,6 @@ public class MapBwaMemMR extends MapBwaMem {
 		sam2SysOutMR.setIsPairend(isPairend);
 		sam2SysOutMR.readInputStream();
 		sam2SysOutMR.writeToOs();
-		return null;
-	}
-	
-	public void run() {
-		List<String> lsListCmd = new ArrayList<String>();
-		lsListCmd.addAll(getLsCmd());
-		CmdOperate cmdOperate = new CmdOperate(lsListCmd);
-		cmdOperate.run();
 	}
 	
 	public static class BamStreamIn extends StreamIn {
@@ -145,7 +123,6 @@ public class MapBwaMemMR extends MapBwaMem {
 		}
 		
 		private void runPE(FastQ fastQ) {
-			
 			Iterator<FastQRecord> itFqPE = fastQ.readlines().iterator();
 			//左端序列
 			FastQRecord fqLeft = new FastQRecord();fqLeft.setName("");
@@ -158,9 +135,11 @@ public class MapBwaMemMR extends MapBwaMem {
 				FastQRecord fQRecord = itFqPE.next();
 				if (!fqLeft.getName().split(" ")[0].equals(fQRecord.getName().split(" ")[0])) {
 					fqLeft = fQRecord;
+					isPairend = false;
 					i++;
 				} else {
 					fqRight = fQRecord;
+					isPairend = true;
 					break;
 				}
 				if (i > 100) {
