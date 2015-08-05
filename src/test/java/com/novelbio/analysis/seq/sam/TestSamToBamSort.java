@@ -80,34 +80,6 @@ public class TestSamToBamSort extends TestCase {
 		FileOperate.DeleteFileFolder(outFile);
 	}
 	
-	public void testSortAndReorder() {
-		String inFile = "src/test/resources/test_file/sam/test.sam";
-		String outFile = "src/test/resources/test_file/sam/test_sort_reorder.sam";
-		
-		SamFile samFileIn = new SamFile(inFile);
-		assertEquals("chr4", samFileIn.getMapChrID2Length().keySet().iterator().next());
-		SamToBamSort samToBamSort = new SamToBamSort(outFile, samFileIn);
-		samToBamSort.setAddMultiHitFlag(true);
-		samToBamSort.setNeedSort(true);
-		samToBamSort.setSamSequenceDictionary(getSeqDict());
-		samToBamSort.convert();
-	
-		SamFile samFile = samToBamSort.getSamFileBam();
-		assertEquals("chr1", samFile.getMapChrID2Length().keySet().iterator().next());
-		assertEquals(true, SamFile.isSorted(samFile));
-		
-		int i = 0;
-		for (SamRecord samRecord : samFile.readLines()) {
-			if (i++ < 2) {
-				assertEquals("chr3", samRecord.getRefID());
-			} else {
-				assertEquals("chrc", samRecord.getRefID());
-			}
-		}
-		
-		FileOperate.DeleteFileFolder(outFile);
-	}
-	
 	private SAMSequenceDictionary getSeqDict() {
 		SeqHash seqHash = new SeqHash("/hdfs:/nbCloud/public/nbcplatform/genome/species/3702/tair10/ChromFa/chrAll.fa");
 		seqHash.close();

@@ -48,17 +48,14 @@ public class SamToBam {
 	/** 内部关闭流 */
 	public void setInStream(InputStream inStream) {
 		samFileIn = new SamFile(inStream);
-		samFileHeader = samFileIn.getHeader();
 	}
 	/** 内部关闭流 */
 	public void setInFile(String inSam) {
 		samFileIn = new SamFile(inSam);
-		samFileHeader = samFileIn.getHeader();
 	}
 	/** 内部关闭流 */
 	public void setInFile(SamFile samFile) {
 		samFileIn = samFile;
-		samFileHeader = samFileIn.getHeader();
 	}
 	public void setIsPairend(boolean isPairend) {
 		samAddMultiFlag.setPairend(isPairend);
@@ -68,15 +65,18 @@ public class SamToBam {
 		this.isAddMultiFlag = isAddMultiFlag;
 	}
 	
+	/** 直接修改samReorder，与 {@link #setSamSequenceDictionary} 冲突*/
+	public void setSamReorder(SamReorder samReorder) {
+		this.samReorder = samReorder;
+	}
+	
 	/** <b>首先设定 {@link #setInStream(InputStream)}</b><br>
 	 * 是否根据samSequenceDictionary重新排列samHeader中的顺序，目前只有mapsplice才遇到 */
 	public void setSamSequenceDictionary(SAMSequenceDictionary samSequenceDictionary) {
 		if (samSequenceDictionary != null) {
 			samReorder = new SamReorder();
 			samReorder.setSamSequenceDictionary(samSequenceDictionary);
-			samReorder.setSamFileHeader(samFileHeader);
-			samReorder.reorder();
-			samFileHeader = samReorder.getSamFileHeaderNew();
+
 		}
 	}
 
@@ -89,6 +89,8 @@ public class SamToBam {
 	}
 	
 	public void readInputStream() {
+		samFileHeader = samFileIn.getHeader();
+
 		if (!isAddMultiFlag) return;
 		
 		Thread thread = new Thread(new Runnable() {
@@ -155,6 +157,11 @@ public class SamToBam {
 	}
 	
 	protected void setSamHeader() {
+		if (samReorder != null) {
+			samReorder.setSamFileHeader(samFileHeader);
+			samReorder.reorder();
+			samFileHeader = samReorder.getSamFileHeaderNew();
+		}
 		samWriteTo.setSamHeader(samFileHeader);
 	}
 	

@@ -20,7 +20,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
@@ -176,11 +175,9 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	
 	public void addAlignRecord(AlignRecord alignRecord) {
 		List<Align> lsAligns = alignRecord.getAlignmentBlocks();
-		boolean is = false;
 		for (Align align : lsAligns) {
 			double prop = (double)1/lsAligns.size()/alignRecord.getMappedReadsWeight();
 			if(searchSite(prop, align)) {
-				is = true;
 			}
 		}
 	}
@@ -189,6 +186,8 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		TxtReadandWrite txtRead = new TxtReadandWrite(peakFile, false);
 		int i = 0;
 		for (String readLine : txtRead.readlines(firstLine)) {
+			if (readLine.startsWith("#")) continue;
+			
 			Align align = readInfo(readLine.split("\t"));
 			searchSite(1, align);
 			
@@ -338,7 +337,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 */
 	public ArrayList<String[]> getStatisticsResult() {
 		ArrayList<String[]> lsTitle = new ArrayList<String[]>();
-		lsTitle.add(new String[]{"Item", "Number", "BackGround"});
+		lsTitle.add(new String[]{"Item", "Number"});
 		lsTitle.add(new String[]{"UTR5", (long)UTR5num + ""});
 		lsTitle.add(new String[]{"UTR3", (long)UTR3num + ""});
 		lsTitle.add(new String[]{"CDS", (long)CDSnum + ""});//
@@ -361,18 +360,23 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	 */
 	public ArrayList<String[]> getStatisticsResultWithBG() {
 		GffChrStatistics gffChrStatistics = getStatisticsBackGround(gffChrAbs.getGffHashGene(), tssRegion, tesRegion);
+		long allLen = 0;
+		for (long chrLen : gffChrAbs.getSeqHash().getMapChrLength().values()) {
+			allLen += chrLen;
+		}
+		long allNum = (long) (intraGenic + interGenic);
 		ArrayList<String[]> lsTitle = new ArrayList<String[]>();
-		lsTitle.add(new String[]{"Item", "Number", "BackGround"});
-		lsTitle.add(new String[]{"UTR5", (long)UTR5num + "", (long)gffChrStatistics.UTR5num + ""});
-		lsTitle.add(new String[]{"UTR3", (long)UTR3num + "", (long)gffChrStatistics.UTR3num + ""});
-		lsTitle.add(new String[]{"CDS", (long)CDSnum + "", (long)gffChrStatistics.CDSnum + ""});//
-		lsTitle.add(new String[]{"ExonNCRNA", (long)exonNcRNA + "", (long)gffChrStatistics.exonNcRNA + ""});
-		lsTitle.add(new String[]{"ExonAll", (long)exonNum + "", (long)gffChrStatistics.exonNum + ""});
-		lsTitle.add(new String[]{"Intron", (long)intronNum + "", (long)gffChrStatistics.intronNum + ""});
-		lsTitle.add(new String[]{"Tss", (long)tssNum + "", (long)gffChrStatistics.tssNum + ""});
-		lsTitle.add(new String[]{"Tes", (long)tesNum + "", (long)gffChrStatistics.tesNum + ""});
-		lsTitle.add(new String[]{"InterGenic", (long)interGenic + "", (long)gffChrStatistics.interGenic + ""});
-		lsTitle.add(new String[]{"IntraGenic", (long)intraGenic + "", (long)gffChrStatistics.intraGenic + ""});
+		lsTitle.add(new String[]{"Item", "Number", "NumberRatio", "BackGround", "BackGroupRatio"});
+		lsTitle.add(new String[]{"UTR5", (long)UTR5num + "", (double)UTR5num/allNum + "", (long)gffChrStatistics.UTR5num + "", (double)gffChrStatistics.UTR5num/allLen + ""});
+		lsTitle.add(new String[]{"UTR3", (long)UTR3num + "", (double)UTR3num/allNum + "", (long)gffChrStatistics.UTR3num + "", (double)gffChrStatistics.UTR3num/allLen + ""});
+		lsTitle.add(new String[]{"CDS", (long)CDSnum + "", (double)CDSnum/allNum + "", (long)gffChrStatistics.CDSnum + "", (double)gffChrStatistics.CDSnum/allLen + ""});//
+		lsTitle.add(new String[]{"ExonNCRNA", (long)exonNcRNA + "", (double)exonNcRNA/allNum + "", (long)gffChrStatistics.exonNcRNA + "", (double)gffChrStatistics.exonNcRNA/allLen + ""});
+		lsTitle.add(new String[]{"ExonAll", (long)exonNum + "", (double)exonNum/allNum + "", (long)gffChrStatistics.exonNum + "", (double)gffChrStatistics.exonNum/allLen + ""});
+		lsTitle.add(new String[]{"Intron", (long)intronNum + "", (double)intronNum/allNum + "", (long)gffChrStatistics.intronNum + "", (double)gffChrStatistics.intronNum/allLen + ""});
+		lsTitle.add(new String[]{"Tss", (long)tssNum + "", (double)tssNum/allNum + "", (long)gffChrStatistics.tssNum + "", (double)gffChrStatistics.tssNum/allLen + ""});
+		lsTitle.add(new String[]{"Tes", (long)tesNum + "", (double)tesNum/allNum + "", (long)gffChrStatistics.tesNum + "", (double)gffChrStatistics.tesNum/allLen + ""});
+		lsTitle.add(new String[]{"InterGenic", (long)interGenic + "", (double)interGenic/allNum + "", (long)gffChrStatistics.interGenic + "", (double)gffChrStatistics.interGenic/allLen + ""});
+		lsTitle.add(new String[]{"IntraGenic", (long)intraGenic + "", (double)intraGenic/allNum + "", (long)gffChrStatistics.intraGenic + "", (double)gffChrStatistics.intraGenic/allLen + ""});
 		return lsTitle;
 	}
 

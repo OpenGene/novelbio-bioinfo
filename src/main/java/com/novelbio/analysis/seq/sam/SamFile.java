@@ -705,45 +705,6 @@ public class SamFile implements AlignSeq {
 	}
 	
 	/**
-	 * 把该samfile的refID都修正为小写字母
-	 * @return
-	 */
-	public SamFile changeToLowcase() {
-		SAMFileHeader samFileHeader = getHeader();
-		boolean isLowcase = true;
-		for (SAMSequenceRecord samSequenceRecord : samFileHeader.getSequenceDictionary().getSequences()) {
-			if (!samSequenceRecord.getSequenceName().equals(samSequenceRecord.getSequenceName().toLowerCase())) {
-				isLowcase = false;
-				break;
-			}
-		}
-		if (isLowcase) {
-			return this;
-		}
-		
-		String textHead = samFileHeader.getTextHeader();
-		String[] ss = textHead.split("@SQ\t");
-		for (int i = 1; i < ss.length; i++) {
-			String[] ss2 = ss[i].split("\t");
-			String[] ss3 = ss2[0].split(":");
-			ss3[1] = ss3[1].toLowerCase();
-			ss2[0] = ArrayOperate.cmbString(ss3, ":");
-			ss[i] = ArrayOperate.cmbString(ss2, "\t");
-		}
-		textHead = ArrayOperate.cmbString(ss, "@SQ\t");
-		SAMTextHeaderCodec headerCodec = new SAMTextHeaderCodec();
-		SAMFileHeader mFileHeaderLowcase = headerCodec.decode(new StringLineReader(textHead), null);
-		
-		SamFile samFileOut = new SamFile(FileOperate.changeFileSuffix(getFileName(), "_Lowcase", null), mFileHeaderLowcase, mFileHeaderLowcase.getSortOrder() != SortOrder.unsorted);
-		for (SamRecord samRecord : readLines()) {
-			samRecord.setReferenceName(samRecord.getRefID().toLowerCase());
-			samFileOut.writeSamRecord(samRecord);
-		}
-		samFileOut.close();
-		return samFileOut;
-	}
-	
-	/**
 	 * 获得该bam文件中染色体的长度信息，注意key都为小写
 	 * @return
 	 */
