@@ -10,24 +10,21 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrMap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo.RegionInfoComparator;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
-import com.novelbio.database.model.species.Species;
 
 import de.erichseifert.gral.util.GraphicsUtils;
 /**
@@ -36,15 +33,14 @@ import de.erichseifert.gral.util.GraphicsUtils;
  *
  */
 public class GffPlotChrome {
+	private static final Logger logger = Logger.getLogger(GffPlotChrome.class);
+
 	GffChrAbs gffChrAbs = new GffChrAbs();
-	
-	private static final Logger logger = Logger.getLogger(GffChrMap.class);
-	String fileName = "";
 	int maxresolution = 10000;
 	MapReads mapReads;
 	EnumMapNormalizeType mapNormType = EnumMapNormalizeType.allreads;
 	
-	int[] tssRegion;
+	int[] tssTesRegion;
 	
 	public GffPlotChrome() {
 	}
@@ -59,11 +55,9 @@ public class GffPlotChrome {
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
-	public void setSpecies(Species species) {
-		gffChrAbs.setSpecies(species);
-	}
+	/** 如果需要看全基因组上的tss或tes分布情况，就需要设定该参数 */
 	public void setTssRegion(int[] tssRegion) {
-		this.tssRegion = tssRegion;
+		this.tssTesRegion = tssRegion;
 	}
 	public void setMapReads(MapReads mapReads) {
 		this.mapReads = mapReads;
@@ -92,15 +86,6 @@ public class GffPlotChrome {
 			lsResult.add(chrInfoTmp);
 		}
 		return lsResult;
-	}
-	/**
-	 * @param uniqReads 当reads mapping至同一个位置时，是否仅保留一个reads
-	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则忽略该参数
-	 * @param booUniqueMapping 重复的reads是否只选择一条
-	 * @param cis5to3 是否仅选取某一方向的reads，null不考虑
-	 */
-	public void setFilter(boolean uniqReads, int startCod, boolean booUniqueMapping, Boolean cis5to3) {
-		mapReads.setFilter(uniqReads, startCod, booUniqueMapping, cis5to3);
 	}
 	
 	/**
@@ -147,9 +132,9 @@ public class GffPlotChrome {
 		if (geneStructure == GeneStructure.TSS) {
 			RegionInfo siteInfo = new RegionInfo(gffDetailGene.getRefID());
 			if (gffGeneIsoInfo.isCis5to3()) {
-				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() + tssRegion[0], gffGeneIsoInfo.getTSSsite() + tssRegion[1]);
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() + tssTesRegion[0], gffGeneIsoInfo.getTSSsite() + tssTesRegion[1]);
 			} else {
-				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() - tssRegion[1], gffGeneIsoInfo.getTSSsite() - tssRegion[0]);
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() - tssTesRegion[1], gffGeneIsoInfo.getTSSsite() - tssTesRegion[0]);
 			}
 			lsResult.add(siteInfo);
 		}
@@ -157,9 +142,9 @@ public class GffPlotChrome {
 		else if (geneStructure == GeneStructure.TES) {
 			RegionInfo siteInfo = new RegionInfo(gffDetailGene.getRefID());
 			if (gffGeneIsoInfo.isCis5to3()) {
-				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + tssRegion[0], gffGeneIsoInfo.getTESsite() + tssRegion[1]);
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + tssTesRegion[0], gffGeneIsoInfo.getTESsite() + tssTesRegion[1]);
 			} else {
-				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() - tssRegion[1], gffGeneIsoInfo.getTESsite() - tssRegion[0]);
+				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() - tssTesRegion[1], gffGeneIsoInfo.getTESsite() - tssTesRegion[0]);
 			}
 			lsResult.add(siteInfo);
 		}

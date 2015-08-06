@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.genome;
 
 import java.io.Closeable;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,9 +11,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
-import com.novelbio.base.ExceptionNullParam;
-import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
 /**
@@ -26,7 +22,6 @@ import com.novelbio.database.model.species.Species;
 public class GffChrAbs implements Closeable {
 	private static final Logger logger = Logger.getLogger(GffChrAbs.class);
 	
-	private int distanceMapInfo = 3000;
 	GffHashGene gffHashGene = null;
 	SeqHash seqHash = null;
 	Species species;
@@ -200,87 +195,7 @@ public class GffChrAbs implements Closeable {
 		}
 		gffHashGene.writeToFile(gffType, lsSeqName, outFile);
 	}
-	/**
-	 * 获得指定文件内的坐标信息 如果两个位点终点的间距在distanceMapInfo以内，就会删除那个权重低的
-	 * 
-	 * @param txtExcel
-	 * @param colChrID
-	 * @param colStartLoc
-	 * @param colEndLoc
-	 * @param colScore
-	 *            打分，也就是权重，没有该列的话，就设置为 <= 0
-	 * @param rowStart
-	 */
-	public ArrayList<RegionInfo> readFileRegionMapInfo(String txtExcel,
-			int colChrID, int colStartLoc, int colEndLoc, int colScore,
-			int rowStart) {
-		int[] columnID = null;
-		if (colScore <= 0) {
-			columnID = new int[] { colChrID, colStartLoc, colEndLoc };
-		} else {
-			columnID = new int[] { colChrID, colStartLoc, colEndLoc, colScore };
-		}
-		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel,
-				columnID, rowStart, 0);
-		ArrayList<RegionInfo> lsMapInfos = new ArrayList<RegionInfo>();
-		for (String[] strings : lstmp) {
-			RegionInfo mapInfo = new RegionInfo(strings[0]);
-			try {
-				mapInfo.setStartEndLoc(Integer.parseInt(strings[1]),
-						Integer.parseInt(strings[2]));
-			} catch (Exception e) {
-				logger.error("该坐标有问题：" + mapInfo.getRefID());
-				continue;
-			}
-			if (colScore > 0) {
-				mapInfo.setScore(Double.parseDouble(strings[3]));
-			}
-			lsMapInfos.add(mapInfo);
-		}
-		RegionInfo.sortLsMapInfo(lsMapInfos, distanceMapInfo);
-		return lsMapInfos;
-	}
-
-	/**
-	 * 不用reads填充MapInfo 获得summit两端各region的区域，总共就是region*2+1的区域
-	 * 如果两个位点终点的间距在distanceMapInfo以内，就会删除那个权重低的
-	 * 
-	 * @param txtExcel
-	 * @param region
-	 * @param colChrID
-	 * @param colSummit
-	 * @param rowStart
-	 */
-	public ArrayList<RegionInfo> readFileSiteMapInfo(String txtExcel, int region,
-			int colChrID, int colSummit, int colScore, int rowStart) {
-		int[] columnID = null;
-		if (colScore <= 0) {
-			columnID = new int[] { colChrID, colSummit, colScore };
-		} else {
-			columnID = new int[] { colChrID, colSummit, colScore };
-		}
-		ArrayList<String[]> lstmp = ExcelTxtRead.readLsExcelTxt(txtExcel,
-				columnID, rowStart, 0);
-		ArrayList<RegionInfo> lsMapInfos = new ArrayList<RegionInfo>();
-		for (String[] strings : lstmp) {
-			RegionInfo mapInfo = new RegionInfo(strings[0]);
-			try {
-				mapInfo.setFlagLoc(Integer.parseInt(strings[1]));
-			} catch (Exception e) {
-				logger.error("该坐标有问题：" + mapInfo.getRefID());
-				continue;
-			}
-			mapInfo.setStartEndLoc(mapInfo.getFlagSite() - region,
-					mapInfo.getFlagSite() + region);
-			if (colScore > 0) {
-				mapInfo.setScore(Double.parseDouble(strings[2]));
-			}
-			lsMapInfos.add(mapInfo);
-		}
-		RegionInfo.sortLsMapInfo(lsMapInfos, distanceMapInfo);
-		return lsMapInfos;
-	}
-	
+		
 	/** 检查gtf文件的基因坐标是否都落在chrAll.fa的里面
 	 * 因为葡萄线粒体的gtf坐标落在了线粒体基因组的外面
 	 * 也就是说葡萄线粒体基因nad1 范围 25462--795041

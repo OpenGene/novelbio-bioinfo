@@ -494,6 +494,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		boolean isNeedSetChrLen = mapChrID2Len.isEmpty();
 		String chrIdLast = ""; Set<String> setChrId = new HashSet<>();
 		for (AlignRecord alignRecord : alignSeqReader.readLines()) {
+			if (!alignRecord.isMapped()) continue;
 			
 			//判定是否按照染色体顺序进行排序
 			if (!alignRecord.getRefID().equals(chrIdLast)) {

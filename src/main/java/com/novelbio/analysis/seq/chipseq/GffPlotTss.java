@@ -59,7 +59,7 @@ public class GffPlotTss {
 	 * 结果图片分割为1000份
 	 * 小于0表示不进行分割，直接按照长度合并起来
 	 */
-	int splitNum = 1001;
+	int splitNum = 1000;
 	/**  tss或tes的扩展绘图区域，默认哺乳动物为 -5000到5000 */
 	int[] plotTssTesRange = new int[]{-5000, 5000};
 	
@@ -150,8 +150,7 @@ public class GffPlotTss {
 	 * 小于0表示不进行分割，直接按照长度合并起来
 	 */
 	public void setSplitNum(int splitNum) {
-		//因为是从0开始计数，所以要+1
-		this.splitNum = splitNum + 1;
+		this.splitNum = splitNum;
 	}
 	/**
 	 * 务必最早设定，在查看peak是否覆盖某个基因的tss时使用

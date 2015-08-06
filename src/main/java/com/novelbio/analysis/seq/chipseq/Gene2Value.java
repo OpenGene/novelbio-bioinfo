@@ -39,7 +39,7 @@ public class Gene2Value {
 	 * @param splitNumExonIntron 默认为500份
 	 * <b>小于0表示不进行划修正，仅考虑MapReads产生那会儿的划分。exon是多少就是多少</b>
 	 */
-	int splitNum = 500;
+	int splitNum = 1001;
 	
 	/** 提取的exon和intron，是叠在一起成为一体呢，还是头尾相连成为一体 */
 	boolean pileupExonIntron = false;
@@ -67,11 +67,12 @@ public class Gene2Value {
 	/**
 	 * 如果提取的是exon或者intron的区域，因为exon和intron每个基因都不是等长的，所以要设定划分的分数.
 	 * 如果是tss和tes区域，也需要划分成指定的份数
-	 * @param splitNumExonIntron 默认为500份
+	 * @param splitNumExonIntron 默认为1000份
 	 * <b>小于0表示不进行划修正，仅考虑MapReads产生那会儿的划分。exon是多少就是多少</b>
 	 */
 	public void setSplitNum(int splitNum) {
-		this.splitNum = splitNum;
+		//因为是从0开始计数，所以要+1
+		this.splitNum = splitNum + 1;
 	}
 
 	/** 设定该基因的权重，譬如表达值等属性 */
