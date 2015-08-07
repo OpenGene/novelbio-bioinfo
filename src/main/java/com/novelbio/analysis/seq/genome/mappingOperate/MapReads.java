@@ -497,7 +497,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 			if (!alignRecord.isMapped()) continue;
 			
 			//判定是否按照染色体顺序进行排序
-			if (!alignRecord.getRefID().equals(chrIdLast)) {
+			if (!alignRecord.getRefID().toLowerCase().equals(chrIdLast)) {
 				if (lastAlignRecord != null) {
 					if (setChrId.contains(chrIdLast)) {
 						throw new ExceptionSequenceFileNotSorted("file isn't being sorted: "+ alignSeqReader.getFileName());
