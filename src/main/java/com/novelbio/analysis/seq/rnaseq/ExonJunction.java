@@ -57,24 +57,26 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static long test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("mt:0-500000"));
+		lsAligns.add(new Align("16:61456072-75456121"));
+//		lsAligns.add(new Align("1:7205126-27246005"));
+
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
-		System.out.println("start");
+//		System.out.println("start");
 //		Species species = new Species(9606);
 //		species.setVersion("hg19_GRCh37");
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(new GffHashGene("/home/novelbio/DT40/genes.gtf"));
+		gffChrAbs.setGffHash(new GffHashGene("/home/novelbio/NBCresource/www/genes.gtf"));
 		ExonJunction exonJunction = new ExonJunction();
 //		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
 		exonJunction.setgenerateNewIso(true);
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String parentPath = "/home/novelbio/DT40/";
-		exonJunction.addBamSorted("KO", parentPath + "KO.accepted.sorted.bam");
-		exonJunction.addBamSorted("WT", parentPath + "WT.accepted.sorted.bam");
-		exonJunction.setCompareGroups("KO", "WT");
+		String parentPath = "/home/novelbio/NBCresource/www/";
+		exonJunction.addBamSorted("KD", parentPath + "KD.accepted.bam");
+		exonJunction.addBamSorted("WT", parentPath + "WT.accepted.bam");
+		exonJunction.setCompareGroups("KD", "WT");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.setResultFile(parentPath + "result");
 
@@ -526,7 +528,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			if (gffDetailGene.getName().contains(stopGeneName)) {
 				logger.debug("stop");
 			}
-//			logger.info(gffDetailGene.getNameSingle());
+			logger.info(gffDetailGene.getNameSingle());
+			if (gffDetailGene.getNameSingle().equals("NEB") || gffDetailGene.getNameSingle().equals("TTN")) {
+				logger.debug("stop");
+            }
 			reconstructIso(generateNewIso, gffDetailGene);
 			gffDetailGene.removeDupliIso();
 			
@@ -704,7 +709,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					logger.debug("stop");
 				}
 				logger.info(exonSplicingTest.getExonCluster().getParentGene().getName());
-				exonSplicingTest.setSpliceType2Value();
+				try {
+					exonSplicingTest.setSpliceType2Value();
+				} catch (Exception e) {
+					exonSplicingTest.setSpliceType2Value();
+				}
+				
 			}
 		}
 	}
@@ -718,7 +728,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		setConditionWhileConditionIsNull();
 
 		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
-
+		
 		for (ArrayList<ExonSplicingTest> lsIsoExonSplicingTests : lsSplicingTests) {
 			doTest_And_StatisticSplicingEvent(lsIsoExonSplicingTests);
 			if (oneGeneOneSpliceEvent) {
@@ -736,6 +746,22 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			guiAnnoInfo.setDouble(num);
 			setRunInfo(guiAnnoInfo);
 		}
+		
+		Map<String, ExonSplicingTest> mapKey2SpliceTest = new HashMap<>();
+		for (ExonSplicingTest exonSplicingTest : lsResult) {
+			String key = exonSplicingTest.getSpliceSite();
+			ExonSplicingTest testOld = mapKey2SpliceTest.get(key);
+			if (testOld != null) {
+				 int geneLenOld = testOld.getExonCluster().getParentGene().getLongestSplitMrna().getLenExon(0);
+				 int geneLen = exonSplicingTest.getExonCluster().getParentGene().getLongestSplitMrna().getLenExon(0);
+				 if (geneLen > geneLenOld) {
+					 continue;
+                }
+            }
+			mapKey2SpliceTest.put(key, exonSplicingTest);
+        }
+		lsResult = new ArrayList<>(mapKey2SpliceTest.values());
+		
 		sortLsExonTest_Use_Pvalue(lsResult);
 		return lsResult;
 	}

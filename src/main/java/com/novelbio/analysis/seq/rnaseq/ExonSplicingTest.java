@@ -250,12 +250,16 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return pvalue.compareTo(o.pvalue);
 	}
 	
+	public String getSpliceSite() {
+		return mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite().toStringNoCis();
+	}
+	
 	public String[] toStringArray() {
 		getAndCalculatePvalue();
 		ArrayList<String> lsResult = new ArrayList<String>();
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		lsResult.add(gffDetailGene.getNameSingle());
-		lsResult.add(mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite().toStringNoCis());
+		lsResult.add(getSpliceSite());
 		lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
 		lsResult.add(lsPvalueInfo.get(0).getStrInfo(false, false));
 		lsResult.add(lsPvalueInfo.get(0).getStrInfo(false, true));
@@ -453,8 +457,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 
 		lsTitle.add(TitleFormatNBC.Adjusted_PValue.toString());
 		lsTitle.add("SplicingType");
-		lsTitle.add(TitleFormatNBC.Symbol.toString());
-		lsTitle.add(TitleFormatNBC.Description.toString());
+//		lsTitle.add(TitleFormatNBC.Symbol.toString());
+//		lsTitle.add(TitleFormatNBC.Description.toString());
 		return lsTitle.toArray(new String[0]);
 	}
 	/** 获得标题 */

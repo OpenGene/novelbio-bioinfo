@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -9,13 +11,17 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.freehep.graphicsio.swf.End;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.hg.doc.en;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.listOperate.ListCodAbs;
+import com.novelbio.listOperate.ListCodAbsDu;
 
 public class PredictCassette extends SpliceTypePredict {
 	private static final Logger logger = Logger.getLogger(PredictCassette.class);
@@ -122,18 +128,23 @@ public class PredictCassette extends SpliceTypePredict {
 		setSkipExonIso = new HashSet<GffGeneIsoInfo>();
 		boolean isType = false;
 		int initialNum = -1000;
-		Set<GffGeneIsoInfo> lsIsoExist = new HashSet<>();
-		Set<GffGeneIsoInfo> lsIsoSkip = new HashSet<>();
-		for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
-			if (exonCluster.getMapIso2LsExon().get(gffGeneIsoInfo).size() == 0) {
-				lsIsoSkip.add(gffGeneIsoInfo);
-			} else {
-				lsIsoExist.add(gffGeneIsoInfo);
-			}
-		}
+		
+		Set<GffGeneIsoInfo> lsIsoSkip = getSetIso2(true);
+
+		Set<GffGeneIsoInfo> lsIsoExist = getSetIso2(false);
 		if (lsIsoSkip.size() == 0) {
 			return false;
 		}
+//		Set<GffGeneIsoInfo> lsIsoExist = new HashSet<>();
+//		Set<GffGeneIsoInfo> lsIsoSkip = new HashSet<>();
+//		for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
+//			if (exonCluster.getMapIso2LsExon().get(gffGeneIsoInfo).size() == 0) {
+//				lsIsoSkip.add(gffGeneIsoInfo);
+//			} else {
+//				lsIsoExist.add(gffGeneIsoInfo);
+//			}
+//		}
+
 		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterExist = getIsoExistHaveBeforeAndAfterExon(initialNum, lsIsoExist, lsIsoSkip);
 		ArrayListMultimap<String, GffGeneIsoInfo> setBeforAfterSkip = getIsoSkipHaveBeforeAndAfterExon(initialNum, lsIsoSkip);
 		//判定是否前后的exon相同
@@ -148,6 +159,65 @@ public class PredictCassette extends SpliceTypePredict {
 			}
 		}
 		return isType;
+	}
+	
+	private Set<GffGeneIsoInfo> getSetIso(boolean isSkip) {
+		Set<GffGeneIsoInfo> setIso = new HashSet<>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
+			if (isSkip && exonCluster.getMapIso2LsExon().get(gffGeneIsoInfo).size() == 0) {
+				setIso.add(gffGeneIsoInfo);
+			} else if (!isSkip && exonCluster.getMapIso2LsExon().get(gffGeneIsoInfo).size() > 0) {
+				setIso.add(gffGeneIsoInfo);
+			}
+		}
+		return setIso;
+	}
+	
+	/** 是否获取跳过当前的iso */
+	private Set<GffGeneIsoInfo> getSetIso2(boolean isSkip) {
+		//key 为该iso跳过的前一个exon的坐标和后一个exon的坐标，用这个来去冗余
+		Map<String, GffGeneIsoInfo> mapKey2Iso = new HashMap<>();
+		
+		for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
+			//用来去重复的一组exon */
+			List<ExonInfo> lsExonToRemoveDuplicate = new ArrayList<>();
+			int isoNum = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfo).size();
+			//没有跳过该exon
+			if (!isSkip && isoNum > 0) {
+				ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> lsCodDu = gffGeneIsoInfo.searchLocationDu(exonCluster.getStartAbs(), exonCluster.getEndAbs());
+				List<ExonInfo> lsExonInfos = lsCodDu.getCoveredElement();
+				Collections.sort(lsExonInfos);
+				int start = 0, end = -1;
+				if (lsExonInfos.size() > 0) {
+					start = gffGeneIsoInfo.indexOf(lsExonInfos.get(0));
+					end = gffGeneIsoInfo.indexOf(lsExonInfos.get(lsExonInfos.size() - 1));
+	            }
+				if (start > 0) {
+					lsExonToRemoveDuplicate.add(gffGeneIsoInfo.get(start - 1));
+	            }
+				lsExonToRemoveDuplicate.addAll(lsExonInfos);
+				if (end < gffGeneIsoInfo.size() - 1) {
+					lsExonToRemoveDuplicate.add(gffGeneIsoInfo.get(end + 1));
+	            }
+			} else if(isSkip &&isoNum == 0) {
+				ListCodAbs<ExonInfo> lsInfo = gffGeneIsoInfo.searchLocation((exonCluster.getStartAbs()+exonCluster.getEndAbs())/2);
+				if (lsInfo.getGffDetailUp() != null) {
+					lsExonToRemoveDuplicate.add(lsInfo.getGffDetailUp());
+                }
+				if (lsInfo.getGffDetailDown() != null) {
+	                		lsExonToRemoveDuplicate.add(lsInfo.getGffDetailDown());
+                }
+			}
+			StringBuilder keybuilder = new StringBuilder();
+			if (lsExonToRemoveDuplicate.isEmpty()) {
+				continue;
+			}
+			for (ExonInfo exonInfo : lsExonToRemoveDuplicate) {
+				keybuilder.append(exonInfo.toString());
+            }
+			mapKey2Iso.put(keybuilder.toString(), gffGeneIsoInfo);
+		}
+		return new HashSet<>(mapKey2Iso.values());
 	}
 	
 	/** 

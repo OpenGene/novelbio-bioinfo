@@ -88,6 +88,7 @@ public class GenerateNewIso {
 //				reconstructIso(junctionUnit);
 //			}
 //		}
+		logger.debug("stop");
 		//最后可以构建出比较长的iso
 	}
 	

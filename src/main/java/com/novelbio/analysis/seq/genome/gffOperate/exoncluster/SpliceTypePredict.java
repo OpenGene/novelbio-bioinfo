@@ -44,7 +44,12 @@ public abstract class SpliceTypePredict {
 	 */
 	public ArrayListMultimap<String, Double> getJunGroup2lsValue(String condition) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = getLsJuncCounts(condition);
-		for (String group : mapGroup2LsValue.keys()) {
+		if (mapGroup2LsValue == null) {
+			logger.error(condition + " " + exonCluster.getRefID() + ":" + exonCluster.getStartAbs() + "-" + exonCluster.getEndAbs() 
+					+" doesn't have reads info, use zero replace");
+			mapGroup2LsValue = ArrayListMultimap.create();
+        }
+		for (String group : mapCond2Group.get(condition)) {
 			List<Double> lsValue = mapGroup2LsValue.get(group);
 			if (lsValue == null || lsValue.size() == 0) {
 				mapGroup2LsValue.put(group, 0.0);
