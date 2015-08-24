@@ -233,16 +233,17 @@ public class FastQRecord implements Cloneable {
 	 * 克隆序列
 	 */
 	public FastQRecord clone() {
-		FastQRecord seqFasta = null;
+		FastQRecord fastQRecord = null;
 		try {
-			seqFasta = (FastQRecord) super.clone();
+			fastQRecord = (FastQRecord) super.clone();
 		} catch (CloneNotSupportedException e) {
 			e.printStackTrace();
 		}
-		seqFasta.seqQuality = seqQuality;
-		seqFasta.fastqOffset = fastqOffset;
-		seqFasta.mapFastQFilter = mapFastQFilter;
-		return seqFasta;
+		fastQRecord.seqFasta = seqFasta.clone();
+		fastQRecord.seqQuality = seqQuality;
+		fastQRecord.fastqOffset = fastqOffset;
+		fastQRecord.mapFastQFilter = mapFastQFilter;
+		return fastQRecord;
 	}
 	
 }
