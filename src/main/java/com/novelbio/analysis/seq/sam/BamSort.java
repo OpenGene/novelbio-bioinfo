@@ -1,5 +1,8 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import htsjdk.samtools.SAMFileHeader;
@@ -67,9 +70,10 @@ public class BamSort {
 		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {
 			return samFile.getFileName();
 		}
-		String cmd = ExePath + "samtools sort " + CmdOperate.addQuot(samFile.getFileName()) + " "
-				+ CmdOperate.addQuot(FileOperate.changeFileSuffix(outFile, "", ""));
-		CmdOperate cmdOperate = new CmdOperate(cmd, "sortBam");
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(ExePath + "samtools"); lsCmd.add("sort");
+		lsCmd.add(samFile.getFileName()); lsCmd.add(FileOperate.changeFileSuffix(outFile, "", ""));
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		return FileOperate.changeFileSuffix(outFile, "", "") + ".bam";
 	}

@@ -48,7 +48,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	/** 实验组和对照组的junction reads数量加起来小于这个数，就返回1 */
 	static int junctionReadsMinNum = 10;
-	
+		
 	/** 没有重建转录本的老iso的名字 */
 	Set<String> setIsoName_No_Reconstruct;
 	
@@ -76,6 +76,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 */
 	double pvalueJunctionProp = -1;
 	
+	int juncAllReadsNum = 25;
+	int juncSampleReadsNum = 10;
+	
 	Map<String, Map<String, double[]>> mapCond_Group2ReadsNum;
 	Map<String, Map<String, double[]>> mapCond_Group2JunNum;
 	
@@ -87,6 +90,16 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
 	}
+	
+	/** 设定junction数量，小于该数量的不会进行分析
+	 * 
+	 * @param juncAllReadsNum 所有样本的junction数量必须大于该值，否则不进行计算，默认25
+	 * @param juncSampleReadsNum 单个样本的junction数量必须大于该值，否则不进行计算，默认10
+	 */
+	public void setJuncReadsNum(int juncAllReadsNum, int juncSampleReadsNum) {
+	    this.juncAllReadsNum = juncAllReadsNum;
+	    this.juncSampleReadsNum = juncSampleReadsNum;
+    }
 	/** 设定没有重建转录本的老iso的名字 */
 	public void setSetIsoName_No_Reconstruct(Set<String> setIsoName_No_Reconstruct) {
 		this.setIsoName_No_Reconstruct = setIsoName_No_Reconstruct;
@@ -253,6 +266,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public String getSpliceSite() {
 		return mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite().toStringNoCis();
 	}
+	public double getPvalue() {
+		return lsPvalueInfo.get(0).pvalue;
+	}
 	
 	public String[] toStringArray() {
 		getAndCalculatePvalue();
@@ -281,7 +297,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		
 		lsResult.add(getAndCalculatePvalue() + "");
-//		lsResult.add(fdr + "");
+		lsResult.add(fdr + "");
 		//TODO
 		lsResult.add(getSplicingType().toString());
 //		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
@@ -407,7 +423,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/** 输入的信息会自动排序 */
-	public static void sortAndFdr(List<ExonSplicingTest> colExonSplicingTests) {
+	public static void sortAndFdr(List<ExonSplicingTest> colExonSplicingTests, double fdrCutoff) {
 		//按照pvalue从小到大排序
 		Collections.sort(colExonSplicingTests, new Comparator<ExonSplicingTest>() {
 			public int compare(ExonSplicingTest o1, ExonSplicingTest o2) {
@@ -421,7 +437,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(debug)) {
 				logger.debug("stop");
 			}
-			if (exonSplicingTest.getAndCalculatePvalue() > 0.5) {
+			if (exonSplicingTest.getAndCalculatePvalue() > fdrCutoff) {
 				break;
 			}
 			lsPvalue.add(exonSplicingTest.getAndCalculatePvalue());
@@ -454,8 +470,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //		
 //		lsTitle.add("LogFoldChange_Type1");
 //		lsTitle.add("LogFoldChange_Type2");
-
-		lsTitle.add(TitleFormatNBC.Adjusted_PValue.toString());
+		
+		lsTitle.add(TitleFormatNBC.Pvalue.toString());
+		lsTitle.add(TitleFormatNBC.FDR.toString());
 		lsTitle.add("SplicingType");
 //		lsTitle.add(TitleFormatNBC.Symbol.toString());
 //		lsTitle.add(TitleFormatNBC.Description.toString());
@@ -499,12 +516,14 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			iSpliceTestExp = SpliceTestFactory.createSpliceModule(isCombine);
 			ArrayListMultimap<String, Double> lsExp1 = spliceType2ValueTreat.getLsExp(splicingType);
 			ArrayListMultimap<String, Double> lsExp2= spliceType2ValueCtrl.getLsExp(splicingType);
+			iSpliceTestExp.setJuncReadsNum(juncAllReadsNum, juncSampleReadsNum);
 			iSpliceTestExp.setNormalizedNum(normExp);
 			iSpliceTestExp.setLsRepeat2Value(mapCond_Group2ReadsNum, condTreat, lsExp1, condCtrl, lsExp2);
 			
 			iSpliceTestJun = SpliceTestFactory.createSpliceModule(isCombine);
 			ArrayListMultimap<String, Double> lsJunc1 = spliceType2ValueTreat.getLsJun(splicingType);
 			ArrayListMultimap<String, Double> lsJunc2 = spliceType2ValueCtrl.getLsJun(splicingType);
+			iSpliceTestJun.setJuncReadsNum(juncAllReadsNum, juncSampleReadsNum);
 			iSpliceTestJun.setNormalizedNum(junction);
 			iSpliceTestJun.setLsRepeat2Value(mapCond_Group2JunNum, condTreat, lsJunc1, condCtrl, lsJunc2);
 		}

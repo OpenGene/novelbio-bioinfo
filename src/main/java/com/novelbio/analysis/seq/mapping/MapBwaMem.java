@@ -22,112 +22,40 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 @Component
 @Scope("prototype")
 public class MapBwaMem extends MapDNA {
-	/**指定线程数**/
-	int nThreads;
-	/**输出所有找到比对的单端和不配对的双端的读长。**/
-	boolean isOutputSingleReads = false;
-	/** 指定种子的最大长度，比对匹配短于这个数据的都会被过滤掉，当这个数据在20附近的时候对结果不会有显著影响[19]；**/
-	int  minSeedLen;
-	/** 带宽，设置了软件查询的gap的最长长度[100]**/
-	int  bandWidth;
-	/**用于结果过滤的，当最好的打分和现在的打分相差超过这个分数的时候，过滤掉这个结果。[100] **/
-	int zDropoff;
-	/** 设定新的种子的长度倍数，这个参数对于性能有很大影响，这个值越大，比对的速度就会越快，但是的准确度会降低。[1.5]**/
-	double seedSplitRatio;
-	/**设定当一条读长在基因组中的次数高于这个值的时候，就舍弃这个数据。[10000]**/
-	int maxOcc;
-	/**设定匹配打分[1]**/
-	int  matchScore;
-	/**设定不匹配罚分[4]**/
-	int mmPenalty;
-	/** gap的起始罚分[6]**/
-	int gapOpenPen;
-	/**gap的延伸罚分[1]**/
-	int gapExtPen;
-	/**剪切罚分[5]**/
-	int clipPen;
-	/**对于不配对的读长配对的罚分[9]**/
-	int unpairPen;
-	/**指定输出的sam文件的header区[null]**/
-	String RGline;
-	/** 最低mapping 质量 */
-	int minMapQuality;
-	/**是否对于结果是否使用hard clipping**/
-	boolean hardClipping;
-	
-	/** The BWA-MEM algorithm performs local alignment. It may produce 
-	 * multiple primary alignments for different part of a query sequence.
-	 *  This is a crucial feature for long sequences. However, some tools 
-	 *  such as Picard’s markDuplicates does not work with split alignments.
-	 *   One may consider to use option -M to flag shorter split hits as secondary.
-	 */
-	boolean markShorterSplitAsSecondary = false;
-	
-	/**设定读入的第一个fq文件是交错的配对数据。**/
-	boolean staggeredPairingFQ = false;
-	
-	/**在双端模式中，使用SW(Smith-Waterman algorithm)来检测没有回帖的数据，而不会尝试去找到适合双端的匹配形式
-	 * In the paired-end mode, perform SW to rescue missing hits only but do not try to find hits that fit a proper pair.
-	 */
-	boolean swData = true;
-	
 	String leftCombFq;
 	String rightCombFq;
-	
-	String exePath;
-	
+		
 	/** 临时文件 */
 	String tmpPath;
 	CmdOperate cmdOperate;
+	
+	BwaMemParam bwaMemParam;
+	
 	public MapBwaMem() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_mem);
 		softWare = SoftWare.bwa_mem;
-		this.exePath = softWareInfo.getExePathRun();
+		String exePath = softWareInfo.getExePathRun();
+		bwaMemParam.setExePath(exePath);
 	}
 	
 	/**指定线程数**/
 	public void setThreadNum(int nThreads) {
-		this.nThreads = nThreads;
+		bwaMemParam.setThreadNum(nThreads);
 	}
-	protected String[] getThreadNum() {
-		if (nThreads <= 0) {
-			return null;
-		}
-		return new String[]{"-t" ,nThreads + "" };
-	}
-	
+
 	/**输出所有找到比对的单端和不配对的双端的读长，应该是仅双端起作用，默认是false **/
 	public void setOutputSingleReads(boolean isOutputSingleReads) {
-		this.isOutputSingleReads = isOutputSingleReads;
-	}
-	protected String getIsOutputSingleReads() {
-		if (isOutputSingleReads) {
-			return "-a";
-		} else {
-			return null;
-		}
+		bwaMemParam.setOutputSingleReads(isOutputSingleReads);
 	}
 	
 	/** 指定种子的最大长度，比对匹配短于这个数据的都会被过滤掉，当这个数据在20附近的时候对结果不会有显著影响[19]；*/
 	public void setMinSeedLen(int minSeedLen) {
-		this.minSeedLen = minSeedLen;
-	}
-	protected String[] getMinSeedLenParam() {
-		if (minSeedLen <= 15) {
-			return null;
-		}
-		return new String[]{"-k" ,minSeedLen + "" };
+		bwaMemParam.setMinSeedLen(minSeedLen);
 	}
 	
 	/** 带宽，设置了软件查询的gap的最长长度[100] */
 	public void setGapBandWidth(int bandWidth) {
-		this.bandWidth = bandWidth;
-	}
-	protected String[] getBandWidthParam() {
-		if (bandWidth <= 0) {
-			return null;
-		}
-		return new String[]{"-w" ,bandWidth + "" };
+		bwaMemParam.setGapBandWidth(bandWidth);
 	}
 	
 	/** Off-diagonal X-dropoff (Z-dropoff). Stop extension when the difference between 
@@ -137,15 +65,9 @@ public class MapBwaMem extends MapDNA {
 	 *  gaps in one of the sequences in the alignment. Z-dropoff not only avoids unnecessary 
 	 *  extension, but also reduces poor alignments inside a long good alignment. [100] */
 	public void setzDropoff(int zDropoff) {
-		this.zDropoff = zDropoff;
+		bwaMemParam.setzDropoff(zDropoff);
 	}
-	protected String[] getzDropoffParam() {
-		if (zDropoff <= 0) {
-			return null;
-		}
-		return new String[]{"-d" ,zDropoff + "" };
-	}
-
+	
 	/**
 	 * Trigger re-seeding for a MEM longer than minSeedLen*FLOAT. 
 	 * This is a key heuristic parameter for tuning the performance. L
@@ -153,25 +75,13 @@ public class MapBwaMem extends MapDNA {
 	 * speed but lower accuracy. [1.5]
 	 */
 	public void setSeedSplitRatio(double seedSplitRatio) {
-		this.seedSplitRatio = seedSplitRatio;
-	}
-	protected String[] getSeedSplitRatioParam() {
-		if (seedSplitRatio <= 0 || seedSplitRatio > 10) {
-			return null;
-		}
-		return new String[]{"-r" ,seedSplitRatio + "" };
+		bwaMemParam.setSeedSplitRatio(seedSplitRatio);
 	}
 	
 	/** Discard a MEM if it has more than INT occurence in the genome. 
 	 * This is an insensitive parameter. [10000] */
 	public void setMaxOcc(int maxOcc) {
-		this.maxOcc = maxOcc;
-	}
-	protected String[] getMaxOccParam() {
-		if (maxOcc <= 0) {
-			return null;
-		}
-		return new String[]{"-c" ,maxOcc + "" };
+		bwaMemParam.setMaxOcc(maxOcc);
 	}
 	
 	/**
@@ -179,57 +89,27 @@ public class MapBwaMem extends MapDNA {
 	 * @param swData
 	 */
 	public void setSwData(boolean swData) {
-		this.swData = swData;
-	}
-	protected String getSwDataParam(){
-		if (swData) {
-			return "-P";
-		}
-		return null;
+		bwaMemParam.setSwData(swData);
 	}
 	
 	/** 设定匹配打分[1] */
 	public void setMatchScore(int matchScore) {
-		this.matchScore = matchScore;
-	}
-	protected String[] getMatchScoreParam() {
-		if (matchScore <= 0) {
-			return null;
-		}
-		return new String[]{"-A" ,matchScore + "" };
+		bwaMemParam.setMatchScore(matchScore);
 	}
 
 	/** 设定mismatch罚分[4] */
 	public void setMmPenalty(int mmPenalty) {
-		this.mmPenalty = mmPenalty;
-	}
-	protected String[] getMmPenaltyParam() {
-		if (mmPenalty <= 0) {
-			return null;
-		}
-		return new String[]{"-B" ,mmPenalty + "" };
+		bwaMemParam.setMmPenalty(mmPenalty);
 	}
 	
 	/** gap的起始罚分[6] */
 	public void setGapOpenPen(int gapOpenPen) {
-		this.gapOpenPen = gapOpenPen;
+		bwaMemParam.setGapOpenPen(gapOpenPen);
 	}
-	protected String[] getGapOpenPenParam() {
-		if (gapOpenPen <= 0) {
-			return null;
-		}
-		return new String[]{"-O" ,gapOpenPen + "" };
-	}
-
+	
 	/** gap的延伸罚分[1] */
 	public void setGapExtPen(int gapExtPen) {
-		this.gapExtPen = gapExtPen;
-	}
-	protected String[] getGapExtPenParam() {
-		if (gapExtPen <= 0) {
-			return null;
-		}
-		return new String[]{"-E" ,gapExtPen + "" };
+		bwaMemParam.setGapExtPen(gapExtPen);
 	}
 	
 	/** Clipping penalty. When performing SW(Smith-Waterman algorithm) extension, BWA-MEM keeps track of the best 
@@ -237,80 +117,34 @@ public class MapBwaMem extends MapDNA {
 	 * clipping penalty, clipping will not be applied. Note that in this case, the SAM AS tag 
 	 * reports the best SW score; clipping penalty is not deducted. [5]  */
 	public void setClipPen(int clipPen) {
-		this.clipPen = clipPen;
+		bwaMemParam.setClipPen(clipPen);
 	}
-	protected String[] getClipPenParam() {
-		if (clipPen <= 0) {
-			return null;
-		}
-		return new String[]{"-L" ,clipPen + "" };
-	}
-	
+
 	/** Penalty for an unpaired read pair. BWA-MEM scores an unpaired read pair as scoreRead1+scoreRead2-INT
 	 * and scores a paired as scoreRead1+scoreRead2-insertPenalty. It compares these two scores to determine 
 	 * whether we should force pairing. [9]  */
 	public void setUnpairPen(int unpairPen) {
-		this.unpairPen = unpairPen;
-	}
-	protected String[] getUnpairPenParam() {
-		if (unpairPen <= 0) {
-			return null;
-		}
-		return new String[]{"-U" ,unpairPen + "" };
+		bwaMemParam.setUnpairPen(unpairPen);
 	}
 	
 	/** 设定读入的第一个fq文件是交错的配对数据 */
 	public void setStaggeredPairingFQ(boolean staggeredPairingFQ) {
-		this.staggeredPairingFQ = staggeredPairingFQ;
-	}
-	/** 设定读入的第一个fq文件是交错的配对数据 */
-	protected String getStaggeredPairingFQParam(){
-		if (staggeredPairingFQ) {
-			return "-p";
-		}
-		return null;
+		bwaMemParam.setStaggeredPairingFQ(staggeredPairingFQ);
 	}
 	
-	
-	@Override
 	public void setSampleGroup(String sampleID, String LibraryName,
 			String SampleName, String Platform) {
-		SamRGroup samRGroup = new SamRGroup(sampleID, LibraryName, SampleName, Platform);
-		RGline = samRGroup.toString();
-	}
-	/**
-	 *  Complete read group header line. ’\t’ can be used in STR and will be
-	 *  converted to a TAB in the output SAM. The read group ID will be 
-	 *  attached to every read in the output. An example is ’@RG\tID:foo\tSM:bar’.
-	 * @param rGline
-	 */
-	protected String[] getRGlineParam() {
-		if (StringOperate.isRealNull(RGline)) {
-			return null;
-		}
-		return new String[]{"-R" ,RGline + "" };
+		bwaMemParam.setSampleGroup(sampleID, LibraryName, SampleName, Platform);
 	}
 	
 	/** 最低mapping 质量 */
 	public void setMinMapQuality(int minMapQuality) {
-		this.minMapQuality = minMapQuality;
-	}
-	protected String[] getMinMapQuality() {
-		if (minMapQuality <= 0) {
-			return null;
-		}
-		return new String[]{"-T", minMapQuality + ""};
+		bwaMemParam.setMinMapQuality(minMapQuality);
 	}
 	
 	/** 默认为false */
 	public void setHardClipping(boolean hardClipping) {
-		this.hardClipping = hardClipping;
-	}
-	protected String getHardClippingParam(){
-		if (hardClipping) {
-			return "-H";
-		}
-		return null;
+		bwaMemParam.setHardClipping(hardClipping);
 	}
 	
 	/**
@@ -322,14 +156,9 @@ public class MapBwaMem extends MapDNA {
 	 *   One may consider to use option -M to flag shorter split hits as secondary.
 	 */
 	public void setMarkShorterSplitAsSecondary(boolean markShorterSplitAsSecondary) {
-		this.markShorterSplitAsSecondary = markShorterSplitAsSecondary;
+		bwaMemParam.setMarkShorterSplitAsSecondary(markShorterSplitAsSecondary);
 	}
-	protected String getMarkShorterSplitAsSecondary(){
-		if (markShorterSplitAsSecondary) {
-			return "-M";
-		}
-		return null;
-	}
+	
 	/**
 	 * 设置左端的序列，设置会把以前的清空
 	 * @param fqFile
@@ -375,27 +204,7 @@ public class MapBwaMem extends MapDNA {
 	
 	protected List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<String>();
-		lsCmd.add(exePath + "bwa");
-		lsCmd.add("mem");
-		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
-		addStringParam(lsCmd, getIsOutputSingleReads());
-		ArrayOperate.addArrayToList(lsCmd, getMinSeedLenParam());
-		ArrayOperate.addArrayToList(lsCmd, getBandWidthParam());
-		ArrayOperate.addArrayToList(lsCmd, getzDropoffParam());
-		ArrayOperate.addArrayToList(lsCmd, getSeedSplitRatioParam());
-		ArrayOperate.addArrayToList(lsCmd, getMaxOccParam());
-		ArrayOperate.addArrayToList(lsCmd, getMatchScoreParam());
-		ArrayOperate.addArrayToList(lsCmd, getMmPenaltyParam());
-		ArrayOperate.addArrayToList(lsCmd, getGapOpenPenParam());
-		ArrayOperate.addArrayToList(lsCmd, getGapExtPenParam());
-		ArrayOperate.addArrayToList(lsCmd, getClipPenParam());
-		ArrayOperate.addArrayToList(lsCmd, getUnpairPenParam());
-		ArrayOperate.addArrayToList(lsCmd, getRGlineParam());
-		ArrayOperate.addArrayToList(lsCmd, getMinMapQuality());
-		addStringParam(lsCmd, getMarkShorterSplitAsSecondary());
-		addStringParam(lsCmd, getHardClippingParam());
-		addStringParam(lsCmd, getStaggeredPairingFQParam());
-		addStringParam(lsCmd, getSwDataParam());
+		lsCmd.addAll(bwaMemParam.getLsCmd());
 		
 		lsCmd.add(chrFile);
 		lsCmd.addAll(getLsFqFile());
@@ -403,13 +212,7 @@ public class MapBwaMem extends MapDNA {
 		lsCmd.add(outFileName);
 		return lsCmd;
 	}
-	
-	protected void addStringParam(List<String> lsCmd, String param) {
-		if (StringOperate.isRealNull(param)) {
-			return;
-		}
-		lsCmd.add(param);
-	}
+
 	
 
 	@Override
@@ -460,7 +263,7 @@ public class MapBwaMem extends MapDNA {
 		generateTmpPath();
 		combSeq();
 		List<String> lsCmdResult = new ArrayList<>();
-		lsCmdResult.add("bwa version: " + MapBwaAln.getVersion(this.exePath));
+		lsCmdResult.add("bwa version: " + MapBwaAln.getVersion(bwaMemParam.getExePath()));
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmdResult.add(cmdOperate.getCmdExeStr());
 		return lsCmdResult;
@@ -504,7 +307,7 @@ public class MapBwaMem extends MapDNA {
 	protected List<String> getLsCmdIndex() {
 		MapBwaAln mapBwaAln = new MapBwaAln();
 		mapBwaAln.setChrIndex(chrFile);
-		mapBwaAln.setExePath(exePath);
+		mapBwaAln.setExePath(bwaMemParam.getExePath());
 		List<String> lsCmd = mapBwaAln.getLsCmdIndex();
 		mapBwaAln = null;
 		return lsCmd;

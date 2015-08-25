@@ -1,6 +1,10 @@
 package com.novelbio.analysis.seq.resequencing;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SomaticIndel {
@@ -66,8 +70,8 @@ public class SomaticIndel {
 		this.outIndelsVcfFile = indelsVcfFile;
 	}
 	
-	private String getType() {
-		return  " -T " + type;
+	private String[] getType() {
+		return  new String[]{"-T", type};
 	}
 	private String getJvmMemory() {
 		return jvmMemory;
@@ -77,51 +81,58 @@ public class SomaticIndel {
 		return jarPathAndName;
 	}
 	
-	private String getTumorBamFile() {
+	private String[] getTumorBamFile() {
 		if (tumorBamFile == null) {
-			return "";
+			return null;
 		}
-		return " -I:tumor " + tumorBamFile;
+		return new String[]{"-I:tumor", tumorBamFile};
 	}
-	private String getNormalBamFile() {
+	private String[] getNormalBamFile() {
 		if (normalBamFile == null) {
-			return "";
+			return null;
 		}
-		return  " -I:normal " + normalBamFile;
+		return new String[]{"-I:normal", normalBamFile};
 	}
 
-	private String getOutIndelVerboseFile() {
+	private String[] getOutIndelVerboseFile() {
 		if (outIindelsVerboseFile != null && !outIindelsVerboseFile.trim().equals("")) {
-			return " -verbose " + outIindelsVerboseFile;
+			return new String[]{"-verbose", outIindelsVerboseFile};
 		}
-		return "";
+		return null;
 	}
 	
-	private String getOutIndelsVcfFile() {
+	private String[] getOutIndelsVcfFile() {
 		if (outIndelsVcfFile == null) {
-			return "";
+			return null;
 		}
-		return " -o " + outIndelsVcfFile;
+		return new String[]{"-o", outIndelsVcfFile};
 	}
-	private String getRefFastaFile() {
+	private String[] getRefFastaFile() {
 		if (refFastaFile == null || refFastaFile.equals("")) {
-			return "";
+			return null;
 		}
-		return " --refseq " + refFastaFile;
+		return new String[]{"--refseq", refFastaFile};
 	}
 	
-	private String getOutBedAndMetrics() {
+	private String[] getOutBedAndMetrics() {
 		String outBed = FileOperate.changeFileSuffix(outIndelsVcfFile, "", "bed");
 		String outMetrics = FileOperate.changeFileSuffix(outIndelsVcfFile, "", "matrix");
-		return " --bedOutput " + outBed + " " + " -metrics " + outMetrics + " ";
+		return new String[]{"--bedOutput", outBed, "-metrics", outMetrics};
 	}
 	
 	public void run() {
-		String cmdScript = "java -Xmx" + getJvmMemory() + " -jar " + getJarPathAndName() +  getType() 
-				+ getNormalBamFile() + getTumorBamFile() + getRefFastaFile() + getOutIndelVerboseFile()
-				+ getOutIndelsVcfFile() + getOutBedAndMetrics();
-		CmdOperate cmdOperate = new CmdOperate(cmdScript, "SomaticIndel");
-		cmdOperate.run();
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("java"); lsCmd.add("-Xmx"+getJvmMemory());
+		lsCmd.add("-jar"); lsCmd.add(getJarPathAndName());
+		ArrayOperate.addArrayToList(lsCmd, getType());
+		ArrayOperate.addArrayToList(lsCmd, getNormalBamFile());
+		ArrayOperate.addArrayToList(lsCmd, getTumorBamFile());
+		ArrayOperate.addArrayToList(lsCmd, getRefFastaFile());
+		ArrayOperate.addArrayToList(lsCmd, getOutIndelVerboseFile());
+		ArrayOperate.addArrayToList(lsCmd, getOutIndelsVcfFile());
+		ArrayOperate.addArrayToList(lsCmd, getOutBedAndMetrics());
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.runWithExp();
 	}
 	
 }

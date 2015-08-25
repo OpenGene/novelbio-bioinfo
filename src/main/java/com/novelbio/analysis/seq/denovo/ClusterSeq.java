@@ -11,6 +11,7 @@ import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 
@@ -127,7 +128,7 @@ nr时<br>
 -n 5 for thresholds 0.80-0.85<br>
 -n 4 for thresholds 0.75-0.80<br>
 	 */
-	private String getThreshold() {
+	private String[] getThreshold() {
 		double similar = (double)identityThrshld/100;
 		int wordLen = 5;
 		if (isProtein) {
@@ -157,44 +158,51 @@ nr时<br>
 				wordLen = 4;
 			} 
 		}
-		return " -c " + similar + " -n " + wordLen + " ";
+		return new String[]{"-c", similar+"", "-n", wordLen+""};
 	}
 	
-	private String getBigData() {
+	private String[] getBigData() {
 		if (veryBigData) {
-			return " -B 1 ";
+			return new String[]{"-B", "1"};
 		} else {
-			return " -B 0 ";
+			return new String[]{"-B", "0"};
 		}
 	}
-	private String getTreadNum() {
-		return " -T " + threadNum + " ";
+	private String[] getTreadNum() {
+		return new String[]{"-T", threadNum + ""};
 	}
-	private String getMemoryUse() {
-		return " -M " + memoryBeUse + " ";
+	private String[] getMemoryUse() {
+		return new String[]{"-M", memoryBeUse + ""};
 	}
-	private String getInFileName() {
-		return " -i " + inFileName + " ";
+	private String[] getInFileName() {
+		return new String[]{"-i", inFileName};
 	}
-	private String getOutFileNameStr() {
-		return " -o " + outFileName + " ";
+	private String[] getOutFileNameStr() {
+		return new String[]{"-o", outFileName};
 	}
-	private String isAccurate() {
+	private String[] isAccurate() {
 		if (accurateMode) {
-			return " -g 1 "; 
+			return new String[]{"-g", "1"}; 
 		} else {
-			return " -g 0 ";
+			return new String[]{"-g", "0"};
 		}
 	}
 	public void run() {
-		String cmd = "";
+		List<String> lsCmd = new ArrayList<>();
 		if (isProtein) {
-			cmd = "cd-hit";
+			lsCmd.add("cd-hit");
 		} else {
-			cmd = "cd-hit-est";
+			lsCmd.add("cd-hit-est");
 		}
-		cmd = cmd + getBigData() + getInFileName() + getMemoryUse() + getOutFileNameStr() + getThreshold() + getTreadNum() + isAccurate();
-		CmdOperate cmdOperate = new CmdOperate(cmd, "cd-hit");
+		ArrayOperate.addArrayToList(lsCmd, getBigData());
+		ArrayOperate.addArrayToList(lsCmd, getInFileName());
+		ArrayOperate.addArrayToList(lsCmd, getMemoryUse());
+		ArrayOperate.addArrayToList(lsCmd, getOutFileNameStr());
+		ArrayOperate.addArrayToList(lsCmd, getThreshold());
+		ArrayOperate.addArrayToList(lsCmd, getTreadNum());
+		ArrayOperate.addArrayToList(lsCmd, isAccurate());
+		
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		lsCluster.clear();
 	}

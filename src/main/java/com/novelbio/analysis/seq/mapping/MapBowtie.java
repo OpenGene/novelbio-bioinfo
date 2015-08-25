@@ -258,7 +258,9 @@ public class MapBowtie extends MapDNA {
 		if (softWare == SoftWare.bowtie) {
 			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix(chrFile) + ".3.ebwt");
 		} else if (softWare == SoftWare.bowtie2) {
-			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix(chrFile) + ".3.bt2");
+			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix(chrFile) + ".3.bt2") 
+					|| FileOperate.isFileExist(getChrNameWithoutSuffix(chrFile) + ".3.bt2l");
+
 		}
 		return isIndexExist;
 	}

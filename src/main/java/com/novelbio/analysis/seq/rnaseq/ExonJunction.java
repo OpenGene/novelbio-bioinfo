@@ -241,7 +241,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	//TODO 默认设置为false
 	boolean isLessMemory = false;
 	boolean isReconstructIso = false;
-		
+	
 	/**
 	 * 读取区域，调试用。设定之后就只会读取这个区域的reads
 	 */
@@ -254,12 +254,29 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 是否仅使用 unique mapped reads 来做分析 */
 	boolean isUseUniqueMappedReads = false;
 	
+	int juncAllReadsNum = 25;
+	int juncSampleReadsNum = 10;
+	/** pvalue超过这个值就不进行fdr计算 */
+	double fdrCutoff = 0.99;
+	
 	public ExonJunction() {
 //		List<Align> lsAligns = new ArrayList<>();
 //		lsAligns.add(new Align("chr1:145663570-145864207"));
 //		setLsReadRegion(lsAligns);
 	}
 	
+	/** 设定junction数量，小于该数量的不会进行分析
+	 * 
+	 * @param juncAllReadsNum 所有样本的junction数量必须大于该值，否则不进行计算，默认25
+	 * @param juncSampleReadsNum 单个样本的junction数量必须大于该值，否则不进行计算，默认10
+	 */
+	public void setJuncReadsNum(int juncAllReadsNum, int juncSampleReadsNum) {
+	    this.juncAllReadsNum = juncAllReadsNum;
+	    this.juncSampleReadsNum = juncSampleReadsNum;
+    }
+	public void setFdrCutoff(double fdrCutoff) {
+	    this.fdrCutoff = fdrCutoff;
+    }
 	/**
 	 * pvalue的计算是合并exon表达pvalue和junction pvalue 
 	 * junction的pvalue所占的比重
@@ -597,6 +614,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 
 				ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
+				exonSplicingTest.setJuncReadsNum(juncAllReadsNum, juncSampleReadsNum);
 				exonSplicingTest.setSetIsoName_No_Reconstruct(setIsoName_No_Reconstruct);
 				exonSplicingTest.setPvalueJunctionProp(pvalueJunctionProp);
 				exonSplicingTest.setCombine(isCombine);
@@ -747,19 +765,27 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			setRunInfo(guiAnnoInfo);
 		}
 		
+		//去除相同位点，仅选择pvalue小的那一个
 		Map<String, ExonSplicingTest> mapKey2SpliceTest = new HashMap<>();
 		for (ExonSplicingTest exonSplicingTest : lsResult) {
-			String key = exonSplicingTest.getSpliceSite();
+			String key = exonSplicingTest.getSpliceSite().trim();
 			ExonSplicingTest testOld = mapKey2SpliceTest.get(key);
 			if (testOld != null) {
-				 int geneLenOld = testOld.getExonCluster().getParentGene().getLongestSplitMrna().getLenExon(0);
-				 int geneLen = exonSplicingTest.getExonCluster().getParentGene().getLongestSplitMrna().getLenExon(0);
-				 if (geneLen > geneLenOld) {
-					 continue;
+				if (testOld.getPvalue() < exonSplicingTest.getPvalue()) {
+					continue;
                 }
+				if (testOld.getPvalue() == exonSplicingTest.getPvalue()) {
+					 int geneLenOld = testOld.getExonCluster().getParentGene().getLongestSplitMrna().getLenExon(0);
+					 int geneLen = exonSplicingTest.getExonCluster().getParentGene().getLongestSplitMrna().getLenExon(0);
+					 if (geneLenOld >= geneLen) {
+						 continue;
+	                }
+                }
+		
             }
 			mapKey2SpliceTest.put(key, exonSplicingTest);
         }
+		
 		lsResult = new ArrayList<>(mapKey2SpliceTest.values());
 		
 		sortLsExonTest_Use_Pvalue(lsResult);
@@ -801,7 +827,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void sortLsExonTest_Use_Pvalue(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
-		ExonSplicingTest.sortAndFdr(lsExonSplicingTest);
+		ExonSplicingTest.sortAndFdr(lsExonSplicingTest, fdrCutoff);
 	}
 	
 	/**

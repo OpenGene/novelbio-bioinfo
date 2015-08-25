@@ -118,6 +118,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 			if (isOutputResult) {
 				fqWrite[0].fastQwrite.setFinishedRead(false);
 				Thread thread = new Thread(fqWrite[0].fastQwrite);
+				thread.setDaemon(true);
 				thread.start();
 			}
 

@@ -1,14 +1,17 @@
 package com.novelbio.analysis.seq.resequencing;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 
 public class MuTect {
 	public static void main(String[] args) {
@@ -42,7 +45,7 @@ public class MuTect {
 	 */
 	String referenceSequence;
 	/**
-	 * 不明
+	 * cosmic数据库，应该是vcf格式
 	 */
 	String cosmic;
 	
@@ -70,11 +73,11 @@ public class MuTect {
 	/**
 	 * 参考基因组
 	 */
-	private String getReferenceSequence() {
+	private String[] getReferenceSequence() {
 		if (referenceSequence == null) {
-			return "";
+			return null;
 		}
-		return " --reference_sequence " +  referenceSequence;
+		return new String[]{"--reference_sequence", referenceSequence};
 	}
 	/**
 	 * 参考基因组
@@ -82,20 +85,23 @@ public class MuTect {
 	public void setReferenceSequence(String referenceSequence) {
 		this.referenceSequence = referenceSequence;
 	}
-	private String getCosmic() {
+	private String[] getCosmic() {
 		if (cosmic == null || cosmic.equals("")) {
-			return "";
+			return null;
 		}
-		return "--cosmic " + cosmic;
+		return new String[]{"--cosmic", cosmic};
 	}
+	
+	/** cosmic数据库，应该是vcf格式 */
 	public void setCosmic(String cosmic) {
 		this.cosmic = cosmic;
 	}
-	private String getDbsnp() {
+	
+	private String[] getDbsnp() {
 		if (dbsnp == null || dbsnp.equals("")) {
-			return "";
+			return null;
 		}
-		return "--dbsnp " + dbsnp;
+		return new String[]{"--dbsnp", dbsnp};
 	}
 	public void setDbsnp(String dbsnp) {
 		this.dbsnp = dbsnp;
@@ -125,8 +131,8 @@ public class MuTect {
 	/**
 	 * 固定是MuTect
 	 */
-	private String getAnalysisType() {
-		return " --analysis_type " + analysisType;
+	private String[] getAnalysisType() {
+		return new String[]{"--analysis_type", analysisType};
 	}
 	
 	/**
@@ -139,21 +145,21 @@ public class MuTect {
 	/**
 	 * 获得正常组的bam文件
 	 */
-	private String getInputNormalFile() {
+	private String[] getInputNormalFile() {
 		if (inputNormalFile == null) {
-			return "";
+			return null;
 		}
-		return"--input_file:normal " +  inputNormalFile;
+		return new String[]{"--input_file:normal", inputNormalFile};
 	}
 
 	/**
 	 * 输入疾病bam文件
 	 */
-	private String getInputTumorFile() {
+	private String[] getInputTumorFile() {
 		if (inputTumorFile == null) {
-			return "";
+			return null;
 		}
-		return "--input_file:tumor " + inputTumorFile;
+		return new String[]{"--input_file:tumor", inputTumorFile};
 	}
 	/**
 	 * 输入疾病文件
@@ -164,8 +170,8 @@ public class MuTect {
 	/**
 	 * 输出结果2
 	 */
-	private String getOutFile() {
-		return "--out " + outFile;
+	private String[] getOutFile() {
+		return new String[]{"--out", outFile};
 	}
 	/**
 	 * 输出结果
@@ -176,11 +182,11 @@ public class MuTect {
 	/**
 	 * 输出结果2
 	 */
-	private String getCoverageFile() {
+	private String[] getCoverageFile() {
 		if (coverageFile == null || coverageFile.equals("")) {
-			return "";
+			return null;
 		}
-		return "--coverage_file " + coverageFile;
+		return new String[]{"--coverage_file", coverageFile};
 	}
 	/**
 	 * 输出结果2
@@ -216,11 +222,14 @@ public class MuTect {
 	 * 染色体信息
 	 * @return
 	 */
-	private String getIntervals() {
+	private String[] getIntervals() {
 		if (intervals == null) {
 			intervals = getIntervalsFromChr();
 		}
-		return "--intervals " + CmdOperate.addQuot(intervals);
+		if (StringOperate.isRealNull(intervals)) {
+			return null;
+        }
+		return new String[]{"--intervals", intervals};
 	}
 	
 	/** 根据chrID产生的intervals */
@@ -240,10 +249,19 @@ public class MuTect {
 	 * 主运行方法
 	 */
 	public void run() {
-		String  cmdScript = "java -Xmx" + getJvmRunMemory() + " -jar " + getJarPathAndName() + " " + getAnalysisType() + " "
-											 + getCosmic() + " " + getDbsnp() + " "  + getInputNormalFile() + " " + getInputTumorFile() + " " + getIntervals() + " "
-											 + getReferenceSequence() + " " + getOutFile() + " " +getCoverageFile();
-		CmdOperate cmdOperate = new CmdOperate(cmdScript, "muTect");
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("java"); lsCmd.add("-Xmx" + getJvmRunMemory());
+		lsCmd.add("-jar"); lsCmd.add(getJarPathAndName());
+		ArrayOperate.addArrayToList(lsCmd, getAnalysisType());
+		ArrayOperate.addArrayToList(lsCmd, getCosmic());
+		ArrayOperate.addArrayToList(lsCmd, getDbsnp());
+		ArrayOperate.addArrayToList(lsCmd, getInputNormalFile());
+		ArrayOperate.addArrayToList(lsCmd, getInputTumorFile());
+		ArrayOperate.addArrayToList(lsCmd, getIntervals());
+		ArrayOperate.addArrayToList(lsCmd, getReferenceSequence());
+		ArrayOperate.addArrayToList(lsCmd, getOutFile());
+		ArrayOperate.addArrayToList(lsCmd, getCoverageFile());
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 	}
 	

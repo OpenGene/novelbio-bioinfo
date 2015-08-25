@@ -131,9 +131,11 @@ public class AffyNormalization implements IntCmdSoft {
 		clean();
 	}
 	protected void Rrunning(String cmdName) {
-		String cmd = PathDetail.getRscriptWithSpace() + outScript.replace("\\", "/");
-		CmdOperate cmdOperate = new CmdOperate(cmd);
-		cmdOperate.run();
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(PathDetail.getRscript());
+		lsCmd.add(outScript.replace("\\", "/"));
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.runWithExp();
 	}
 	
 	public static HashMap<String, Integer> getMapNormStr2ID() {

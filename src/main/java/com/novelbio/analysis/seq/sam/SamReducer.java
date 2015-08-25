@@ -90,6 +90,7 @@ public class SamReducer {
 					samHeadCreater.addReadGroup(content);
 				} else if (!content.startsWith("@")) {
 					SAMFileHeader header = samHeadCreater.generateHeader();
+					start = true;
 					setHeader(header);
 					initial();
 					addSamRecordTxt(content);
@@ -111,7 +112,7 @@ public class SamReducer {
 		} else {
 			samFile = new SamFile(getTmpFileName(), header);
 		}
-		start = true;
+	
 	}
 	
 	private String getTmpFileName() {

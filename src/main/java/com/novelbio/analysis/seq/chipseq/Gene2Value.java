@@ -165,7 +165,7 @@ public class Gene2Value {
 			return null;
 		}
 		
-		if (!sucess || regionInfo.getDouble() == null) {
+		if (!sucess || regionInfo.getDouble().length == 0) {
 			return null;
 		}
 		return regionInfo;

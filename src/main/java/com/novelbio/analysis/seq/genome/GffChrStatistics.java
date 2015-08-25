@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genome;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -361,7 +362,14 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 	public ArrayList<String[]> getStatisticsResultWithBG() {
 		GffChrStatistics gffChrStatistics = getStatisticsBackGround(gffChrAbs.getGffHashGene(), tssRegion, tesRegion);
 		long allLen = 0;
-		for (long chrLen : gffChrAbs.getSeqHash().getMapChrLength().values()) {
+		Map<String, Long> mapChrId2Len = null;
+		if (gffChrAbs.getSeqHash() == null) {
+			//这是只输入了gtf文件，从gtf文件中获取染色体的长度
+			mapChrId2Len = gffChrAbs.getGffHashGene().getChrID2LengthForRNAseq();
+		} else {
+			mapChrId2Len = gffChrAbs.getSeqHash().getMapChrLength();
+		}
+		for (long chrLen : mapChrId2Len.values()) {
 			allLen += chrLen;
 		}
 		long allNum = (long) (intraGenic + interGenic);

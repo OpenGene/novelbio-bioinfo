@@ -1,5 +1,8 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.cmd.CmdOperate;
@@ -23,7 +26,7 @@ private static final Logger logger = Logger.getLogger(BcfTools.class);
 	
 	public boolean snpCalling() {
 		try {
-			CmdOperate cmdOperate = new CmdOperate(getCmd(), "bcfCallSnp");
+			CmdOperate cmdOperate = new CmdOperate(getCmd());
 			cmdOperate.run();
 			if (cmdOperate.isFinishedNormal()) {
 				return true;
@@ -34,10 +37,12 @@ private static final Logger logger = Logger.getLogger(BcfTools.class);
 		return false;
 	}
 	
-	private String getCmd() {
-		String cmd = "bcftools view -Ncvg ";
-		cmd = cmd + CmdOperate.addQuot(inputFile) + " > " + CmdOperate.addQuot(outputFile);
-		return cmd;
+	private List<String> getCmd() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add("bcftools"); lsCmd.add("view");
+		lsCmd.add("-Ncvg"); lsCmd.add(inputFile);
+		lsCmd.add(">"); lsCmd.add(outputFile);
+		return lsCmd;
 	}
 	
 }

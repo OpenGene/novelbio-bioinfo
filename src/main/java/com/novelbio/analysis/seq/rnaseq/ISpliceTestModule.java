@@ -28,6 +28,13 @@ public interface ISpliceTestModule {
 	
 	public double calculatePvalue();
 	
+	/**
+	 * 设定junction数量，小于该数量的不会进行分析
+	 * @param juncAllReadsNum 所有样本的junction数量必须大于该值，否则不进行计算，默认25
+	 * @param juncSampleReadsNum 单个样本的junction数量必须大于该值，否则不进行计算，默认10
+	 */
+	public void setJuncReadsNum(int juncAllReadsNum, int juncSampleReadsNum);
+	
 	/** 目前设置为：exp设定为50，junction设定为200 */
 	public void setNormalizedNum(int normalizedNum);
 	
@@ -62,15 +69,15 @@ public interface ISpliceTestModule {
 }
 
 class SpliceTestRepeat implements ISpliceTestModule {
-	/** 实验组和对照组的junction reads数量加起来小于这个数，就返回1 */
-	static int junctionReadsMinNum = 10;
-	
 	/** 将reads的数量扩大5倍，这样可以获得更多的差异 */
 	static int foldbig = 2;
 	/** 将reads的数量扩大3倍，这样可以获得更多的差异 */
 	static int foldMid = 2;
 	/** 如果reads数量过少，可以考虑扩大3倍 */
 	static int foldsmall = 2;
+	
+	int juncAllReadsNum = 25;
+	int juncSampleReadsNum = 10;
 	
 	/** 如果count数超过该值，就标准化 */
 	int normalizedNum = 400;
@@ -88,6 +95,16 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	 */
 	List<List<Double>> lsCtrl2LsValue;
 	ArrayListMultimap<String, Double> mapCtrl2LsValue;
+	
+	/** 设定junction数量，小于该数量的不会进行分析
+	 * 
+	 * @param juncAllReadsNum 所有样本的junction数量必须大于该值，否则不进行计算，默认25
+	 * @param juncSampleReadsNum 单个样本的junction数量必须大于该值，否则不进行计算，默认10
+	 */
+	public void setJuncReadsNum(int juncAllReadsNum, int juncSampleReadsNum) {
+	    this.juncAllReadsNum = juncAllReadsNum;
+	    this.juncSampleReadsNum = juncSampleReadsNum;
+    }
 	
 	@Override
 	public void setNormalizedNum(int normalizedNum) {
@@ -192,7 +209,7 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	public double calculatePvalue() {
 		int[] cond1 = combReadsNumInt(mapTreat2LsValue);
 		int[] cond2 = combReadsNumInt(mapCtrl2LsValue);
-		if (!filter(cond1, cond2)) {
+		if (!filter(cond1, cond2, juncAllReadsNum, juncSampleReadsNum)) {
 			return 1.0;
 		}
 
@@ -343,36 +360,39 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	}
 
 	
-	/** 某些情况不适合做分析，就过滤掉<br>
+	/**
+	 *  某些情况不适合做分析，就过滤掉<br>
 	 * 譬如：遇到类似 0:5 0:50<br>
 	 * 和<br>
 	 * 2：3：50<br>  4：2：50<br>
 	 * 以及总reads过少的情况，就要删除不进行分析<br>
+	 * 
+	 * @param cond1
+	 * @param cond2
+	 * @param juncAllReadsSumMin
+	 * @param juncReadsSampleMin
+	 * @return
 	 */
-	protected static boolean filter(int[] cond1, int[] cond2) {
+	protected static boolean filter(int[] cond1, int[] cond2, int juncAllReadsSumMin, int juncReadsSampleMin) {
 		//遇到类似 0:5 0:50
 		//2：3：50  4：2：50
 		//等就要删除了
 		int allReadsNum = MathComput.sum(cond1) + MathComput.sum(cond2);
 		int readsNumLess = 0;
 		for (int i = 0; i < cond1.length; i++) {
-			try {
-				if (cond1[i] <= allReadsNum/20 && cond2[i] <= allReadsNum/20) {
-					readsNumLess++;
-				}
-			} catch (Exception e) {
-				if (cond1[i] <= allReadsNum/20 && cond2[i] <= allReadsNum/20) {
-					readsNumLess++;
-				}
+			if (cond1[i] <= allReadsNum/20 && cond2[i] <= allReadsNum/20) {
+				readsNumLess++;
 			}
-		
 		}
 		if (cond1.length - readsNumLess <= 1) {
 			return false;
 		}
 		
+		if (MathComput.sum(cond1) < juncReadsSampleMin || MathComput.sum(cond2) < juncReadsSampleMin) {
+			return false;
+        }
 		//总reads数太少也过滤
-		if (MathComput.sum(cond1) + MathComput.sum(cond1) < junctionReadsMinNum) {
+		if (allReadsNum < juncAllReadsSumMin) {
 			return false;
 		}
 		return true;
@@ -395,6 +415,19 @@ class SpliceTestCombine implements ISpliceTestModule {
 	/** 是否为fisher检验，false表示选择卡方检验 */
 	boolean isFisher = false;
 	
+	int juncAllReadsNum = 25;
+	int juncSampleReadsNum = 10;
+	
+	/** 设定junction数量，小于该数量的不会进行分析
+	 * 
+	 * @param juncAllReadsNum 所有样本的junction数量必须大于该值，否则不进行计算，默认25
+	 * @param juncSampleReadsNum 单个样本的junction数量必须大于该值，否则不进行计算，默认10
+	 */
+	public void setJuncReadsNum(int juncAllReadsNum, int juncSampleReadsNum) {
+	    this.juncAllReadsNum = juncAllReadsNum;
+	    this.juncSampleReadsNum = juncSampleReadsNum;
+    }
+	
 	/** 目前设置为：exp设定为50，junction设定为200 */
 	public void setNormalizedNum(int normalizedNum) {
 		this.normalizedNum = normalizedNum;
@@ -409,7 +442,7 @@ class SpliceTestCombine implements ISpliceTestModule {
 	public double calculatePvalue() {
 		int[] cond1 = combReadsNumInt(mapTreat2LsValue);
 		int[] cond2 = combReadsNumInt(mapCtrl2LsValue);
-		if (!SpliceTestRepeat.filter(cond1, cond2)) {
+		if (!SpliceTestRepeat.filter(cond1, cond2, juncAllReadsNum, juncSampleReadsNum)) {
 			return 1.0;
 		}
 

@@ -20,12 +20,10 @@
 package uk.ac.babraham.FastQC.Sequence.Contaminant;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Vector;
-
-import org.springframework.core.io.ClassPathResource;
 
 public class ContaminentFinder {
 
@@ -60,10 +58,9 @@ public class ContaminentFinder {
 		Vector<Contaminant>c = new Vector<Contaminant>();
 		
 		try {
-			ClassPathResource resource = new ClassPathResource("contaminant_list.txt", ContaminentFinder.class);
-			File contaminantFile = resource.getFile();
-			
-			BufferedReader br = new BufferedReader(new FileReader(contaminantFile));
+			String configPath = "contaminant_list.txt";
+			InputStream in = ContaminentFinder.class.getClassLoader().getResourceAsStream(configPath);
+			BufferedReader br = new BufferedReader(new InputStreamReader(in));
 
 			String line;
 			while ((line = br.readLine())!= null){

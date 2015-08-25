@@ -13,7 +13,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 
-/** sam文件添加非unique mapping的标签 */
+/** sam文件添加非unique mapping的标签，待添加的文件不能被排序 */
 public class SamAddMultiFlag {
 	private static final Logger logger = Logger.getLogger(SamAddMultiFlag.class);
 	

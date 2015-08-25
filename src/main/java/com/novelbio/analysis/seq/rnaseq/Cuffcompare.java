@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -49,47 +50,46 @@ public class Cuffcompare {
 		this.outPath = outPath;
 	}
 	
-	private String getOutPath() {
-		return " -o " + outPath;
+	private String[] getOutPath() {
+		return new String[]{"-o", outPath};
 	}
-	public String getSeqFasta() {
+	public String[] getSeqFasta() {
 		if (FileOperate.isFileExist(seqFasta)) {
-			return " -s " + CmdOperate.addQuot(seqFasta);
+			return new String[]{"-s", seqFasta};
 		}
-		return " ";
+		return null;
 	}
 	
 	/** 只有gtf文件，就是想生成cuffdiff的输入文件 */
-	private String getRefGtfOnly() {
+	private String[] getRefGtfOnly() {
 		clearFile = true;
-		return " -CG -r " + CmdOperate.addQuot(refGtfFile) + " " + CmdOperate.addQuot(refGtfFile);
+		return new String[]{"-CG", "-r", refGtfFile, refGtfFile};
 	}
-	private String getRefGtf() {
+	private String[] getRefGtf() {
 		if (FileOperate.isFileExistAndBigThanSize(refGtfFile, 1)) {
-			return " -r " + CmdOperate.addQuot(refGtfFile) + " ";
+			return new String[]{"-r", refGtfFile};
 		}
-		return " ";
-	}
-	
-	private String getLsInputGtf() {
-		String out = CmdOperate.addQuot(lsInputGtfFile.get(0));
-		for (int i = 1; i < lsInputGtfFile.size(); i++) {
-			out = out + " " + CmdOperate.addQuot(lsInputGtfFile.get(i));
-		}
-		return " " + out;
+		return null;
 	}
 	
 	/**
 	 * 获得修改的gtf文件名
 	 */
 	public String runCompareGtf() {
-		String cmd = ExePath + "cuffcompare " + getSeqFasta() + getOutPath();
+		List<String> lsCmd = new ArrayList<>();
+		
+		lsCmd.add(ExePath + "cuffcompare");
+		ArrayOperate.addArrayToList(lsCmd, getSeqFasta());
+		ArrayOperate.addArrayToList(lsCmd, getOutPath());
+		
+		
 		if (lsInputGtfFile.size() == 0) {
-			cmd = cmd + getRefGtfOnly();
+			ArrayOperate.addArrayToList(lsCmd, getRefGtfOnly());
 		} else {
-			cmd = cmd + getRefGtf() + getLsInputGtf();
+			ArrayOperate.addArrayToList(lsCmd, getRefGtf());
+			lsCmd.addAll(lsInputGtfFile);
 		}
-		CmdOperate cmdOperate = new CmdOperate(cmd, "cuffcompare");
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
 		if (clearFile) {
 			clearUnknownFile();
