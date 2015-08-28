@@ -8,7 +8,7 @@ import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 /** 所有与输入文件无关的参数 */
-public class BwaMemParam {
+public class MapParamBwaMem {
 	private String exePath;
 	
 	/**指定线程数**/
@@ -240,7 +240,7 @@ public class BwaMemParam {
 		return new String[]{"-U" ,unpairPen + "" };
 	}
 	
-	/** 设定读入的第一个fq文件是交错的配对数据 */
+	/** 设定读入的fq文件是交错的配对数据 */
 	public void setStaggeredPairingFQ(boolean staggeredPairingFQ) {
 		this.staggeredPairingFQ = staggeredPairingFQ;
 	}

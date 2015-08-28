@@ -15,7 +15,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 public class SamHeadCreater {
 	SAMFileHeader samFileHeader = new SAMFileHeader();
 	Set<String> setProgramId = new HashSet<>();
-	
+	Set<String> setRG = new HashSet<>();
 	public void setRefSeq(String refseq) {
 		if (!refseq.endsWith(".fai")) {
 			refseq = refseq + ".fai";
@@ -44,6 +44,11 @@ public class SamHeadCreater {
 		if (!rgLine.startsWith("@RG")) {
 			throw new ExceptionSamError("attrLine error, no @RG flag: " + rgLine);
 		}
+		rgLine = rgLine.trim();
+		if (setRG.contains(rgLine)) {
+			return;
+        }
+		setRG.add(rgLine);
 		String[] ss = rgLine.split("\t");
 		SAMReadGroupRecord samReadGroupRecord = new SAMReadGroupRecord(getId(ss));
 		addAttr(samReadGroupRecord, ss);

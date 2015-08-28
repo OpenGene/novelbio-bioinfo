@@ -747,8 +747,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 
 		ArrayList<ExonSplicingTest> lsResult = new ArrayList<ExonSplicingTest>();
 		
-		for (ArrayList<ExonSplicingTest> lsIsoExonSplicingTests : lsSplicingTests) {
-			doTest_And_StatisticSplicingEvent(lsIsoExonSplicingTests);
+		for (List<ExonSplicingTest> lsIsoExonSplicingTests : lsSplicingTests) {
+			lsIsoExonSplicingTests = doTest_And_StatisticSplicingEvent(lsIsoExonSplicingTests);
 			if (oneGeneOneSpliceEvent) {
 				lsResult.add(lsIsoExonSplicingTests.get(0));
 			} else {
@@ -814,19 +814,28 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * @param lsExonClusters
 	 * @return ls ExonSplicingTest -- ls 每个时期 -- 所涉及到的exon的检验结果，按照pvalue从小到大排序
 	 */
-	private void doTest_And_StatisticSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
+	private List<ExonSplicingTest> doTest_And_StatisticSplicingEvent(List<ExonSplicingTest> lsExonSplicingTest) {
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
 			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
 				logger.debug("");
 			}
 			exonSplicingTest.setCompareCondition(condition1, condition2);
 		}
+		List<ExonSplicingTest> lsFilter = new ArrayList<>();
+		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
+			exonSplicingTest.getAndCalculatePvalue();
+			if (exonSplicingTest.getSplicingType() == SplicingAlternativeType.unknown) {
+				continue;
+            }
+			lsFilter.add(exonSplicingTest);
+        }
 		//按照pvalue从小到大排序
-		sortLsExonTest_Use_Pvalue(lsExonSplicingTest);
-		statisticsSplicingEvent(lsExonSplicingTest);
+		sortLsExonTest_Use_Pvalue(lsFilter);
+		statisticsSplicingEvent(lsFilter);
+		return lsFilter;
 	}
 	
-	private void sortLsExonTest_Use_Pvalue(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
+	private void sortLsExonTest_Use_Pvalue(List<ExonSplicingTest> lsExonSplicingTest) {
 		ExonSplicingTest.sortAndFdr(lsExonSplicingTest, fdrCutoff);
 	}
 	
@@ -834,7 +843,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * 统计可变剪接事件
 	 * @param lsExonSplicingTest
 	 */
-	private void statisticsSplicingEvent(ArrayList<ExonSplicingTest> lsExonSplicingTest) {
+	private void statisticsSplicingEvent(List<ExonSplicingTest> lsExonSplicingTest) {
 		SplicingAlternativeType exonSplicingType = null;
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTest) {
 			exonSplicingType = exonSplicingTest.getSplicingType();
