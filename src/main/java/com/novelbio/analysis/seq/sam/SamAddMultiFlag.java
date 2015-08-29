@@ -28,6 +28,8 @@ public class SamAddMultiFlag {
 	Map<String, List<SamRecord>> mapMateInfo2pairReads = new LinkedHashMap<>();
 	long i = 0;
 	
+	String lastSeqName = "";
+	
 	/** 是否为双端 */
 	public void setPairend(boolean isPairend) {
 		this.isPairend = isPairend;
@@ -42,7 +44,7 @@ public class SamAddMultiFlag {
 				logger.info("read lines: " + i);
 				logger.info("mapMateInfo2pairReads.size: " + mapMateInfo2pairReads.size());
 			}
-			if ((!isPairend) || (isPairend && samRecord.isFirstRead())
+			if ((!isPairend) || (isPairend && !lastSeqName.equals(samRecord.getName()))
 					) {
 				String samName = samRecord.getName();
 				if (!setTmp.contains(samName)) {
@@ -54,6 +56,7 @@ public class SamAddMultiFlag {
 				setTmp.add(samRecord.getName());
 			}
 			addSamRecordToMap(isPairend, samRecord, mapMateInfo2pairReads);
+			lastSeqName = samRecord.getName();
 		} catch (Exception e) {
 			logger.error(e);
 		}
