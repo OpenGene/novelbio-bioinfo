@@ -105,7 +105,7 @@ public class BlastNBC implements IntCmdSoft {
 	}
 	/** 待比对的序列，和{@link #setQueryFastaFile(String)} 两者取一 */
 	public void setQueryFasta(SeqFasta seqFasta) {
-		this.queryFasta = PathDetail.getTmpPath() + "seqToBlast" + DateUtil.getDateAndRandom() + ".fa";
+		this.queryFasta = PathDetail.getTmpPathWithSep() + "seqToBlast" + DateUtil.getDateAndRandom() + ".fa";
 		this.deleteQueryFasta = true;
 		TxtReadandWrite txtWrite = new TxtReadandWrite(queryFasta, true);
 		txtWrite.writefileln(seqFasta.toStringNRfasta());

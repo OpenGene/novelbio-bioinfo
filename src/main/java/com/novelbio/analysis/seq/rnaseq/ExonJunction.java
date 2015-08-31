@@ -57,7 +57,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static long test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("16:61456072-75456121"));
+		lsAligns.add(new Align("1:218141123-238141288"));
 //		lsAligns.add(new Align("1:7205126-27246005"));
 
 		DateUtil dateUtil = new DateUtil();
@@ -78,7 +78,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("WT", parentPath + "WT.accepted.bam");
 		exonJunction.setCompareGroups("KD", "WT");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
-		exonJunction.setResultFile(parentPath + "result");
+		exonJunction.setResultFile(parentPath + "result_single");
 
 		exonJunction.run();
 		exonJunction = null;
@@ -188,7 +188,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "PALB2";
+	private static String stopGeneName = "GUK1";
 	
 	GffHashGene gffHashGene = null;
 	/** 没有重建转录本的老iso的名字，用于后面计算可变剪接所在exon number的 */
@@ -546,9 +546,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				logger.debug("stop");
 			}
 			logger.info(gffDetailGene.getNameSingle());
-			if (gffDetailGene.getNameSingle().equals("NEB") || gffDetailGene.getNameSingle().equals("TTN")) {
-				logger.debug("stop");
-            }
 			reconstructIso(generateNewIso, gffDetailGene);
 			gffDetailGene.removeDupliIso();
 			

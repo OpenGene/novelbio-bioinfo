@@ -55,7 +55,7 @@ public class SamReducer {
 		String outFileName = cliParser.getOptionValue("outFileName");
 		final SamReducer samReducer = new SamReducer();
 		
-		if (!StringOperate.isRealNull(outFileName)) {
+		if (StringOperate.isRealNull(outFileName)) {
 			samReducer.setOutStream(System.out);
 		} else {
 			samReducer.setOutFileName(outFileName);

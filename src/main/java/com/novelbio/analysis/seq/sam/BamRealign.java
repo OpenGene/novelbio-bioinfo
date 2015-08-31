@@ -127,7 +127,7 @@ public class BamRealign implements IntCmdSoft {
 	}
 
 	private String[] getTmpPath() {
-		return new String[]{"-Djava.io.tmpdir=" + PathDetail.getTmpPath()};
+		return new String[]{"-Djava.io.tmpdir=" + PathDetail.getTmpPathWithOutSep()};
 	}
 	private String[] getInIntervalFile(String outFile) {
 		return new String[]{"-targetIntervals", getOutInterVals(outFile)};

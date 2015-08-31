@@ -85,7 +85,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 */
 	boolean isCombine = true;
 	
-	private static final String debug = "PDZK1";
+	private static final String debug = "GUK1";
 	
 	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
@@ -180,9 +180,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void setSpliceType2Value() {
 		if (exonCluster.getParentGene().getName().contains(debug)) {
 			logger.debug("stop");
-			if (exonCluster.getStartAbs() == 145763570) {
-				logger.debug("stop");
-			}
 		}
 		
 		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {

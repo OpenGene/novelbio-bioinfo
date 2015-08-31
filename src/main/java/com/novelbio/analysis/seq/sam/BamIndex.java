@@ -3,21 +3,16 @@ package com.novelbio.analysis.seq.sam;
 import htsjdk.samtools.BAMIndexer;
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMFileReader;
-import htsjdk.samtools.SAMRecord;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.cmd.ExceptionCmd;
-import com.novelbio.base.fileOperate.FileHadoop;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class BamIndex {
@@ -45,16 +40,18 @@ public class BamIndex {
 		if (FileOperate.isFileExistAndBigThanSize(samFile.getFileName() + ".bai", 1000)) {
 			return samFile.getFileName() + ".bai";
 		}
+		String tmpIndex = PathDetail.getTmpPathWithSep() + 
+				DateUtil.getDateAndRandom() + FileOperate.getFileName(samFile.getFileName()) + ".bai";
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(ExePath + "samtools");
 		lsCmd.add("index");
 		lsCmd.add(samFile.getFileName());
+		lsCmd.add(tmpIndex);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("samtools index error:\n" + cmdOperate.getCmdExeStr());
-		}
-		return samFile.getFileName() + ".bai";
+		cmdOperate.runWithExp();
+		
+		FileOperate.moveFile(true, tmpIndex, samFile.getFileName() + ".bai");
+		return tmpIndex;
 	}
 	
 	/**
@@ -79,13 +76,15 @@ public class BamIndex {
         }
 
         if (!samFile.getHeader().getSortOrder().equals(SAMFileHeader.SortOrder.coordinate)) {
-            throw new SAMException("Input bam file must be sorted by coordinates");
+        	throw new SAMException("Input bam file must be sorted by coordinates");
         }
         try {
-			makeIndex(samFile.samReader, outFile);
-		} catch (Exception e) {
-			throw e;
-		}
+        	makeIndex(samFile.samReader, outFile);
+        } catch (Exception e) {
+        	FileOperate.DeleteFileFolder(FileOperate.changeFileSuffix(outFile, "_tmp", null));
+        	logger.error(e);
+        	indexC();
+        }
     }
     
     private static void makeIndex(SamReader reader, String output) {

@@ -9,7 +9,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 
 /** 所有与输入文件无关的参数 */
 public class MapParamBwaMem {
-	private String exePath;
+	private String exePath = "";
 	
 	/**指定线程数**/
 	int nThreads;

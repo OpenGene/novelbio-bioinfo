@@ -122,7 +122,7 @@ public class BamMergeJava implements BamMergeInt {
         	sortOrder = SORT_ORDER;
             mergingSamRecordIteratorAssumeSorted = presorted;
         } else {
-        	logger.info("Sorting input files using temp directory " + PathDetail.getTmpPath());
+        	logger.info("Sorting input files using temp directory " + PathDetail.getTmpPathWithSep());
         	sortOrder = SAMFileHeader.SortOrder.unsorted;
             mergingSamRecordIteratorAssumeSorted = false;
         }

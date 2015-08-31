@@ -234,7 +234,7 @@ public class MuTect {
 	
 	/** 根据chrID产生的intervals */
 	private String getIntervalsFromChr() {
-		String outFile = PathDetail.getTmpPath() + "snp_intervals" + DateUtil.getDateAndRandom() + ".list";
+		String outFile = PathDetail.getTmpPathWithSep() + "snp_intervals" + DateUtil.getDateAndRandom() + ".list";
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
 		SamFile samFile = new SamFile(inputNormalFile);
 		Map<String, Long> mapChrID2Long = samFile.getMapChrID2Length();

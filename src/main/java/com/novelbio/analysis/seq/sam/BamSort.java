@@ -37,7 +37,7 @@ public class BamSort {
 	public void setSamFile(SamFile samFile) {
 		this.samFile = samFile;
 		SAMFileWriterImpl.setDefaultMaxRecordsInRam(maxRecordsInRam);
-		PathDetail.getTmpPath();
+		PathDetail.getTmpPathWithSep();
 	}
 
 	/** 根据输入的samSequenceDictionary的顺序来重新排列samHeader中的染色体顺序，只有当选择java模式时才有作用 */

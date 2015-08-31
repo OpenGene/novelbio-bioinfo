@@ -150,7 +150,7 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		return new String[]{"REMOVE_DUPLICATES=true", "VALIDATION_STRINGENCY=LENIENT",  "AS=true" };
 	}
 	private String[] getTmpPath() {
-		return new String[]{"-Djava.io.tmpdir=" + PathDetail.getTmpPath()};
+		return new String[]{"-Djava.io.tmpdir=" + PathDetail.getTmpPathWithOutSep()};
 	}
 	/** duplicate的矩阵 */
 	private String[] getMETRICS(String outFile) {

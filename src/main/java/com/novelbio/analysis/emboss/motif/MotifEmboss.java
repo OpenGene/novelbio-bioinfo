@@ -62,7 +62,7 @@ public class MotifEmboss implements IntCmdSoft {
 			SeqFasta seqFasta = seqHash.getSeq(string);
 			colAlignmentMotif.add(seqFasta);
 		}
-		this.motifFilePath = FileOperate.addSep(PathDetail.getTmpPath()) + DateUtil.getDateAndRandom();
+		this.motifFilePath = PathDetail.getTmpPathWithSep() + DateUtil.getDateAndRandom();
 	}
 	
 	/** 输出文件路径 */
