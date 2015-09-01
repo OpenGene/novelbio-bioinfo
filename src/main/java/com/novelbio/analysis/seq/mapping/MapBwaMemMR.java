@@ -123,54 +123,15 @@ public class MapBwaMemMR {
 		}
 		
 		private void runPE(FastQ fastQ) {
-			Iterator<FastQRecord> itFqPE = fastQ.readlines().iterator();
-			//左端序列
-			FastQRecord fqLeft = new FastQRecord();fqLeft.setName("");
-			//右端序列
-			FastQRecord fqRight = null;
-			
-			int i = 0;
-			boolean isPairend = false;
-			while (itFqPE.hasNext()) {
-				FastQRecord fQRecord = itFqPE.next();
-				if (!fqLeft.getName().split(" ")[0].equals(fQRecord.getName().split(" ")[0])) {
-					fqLeft = fQRecord;
-					isPairend = false;
-					i++;
-				} else {
-					fqRight = fQRecord;
-					isPairend = true;
-					break;
+			for (FastQRecord[] fastQRecords : fastQ.readlinesInterleavedPE()) {
+				try {
+					processInStream.write((fastQRecords[0].toString() + TxtReadandWrite.ENTER_LINUX).getBytes("UTF-8"));
+					processInStream.write((fastQRecords[1].toString() + TxtReadandWrite.ENTER_LINUX).getBytes("UTF-8"));
+				} catch (Exception e) {
+					throw new ExceptionFastq(e);
 				}
-				if (i > 100) {
-					break;
-				}
-			}
-			
-			if (!isPairend) throw new ExceptionFastq("input file is not pairend");
-			
-			writePE(fqLeft, fqRight);
-
-			while (itFqPE.hasNext()) {
-				fqLeft = itFqPE.next();
-				if (itFqPE.hasNext()) {
-					fqRight = itFqPE.next();
-					writePE(fqLeft, fqRight);
-				}
-			}
+            }
 		}
-		
-		private void writePE(FastQRecord fqLeft, FastQRecord fqRight) {
-			try {
-				processInStream.write((fqLeft.toString() + TxtReadandWrite.ENTER_LINUX).getBytes("UTF-8"));
-				processInStream.write((fqRight.toString() + TxtReadandWrite.ENTER_LINUX).getBytes("UTF-8"));
-			} catch (Exception e) {
-				throw new ExceptionFastq(e);
-			
-			}
-
-		}
-		
 		
 		private void runSE(FastQ fastQ) {
 			for (FastQRecord fastQRecord : fastQ.readlines()) {

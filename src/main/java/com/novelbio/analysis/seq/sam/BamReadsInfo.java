@@ -35,7 +35,11 @@ public class BamReadsInfo {
 		species.setVersion("tigr7");
 		GffChrAbs gffHashGene = new GffChrAbs(species);
 		bamReadsInfo.setGffHashGene(gffHashGene.getGffHashGene());
-		bamReadsInfo.calculate();
+		try {
+			bamReadsInfo.calculate();
+		} catch (Exception e) {
+	        // TODO: handle exception
+        }
 		System.out.println(bamReadsInfo.getMapLibrary().toString());
 		System.out.println(bamReadsInfo.getStrandSpecific().toString());
 	}
@@ -61,7 +65,7 @@ public class BamReadsInfo {
 		this.gffHashGene = gffHashGene;
 	}
 	
-	public void calculate() {
+	public void calculate() throws ExceptionSamStrandError {
 		mapLibrary = null;
 		cisNum = 0;
 		transNum = 0;
@@ -137,7 +141,7 @@ public class BamReadsInfo {
 		}
 	}
 	
-	protected void calculateStrandSpecific() {
+	protected void calculateStrandSpecific() throws ExceptionSamStrandError {
 		int countsMax = 10000000;
 		int counts = 0;
 		int countsMapped = 0;//mapping上的reads数量
@@ -167,7 +171,7 @@ public class BamReadsInfo {
 			}
 		}
 		if (countsMapped < counts/100) {
-			throw new ExceptionSamError(samFile.getFileName() + " Mapped Rate Too Low");
+			throw new ExceptionSamStrandError(samFile.getFileName() + " Mapped Rate Too Low");
 		}
 		samFile.close();
 		logger.info("cisReadsNum/transReadsNum" + cisNum/transNum);

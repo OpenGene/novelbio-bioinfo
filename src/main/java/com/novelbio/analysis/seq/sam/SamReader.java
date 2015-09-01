@@ -400,7 +400,7 @@ class ReadSamIterable implements Iterable<SamRecord> {
 }
 
 class ReadSamIterator implements Iterator<SamRecord> {
-	private static final Logger logger = Logger.getLogger(ReadSamIterable.class);
+	private static final Logger logger = Logger.getLogger(ReadSamIterator.class);
 	boolean isReportEOF = false;
 	/** 连续50000条reads出错就报错 */
 	static int errorLinNum = 50000;

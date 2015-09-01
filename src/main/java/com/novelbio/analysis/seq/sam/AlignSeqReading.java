@@ -138,9 +138,6 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 		long num = 0;
 		for (AlignSeq alignSeqFile : lsAlignSeqs) {
 			for (AlignRecord samRecord : alignSeqFile.readLines()) {
-				if (samRecord.getName().contains("HISEQ04:211:C77RTANXX:1:1101:9467")) {
-					logger.debug("stop");
-				}
 				suspendCheck();
 				if (suspendFlag) {
 					break;

@@ -163,7 +163,7 @@ public class StatisticTestResult {
 		lsTitle.add(testType.toString() + TitleFormatNBC.Term.toString());
 		lsTitle.add("DifGene");
 		lsTitle.add("AllDifGene");
-		lsTitle.add("GeneInGOID");
+		lsTitle.add("GeneIn"+testType.toString());
 		lsTitle.add("AllGene");
 		
 		addTitle(lsTitle);

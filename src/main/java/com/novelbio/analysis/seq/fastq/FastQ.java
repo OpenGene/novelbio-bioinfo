@@ -126,6 +126,10 @@ public class FastQ {
 		return fastQRead.readlinesPE();
 	}
 	
+	public Iterable<FastQRecord[]> readlinesInterleavedPE() {
+		return fastQRead.readlinesInterleavedPE();
+	}
+	
 	public Iterable<FastQRecord> readlines() {
 		return fastQRead.readlines();
 	}

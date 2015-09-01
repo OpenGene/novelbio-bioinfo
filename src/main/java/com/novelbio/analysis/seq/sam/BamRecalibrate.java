@@ -10,6 +10,7 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.ExceptionFileInputNotExist;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -54,6 +55,8 @@ public class BamRecalibrate implements IntCmdSoft {
 		ExePath = softWareInfo.getExePathRun();
 	}
 	public void setRefSequenceFile(String refSequencFile) {
+		ExceptionFileInputNotExist.validateFile(refSequencFile, "Recalibrate cannot run without a refSequencFile");
+		
 		this.refSequenceFile = refSequencFile;
 	}
 	public void setBamFile(String bamFile) {

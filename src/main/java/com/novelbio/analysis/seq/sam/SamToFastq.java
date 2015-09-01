@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 import org.apache.log4j.Logger;
 
@@ -35,7 +35,7 @@ public class SamToFastq implements AlignmentRecorder {
 	FastQ fastQ1;
 	FastQ fastQ2;
 	
-    final Map<String, SamRecord> firstSeenMates = new HashMap<String, SamRecord>();
+    final Map<String, SamRecord> firstSeenMates = new WeakHashMap<String, SamRecord>(500);
     
 	/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字，默认是true */
     public SamToFastq() {}
@@ -179,7 +179,11 @@ public class SamToFastq implements AlignmentRecorder {
 				try {
 					assertPairedMates(firstRecord, samRecord);
 				} catch (Exception e) {
-					logger.error("error");
+					//同一条reads比对两次就会有这个结果，没关系继续放入hashmap
+					firstSeenMates.put(currentReadName, samRecord);
+					if (firstSeenMates.size() > 100000) {
+						firstSeenMates.clear();
+                    }
 					return;
 				}
 				
@@ -220,10 +224,13 @@ public class SamToFastq implements AlignmentRecorder {
 		if (isPairend) {
 			fastQ2.close();
 		}
+		logger.info("if need change file name "+ isGenerateTmpFile);
 		if (isGenerateTmpFile) {
+			logger.info("change file name from "+ outFileNameTmp[0] + " to " + outFileName[0]);
 			FileOperate.moveFile(true, outFileNameTmp[0], outFileName[0]);
 			fastQ1 = new FastQ(outFileName[0]);
 			if (isPairend) {
+				logger.info("change file name from "+ outFileNameTmp[1] + " to " + outFileName[1]);
 				FileOperate.moveFile(true, outFileNameTmp[1], outFileName[1]);
 				fastQ2 = new FastQ(outFileName[1]);
 			}

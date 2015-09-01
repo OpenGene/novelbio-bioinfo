@@ -327,7 +327,75 @@ class FastQReader implements Closeable {
 			}
 		};
 	}
-	
+	public Iterable<FastQRecord[]> readlinesInterleavedPE() {
+		final Iterator<FastQRecord> itFqPE = readlines().iterator();
+		return new Iterable<FastQRecord[]>() {
+
+			@Override
+			public Iterator<FastQRecord[]> iterator() {
+				final int[] errorNum = new int[] { 0 };
+				return new Iterator<FastQRecord[]>() {
+					FastQRecord[] fastQRecords = getLine();
+
+					public boolean hasNext() {
+						return fastQRecords != null;
+					}
+
+					public FastQRecord[] next() {
+						FastQRecord[] retval = fastQRecords;
+						fastQRecords = getLine();
+						return retval;
+					}
+
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+
+					FastQRecord[] getLine() {
+						FastQRecord fqLeft = new FastQRecord();
+						fqLeft.setName("");
+						// 右端序列
+						FastQRecord fqRight = null;
+						int i = 0;
+						boolean isPairend = false;
+
+						if (!itFqPE.hasNext()) {
+							return null;
+						}
+
+						while (itFqPE.hasNext()) {
+							FastQRecord fQRecord = itFqPE.next();
+							if (!fqLeft.getName().split(" ")[0].equals(fQRecord.getName().split(" ")[0])) {
+								fqLeft = fQRecord;
+								isPairend = false;
+								i++;
+							} else {
+								fqRight = fQRecord;
+								isPairend = true;
+								break;
+							}
+							if (i > 10) {
+								errorNum[0]++;
+							}
+							if (i > 100 || errorNum[0] > 20) {
+								logger.error("many reads are not paired， please check the file: " + getFileName());
+								throw new ExceptionFastq("input file is not pairend");
+							}
+						}
+
+						if (!isPairend) {
+							if (!itFqPE.hasNext()) {
+								return null;
+							} else {
+								throw new ExceptionFastq("input file is not pairend");
+							}
+						}
+						return new FastQRecord[] { fqLeft, fqRight };
+					}
+				};
+			}
+		};
+	}
 	/**
 	 * 获得前1000条reads的平均长度，返回负数说明出错
 	 * @return

@@ -17,6 +17,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.BamReadsInfo;
+import com.novelbio.analysis.seq.sam.ExceptionSamStrandErrorRuntime;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -342,7 +343,11 @@ public class CufflinksGTF implements IntCmdSoft {
 			BamReadsInfo bamReadsInfo = new BamReadsInfo();
 			bamReadsInfo.setSamFile(new SamFile(bamFile));
 			bamReadsInfo.setGffHashGene(gffHashGene);
-			bamReadsInfo.calculate();
+			try {
+				bamReadsInfo.calculate();
+			} catch (Exception e) {
+				throw new ExceptionSamStrandErrorRuntime(e.getMessage() + " please choose the correct strand Type");
+			}
 			strandSpecifictype = bamReadsInfo.getStrandSpecific();
 		}
 		
