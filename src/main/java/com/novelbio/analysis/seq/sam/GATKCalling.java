@@ -76,7 +76,7 @@ public class GATKCalling implements IntCmdSoft {
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("java"); lsCmd.add("-Xmx4g"); lsCmd.add("-jar");
-		lsCmd.add(exePath + "GenomeAnalysisTK-3.2-2.jar");
+		lsCmd.add(exePath + "GenomeAnalysisTK.jar");
 		lsCmd.add("-T"); lsCmd.add("UnifiedGenotyper");
 		ArrayOperate.addArrayToList(lsCmd, getRefFilePath());
 		ArrayOperate.addArrayToList(lsCmd, getOutPutPath());
