@@ -118,6 +118,16 @@ public class SamFile implements AlignSeq {
 		}		
 	}
 	
+	/**
+	 * @param os
+	 * @param samFileHeader
+	 * @param isBam
+	 * @param preSorted 输入的文件是否经过排序
+	 */
+	public SamFile(OutputStream os, SAMFileHeader samFileHeader, boolean isBam, boolean preSorted) {
+		setSamFileNew(samFileHeader, os, isBam, preSorted);
+	}
+	
 	/** 创建新的sambam文件'
 	 * @param samBamFile
 	 * @param samFileHeader
@@ -189,7 +199,8 @@ public class SamFile implements AlignSeq {
 	/** 
 	 * 创建新的sam文件
 	 * @param samFileHeader
-	 * @param samFileCreate
+	 * @param os
+	 * @param isBam
 	 * @param preSorted 输入的文件是否经过排序
 	 */
 	private void setSamFileNew(SAMFileHeader samFileHeader, OutputStream os, boolean isBam, boolean preSorted) {

@@ -77,7 +77,7 @@ public class MapParamBwaMem {
 		return new String[]{"-t" ,nThreads + "" };
 	}
 	
-	/**输出所有找到比对的单端和不配对的双端的读长，应该是仅双端起作用，默认是false **/
+	/**输出所有找到比对的单端和不配对的双端的读长，默认是false，选择为true会出来一堆乱七八糟的东西 **/
 	public void setOutputSingleReads(boolean isOutputSingleReads) {
 		this.isOutputSingleReads = isOutputSingleReads;
 	}

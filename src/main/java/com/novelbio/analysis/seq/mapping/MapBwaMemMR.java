@@ -22,9 +22,7 @@ import com.novelbio.base.cmd.StreamIn;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
-@Component
-@Scope("prototype")
-public class MapBwaMemMR {
+public class MapBwaMemMR{
 	private static final Logger logger = Logger.getLogger(MapBwaMemMR.class);
 	boolean isPairend = false;
 	InputStream ins;

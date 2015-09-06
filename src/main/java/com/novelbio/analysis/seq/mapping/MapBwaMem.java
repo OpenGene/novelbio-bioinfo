@@ -29,7 +29,7 @@ public class MapBwaMem extends MapDNA {
 	String tmpPath;
 	CmdOperate cmdOperate;
 	
-	MapParamBwaMem bwaMemParam;
+	MapParamBwaMem bwaMemParam = new MapParamBwaMem();
 	
 	public MapBwaMem() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_mem);

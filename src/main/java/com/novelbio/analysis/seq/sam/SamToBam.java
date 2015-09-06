@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.sam;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.samtools.SAMTextHeaderCodec;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
 
@@ -12,7 +13,9 @@ import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -282,6 +285,8 @@ public class SamToBam {
 	 */
 	public static class SamToBamOutMR implements SamToBamOut {
 		OutputStream outputStream;
+		/** chrId和具体的顺序，这是方便hadoop后面排序的，因为chr2可能会排在chr11之后，所以我们用这个map来重新定义排序 */
+		Map<String, String> mapChrId2Index = new HashMap<>();
 		
 		public void setOutputStream(OutputStream outputStream) {
 			this.outputStream = outputStream;
@@ -300,6 +305,11 @@ public class SamToBam {
 		/** 不需要要设置 */
 		@Override
 		public void setSamHeader(SAMFileHeader header) {
+			int i = 0;
+			for (SAMSequenceRecord samSequenceRecord : header.getSequenceDictionary().getSequences()) {
+				i++;
+				mapChrId2Index.put(samSequenceRecord.getSequenceName(), fillBy0(i+"", 7));
+            }
 			List<String> lsHeader = getLsHeader(header);
 			for (String string : lsHeader) {
 				try {
@@ -327,7 +337,8 @@ public class SamToBam {
 		public void write(SamRecord samRecord) throws UnsupportedEncodingException, IOException {
 			String record = samRecord.toString();
 			String[] ss = record.split("\t");
-			String key = ss[2] + "_@_" + fillBy0(ss[3]) + "_@_" + ss[0];
+			String index = mapChrId2Index.get(ss[2]);
+			String key = index+ "_@_" + ss[2] + "_@_" + fillBy0(ss[3], maxLen) + "_@_" + ss[0];
 			record = key + "\t" + record;
 			boolean isMapped = samRecord.isMapped();
 			if (!isMapped && (!samRecord.getRefID().equals("*") || samRecord.getStartAbs() > 0)) {
@@ -341,14 +352,15 @@ public class SamToBam {
 		/** 因为hadoop的key是按照字符串排列的，所以会出现 1234 排在 234 的后面
 		 * 目前我想到的解决方案是将数字前面用0填充，改称 00001234 00000234 这种
 		 * @param location
+		 * @param nameLen
 		 * @return
 		 */
-		private String fillBy0(String location) {
+		private String fillBy0(String location, int nameLen) {
 			int len = location.length();
-			if (maxLen < len) {
+			if (nameLen < len) {
 				throw new ExceptionSamError("very long chromosome: " + len);
 			}
-			int num0 = maxLen - len;
+			int num0 = nameLen - len;
 			StringBuilder builder = new StringBuilder();
 			for (int i = 0; i < num0; i++) {
 				builder.append("0");

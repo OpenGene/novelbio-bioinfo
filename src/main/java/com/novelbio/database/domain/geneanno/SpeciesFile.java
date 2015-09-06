@@ -710,14 +710,21 @@ public class SpeciesFile {
 	 * @return
 	 */
 	private boolean creatIndex(String indexChromFinal, String seqFile) {
-		String indexChromLocal = FileHadoop.convertToLocalPath(indexChromFinal);
-
-		if (FileOperate.isFileExistAndBigThanSize(indexChromLocal, 0)) {
+		boolean isChrExist = FileOperate.isFileExistAndBigThanSize(indexChromFinal, 0);
+		boolean isFaiExist = FileOperate.isFileExistAndBigThanSize(indexChromFinal + ".fai", 0);
+		if (isChrExist && isFaiExist) {
 			return true;
 		}
-		FileOperate.DeleteFileFolder(indexChromFinal);
 		FileOperate.createFolders(FileOperate.getPathName(indexChromFinal));
-		if (!FileOperate.copyFile(seqFile, indexChromFinal, true)) {
+		boolean isSucess = true;
+		if (!isChrExist) {
+			isSucess = FileOperate.copyFile(seqFile, indexChromFinal, true);
+        }
+		if (!isFaiExist) {
+			isSucess = isSucess && FileOperate.copyFile(seqFile + ".fai", indexChromFinal + ".fai", true);
+        }
+		
+		if (!isSucess) {
 			logger.error("复制文件出错：" + seqFile + " " + indexChromFinal);
 			return false;
 		}

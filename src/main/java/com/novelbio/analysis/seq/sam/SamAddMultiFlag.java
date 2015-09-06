@@ -78,7 +78,7 @@ public class SamAddMultiFlag {
 					
 					while (queueSamRecords.remainingCapacity() < capacity/200) {
 						try {
-							Thread.sleep(50);
+							Thread.sleep(200);
 							logger.info(queueSamRecords.size());
 						} catch (Exception e) {
 							// TODO: handle exception

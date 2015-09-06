@@ -75,9 +75,9 @@ public class BamIndex {
             throw new SAMException("Input file must be bam file, not sam file.");
         }
 
-        if (!samFile.getHeader().getSortOrder().equals(SAMFileHeader.SortOrder.coordinate)) {
-        	throw new SAMException("Input bam file must be sorted by coordinates");
-        }
+//        if (!samFile.getHeader().getSortOrder().equals(SAMFileHeader.SortOrder.coordinate)) {
+//        	throw new SAMException("Input bam file must be sorted by coordinates");
+//        }
         try {
         	makeIndex(samFile.samReader, outFile);
         } catch (Exception e) {

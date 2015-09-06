@@ -6,6 +6,7 @@ import htsjdk.samtools.SAMLineParser;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordFactory;
 import htsjdk.samtools.ValidationStringency;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -90,6 +91,7 @@ public class SamReducer {
 					samHeadCreater.addReadGroup(content);
 				} else if (!content.startsWith("@")) {
 					SAMFileHeader header = samHeadCreater.generateHeader();
+					header.setSortOrder(SortOrder.coordinate);
 					start = true;
 					setHeader(header);
 					initial();
@@ -108,9 +110,9 @@ public class SamReducer {
 	
 	protected void initial() {
 		if (os != null) {
-			samFile = new SamFile(os, header, true);
+			samFile = new SamFile(os, header, true, true);
 		} else {
-			samFile = new SamFile(getTmpFileName(), header);
+			samFile = new SamFile(getTmpFileName(), header, true);
 		}
 	
 	}
@@ -130,7 +132,7 @@ public class SamReducer {
 		}
 	}
 	
-	/** 输入项目为 mchr1_@_10019193_@_HWI-D00175:261:C6L59ANXX:7:1101:4774:82368	HWI-D00175:261:C6L59ANXX:7:1101:4774:82368	185	chr1	10019193	0	18S36M71S	=	10019193	0	TTATATTCTATGTATATATCTCCTCTCTCTCTCTCTCTCTCTCTCTCTCTCTCTGTGTCCCCTTCTGTAGATGAATATATATGTTCAAGTCTGAAAGATCTTATTTACTGCTAATTAAGTATAAG	AAAAAAAADAAAABFADAAFCAFADGGGFABGDDEADFAAEABDDGAAGGGBFAEFAADBBFCAGGGGGGFCAAAFACFAAACAGGFDGDGEGEECFFGAGGEDEFFAFGGGGGEGGGEGABBBB	MD:Z:36	NH:i:1	HI:i:1	NM:i:0	AS:i:36	XS:i:35
+	/** 输入项目为 m00001chr1_@_10019193_@_HWI-D00175:261:C6L59ANXX:7:1101:4774:82368	HWI-D00175:261:C6L59ANXX:7:1101:4774:82368	185	chr1	10019193	0	18S36M71S	=	10019193	0	TTATATTCTATGTATATATCTCCTCTCTCTCTCTCTCTCTCTCTCTCTCTCTCTGTGTCCCCTTCTGTAGATGAATATATATGTTCAAGTCTGAAAGATCTTATTTACTGCTAATTAAGTATAAG	AAAAAAAADAAAABFADAAFCAFADGGGFABGDDEADFAAEABDDGAAGGGBFAEFAADBBFCAGGGGGGFCAAAFACFAAACAGGFDGDGEGEECFFGAGGEDEFFAFGGGGGEGGGEGABBBB	MD:Z:36	NH:i:1	HI:i:1	NM:i:0	AS:i:36	XS:i:35
 		* 这种类型，最前面是用来排序的，删掉就好
 	*/
 	protected void addSamRecordTxt(String samRecordTxt) {
