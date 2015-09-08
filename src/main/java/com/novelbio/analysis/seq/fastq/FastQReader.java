@@ -183,7 +183,7 @@ class FastQReader implements Closeable {
 								String lineTmp = bufread.readLine();
 								if (lineTmp == null) {
 									if (i != 0 && isCheckFormat) {
-										throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4);
+										throw new ExceptionFastq(txtSeqFile.getFileName() + " check fqformat and fastq file error on line: " + lineNum[0]/4);
 									} else {
 										return null;
 									}
@@ -192,10 +192,10 @@ class FastQReader implements Closeable {
 							}
 							fastQRecord = new FastQRecord(lsStr, offset);
 						} catch (IOException ioEx) {
-							throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4);
+							throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4 + " caused by io exception", ioEx);
 						} catch (ExceptionFastq efastq) {
 							if (isCheckFormat) {
-								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4);
+								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4, efastq);
 							} else {
 								String errMsg = "fastq file error on line: " + lineNum[0]/4;
 								if (txtSeqFile.getFileName() != null) {
@@ -222,12 +222,14 @@ class FastQReader implements Closeable {
 										break;
 									} catch (Exception e) {}
 									if (errorNum[0] > 10000) {
-										throw new ExceptionFastq(txtSeqFile.getFileName() + "fastq file error on line: " + lineNum[0]/4);
+										throw new ExceptionFastq(txtSeqFile.getFileName() + "fastq file error on line: " 
+												+ lineNum[0]/4 + " error number larger than 10000");
 									}
 								}
 							}
 						} catch (OutOfMemoryError e) {
-								throw new ExceptionFastq(txtSeqFile.getFileName() + "fastq file error on line: " + lineNum[0]/4);
+								throw new ExceptionFastq(txtSeqFile.getFileName() + "fastq file error on line: " 
+										+ lineNum[0]/4 + " due to OutOfMemoryError", e);
 						 }
 						return fastQRecord;
 					}
@@ -357,6 +359,7 @@ class FastQReader implements Closeable {
 						// 右端序列
 						FastQRecord fqRight = null;
 						int i = 0;
+						boolean isError = false;
 						boolean isPairend = false;
 
 						if (!itFqPE.hasNext()) {
@@ -365,7 +368,7 @@ class FastQReader implements Closeable {
 
 						while (itFqPE.hasNext()) {
 							FastQRecord fQRecord = itFqPE.next();
-							if (!fqLeft.getName().split(" ")[0].equals(fQRecord.getName().split(" ")[0])) {
+							if (!FastQRecord.isPairedByName(fqLeft, fQRecord)) {
 								fqLeft = fQRecord;
 								isPairend = false;
 								i++;
@@ -374,10 +377,11 @@ class FastQReader implements Closeable {
 								isPairend = true;
 								break;
 							}
-							if (i > 10) {
+							if (i > 10 && !isError) {
+								isError = true;
 								errorNum[0]++;
 							}
-							if (i > 100 || errorNum[0] > 20) {
+							if (i > 1000 || errorNum[0] > 100) {
 								logger.error("many reads are not paired， please check the file: " + getFileName());
 								throw new ExceptionFastq("input file is not pairend");
 							}

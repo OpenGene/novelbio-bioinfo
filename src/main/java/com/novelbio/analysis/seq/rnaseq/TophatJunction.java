@@ -29,8 +29,9 @@ public class TophatJunction extends ListHashSearch<JunctionInfo, ListCodAbs<Junc
 ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(TophatJunction.class);
 	
-	private static int intronMinLen = 25;
-	
+	private int intronMinLen = 25;
+	private int junctionMinAdaptor = 5;
+
 	Map<String, JunctionUnit> mapJunUnitKey2Unit = new HashMap<String, JunctionUnit>();
 	ArrayListMultimap<String, JunctionUnit> mapJunSite2JunUnit = ArrayListMultimap.create();
 	String condition;
@@ -47,6 +48,14 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		lsNameAll = new ArrayList<>();
 		lsNameNoRedundent = new ArrayList<>();
 	}
+	/** 设定最短的intron长度，默认为25,也就是说小于25bp（<25）的都认为是deletion，该reads不加入可变剪接考察 */
+	public void setIntronMinLen(int intronMinLen) {
+	    this.intronMinLen = intronMinLen;
+    }
+	/** 设定junction reads的接头最短长度，譬如reads的一头搭到了某个exon上，如果这个长度小于该指定长度,默认为5(<5)，则该reads不加入可变剪接考察 */
+	public void setJunctionMinAdaptor(int junctionMinAdaptor) {
+	    this.junctionMinAdaptor = junctionMinAdaptor;
+    }
 	/** 设定测序连特异性的方向 */
 	public void setStrandSpecific(StrandSpecific strandSpecific) {
 		this.strandSpecific = strandSpecific;
@@ -82,20 +91,25 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		if (lsAlign.size() <= 1) {
 			return;
 		}
+		//TODO 没有考虑junction adaptor
 		//消除intron的影响
 		List<Align> lsAlignNew = new ArrayList<>();
-		for (Align align : lsAlign) {
+		for (int i = 0; i < lsAlign.size(); i++) {
+			Align align = lsAlign.get(i);
+			if ((i== 0 || i == lsAlign.size() - 1) && align.getLength() < junctionMinAdaptor) {
+				continue;
+            }
 			if (lsAlignNew.size() == 0) {
 				lsAlignNew.add(align);
 			} else {
 				Align alignlast = lsAlignNew.get(lsAlignNew.size() - 1);
-				if (align.getStartAbs() - alignlast.getEndAbs() <= intronMinLen) {
+				if (align.getStartAbs() - alignlast.getEndAbs() < intronMinLen) {
 					alignlast.setEnd(align.getEndAbs());
 				} else {
 					lsAlignNew.add(align);
 				}
 			}
-		}
+        }
 		int size = lsAlignNew.size();
 		if (size <= 1) {
 			return;
@@ -112,7 +126,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			if (cis5to3 != null) {
 				jun.setCis5to3(cis5to3);
 			}
-			jun.addReadsNum(condition, subGroup, (double)1/alignRecord.getMappedReadsWeight());
+			jun.addReadsNum(condition, subGroup, (double)1/alignRecord.getMappedReadsWeight()/(size - 1));
 			lsJun.add(jun);
 			junNum[0] += (double)1/alignRecord.getMappedReadsWeight();
 		}

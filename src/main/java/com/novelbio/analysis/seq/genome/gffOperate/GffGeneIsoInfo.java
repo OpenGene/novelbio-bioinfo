@@ -69,13 +69,13 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	/**  哺乳动物为Distal Promoter Tss上游1000bp，以内的就为Proximal Promoter */
 	public static int PROMOTER_DISTAL_MAMMUM = 1000;
 	/** InterGenic_ */
-	public static final String PROMOTER_INTERGENIC_STR = "InterGenic_";
+	public static final String PROMOTER_INTERGENIC_STR = "InterGenic";
 	/**  Distal Promoter_ */
-	public static final String PROMOTER_DISTAL_STR = "Distal Promoter_";
+	public static final String PROMOTER_DISTAL_STR = "Distal_Promoter";
 	/**  Proximal Promoter_ */
-	public static final String PROMOTER_PROXIMAL_STR = "Proximal Promoter_";
+	public static final String PROMOTER_PROXIMAL_STR = "Proximal_Promoter";
 	/**  Proximal Promoter_  */
-	public static final String PROMOTER_DOWNSTREAMTSS_STR = "Promoter DownStream Of Tss_";
+	public static final String PROMOTER_DOWNSTREAMTSS_STR = "Promoter DownStream Of Tss";
 
 	@Id
 	String id;
@@ -1324,13 +1324,13 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			} else if (getCod2Tss(coord) > PROMOTER_DISTAL_MAMMUM) {
 				result = result + PROMOTER_DISTAL_STR;
 			} else {
-				result = result + PROMOTER_PROXIMAL_STR;;
+				result = result + PROMOTER_PROXIMAL_STR;
 			}
 		} else if (isCodInIsoTss(tss, coord) && codLoc != COD_LOC_OUT) {
 			result = result + PROMOTER_DOWNSTREAMTSS_STR;
 		}
 		
-		result = result + "Distance_to_Tss_is:" + Math.abs(getCod2Tss(coord)) + " ";
+		result = result + " Distance_to_Tss_is:" + getCod2Tss(coord) + " ";
 		//UTR
 		if (getCodLocUTRCDS(coord) == COD_LOCUTR_5UTR) {
 			result = result + "5UTR_";

@@ -51,13 +51,40 @@ import com.novelbio.database.model.species.Species;
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
-//		long timeEclipse1 = test();
-		test();
+		long timeEclipse1 = wwwSimulation();
+		System.out.println(timeEclipse1);
 	}
+	
+	public static long wwwSimulation() {
+		String parentPath = "/home/novelbio/NBCresource/www/simulate/";
+		DateUtil dateUtil = new DateUtil();
+		dateUtil.setStartTime();
+		
+		List<Align> lsAligns = new ArrayList<>();
+		lsAligns.add(new Align("1", 2588282, 2588574));
+		
+		GffChrAbs gffChrAbs = new GffChrAbs();
+		gffChrAbs.setGffHash(new GffHashGene(parentPath + "genes-5-exclusion.gtf"));
+		ExonJunction exonJunction = new ExonJunction();
+		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
+		exonJunction.setgenerateNewIso(true);
+		exonJunction.setLsReadRegion(lsAligns);
+		exonJunction.setOneGeneOneSpliceEvent(false);
+		exonJunction.addBamSorted("Ex", parentPath + "simulation1/exclusion/exclusion.bam");
+		exonJunction.addBamSorted("In", parentPath + "simulation1/inclusion/inclusion.bam");
+		exonJunction.setCompareGroups("Ex", "In");
+//		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
+		exonJunction.setResultFile(parentPath + "simulation1/result");
+		exonJunction.setJunctionMinAdaptor(0);
+		exonJunction.run();
+		exonJunction = null;
+		return dateUtil.getElapseTime();
+	}
+	
 	public static long test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("1:218141123-238141288"));
+//		lsAligns.add(new Align("CHR_HSCHR3_1_CTG3:105658073-205658165"));
 //		lsAligns.add(new Align("1:7205126-27246005"));
 
 		DateUtil dateUtil = new DateUtil();
@@ -78,7 +105,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("WT", parentPath + "WT.accepted.bam");
 		exonJunction.setCompareGroups("KD", "WT");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
-		exonJunction.setResultFile(parentPath + "result_single");
+		exonJunction.setResultFile(parentPath + "result");
 
 		exonJunction.run();
 		exonJunction = null;
@@ -188,7 +215,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "GUK1";
+	private static String stopGeneName = "ENSG00000189409";
 	
 	GffHashGene gffHashGene = null;
 	/** 没有重建转录本的老iso的名字，用于后面计算可变剪接所在exon number的 */
@@ -323,7 +350,15 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 		this.strandSpecific = strandSpecific;
 	}
+	/** 设定最短的intron长度，默认为25,也就是说小于25bp（<25）的都认为是deletion，该reads不加入可变剪接考察 */
+	public void setIntronMinLen(int intronMinLen) {
+		tophatJunction.setIntronMinLen(intronMinLen);
+	}
 	
+	/** 设定junction reads的接头最短长度，譬如reads的一头搭到了某个exon上，如果这个长度小于该指定长度,默认为5(<5)，则该reads不加入可变剪接考察 */
+	public void setJunctionMinAdaptor(int junctionMinAdaptor) {
+		tophatJunction.setJunctionMinAdaptor(junctionMinAdaptor);
+	}
 	/**
 	 * 设定输出
 	 * @param resultFile
@@ -490,6 +525,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void loadJunctionBam(MapReads mapReads) {
 		AlignSeqReading samFileReadingLast = null;
 		tophatJunction.setStrandSpecific(strandSpecific);
+
 		for (String condition : mapCond2SamReader.keySet()) {
 			if (runGetInfo != null) {
 				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
@@ -510,7 +546,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 				
 				samFileReading.setLsAlignments(lsReadReagion);
-//				samFileReading.setLsAlignments(lsDifIsoGene);
 				samFileReading.setRunGetInfo(runGetInfo);
 				SamFileStatistics samStatistics = new SamFileStatistics(condition);
 				samStatistics.setStandardData(samFileReading.getFirstSamFile().getMapChrID2Length());
@@ -724,11 +759,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					logger.debug("stop");
 				}
 				logger.info(exonSplicingTest.getExonCluster().getParentGene().getName());
-				try {
-					exonSplicingTest.setSpliceType2Value();
-				} catch (Exception e) {
-					exonSplicingTest.setSpliceType2Value();
-				}
+				exonSplicingTest.setSpliceType2Value();
+	
 				
 			}
 		}

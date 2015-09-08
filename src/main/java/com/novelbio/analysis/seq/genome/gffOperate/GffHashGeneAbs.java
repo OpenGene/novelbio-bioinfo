@@ -558,7 +558,33 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		txtGtf.close();
 	}
-	
+	/**
+	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
+	 * 也就是说，仅含有一个转录本的基因就不写入文本了
+	 * @param txtWrite
+	 * @param lsGffDetailGenes
+	 * @param title
+	 */
+	public void writeToGFF3(String GFFfile, String title) {
+		TxtReadandWrite txtGtf = new TxtReadandWrite(GFFfile, true);
+		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(mapChrID2ListGff);
+		//把得到的ChrID排个序
+		TreeSet<String> treeSet = new TreeSet<String>();
+		for (String string : lsChrID) {
+			treeSet.add(string);
+		}
+		for (String string : treeSet) {
+			ListAbs<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
+			for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+				gffDetailGene.removeDupliIso();
+				List<String> lsGene = gffDetailGene.toGFFformate(title);
+				for (String info : lsGene) {
+					txtGtf.writefileln(info);
+                }
+			}
+		}
+		txtGtf.close();
+	}
 	/**
 	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
 	 * 也就是说，仅含有一个转录本的基因就不写入文本了
@@ -572,8 +598,10 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			if (gffDetailGene.getLsCodSplit().size() <= 1) {
 				continue;
 			}
-			String geneGFF = gffDetailGene.toGFFformate(title);
-			txtWrite.writefileln(geneGFF.trim());
+			List<String> lsGene = gffDetailGene.toGFFformate(title);
+			for (String info : lsGene) {
+				txtWrite.writefileln(info.trim());
+            }
 		}
 	}
 	@Override

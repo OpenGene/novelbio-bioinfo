@@ -11,6 +11,7 @@ import uk.ac.babraham.FastQC.Sequence.SequenceFile;
 import uk.ac.babraham.FastQC.Sequence.SequenceFormatException;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class FastQRecord implements Cloneable {
@@ -246,4 +247,14 @@ public class FastQRecord implements Cloneable {
 		return fastQRecord;
 	}
 	
+	public static boolean isPairedByName(FastQRecord fq1, FastQRecord fq2) {
+		if (fq1 == null || fq2 == null) {
+			return false;
+        }
+		String name1 = fq1.getName(), name2 = fq2.getName();
+		if (StringOperate.isRealNull(name1) || StringOperate.isRealNull(name2)) {
+			return false;
+        }
+		return name1.split(" ")[0].equals(name2.split(" ")[0]);
+	}
 }

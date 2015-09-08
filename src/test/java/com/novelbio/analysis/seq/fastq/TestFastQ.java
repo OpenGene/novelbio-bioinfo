@@ -9,11 +9,11 @@ public class TestFastQ {
 		String file = "src/test/resources/test_file/fastq/interleaved.fq";
 		FastQ fastQ = new FastQ(file);
 		int i = 0;
-//		for (FastQRecord[] fastQRecords : fastQ.readlinesInterleavedPE()) {
-//			i++;
-//	        	Assert.assertEquals(fastQRecords[0].getName(), fastQRecords[1].getName());
-//        }
-//		Assert.assertEquals(1065, i);
+		for (FastQRecord[] fastQRecords : fastQ.readlinesInterleavedPE()) {
+			i++;
+	        	Assert.assertEquals(fastQRecords[0].getName(), fastQRecords[1].getName());
+        }
+		Assert.assertEquals(1065, i);
 		
 		file = "src/test/resources/test_file/fastq/interleaved_with_error.fq";
 		fastQ = new FastQ(file);
@@ -39,5 +39,15 @@ public class TestFastQ {
 		}
 		
 		Assert.assertEquals(0, i);
+		
+		
+		file = "src/test/resources/test_file/fastq/interleaved_with_many_error.fq";
+		fastQ = new FastQ(file);
+		i = 0;
+		for (FastQRecord[] fastQRecords : fastQ.readlinesInterleavedPE()) {
+			i++;
+	        	Assert.assertEquals(fastQRecords[0].getName(), fastQRecords[1].getName());
+        }
+		Assert.assertEquals(1062, i);
 	}
 }

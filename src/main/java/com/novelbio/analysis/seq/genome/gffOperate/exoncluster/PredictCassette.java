@@ -107,15 +107,17 @@ public class PredictCassette extends SpliceTypePredict {
 		for (Align align : setAlignSkip) {
 			mapSkip = addMapDouble(mapSkip, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
 		}
-		// 像这种 ------exon------------，应该将junction reads的数量减半，这样可以获得更准确的值
-		for (String group : mapSkip.keySet()) {
-			double value = mapSkip.get(group);
-			mapSkip.put(group, value/2);
-		}
 		
 		for (Align align : setAlignExist) {
 			mapExist = addMapDouble(mapExist, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
 		}
+		
+		// 像这种 ------exon------------，应该将junction reads的数量减半，这样可以获得更准确的值
+//		for (String group : mapExist.keySet()) {
+//			double value = mapExist.get(group);
+//			mapExist.put(group, value/2);
+//		}
+		
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
 		addMapGroup2LsValue(mapGroup2LsValue, mapSkip);
 		addMapGroup2LsValue(mapGroup2LsValue, mapExist);

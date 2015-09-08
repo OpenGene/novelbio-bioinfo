@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.TreeMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -777,9 +779,14 @@ public class GffDetailGene extends ListDetailAbs {
 		 * 一个基因如果有不止一个的转录本，那么这些转录本的同一区域的exon就可以提取出来，并放入该list
 		 * 也就是每个exoncluster就是一个exon类，表示 
 		 */
-		Map<String, ExonCluster> mapLoc2DifExonCluster = new HashMap<String, ExonCluster>();
-		addExonCluster(null, mapLoc2DifExonCluster, lsSameGroupIso);
-		return mapLoc2DifExonCluster.values();
+		try {
+			return addExonCluster(lsSameGroupIso);
+		} catch (Exception e) {
+			e.printStackTrace();
+//			System.out.println();
+			return addExonCluster(lsSameGroupIso);
+		}
+	
 	}
 	
 	/**
@@ -788,21 +795,46 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param mapLoc2DifExonCluster
 	 * @param lsSameGroupIso
 	 */
-	private void addExonCluster(Alignment alignRetainIntron, Map<String, ExonCluster> mapLoc2DifExonCluster, List<GffGeneIsoInfo> lsSameGroupIso ) {
+	private List<ExonCluster> addExonCluster(List<GffGeneIsoInfo> lsSameGroupIso ) {
 		if (lsSameGroupIso.size() <= 1) {
-			return;
+			return new ArrayList<>();
 		}
 		boolean cis5to3 = lsSameGroupIso.get(0).isCis5to3();
-		List<ExonCluster> lsTmpResult = add2MapLoc2DifExonCluster(alignRetainIntron, cis5to3, lsSameGroupIso, mapLoc2DifExonCluster);
+		List<ExonCluster> lsTmpResult = getLsExonClusterInRegion(null, cis5to3, lsSameGroupIso);
 		if (lsSameGroupIso.size() <= 2) {
-			return;
+			return lsTmpResult;
 		}
+		
+		//取出包含 retain_intron形式的exonCluster
+		List<ExonCluster> lsExonClusterLong = new ArrayList<>();
 		for (ExonCluster exonCluster : lsTmpResult) {
 			//含有特别长exon的iso，要把他们除去再做分析
 			if (exonCluster.getSplicingTypeSet().contains(SplicingAlternativeType.retain_intron)) {
-				ArrayList<GffGeneIsoInfo> lsSameGroupIsoNew = getLsIsoRemoveLongExon(exonCluster, lsSameGroupIso);
-				addExonCluster(exonCluster, mapLoc2DifExonCluster, lsSameGroupIsoNew);
+				lsExonClusterLong.add(exonCluster);
 			}
+		}
+		
+		getLsExonInRegionRecur(lsTmpResult, cis5to3, lsExonClusterLong, lsSameGroupIso);
+		Map<String, ExonCluster> mapLoc2DifExonCluster = new HashMap<String, ExonCluster>();
+
+		for (ExonCluster exonCluster : lsTmpResult) {
+			mapLoc2DifExonCluster.put(exonCluster.getHashKey(), exonCluster);
+        }
+		
+		return new ArrayList<>(mapLoc2DifExonCluster.values());
+	}
+	
+	private void getLsExonInRegionRecur(List<ExonCluster> lsResult, Boolean cis5to3, 
+			List<ExonCluster> lsExonClusters, List<GffGeneIsoInfo> lsIso) {
+		for (ExonCluster exonClusterSub : lsExonClusters) {
+			if (!exonClusterSub.getSplicingTypeSet().contains(SplicingAlternativeType.retain_intron)) {
+				continue;
+            }
+			List<GffGeneIsoInfo> lsIsoRemoveLong = getLsIsoRemoveLongExon(exonClusterSub, lsIso);
+			if (lsIsoRemoveLong.size() < 2) return;
+			List<ExonCluster> lsExonClustersSub = getLsExonClusterInRegion(exonClusterSub, cis5to3, lsIsoRemoveLong);
+			lsResult.addAll(lsExonClustersSub);
+			getLsExonInRegionRecur(lsResult, cis5to3, lsExonClustersSub, lsIsoRemoveLong);
 		}
 	}
 	
@@ -814,8 +846,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param mapChrID2ExonClusters 待写入的map表
 	 * @return 返回本次添加到map中的全体exonClusters
 	 */
-	private List<ExonCluster> add2MapLoc2DifExonCluster(Alignment align, Boolean cis5to3, List<GffGeneIsoInfo> lsSameGroupIso,
-			Map<String, ExonCluster> mapChrID2ExonClusters) {
+	private List<ExonCluster> getLsExonClusterInRegion(Alignment align, Boolean cis5to3, List<GffGeneIsoInfo> lsSameGroupIso) {
 		List<ExonCluster> lsResult = new ArrayList<>();
 		if (lsSameGroupIso.size() <= 1) {
 			return lsResult;
@@ -826,41 +857,101 @@ public class GffDetailGene extends ListDetailAbs {
 				continue;
 			}
 			
-			String key = exonClusters.getHashKey();
-			if (exonClusters.isSameExonInExistIso() || exonClusters.getLsIsoExon().size() == 1
-					|| mapChrID2ExonClusters.containsKey(key) ) {
+			if (exonClusters.isSameExonInExistIso()) {
 				continue;
 			}
-			mapChrID2ExonClusters.put(exonClusters.getHashKey(), exonClusters);
 			lsResult.add(exonClusters);
 		}
 		return lsResult;
 	}
 	
 	/**
+	 * 	里面的连续两个exon中间的intron
+		如果发现有转录本覆盖了该intron，那么就是造成retain intron的那个转录本，把它去除就好
 	 * 去除含有长exon后的转录本集合
 	 * @return
 	 */
 	private ArrayList<GffGeneIsoInfo> getLsIsoRemoveLongExon(ExonCluster exonCluster, List<GffGeneIsoInfo> lsIsoRaw) {
-		//里面的连续两个exon中间的intron
-		//如果发现有转录本覆盖了该intron，那么就是造成retain intron的那个转录本，把它去除就好
-		Align alignIntron = null;
+		//如果存在多个长的exon，则删除覆盖最长intron的序列
+		ArrayListMultimap<Integer, Align> mapExonLen2IntronLen = ArrayListMultimap.create();
+		//按照exon长度进行排序
+		//1----------2+++3----4++5--------
+		//2--------1+++++3----4++++6
+		//3----------2+++++++++++5---------
+		//这里会获得 1 和 2,那么2就排在1之前
+		TreeSet<Integer> treeExonLen = new TreeSet<>(new Comparator<Integer>() {
+            public int compare(Integer o1, Integer o2) {
+	            return -o1.compareTo(o2);
+            }
+		});
+		
 		for (List<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
 			if (lsexoninfo.size() > 1) {
-				alignIntron = new Align(exonCluster.getRefID(), lsexoninfo.get(0).getEndCis(), lsexoninfo.get(1).getStartCis());
+				int exonLen = lsExonLenAll(lsexoninfo);
+				treeExonLen.add(exonLen);
+				Align alignIntron = new Align(exonCluster.getRefID(), lsexoninfo.get(0).getEndCis(), lsexoninfo.get(1).getStartCis());
+				mapExonLen2IntronLen.put(exonLen, alignIntron);
 			}
 		}
+		if (treeExonLen.isEmpty()) {
+	        	return new ArrayList<>();
+        }
 		//获得这种长的iso
+		List<ExonInfo> lsExons = null;
 		HashSet<GffGeneIsoInfo> setGeneIsoWithLongExon = new HashSet<GffGeneIsoInfo>();
-		for (List<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
-			if (lsexoninfo.size() > 0
-					&& lsexoninfo.get(0).getStartAbs() < alignIntron.getStartAbs()
-					&& lsexoninfo.get(0).getEndAbs() > alignIntron.getEndAbs())
-			{
-				setGeneIsoWithLongExon.add(lsexoninfo.get(0).getParent());
-			}
-		}
+		for (int exonLen : treeExonLen) {
+			//某一对exon中间的intron，如
+			//1----------2+++3----4++5--------
+			//2--------1+++++3----4++++6
+			//3----------2+++++++++++5---------
+			//这里获得 3---4
+			//因为可能有多个复杂的exon对，如上面的转录本 1 和 2 ，那么就优先选择exon长度比较长的转录本的intron
+			List<Align> lsIntron = mapExonLen2IntronLen.get(exonLen);
+			for (Align alignIntron : lsIntron) {
+				for (List<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
+					if (lsexoninfo.size() > 0
+							&& lsexoninfo.get(0).getStartAbs() < alignIntron.getStartAbs()
+							&& lsexoninfo.get(0).getEndAbs() > alignIntron.getEndAbs())
+					{
+						if (lsexoninfo.size() == 1) {
+							setGeneIsoWithLongExon.add(lsexoninfo.get(0).getParent());
+		                }
+						if (lsExons == null || lsExonLenAll(lsexoninfo) > lsExonLenAll(lsExons)) {
+							lsExons = lsexoninfo;
+		                }
+					}
+				}
+				if (!setGeneIsoWithLongExon.isEmpty()) {
+					break;
+                }
+            }
+			if (!setGeneIsoWithLongExon.isEmpty()) {
+				break;
+            }
+        }
 		
+
+		
+		if (setGeneIsoWithLongExon.isEmpty()) {
+			if (lsExons != null && !lsExons.isEmpty()) {
+				setGeneIsoWithLongExon.add(lsExons.get(0).getParent());
+			} else {
+				//可能存在这种情况
+				//-----------1+++5----10+++15------
+				//-------------2++++7-------------
+				//-----------------6+++++12--------
+				//这时候就没有retain intron的存在，setGeneIsoWithLongExon为空
+				//这里就随便删掉一个最长的，譬如把6++++12删掉
+				GffGeneIsoInfo isoLongestExon = null;
+				int exonLen = 0;
+				for (List<ExonInfo> lsexoninfo : exonCluster.getLsIsoExon()) {
+					if (lsexoninfo.size() == 1 && (isoLongestExon == null || exonLen < lsLenAll(lsexoninfo))) {
+						isoLongestExon = lsexoninfo.get(0).getParent();
+					}
+				}
+				setGeneIsoWithLongExon.add(isoLongestExon);
+			}
+        }
 		ArrayList<GffGeneIsoInfo> lsSameGroupIsoNew = new ArrayList<GffGeneIsoInfo>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsoRaw) {
 			if (setGeneIsoWithLongExon.contains(gffGeneIsoInfo)) {
@@ -870,7 +961,20 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		return lsSameGroupIsoNew;
 	}
+	
+	private int lsExonLenAll(List<ExonInfo> lsExonInfos) {
+		int len = 0;
+		for (ExonInfo exonInfo : lsExonInfos) {
+			len+=exonInfo.getLength();
+        }
+		return len;
+	}
+	private int lsLenAll(List<ExonInfo> lsExonInfos) {
+		int start = Math.min(lsExonInfos.get(0).getStartAbs(), lsExonInfos.get(lsExonInfos.size()-1).getStartAbs());
+		int end = Math.max(lsExonInfos.get(0).getEndAbs(), lsExonInfos.get(lsExonInfos.size()-1).getEndAbs());
 
+		return end - start;
+	}
 	/** 返回iso基本接近的一组做可变剪接分析
 	 * 只有当几个iso中只有少数几个exon的差距，才能做可变剪接的分析
 	 *  */
@@ -1050,7 +1154,8 @@ public class GffDetailGene extends ListDetailAbs {
 	 * @param title 公司名等信息
 	 * @return
 	 */
-	public String toGFFformate(String title) {
+	public List<String> toGFFformate(String title) {
+		List<String> lsResult = new ArrayList<>();
 		if (title == null || title.trim().equals("")) {
 			title = TitleFormatNBC.CompanyNameAbbr.toString();
 		}
@@ -1058,22 +1163,28 @@ public class GffDetailGene extends ListDetailAbs {
 		if (!isCis5to3()) {
 			strand = "-";
 		}
-		String geneGFF = getRefID() + "\t" +title + "\tgene\t" + getStartAbs()+ "\t" + getEndAbs()
-        + "\t"+"."+"\t" +strand+"\t.\t"+ "ID=" + getNameSingle()
-        +";Name=" + getNameSingle() + ";Name=" + getNameSingle() + " " + TxtReadandWrite.ENTER_LINUX;
+		
+		List<String> lsGene = new ArrayList<>();
+		lsGene.add(getRefID()); lsGene.add(title); lsGene.add("gene"); lsGene.add(getStartAbs() + ""); lsGene.add(getEndAbs() + "");
+		lsGene.add(".");  lsGene.add(strand); lsGene.add("."); lsGene.add("ID=" + getNameSingle() + ";" + "Name=" + getNameSingle());
+		String geneGFF = ArrayOperate.cmbString(lsGene.toArray(new String[0]), "\t");
+		lsResult.add(geneGFF);
 		//TODO 这里的getLsCodSplit 以后要改成获得不同的分组，这样可以将相同来源的iso放在一组
 		for (GffGeneIsoInfo gffGeneIsoInfo : getLsCodSplit()) {
 			String strandmRNA = "+";
 			if (!gffGeneIsoInfo.isCis5to3()) {
 				strandmRNA = "-";
 			}
-			geneGFF = geneGFF + getRefID() + "\t" +title + "\tmRNA\t" +gffGeneIsoInfo.getStartAbs()+ "\t" + gffGeneIsoInfo.getEndAbs()
-	        + "\t"+"."+"\t" +strandmRNA+"\t.\t"+ "ID=" + gffGeneIsoInfo.getName() 
-	        +";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ gffGeneIsoInfo.getParentGeneName() + " " + TxtReadandWrite.ENTER_LINUX;
+			List<String> lsmRNA = new ArrayList<>();
+			lsmRNA.add(getRefID()); lsmRNA.add(title); lsmRNA.add(gffGeneIsoInfo.getGeneType().toString());
+			lsmRNA.add(gffGeneIsoInfo.getStartAbs() + ""); lsmRNA.add(gffGeneIsoInfo.getEndAbs() + "");
+			lsmRNA.add("."); lsmRNA.add(strandmRNA);
+			lsmRNA.add("ID=" + gffGeneIsoInfo.getName() + ";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ gffGeneIsoInfo.getParentGeneName());
+			lsResult.add(ArrayOperate.cmbString(lsmRNA.toArray(new String[0]), "\t"));			
 			gffGeneIsoInfo.sort();
-			geneGFF = geneGFF + gffGeneIsoInfo.getGFFformat(title);
+			lsResult.add(gffGeneIsoInfo.getGFFformat(title));
 		}
-		return geneGFF;
+		return lsResult;
 	}
 	/**
 	 * 获得坐标到该ItemEnd的距离

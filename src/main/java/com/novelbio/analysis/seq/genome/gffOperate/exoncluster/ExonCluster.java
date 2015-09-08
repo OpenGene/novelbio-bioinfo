@@ -665,6 +665,9 @@ public class ExonCluster implements Alignment {
 		return getRefID() + "_" +getStartAbs() + "_" + getEndAbs();
 	}
 
-
+	/** 根据坐标设定一个key */
+	public String toString() {
+		return getRefID() + " " +getStartAbs() + " " + getEndAbs() + " " + getParentGene().getName();
+	}
 	
 }

@@ -74,11 +74,8 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpTranscriptNameLast = "";
 		int line = 0;
 		for (String content : txtgff.readlines() ) {
-			if (content.contains("TIP1%3B2")) {
-				logger.debug("stop");
-			}
 			line++;
-			if (content.charAt(0) == '#') continue;
+			if (StringOperate.isRealNull(content) || content.charAt(0) == '#') continue;
 			String[] ss = content.split("\t");// 按照tab分开
 			ss[8] = HttpFetch.decode(ss[8]);
 			if (setContig.contains(ss[2].toLowerCase())) continue;

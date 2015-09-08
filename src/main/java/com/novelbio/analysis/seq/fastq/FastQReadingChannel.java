@@ -7,9 +7,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javax.tools.FileObject;
+
 import org.apache.log4j.Logger;
 
 import com.novelbio.GuiAnnoInfo;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 
 public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
@@ -131,6 +134,9 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 			if (isOutputResult) {
 				closeThread();
 			}
+			executorPool.shutdown();
+			executorPool = null;
+			queueResult = null;
 		} catch (Exception e) {
 			e.printStackTrace();
 			closeThread();
@@ -146,11 +152,9 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 		fqWrite[0].close();
 		try {
 			fqWrite[1].close();
-		} catch (Exception e) {}
-		
-		executorPool.shutdown();
-		executorPool = null;
-		queueResult = null;
+		} catch (Exception e) {
+			logger.error("close thread error", e);
+		}
 	}
 	
 	private void readSE() {
@@ -194,8 +198,17 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 			
 			fastQs[0].fastQRead.setFastQReadMate(fastQs[1].fastQRead);
 
-			
+			int notPairedNum = 0;
 			for (FastQRecord[] fastQRecord : fastQs[0].fastQRead.readlinesPE()) {
+				if (FastQRecord.isPairedByName(fastQRecord[0], fastQRecord[1])) {
+					notPairedNum++;
+					if (notPairedNum > 100) {
+						throw new ExceptionFastq("input file is not pairend " 
+								+ FileOperate.getFileName(fastQs[0].getReadFileName()) + " " + FileOperate.getFileName(fastQs[1].getReadFileName()));
+	                }
+					continue;
+                }
+
 				readsNum++;
 				wait_To_Cope_AbsQueue();
 				if (flagStop) break;
