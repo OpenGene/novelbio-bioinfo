@@ -1,6 +1,8 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -38,17 +40,39 @@ public class PredictAlt5 extends PredictAlt5Or3 {
 	 */
 	protected void find() {
 		mapEdge2Iso = new HashMap<Integer, GffGeneIsoInfo>();
+		Align align = null;
+
 		if (exonCluster.exonClusterAfter == null) {
 			return;
 		}
-		for (List<ExonInfo> lsExonInfo : exonCluster.getLsIsoExon()) {
-			if (lsExonInfo.size() == 0) {
+		
+		//将iso中单个exon的提取出来然后做预测，多个exon的iso跳过不参与分析
+		List<ExonInfo> lsExon = new ArrayList<>();
+		for (List<ExonInfo> lsExonInfos : exonCluster.getLsIsoExon()) {
+			if (lsExonInfos.size() == 0 || lsExonInfos.size() > 1) {
 				continue;
 			}
-			GffGeneIsoInfo gffGeneIsoInfo = lsExonInfo.get(0).getParent();
+			lsExon.add(lsExonInfos.get(0));
+		}
+		Collections.sort(lsExon, new Comparator<ExonInfo>() {
+			public int compare(ExonInfo o1, ExonInfo o2) {
+				Integer o1Len = o1.getLength();
+				Integer o2Len = o2.getLength();
+				return -o1Len.compareTo(o2Len);
+			}
+		});
+		for (ExonInfo exonInfo : lsExon) {
+			GffGeneIsoInfo gffGeneIsoInfo = exonInfo.getParent();
 			
 			if (exonCluster.exonClusterAfter.isIsoCover(gffGeneIsoInfo)) {
-				mapEdge2Iso.put(lsExonInfo.get(lsExonInfo.size() - 1).getEndCis(), gffGeneIsoInfo);
+				if (align == null) {
+					mapEdge2Iso.put(exonInfo.getEndCis(), gffGeneIsoInfo);
+					align = new Align(exonInfo.getRefID(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
+				} else if (isOverlap(align, exonInfo)) {
+					mapEdge2Iso.put(exonInfo.getEndCis(), gffGeneIsoInfo);
+					align = new Align(exonInfo.getRefID(), Math.min(align.getStartAbs(), exonInfo.getStartAbs()),
+							Math.max(align.getEndAbs(), exonInfo.getEndAbs()));
+				}
 			}
 		}
 		

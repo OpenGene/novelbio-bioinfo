@@ -1350,6 +1350,15 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return result;
 	}
 	
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder(geneParentName);
+		stringBuilder.append("\t"); stringBuilder.append(getName() + ":");
+		for (ExonInfo exonInfo : lsElement) {
+			stringBuilder.append( exonInfo.getStartCis() + "-" + exonInfo.getEndCis() + ",");
+		}
+		return stringBuilder.toString();
+	}
+	
 	/**
 	 * 重写equal
 	 * 比较是否为同一个转录本

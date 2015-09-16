@@ -63,7 +63,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	String condition1;
 	String condition2;
 	/** 设置一个负数的初始值 */
-	Double pvalue= -1.0;
 	double fdr = 1.0;
 	Set<String> setCondition;
 	/** readsLength越长，juncReadsPvalue所占的比例就越大 */
@@ -127,7 +126,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void setCompareCondition(String condition1, String condition2) {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
-		pvalue = -1.0;
 	}
 	public void setMapCond_Group2ReadsNum(
 			Map<String, Map<String, double[]>> mapCond_Group2ReadsNum) {
@@ -233,16 +231,54 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			pvaCalculate.setCombine(isCombine);
 			pvaCalculate.setSpliceType2Value(splicingType, condition1, mapCondition2SpliceInfo.get(condition1), 
 					condition2, mapCondition2SpliceInfo.get(condition2));
-			try {
-				pvaCalculate.calculatePvalue();
-			} catch (Exception e) {
-				pvaCalculate.calculatePvalue();
-			}
-	
+			
+			pvaCalculate.calculatePvalue();
 			lsPvalueInfo.add(pvaCalculate);
 		}
-		Collections.sort(lsPvalueInfo);
+		Collections.sort(lsPvalueInfo, new Comparator<PvalueCalculate>() {
+			public int compare(PvalueCalculate o1, PvalueCalculate o2) {
+				int[] readsInfo1 = o1.getReadsInfo();
+				int[] readsInfo2 = o2.getReadsInfo();
+				Integer o1min = Math.min(readsInfo1[0], readsInfo1[1]);
+				Integer o2min = Math.min(readsInfo2[0], readsInfo2[1]);
+				Double o1result = o1.calculatePvalue()/o1min;
+				Double o2result = o2.calculatePvalue()/o2min;
+				
+				return o1result.compareTo(o2result);
+			}
+		});
+		
+		//优先选择 SE 的剪接形式
+		PvalueCalculate pvalueFirst = lsPvalueInfo.get(0);
+		if (pvalueFirst.splicingType != SplicingAlternativeType.cassette) {
+			PvalueCalculate pvalueSe = null;
+			int i = 0;
+			for (PvalueCalculate pvalueCalculate : lsPvalueInfo) {
+				if (pvalueCalculate.splicingType == SplicingAlternativeType.cassette) {
+					pvalueSe = pvalueCalculate;
+					break;
+				}
+				i++;
+			}
+			if (pvalueSe != null && pvalueSe.calculatePvalue()/pvalueFirst.calculatePvalue() < 1.1) {
+				lsPvalueInfo.remove(i);
+				lsPvalueInfo.add(0, pvalueSe);
+			}
+		}
+		
+
+		
+		
 		return lsPvalueInfo.get(0).calculatePvalue();
+	}
+	
+	/**
+	 * 计算完pvalue后{@link #getAndCalculatePvalue()}
+	 * 获得该splicing type所对应的pvalue
+	 * @return
+	 */
+	public PvalueCalculate getSpliceTypePvalue() {
+		return lsPvalueInfo.get(0);
 	}
 	
 	/**
@@ -257,12 +293,17 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	@Override
 	public int compareTo(ExonSplicingTest o) {
-		return pvalue.compareTo(o.pvalue);
+		return getAndCalculatePvalue().compareTo(o.getAndCalculatePvalue());
 	}
 	
 	public String getSpliceSite() {
 		return mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite().toStringNoCis();
 	}
+	
+	public Align getSpliceSiteAlign() {
+		return mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite();
+	}
+	
 	public double getPvalue() {
 		return lsPvalueInfo.get(0).pvalue;
 	}
@@ -431,7 +472,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		ArrayList<Double> lsPvalue = new ArrayList<Double>();
 		for (ExonSplicingTest exonSplicingTest : colExonSplicingTests) {
 			//TODO
-			if (exonSplicingTest.getExonCluster().getParentGene().getName().contains(debug)) {
+			if (exonSplicingTest.getExonCluster().getStartAbs() == 136862119) {
 				logger.debug("stop");
 			}
 			if (exonSplicingTest.getAndCalculatePvalue() > fdrCutoff) {
@@ -486,7 +527,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return lsTitle.toArray(new String[0]);
 	}	
 	
-	class PvalueCalculate implements Comparable<PvalueCalculate> {
+	public class PvalueCalculate implements Comparable<PvalueCalculate> {
 		boolean isCombine = true;
 		int normExp = 200;
 		int junction = 200;
@@ -503,6 +544,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		 */
 		public void setCombine(boolean isCombine) {
 			this.isCombine = isCombine;
+		}
+		
+		/** 返回junction的reads信息 */
+		public int[] getReadsInfo() {
+			return iSpliceTestJun.getReadsInfo();
 		}
 		
 		public void setSpliceType2Value(SplicingAlternativeType splicingType, String condTreat,

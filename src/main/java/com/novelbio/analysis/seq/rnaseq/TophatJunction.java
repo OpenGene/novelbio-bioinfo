@@ -30,7 +30,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	private static final Logger logger = Logger.getLogger(TophatJunction.class);
 	
 	private int intronMinLen = 25;
-	private int junctionMinAdaptor = 5;
+	private int junctionMinAnchorLen = 5;
 
 	Map<String, JunctionUnit> mapJunUnitKey2Unit = new HashMap<String, JunctionUnit>();
 	ArrayListMultimap<String, JunctionUnit> mapJunSite2JunUnit = ArrayListMultimap.create();
@@ -53,8 +53,8 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	    this.intronMinLen = intronMinLen;
     }
 	/** 设定junction reads的接头最短长度，譬如reads的一头搭到了某个exon上，如果这个长度小于该指定长度,默认为5(<5)，则该reads不加入可变剪接考察 */
-	public void setJunctionMinAdaptor(int junctionMinAdaptor) {
-	    this.junctionMinAdaptor = junctionMinAdaptor;
+	public void setJunctionMinAnchorLen(int junctionMinAnchorLen) {
+	    this.junctionMinAnchorLen = junctionMinAnchorLen;
     }
 	/** 设定测序连特异性的方向 */
 	public void setStrandSpecific(StrandSpecific strandSpecific) {
@@ -96,7 +96,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		List<Align> lsAlignNew = new ArrayList<>();
 		for (int i = 0; i < lsAlign.size(); i++) {
 			Align align = lsAlign.get(i);
-			if ((i== 0 || i == lsAlign.size() - 1) && align.getLength() < junctionMinAdaptor) {
+			if ((i== 0 || i == lsAlign.size() - 1) && align.getLength() < junctionMinAnchorLen) {
 				continue;
             }
 			if (lsAlignNew.size() == 0) {
@@ -241,7 +241,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			if (mapGroup2ValueTmp.isEmpty()) {
 				continue;
 			}
-			if (mapGroup2Value == null || mapGroup2Value.size() == 0) {
+			if (mapGroup2Value.isEmpty()) {
 				mapGroup2Value = new HashMap<>(mapGroup2ValueTmp);
 			} else {
 				for (String group : mapGroup2ValueTmp.keySet()) {
@@ -264,6 +264,25 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	
 	/**
 	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
+	 * 0表示没有junction
+	 * @param chrID
+	 * @param locSite
+	 * @return
+	 */
+	public List<JunctionUnit> getLsJunctionUnit(String condition, boolean cis5to3, String chrID, int locSite) {
+		List<JunctionUnit> lsJunctionUnits = mapJunSite2JunUnit.get(chrID + SepSign.SEP_ID + locSite);
+		List<JunctionUnit> lsJuncResult = new ArrayList<>();
+		for (JunctionUnit junctionUnit : lsJunctionUnits) {
+			if (strandSpecific != StrandSpecific.NONE && cis5to3 != junctionUnit.isCis5to3()) {
+				continue;
+			}
+			lsJuncResult.add(junctionUnit);
+		}
+		return lsJuncResult;
+	}
+	
+	/**
+	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
 	 * @param condition 时期
 	 * @param cis5to3 方向
 	 * @param chrID
@@ -276,6 +295,12 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		Map<String, Double> mapGroup2Value = new HashMap<>();
 		for (String group : mapCondition2Group.get(condition)) {
 			mapGroup2Value.put(group, getJunctionSite(condition, group, cis5to3, chrID, locStartSite, locEndSite));
+		}
+		if (mapGroup2Value.isEmpty()) {
+			for (String group : mapCondition2Group.get(condition)) {
+				mapGroup2Value.put(group, 0.0);
+			}
+			return mapGroup2Value;
 		}
 		return mapGroup2Value;
 	}

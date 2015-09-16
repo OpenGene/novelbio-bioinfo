@@ -2,14 +2,15 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -32,8 +33,32 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
 		Align align = getDifSite();
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
-		Map<String, Double> mapGroup2Value1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs());
-		Map<String, Double> mapGroup2Value2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
+		//第一个剪接点
+		List<JunctionUnit> lsJunctionStart = tophatJunction.getLsJunctionUnit(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs());
+		//第二个剪接点
+		List<JunctionUnit> lsJunctionEnd = tophatJunction.getLsJunctionUnit(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
+		
+		Map<String, Double> mapGroup2Value1 = new HashMap<>();
+		Map<String, Double> mapGroup2Value2 = new HashMap<>();
+		for (JunctionUnit junctionUnit : lsJunctionStart) {
+			if (isInsideExonCluster(junctionUnit)) {
+				continue;
+			}
+			Map<String, Double> mapGroup2ValueTmp1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(),
+					exonCluster.getRefID(), junctionUnit.getStartAbs(), junctionUnit.getEndAbs());
+			addMapGroup2Value(mapGroup2Value1, mapGroup2ValueTmp1);
+		}
+		for (JunctionUnit junctionUnit : lsJunctionEnd) {
+			if (isInsideExonCluster(junctionUnit)) {
+				continue;
+			}
+			Map<String, Double> mapGroup2ValueTmp2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(),
+					exonCluster.getRefID(), junctionUnit.getStartAbs(), junctionUnit.getEndAbs());
+			addMapGroup2Value(mapGroup2Value2, mapGroup2ValueTmp2);
+		}
+		
+//		Map<String, Double> mapGroup2Value1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs());
+//		Map<String, Double> mapGroup2Value2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
 		if (mapGroup2Value2.size() == 0) {
 			mapGroup2Value2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
 		}
@@ -42,12 +67,28 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		return mapGroup2LsValue;
 	}
 	
+	private boolean isInsideExonCluster(JunctionUnit junctionUnit) {
+		boolean startIn = junctionUnit.getStartAbs() > exonCluster.getStartAbs() && junctionUnit.getStartAbs() < exonCluster.getEndAbs();
+		boolean endIn = junctionUnit.getEndAbs() > exonCluster.getStartAbs() && junctionUnit.getEndAbs() < exonCluster.getEndAbs();
+		return startIn && endIn;
+	}
+	
 	private void addMapGroup2Value(ArrayListMultimap<String, Double> mapGroup2LsValue, Map<String, Double> mapGroup2ValueTmp) {
 		for (String group : mapGroup2ValueTmp.keySet()) {
 			mapGroup2LsValue.put(group, mapGroup2ValueTmp.get(group));
 		}
 	}
 	
+	private void addMapGroup2Value(Map<String, Double> mapGroup2Value, Map<String, Double> mapGroup2ValueTmp) {
+		for (String group : mapGroup2ValueTmp.keySet()) {
+			double value = mapGroup2ValueTmp.get(group);
+			if (mapGroup2Value.containsKey(group)) {
+				value = mapGroup2Value.get(group) + value;
+				
+			}
+			mapGroup2Value.put(group, value);
+		}
+	}
 	/** 获得alt5， alt3的差异位点 */
 	@Override
 	public Align getDifSite() {
@@ -110,4 +151,7 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	
 	protected abstract void find();
 
+	public static boolean isOverlap(Alignment alg1, Alignment alg2) {
+		return alg1.getStartAbs() < alg2.getEndAbs() && alg1.getEndAbs() > alg2.getStartAbs(); 
+	}
 }

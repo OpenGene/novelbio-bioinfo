@@ -49,6 +49,9 @@ public interface ISpliceTestModule {
 	 */
 	public String getCondtionCtrl(boolean isInt);
 	
+	/** 返回该位点的reads情况，譬如SE类型，则skip有25条 exon的有30条，即为 25，30 */
+	public int[] getReadsInfo();
+	
 	public static class SpliceTestFactory {
 		
 		/**
@@ -235,6 +238,25 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		for (int i = 0; i < result.length; i++) {
 			result[i] = lsDouble.get(i).intValue();
 		}
+		return result;
+	}
+	
+	/** 返回该位点的reads情况 */
+	public int[] getReadsInfo() {
+		double[] a2b = new double[2];
+		for (String ctrl : mapCtrl2LsValue.keys()) {
+			List<Double> lsValue = mapCtrl2LsValue.get(ctrl);
+			for (int i = 0; i < 2; i++) {
+				a2b[i] += lsValue.get(i);
+			}
+		}
+		for (String treat : mapTreat2LsValue.keys()) {
+			List<Double> lsValue = mapTreat2LsValue.get(treat);
+			for (int i = 0; i < 2; i++) {
+				a2b[i] += lsValue.get(i);
+			}
+		}
+		int[] result = new int[]{(int) a2b[0], (int) a2b[1]};
 		return result;
 	}
 	
@@ -479,5 +501,28 @@ class SpliceTestCombine implements ISpliceTestModule {
 	/** 返回整理好的比较结果展示 */
 	public String getCondtionCtrl(boolean isInt) {
 		return isInt? SpliceTestRepeat.getConditionInt(mapCtrl2LsValue) : SpliceTestRepeat.getCondition(mapCtrl2LsValue);
+	}
+	
+	/** 返回该位点的reads情况 */
+	public int[] getReadsInfo() {
+		double[] a2b = new double[2];
+		for (String ctrl : mapCtrl2LsValue.keys()) {
+			List<Double> lsValue = mapCtrl2LsValue.get(ctrl);
+			for (int i = 0; i < 2; i++) {
+				if (i >= lsValue.size()) continue;
+				
+				a2b[i] += lsValue.get(i);
+			}
+		}
+		for (String treat : mapTreat2LsValue.keys()) {
+			List<Double> lsValue = mapTreat2LsValue.get(treat);
+			for (int i = 0; i < 2; i++) {
+				if (i >= lsValue.size()) continue;
+				
+				a2b[i] += lsValue.get(i);
+			}
+		}
+		int[] result = new int[]{(int) a2b[0], (int) a2b[1]};
+		return result;
 	}
 }

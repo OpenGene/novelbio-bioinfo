@@ -29,7 +29,7 @@ import com.novelbio.listOperate.ListCodAbsDu;
  *  */
 public class GenerateNewIso {
 	private static final Logger logger = Logger.getLogger(GenerateNewIso.class);
-	/** 至少有20条reads支持的junction才会用于重建转录本 */
+	/** 至少有15条reads支持的junction才会用于重建转录本 */
 	int newIsoReadsNum = 15;
 	int blankNum = 30;//至少超过50bp的没有reads堆叠的区域，才被认为是intron
 	int longExon = 200;//超过100bp就认为是比较长的exon，就需要做判定了
@@ -49,6 +49,11 @@ public class GenerateNewIso {
 		this.mapReads = mapReads;
 	}
 	
+	/** 至少有多少条reads支持的junction才会用于重建转录本，默认15 */
+	public void setNewIsoReadsNum(int newIsoReadsNum) {
+		this.newIsoReadsNum = newIsoReadsNum;
+	}
+	
 	public void setGffHash(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
@@ -58,6 +63,8 @@ public class GenerateNewIso {
 	}
 	
 	public void reconstructGffDetailGene() {
+		if (!isNeedReconstruct()) return;
+		
 		List<JunctionUnit> lsJunUnit = getLsJunUnit(gffDetailGene);
 		Set<String> setJunInfoLast = getJunctionInfo(lsJunUnit);
 		//循环直至找不到新的junction reads
@@ -75,12 +82,20 @@ public class GenerateNewIso {
 				}
 			}
 			lsJunUnit = getLsJunUnit(gffDetailGene);
+			//去重复
 			Set<String> setJunInfo = getJunctionInfo(lsJunUnit);
+			//如果找到的junction数量是最长转录本exon的10倍，一般来说这里的junction事件会非常复杂，
+			//所以怀疑该处的剪接事件很混乱。为了保证准确性，不进行转录本重建的工作
+			if (setJunInfo.size() > gffDetailGene.getLsCodSplit().size() * 10) {
+				break;
+			}
+			
 			if (setJunInfo.equals(setJunInfoLast)) {
 				break;
 			}
 			setJunInfoLast = setJunInfo;
 		}
+		//TODO 这里连续的扩大junction的数量，所以会引入很多噪声
 		//再反着来
 //		for (int i = lsJunUnit.size() - 1; i >= 0; i--) {
 //			JunctionUnit junctionUnit = lsJunUnit.get(i);
@@ -91,6 +106,21 @@ public class GenerateNewIso {
 		logger.debug("stop");
 		//最后可以构建出比较长的iso
 	}
+	
+	/** 是否需要重建转录本，有些单基因的就不要重建了要不然很乱 */
+	private boolean isNeedReconstruct() {
+		int onExonIsoNum = 0;
+		for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+			if (iso.getLsElement().size() == 1) {
+				onExonIsoNum++;
+			}
+		}
+		if ((double)onExonIsoNum/gffDetailGene.getLsCodSplit().size() > 0.7) {
+			return false;
+		}
+		return true;
+	}
+	
 	
 	/** 获得与该基因相关的全体JunctionUnit */
 	private List<JunctionUnit> getLsJunUnit(GffDetailGene gffDetailGene) {
@@ -108,10 +138,7 @@ public class GenerateNewIso {
 			for (JunctionUnit junctionUnit : junctionInfo.lsJunctionUnits) {
 				if (junctionUnit.getStartAbs() <= gffDetailGene.getStartAbs() && junctionUnit.getEndAbs() >= gffDetailGene.getEndAbs()
 						|| 
-						(
-						  (junctionUnit.getLength() > gffDetailGene.getLength() &&  junctionInfo.lsJunctionUnits.size() >= 5)
-						   ||  (junctionUnit.getLength() > 4 * gffDetailGene.getLength() && junctionInfo.lsJunctionUnits.size() >= 5))
-						) {
+						 junctionUnit.getLength() > 0.8 * gffDetailGene.getLength()) {
 					continue;
 				}
 				if(isJunctionCoverTwoGene(gffDetailGene, junctionUnit)) {
@@ -127,7 +154,7 @@ public class GenerateNewIso {
 				return into1.compareTo(into2);
 			}
 		});
-		
+
 		return lsJunUnit;
 	}
 	

@@ -31,6 +31,8 @@ import com.novelbio.listOperate.ListCodAbsDu;
 public class ExonCluster implements Alignment {
 	private static final Logger logger = Logger.getLogger(ExonCluster.class);
 	
+	ExonClusterSite exonClusterSite;
+	
 	/** 全体父亲ISO */
 	List<GffGeneIsoInfo> colGeneIsoInfosParent;
 	ExonCluster exonClusterBefore;
@@ -233,7 +235,7 @@ public class ExonCluster implements Alignment {
 			return false;
 		}
 		for (List<ExonInfo> lsexons : mapIso2LsExon.values()) {
-			if (lsexons.size() > 2) {
+			if (lsexons.size() >= 2) {
 				return false;
 			}
 			if (lsexons.size() == 1) {
@@ -655,6 +657,9 @@ public class ExonCluster implements Alignment {
 	 */
 	public List<SpliceTypePredict> getSplicingTypeLs() {
 		if (lsSpliceTypePredicts == null) {
+			if (getStartAbs() == 16441011) {
+				logger.debug("");
+			}
 			lsSpliceTypePredicts = SpliceTypePredict.getSplicingTypeLs(this);
 		}
 		return lsSpliceTypePredicts;
@@ -670,4 +675,11 @@ public class ExonCluster implements Alignment {
 		return getRefID() + " " +getStartAbs() + " " + getEndAbs() + " " + getParentGene().getName();
 	}
 	
+	
+	public void setExonClusterSite(ExonClusterSite exonClusterSite) {
+		this.exonClusterSite = exonClusterSite;
+	}
+	public ExonClusterSite getExonClusterSite() {
+		return exonClusterSite;
+	}
 }

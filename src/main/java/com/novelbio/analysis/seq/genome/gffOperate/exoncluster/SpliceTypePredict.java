@@ -224,7 +224,6 @@ public abstract class SpliceTypePredict {
 		if (exonCluster.isSameExonInExistIso() || exonCluster.isNotSameTss_But_SameEnd() || exonCluster.isAtEdge()) {
 			return lsSpliceTypePredictsTmp;
 		}
-		
 		SpliceTypePredict spliceTypeME = new PredictME(exonCluster);
 		SpliceTypePredict spliceTypeAS = new PredictAltStart(exonCluster);
 		SpliceTypePredict spliceTypeAE = new PredictAltEnd(exonCluster);
