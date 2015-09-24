@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.service.servinformation.ManageSoftWareInfo;
+import com.novelbio.database.service.servinformation.MgmtSoftWareInfo;
 
 /**
  * 生物信息的软件以及执行路径
@@ -166,12 +166,6 @@ public class SoftWareInfo {
 		return installPath;
 	}
 	////////////////////////////////////////////////////充血模型 ///////////////////////////////////////////////////////////
-	/**
-	 * 升级本信息，没有就插入，有就升级
-	 */
-	public void update() {
-		ManageSoftWareInfo.getInstance().update(this);
-	}
 	
 	/**
 	 * 必须要有软件名，最好有版本号
@@ -183,7 +177,7 @@ public class SoftWareInfo {
 		if (softName == null || softName.trim().equals("")) {
 			return;
 		}
-		SoftWareInfo softWareInfos = ManageSoftWareInfo.getInstance().findSoftwareByName(softName);
+		SoftWareInfo softWareInfos = MgmtSoftWareInfo.getInstance().findSoftwareByName(softName);
 		copyInfo(softWareInfos);
 		searched = true;
 	}
@@ -234,7 +228,7 @@ public class SoftWareInfo {
 	 * @param txtFile 	 配置信息：第一行，item名称
 	 */
 	public static void updateInfo(String txtFile) {
-		ManageSoftWareInfo.getInstance().updateInfo(txtFile);
+		MgmtSoftWareInfo.getInstance().updateInfo(txtFile, true);
 	}
 	public static enum SoftWare {
 		blast,

@@ -173,6 +173,7 @@ public abstract class MapDNA implements MapDNAint {
 	}
 	
 	public void IndexMake() {
+		System.out.println();
 		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
 			return;
 		}

@@ -38,6 +38,8 @@ public class SamReducer {
 	OutputStream os;
 	boolean start = false;
 	
+	int i = 0;
+	
 	public static void main(String[] args) {
 		Options opts = new Options();
 		opts.addOption("refseq", true, "refseq, used to create sam head");
@@ -100,6 +102,10 @@ public class SamReducer {
 				continue;
 			}
 			addSamRecordTxt(content);
+			
+			if (++i % 5000000 == 0) {
+				logger.info("write record num " + i);
+			}
 		}
 		
 	}

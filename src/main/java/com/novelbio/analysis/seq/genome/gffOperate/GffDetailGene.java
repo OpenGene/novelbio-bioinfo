@@ -589,6 +589,9 @@ public class GffDetailGene extends ListDetailAbs {
 		if (removeDuplicateIso) {
 			return;
 		}
+		if (getNameSingle().equals("ENSG00000163395")) {
+			logger.debug("");
+		}
 		removeDuplicateIso = true;
 		HashMap<String, GffGeneIsoInfo> mapIso = new HashMap<String, GffGeneIsoInfo>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
@@ -681,6 +684,14 @@ public class GffDetailGene extends ListDetailAbs {
 			cis5to3 = null;
 		}
 		
+		//修改名字
+		String IsoName = gffGeneIsoInfo.getName();
+		int i = 1;
+		while (isContainsIso(IsoName)) {
+			IsoName = FileOperate.changeFileSuffix(IsoName, "", ""+i).replace("/", "");
+			i++;
+		}
+		gffGeneIsoInfo.setName(IsoName);
 		gffGeneIsoInfo.setGffDetailGeneParent(this);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 		

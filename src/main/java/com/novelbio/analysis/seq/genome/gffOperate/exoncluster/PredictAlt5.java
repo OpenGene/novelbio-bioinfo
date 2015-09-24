@@ -26,7 +26,7 @@ public class PredictAlt5 extends PredictAlt5Or3 {
 		List<Alignment> lsAlignments = new ArrayList<Alignment>();
 		Align alignBG = null;
 		int startBGcis = exonCluster.getStartCis();
-		Align align = getDifSite();
+		Align align = getDifSite().get(0);
 		int startSpliceCis = align.getStartCis();
 		alignBG = new Align(exonCluster.getRefID(), startBGcis, startSpliceCis);
 		alignBG.setCis5to3(exonCluster.isCis5to3());

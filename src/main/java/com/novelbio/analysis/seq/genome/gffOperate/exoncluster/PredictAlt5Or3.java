@@ -31,7 +31,7 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 
 	@Override
 	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
-		Align align = getDifSite();
+		Align align = getDifSite().get(0);
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
 		//第一个剪接点
 		List<JunctionUnit> lsJunctionStart = tophatJunction.getLsJunctionUnit(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs());
@@ -91,7 +91,7 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	}
 	/** 获得alt5， alt3的差异位点 */
 	@Override
-	public Align getDifSite() {
+	public List<Align> getDifSite() {
 		Map<Double, List<Integer>> mapJuncNum2Edge = new TreeMap<>(new Comparator<Double>() {
 			public int compare(Double o1, Double o2) {
 				return -o1.compareTo(o2);
@@ -132,7 +132,10 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		}
 		Align align = new Align(exonCluster.getRefID(), MathComput.min(startEnd), MathComput.max(startEnd));
 		align.setCis5to3(exonCluster.isCis5to3());
-		return align;
+		
+		List<Align> lsAligns = new ArrayList<>();
+		lsAligns.add(align);
+		return lsAligns;
 	}
 
 	

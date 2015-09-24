@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.hg.data.a;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
@@ -73,8 +74,11 @@ public class PredictStartDifStart extends SpliceTypePredict {
 	//TODO
 	/** 待修正 */
 	@Override
-	public Align getDifSite() {
-		return new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+	public List<Align> getDifSite() {
+		Align align = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		List<Align> lsAligns = new ArrayList<>();
+		lsAligns.add(align);
+		return lsAligns;
 	}
 
 

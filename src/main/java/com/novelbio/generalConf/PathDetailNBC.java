@@ -120,6 +120,9 @@ public class PathDetailNBC {
 	
 	/** software配置文件的路径 */
 	public static String getSoftwareInfo() {
+		if (!properties.contains("Software")) {
+			return null;
+		}
 		String software = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("Software");
 		if (!software.startsWith("/") && !software.startsWith("\\")) {
 			if (!FileOperate.isFileExistAndBigThanSize(software, 0)) {

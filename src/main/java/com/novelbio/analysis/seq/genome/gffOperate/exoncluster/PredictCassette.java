@@ -394,8 +394,25 @@ public class PredictCassette extends SpliceTypePredict {
 	}
 
 	@Override
-	public Align getDifSite() {
-		return new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+	public List<Align> getDifSite() {
+		List<Align> lsAligns = new ArrayList<>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
+			List<ExonInfo> lsExons = exonCluster.getIsoExon(gffGeneIsoInfo);
+			if (lsExons.size() > 1) {
+				for (ExonInfo exonInfo : lsExons) {
+					Align align = new Align(exonInfo);
+					align.setChrID(exonCluster.getRefID());
+					lsAligns.add(align);
+					break;
+				}
+			}
+		}
+		if (lsAligns.isEmpty()) {
+			Align align = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+			lsAligns.add(align);
+		}
+
+		return lsAligns;
 	}
 
 	@Override

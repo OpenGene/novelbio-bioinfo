@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.hg.sql.al;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -34,6 +35,20 @@ public class Align implements Alignment {
 			cis5to3 = false;
 		}
 	}
+	
+	/**
+	 * 根据输入的start和end自动正反向cis5to3
+	 * @param chrID
+	 * @param start
+	 * @param end
+	 */
+	public Align(Alignment alignment) {
+		this.chrID = alignment.getRefID();
+		this.start = alignment.getStartAbs();
+		this.end = alignment.getEndAbs();
+		this.cis5to3 = alignment.isCis5to3();
+	}
+	
 	/**
 	 * 输入类似 chr16:77099624-77099746
 	 * 这种

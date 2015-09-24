@@ -28,6 +28,9 @@ public interface ISpliceTestModule {
 	
 	public double calculatePvalue();
 	
+	/** 默认开启标准化 */
+	public void setMakeSmallValueBigger(boolean makeSmallValueBigger);
+	
 	/**
 	 * 设定junction数量，小于该数量的不会进行分析
 	 * @param juncAllReadsNum 所有样本的junction数量必须大于该值，否则不进行计算，默认25
@@ -52,8 +55,11 @@ public interface ISpliceTestModule {
 	/** 返回该位点的reads情况，譬如SE类型，则skip有25条 exon的有30条，即为 25，30 */
 	public int[] getReadsInfo();
 	
+	public String getSiteInfo();
+	
+	double getSpliceIndex();
+	
 	public static class SpliceTestFactory {
-		
 		/**
 		 * 是否将n次重复的reads合并为一个bam文件，然后进行分析
 		 * @param combine true：合并，false：考虑重复
@@ -72,18 +78,17 @@ public interface ISpliceTestModule {
 }
 
 class SpliceTestRepeat implements ISpliceTestModule {
+	boolean makeSmallValueBigger = true;
 	/** 将reads的数量扩大5倍，这样可以获得更多的差异 */
 	static int foldbig = 2;
 	/** 将reads的数量扩大3倍，这样可以获得更多的差异 */
 	static int foldMid = 2;
-	/** 如果reads数量过少，可以考虑扩大3倍 */
-	static int foldsmall = 2;
 	
 	int juncAllReadsNum = 25;
 	int juncSampleReadsNum = 10;
 	
 	/** 如果count数超过该值，就标准化 */
-	int normalizedNum = 400;
+	int normalizedNum = 200;
 	
 	/** 本组比较中最大测序量的reads数 */
 	long maxReads = 0;
@@ -98,6 +103,14 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	 */
 	List<List<Double>> lsCtrl2LsValue;
 	ArrayListMultimap<String, Double> mapCtrl2LsValue;
+	
+	List<int[]> lsTreatValue = new ArrayList<>();
+	List<int[]> lsCtrlValue = new ArrayList<>();
+	
+	@Override
+	public void setMakeSmallValueBigger(boolean makeSmallValueBigger) {
+		this.makeSmallValueBigger = makeSmallValueBigger;
+	}
 	
 	/** 设定junction数量，小于该数量的不会进行分析
 	 * 
@@ -143,6 +156,8 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	}
 	
 	private int getFold(ArrayListMultimap<String, Double> mapCtrl2LsValue) {
+		if (!makeSmallValueBigger) return 1;
+		
 		double valueAll = 0;
 		for (Double value : mapCtrl2LsValue.values()) {
 			valueAll += value;
@@ -152,7 +167,7 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		} else if (valueAll >= 20 && valueAll < 80) {
 			return foldMid;
 		} else {
-			return foldsmall;
+			return 1;
 		}
 	}
 	
@@ -213,6 +228,8 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		int[] cond1 = combReadsNumInt(mapTreat2LsValue);
 		int[] cond2 = combReadsNumInt(mapCtrl2LsValue);
 		if (!filter(cond1, cond2, juncAllReadsNum, juncSampleReadsNum)) {
+			lsTreatValue.add(cond1);
+			lsCtrlValue.add(cond2);
 			return 1.0;
 		}
 
@@ -222,10 +239,12 @@ class SpliceTestRepeat implements ISpliceTestModule {
 			List<Double> lsCtrl_OneRepeat = lsCtrl2LsValue.get(i);
 			int[] treatOne = getIntValue(lsTreat_OneRepeat);
 			int[] ctrlOne = getIntValue(lsCtrl_OneRepeat);
-			
+
 			normalizeToLowValue(treatOne, normalizedNum);
 			normalizeToLowValue(ctrlOne, normalizedNum);
 			
+			lsTreatValue.add(treatOne);
+			lsCtrlValue.add(ctrlOne);
 			chiSquareValue += chiSquareDataSetsComparison(treatOne, ctrlOne);
 		}
 		double df = (lsTreat2LsValue.size()) * (lsTreat2LsValue.get(0).size() ) - 1;
@@ -247,17 +266,49 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		for (String ctrl : mapCtrl2LsValue.keys()) {
 			List<Double> lsValue = mapCtrl2LsValue.get(ctrl);
 			for (int i = 0; i < 2; i++) {
+				if (i >= lsValue.size()) continue;
+				
 				a2b[i] += lsValue.get(i);
 			}
 		}
 		for (String treat : mapTreat2LsValue.keys()) {
 			List<Double> lsValue = mapTreat2LsValue.get(treat);
 			for (int i = 0; i < 2; i++) {
+				if (i >= lsValue.size()) continue;
+				
 				a2b[i] += lsValue.get(i);
 			}
 		}
 		int[] result = new int[]{(int) a2b[0], (int) a2b[1]};
 		return result;
+	}
+	
+	/** 返回该位点的reads情况 */
+	public double getSpliceIndex() {
+		double[] a2b1 = new double[2];
+		double[] a2b2 = new double[2];
+		for (String ctrl : mapTreat2LsValue.keys()) {
+			List<Double> lsValue = mapTreat2LsValue.get(ctrl);
+			for (int i = 0; i < 2; i++) {
+				if (i >= lsValue.size()) continue;
+				
+				a2b1[i] += lsValue.get(i);
+			}
+		}
+		for (String treat : mapCtrl2LsValue.keys()) {
+			List<Double> lsValue = mapCtrl2LsValue.get(treat);
+			for (int i = 0; i < 2; i++) {
+				if (i >= lsValue.size()) continue;
+				
+				a2b2[i] += lsValue.get(i);
+			}
+		}
+		if ((a2b1[0] <= 1 && a2b2[0] <= 1) ||(a2b1[1] <= 1 && a2b2[1] <= 1)) {
+			return 1;
+		}
+		
+		a2b1[0] += 1; a2b1[1] += 1; a2b2[0] +=1; a2b2[1] += 1;
+		return Math.log10(a2b1[0]/a2b1[1]/(a2b2[0]/a2b2[1])) / Math.log10(2);
 	}
 	
 	/** 
@@ -400,15 +451,21 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		//2：3：50  4：2：50
 		//等就要删除了
 		int allReadsNum = MathComput.sum(cond1) + MathComput.sum(cond2);
-		int readsNumLess = 0;
-		for (int i = 0; i < cond1.length; i++) {
-			if (cond1[i] <= allReadsNum/20 && cond2[i] <= allReadsNum/20) {
-				readsNumLess++;
-			}
-		}
-		if (cond1.length - readsNumLess <= 1) {
+		
+		if (cond1.length <= 1 || cond2.length <= 1) {
 			return false;
 		}
+		
+		//判定基因表达差异太大也会过滤掉可变剪接
+//		int readsNumLess = 0;
+//		for (int i = 0; i < cond1.length; i++) {
+//			if (cond1[i] <= allReadsNum/20 && cond2[i] <= allReadsNum/20) {
+//				readsNumLess++;
+//			}
+//		}
+//		if (cond1.length - readsNumLess <= 1) {
+//			return false;
+//		}
 		
 		if (MathComput.sum(cond1) < juncReadsSampleMin || MathComput.sum(cond2) < juncReadsSampleMin) {
 			return false;
@@ -420,9 +477,29 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		return true;
 	}
 
+	@Override
+	public String getSiteInfo() {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (int[] list : lsCtrlValue) {
+			for (int double1 : list) {
+				stringBuilder.append(double1 + ":");
+			}
+			stringBuilder.append("|");
+		}
+		stringBuilder.append("@");
+		for (int[] list : lsTreatValue) {
+			for (int double1 : list) {
+				stringBuilder.append(double1 + ":");
+			}
+			stringBuilder.append("|");
+		}
+		return stringBuilder.toString();
+	}
+
 }
 
 class SpliceTestCombine implements ISpliceTestModule {
+	boolean makeSmallValueBigger = true;
 	/** 如果count数超过该值，就标准化 */
 	int normalizedNum = 200;
 	/** 实验组若干重复下的表达情况
@@ -435,10 +512,23 @@ class SpliceTestCombine implements ISpliceTestModule {
 	ArrayListMultimap<String, Double> mapCtrl2LsValue;
 	
 	/** 是否为fisher检验，false表示选择卡方检验 */
-	boolean isFisher = false;
+	boolean isFisher = true;
 	
 	int juncAllReadsNum = 25;
 	int juncSampleReadsNum = 10;
+	
+	/** 将reads的数量扩大5倍，这样可以获得更多的差异 */
+	static int foldbig = 2;
+	/** 将reads的数量扩大3倍，这样可以获得更多的差异 */
+	static int foldMid = 2;
+	
+	int[] cond1;
+	int[] cond2;
+	
+	@Override
+	public void setMakeSmallValueBigger(boolean makeSmallValueBigger) {
+		this.makeSmallValueBigger = makeSmallValueBigger;
+	}
 	
 	/** 设定junction数量，小于该数量的不会进行分析
 	 * 
@@ -462,14 +552,15 @@ class SpliceTestCombine implements ISpliceTestModule {
 	}
 	
 	public double calculatePvalue() {
-		int[] cond1 = combReadsNumInt(mapTreat2LsValue);
-		int[] cond2 = combReadsNumInt(mapCtrl2LsValue);
+		cond1 = combReadsNumInt(mapTreat2LsValue);
+		cond2 = combReadsNumInt(mapCtrl2LsValue);
 		if (!SpliceTestRepeat.filter(cond1, cond2, juncAllReadsNum, juncSampleReadsNum)) {
 			return 1.0;
 		}
 
 		SpliceTestRepeat.normalizeToLowValue(cond1, normalizedNum);
 		SpliceTestRepeat.normalizeToLowValue(cond2, normalizedNum);
+		
 		if (isFisher) {
 			int sum = (int) (cond1[0] + cond1[1] + cond2[0] + cond2[1]);
 			FisherTest fisherTest = new FisherTest(sum + 3);
@@ -490,7 +581,31 @@ class SpliceTestCombine implements ISpliceTestModule {
 				result[i] += lsValues.get(i);
 			}
 		}
+		
+		if (makeSmallValueBigger) {
+			normalizeByNum(result);
+		}
 		return result;
+	}
+	
+	private void normalizeByNum(int[] result) {
+		if (!makeSmallValueBigger) return;
+		
+		int allNum = 0;
+		for (int i : result) {
+			allNum += i;
+		}
+		
+		int fold = 1;
+		if (allNum < 30) {
+			fold = foldbig;
+		} else if (allNum >= 20 && allNum < 80) {
+			fold = foldMid;
+		}
+		for (int i = 0; i < result.length; i++) {
+			result[i] = result[i] * fold;
+		}
+	
 	}
 
 	
@@ -525,4 +640,47 @@ class SpliceTestCombine implements ISpliceTestModule {
 		int[] result = new int[]{(int) a2b[0], (int) a2b[1]};
 		return result;
 	}
+
+	@Override
+	public String getSiteInfo() {
+		StringBuilder stringBuilder = new StringBuilder();
+		for (int i : cond1) {
+			stringBuilder.append(i+":");
+		}
+		stringBuilder.append("@");
+		for (int i : cond2) {
+			stringBuilder.append(i+":");
+		}
+		return stringBuilder.toString();
+	}
+	
+	/** 返回该位点的reads情况 */
+	@Override
+	public double getSpliceIndex() {
+		double[] a2b1 = new double[2];
+		double[] a2b2 = new double[2];
+		for (String ctrl : mapTreat2LsValue.keys()) {
+			List<Double> lsValue = mapTreat2LsValue.get(ctrl);
+			for (int i = 0; i < 2; i++) {
+				if (i >= lsValue.size()) continue;
+				
+				a2b1[i] += lsValue.get(i);
+			}
+		}
+		for (String treat : mapCtrl2LsValue.keys()) {
+			List<Double> lsValue = mapCtrl2LsValue.get(treat);
+			for (int i = 0; i < 2; i++) {
+				if (i >= lsValue.size()) continue;
+				
+				a2b2[i] += lsValue.get(i);
+			}
+		}
+		if ((a2b1[0] <= 1 && a2b2[0] <= 1) ||(a2b1[1] <= 1 && a2b2[1] <= 1)) {
+			return 1;
+		}
+		
+		a2b1[0] += 1; a2b1[1] += 1; a2b2[0] +=1; a2b2[1] += 1;
+		return Math.log10(a2b1[0]/a2b1[1]/(a2b2[0]/a2b2[1])) / Math.log10(2);
+	}
+	
 }

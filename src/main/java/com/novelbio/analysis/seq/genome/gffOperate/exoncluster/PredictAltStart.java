@@ -47,6 +47,7 @@ public class PredictAltStart extends PredictAltStartEnd {
 		//2A. 3’端与现有的3‘端不同
 		//2B. 3’端与现有的3‘端相同，但是5‘端比现有的5’端长
 		//2A和2B只要符合一个就行
+		//感觉2B不行，还是把2B删除
 		Set<Integer> setEdge3 = new HashSet<>();//判定2A
 		int edge5Max = 0;
 		
@@ -64,7 +65,7 @@ public class PredictAltStart extends PredictAltStartEnd {
 				}
 			}
 		}
-		
+
 		lsSite = new ArrayList<>();
 		lslsExonInfos = new ArrayList<>();
 		for (List<ExonInfo> lsExonInfo : lslsExonInfosTmp) {
@@ -72,7 +73,9 @@ public class PredictAltStart extends PredictAltStartEnd {
 			int end = lsExonInfo.get(lsExonInfo.size() - 1).getEndCis();
 			Align align = new Align(exonCluster.getRefID(), start, end);
 
-			if ((exonCluster.isCis5to3() && start < edge5Max) || (!exonCluster.isCis5to3() && start > edge5Max) || !setEdge3.contains(end)) {
+			//去除2B的情况
+//			if ((exonCluster.isCis5to3() && start < edge5Max) || (!exonCluster.isCis5to3() && start > edge5Max) || !setEdge3.contains(end)) {
+			if (!setEdge3.contains(end)) {
 				lsSite.add(align);
 				lslsExonInfos.add(lsExonInfo);
 			}
@@ -80,7 +83,7 @@ public class PredictAltStart extends PredictAltStartEnd {
 	}
 	
 	@Override
-	public Align getDifSite() {
+	public List<Align> getDifSite() {
 		isType();
 		//倒序，获得junction最多的reads
 		TreeMap<Double, List<ExonInfo>> mapJuncNum2Exon = new TreeMap<>(new Comparator<Double>() {
@@ -100,7 +103,9 @@ public class PredictAltStart extends PredictAltStartEnd {
 			align = new Align(exonCluster.getRefID(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
 			break;
 		}		
-		return align;
+		List<Align> lsAligns = new ArrayList<>();
+		lsAligns.add(align);
+		return lsAligns;
 	}
 
 }

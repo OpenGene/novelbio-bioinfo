@@ -13,8 +13,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.hg.doc.fa;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * FastQ的各个指标<br>
@@ -40,10 +40,26 @@ class FastQReader implements Closeable {
 	boolean isCheckFormat = true;
 	int readsLenAvg = 0;
 	boolean isInterleaved = false;
+	
+	/** 如果遇到reads错误，往下读几行 */
+	int readNextNum = 0;
+	
 	/** 标准文件名的话，自动判断是否为gz压缩 */
 	public FastQReader(File seqFile) {
 		txtSeqFile = new TxtReadandWrite(seqFile, false);
 		getOffset();
+	}
+	
+	/** 如果遇到reads错误，往下读几行，用于双端读取的时候，
+	 * 如果左端和右端不符合，则很可能某一端的文件出错，这
+	 * 时候就要左右端分别往下读几行
+	 */
+	public int getReadNextNum() {
+		return readNextNum;
+	}
+	/** 如果读到正确的fastqrecord，那么这个就要归0，等待下次使用 */
+	public void resetReadNextNum() {
+		readNextNum = 0;
 	}
 	
 	/** 标准文件名的话，自动判断是否为gz压缩 */
@@ -197,6 +213,8 @@ class FastQReader implements Closeable {
 							if (isCheckFormat) {
 								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4, efastq);
 							} else {
+								readNextNum = 0;
+
 								String errMsg = "fastq file error on line: " + lineNum[0]/4;
 								if (txtSeqFile.getFileName() != null) {
 									errMsg += " fileName: " + txtSeqFile.getFileName(); 
@@ -205,6 +223,7 @@ class FastQReader implements Closeable {
 								while (true) {
 									String next = null;
 									try {
+										readNextNum++;
 										next = bufread.readLine();
 										lineNum[0]++;
 									} catch (Exception e) {
@@ -279,8 +298,14 @@ class FastQReader implements Closeable {
 	 * @throws IOException
 	 */
 	private Iterable<FastQRecord[]> readPerlinesPE() throws Exception {
-		final BufferedReader bufread1 =  txtSeqFile.readfile();
-		final BufferedReader bufread2 = fastQReadMate.txtSeqFile.readfile();
+		//双端的话内部不检查
+		setCheckFormat(false);
+		fastQReadMate.setCheckFormat(false);
+		
+		final Iterator<FastQRecord> itL =  readlines().iterator();
+		final Iterator<FastQRecord> itR = fastQReadMate.readlines().iterator();
+		final int retryNum = 10000;
+		final int[] errorNum = new int[]{0};
 		final long[] lineNum = new long[1];
 		return new Iterable<FastQRecord[]>() {
 			public Iterator<FastQRecord[]> iterator() {
@@ -299,30 +324,62 @@ class FastQReader implements Closeable {
 					}
 					FastQRecord[] getLine() {
 						lineNum[0]++;
+
+						
 						FastQRecord[] fastQRecord = new FastQRecord[2];
-						try {
-							String linestr1 = bufread1.readLine();
-							String linestr2 = bufread2.readLine();
-							for (int i = 0; i < 3; i++) {
-								String lineTmp1 = bufread1.readLine();
-								String lineTmp2 = bufread2.readLine();
-								if (linestr1 == null || linestr2 == null) {
-									return null;
-								}
-								linestr1 = linestr1 + TxtReadandWrite.ENTER_LINUX + lineTmp1;
-								linestr2 = linestr2 + TxtReadandWrite.ENTER_LINUX + lineTmp2;
-							}
-							fastQRecord[0] = new FastQRecord(linestr1, offset);
-							fastQRecord[1] = new FastQRecord(linestr2, offset);
-							fastQRecord[0].setFastqOffset(offset);
-							fastQRecord[0].setFastqOffset(offset);
-						} catch (IOException ioEx) {
-							fastQRecord = null;
-						} catch (ExceptionFastq efastq) {
-							if (isCheckFormat) {
-								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq format error on line: " + lineNum[0]);
-							}
+						
+						fastQRecord[0] = itL.next();
+						fastQRecord[1] = itR.next();
+						if (fastQRecord[0] == null && fastQRecord[1] == null) {
+							return null;
+						} else if (!(fastQRecord[0] != null && fastQRecord[1] != null)) {
+							throw new ExceptionFastq("input file is not pairend at num " +  lineNum[0]
+									+ FileOperate.getFileName(getFileName()) + " " + FileOperate.getFileName(fastQReadMate.getFileName()));
 						}
+						
+						
+						if (!FastQRecord.isPairedByName(fastQRecord[0], fastQRecord[1])) {
+							errorNum[0]++;
+							if (errorNum[0] > 10) {
+								throw new ExceptionFastq("input pairend file have lots of reads that does't paired pleas check " +  lineNum[0]
+										+ FileOperate.getFileName(getFileName()) + " " + FileOperate.getFileName(fastQReadMate.getFileName()));
+							}
+							int readErrNumL = getReadNextNum();
+							int readErrNumR = fastQReadMate.getReadNextNum();
+							if ((readErrNumL == 0 && readErrNumR == 0) || (readErrNumL != 0 && readErrNumR != 0)) {
+								throw new ExceptionFastq("input file is not pairend at num " +  lineNum[0]
+										+ FileOperate.getFileName(getFileName()) + " " + FileOperate.getFileName(fastQReadMate.getFileName()));
+							}
+							
+							resetReadNextNum(); fastQReadMate.resetReadNextNum();
+							boolean readRightRecord = false;
+							if (readErrNumL == 0) {
+								//往下查10000条
+								for (int i = 0; i < retryNum; i++) {
+									fastQRecord[0] = itL.next();
+									if (FastQRecord.isPairedByName(fastQRecord[0], fastQRecord[1])) {
+										readRightRecord = true;
+										break;
+									}									
+								}
+							} else {
+								//往下查10000条
+								for (int i = 0; i < retryNum; i++) {
+									fastQRecord[1] = itR.next();
+									if (FastQRecord.isPairedByName(fastQRecord[0], fastQRecord[1])) {
+										readRightRecord = true;
+										break;
+									}									
+								}
+							}
+							
+							if (!readRightRecord) {
+								throw new ExceptionFastq("input file is not pairend at num " + lineNum[0] 
+										+ FileOperate.getFileName(getFileName()) + " " + FileOperate.getFileName(fastQReadMate.getFileName()));
+							}
+							
+						}
+						
 						return fastQRecord;
 					}
 				};

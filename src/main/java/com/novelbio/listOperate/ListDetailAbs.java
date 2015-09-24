@@ -284,7 +284,11 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 	 * 一个转录本里面既有正向也有反向，选择方向最多的那个
 	 */
 	public Boolean isCis5to3() {
-		return this.cis5to3;
+		if (cis5to3 != null) return cis5to3;
+		if (listAbs != null && listAbs.isCis5to3() != null) {
+			return listAbs.isCis5to3();
+		}
+		return cis5to3;
 	}
 	public void setCis5to3(Boolean cis5to3) {
 		this.cis5to3 = cis5to3;
@@ -406,7 +410,7 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		Integer o1startAbs = getStartAbs(); Integer o1endAbs = getEndAbs();
 		Integer o2startAbs = o.getStartAbs(); Integer o2endAbs = o.getEndAbs();
 		
-		if (listAbs == null || listAbs.isCis5to3() == null) {
+		if (isCis5to3() == null) {
 			int result = o1startAbs.compareTo(o2startAbs);
 			if (result == 0) {
 				return o1endAbs.compareTo(o2endAbs);
@@ -414,7 +418,7 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 			return result;
 		}
 		
-		else if (listAbs.isCis5to3()) {
+		else if (isCis5to3()) {
 			int result = o1startCis.compareTo(o2startCis);
 			if (result == 0) {
 				return o1endCis.compareTo(o2endCis);

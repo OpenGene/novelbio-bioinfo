@@ -134,9 +134,11 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 		}
 	}
 	
-	public Align getDifSite() {
+	public List<Align> getDifSite() {
 		getJunctionSite();
-		return alignRetain;
+		List<Align> lsAligns = new ArrayList<>();
+		lsAligns.add(alignRetain);
+		return lsAligns;
 	}
 	
 	/** 把两边的区域挑出来 */
@@ -145,7 +147,7 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 		List<Alignment> lsAlignments = new ArrayList<Alignment>();
 		int startBGAbs = exonCluster.getStartAbs();
 		int endBGAbs = exonCluster.getEndAbs();
-		Align align = getDifSite();
+		Align align = getDifSite().get(0);
 		int startSplitAbs = align.getStartAbs();
 		int endSplitAbs = align.getEndAbs();
 		Align alignLeft = new Align(exonCluster.getRefID(), startBGAbs, startSplitAbs);

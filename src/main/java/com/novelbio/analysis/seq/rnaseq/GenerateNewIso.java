@@ -5,12 +5,14 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
@@ -21,20 +23,33 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.base.SepSign;
+import com.novelbio.listOperate.ListAbs;
 import com.novelbio.listOperate.ListCodAbs;
 import com.novelbio.listOperate.ListCodAbsDu;
 
 /** 根据junction reads，产生新的iso
  * 暂时没有考虑链特异性测序
- *  */
+*/
 public class GenerateNewIso {
 	private static final Logger logger = Logger.getLogger(GenerateNewIso.class);
 	/** 至少有15条reads支持的junction才会用于重建转录本 */
 	int newIsoReadsNum = 15;
-	int blankNum = 30;//至少超过50bp的没有reads堆叠的区域，才被认为是intron
+	
+	//判断一个区段是否为exon时用到的参数
+	int blankNum = 30;///如果有超过30bp的区域没有reads堆叠，则被认为是intron
+	double blankProp = 0.2; //如果有20%的区域没有reads堆叠，则被认为是intron
+	int blankMinCoverage = 8;//至少要有8条reads覆盖，才认为该区域有reads堆叠
+	/** 重建exon的时候，如果junction大于该长度，则不重建 */
+	int maxRIlen = 4000;
+	
+	/** 是否重建RI位点 */
+	boolean isReconstructRI = true;
 	int longExon = 200;//超过100bp就认为是比较长的exon，就需要做判定了
 	int maxExonLen = 1000;
 	int catchNum = 50000;
+
+	int minIntronLen = 25;
+	
 	TophatJunction tophatJunctionNew;
 
 	GffHashGene gffHashGene;
@@ -43,12 +58,15 @@ public class GenerateNewIso {
 	MapReads mapReads;
 	Map<String, Boolean> mapLoc2IsCovered = new HashMap<>();
 	
-	public GenerateNewIso(TophatJunction tophatJunctionNew, MapReads mapReads, StrandSpecific considerStrand) {
+	public GenerateNewIso(TophatJunction tophatJunctionNew, MapReads mapReads, StrandSpecific considerStrand, boolean isReconstructRI) {
 		this.tophatJunctionNew = tophatJunctionNew;
 		this.considerStrand = (considerStrand != StrandSpecific.NONE);
 		this.mapReads = mapReads;
+		this.isReconstructRI = isReconstructRI;
 	}
-	
+	public void setMinIntronLen(int minIntronLen) {
+		this.minIntronLen = minIntronLen;
+	}
 	/** 至少有多少条reads支持的junction才会用于重建转录本，默认15 */
 	public void setNewIsoReadsNum(int newIsoReadsNum) {
 		this.newIsoReadsNum = newIsoReadsNum;
@@ -103,7 +121,10 @@ public class GenerateNewIso {
 //				reconstructIso(junctionUnit);
 //			}
 //		}
-		logger.debug("stop");
+		
+		if (isReconstructRI) {
+			reconstructRI();
+		}
 		//最后可以构建出比较长的iso
 	}
 	
@@ -136,6 +157,8 @@ public class GenerateNewIso {
 		List<JunctionUnit> lsJunUnit = new ArrayList<>();
 		for (JunctionInfo junctionInfo : lsJunDu.getAllGffDetail()) {
 			for (JunctionUnit junctionUnit : junctionInfo.lsJunctionUnits) {
+				if (junctionUnit.getLength() < minIntronLen) continue;
+				
 				if (junctionUnit.getStartAbs() <= gffDetailGene.getStartAbs() && junctionUnit.getEndAbs() >= gffDetailGene.getEndAbs()
 						|| 
 						 junctionUnit.getLength() > 0.8 * gffDetailGene.getLength()) {
@@ -162,9 +185,13 @@ public class GenerateNewIso {
 	private Set<String> getJunctionInfo(List<JunctionUnit> lsJunctionUnits) {
 		Set<String> setJunInfo = new HashSet<>();
 		for (JunctionUnit junctionUnit : lsJunctionUnits) {
-			setJunInfo.add(junctionUnit.getRefID() + SepSign.SEP_ID + junctionUnit.getStartAbs() + SepSign.SEP_ID + junctionUnit.getEndAbs());
+			setJunInfo.add(getKey(junctionUnit));
 		}
 		return setJunInfo;
+	}
+	
+	private String getKey(JunctionUnit junctionUnit) {
+		return junctionUnit.getRefID() + SepSign.SEP_ID + junctionUnit.getStartAbs() + SepSign.SEP_ID + junctionUnit.getEndAbs();
 	}
 	
 	/**
@@ -515,9 +542,9 @@ public class GenerateNewIso {
 		int blankNumFinal = 0, blankNum = 0;
 		
 		for (double d : regionFinal) {
-			if (d == 0) {
+			if (d < blankMinCoverage) {
 				blankNum++;
-			} else if (d > 0) {
+			} else if (d >= blankMinCoverage) {
 				if (blankNum > blankNumFinal) {
 					blankNumFinal = blankNum;
 				}
@@ -528,7 +555,7 @@ public class GenerateNewIso {
 			blankNumFinal = blankNum;
 		}
 		blankNumFinal = blankNumFinal * mapReads.getBinNum();
-		if (blankNumFinal >= this.blankNum) {
+		if (blankNumFinal >= this.blankNum || blankNumFinal > Math.abs(end - start) * blankProp) {
 			mapLoc2IsCovered.put(keySite, false);
 			return false;
 		}
@@ -658,7 +685,7 @@ public class GenerateNewIso {
 			int lastEnd = 0;
 			for (JunctionInfo junctionInfo : lsJunctionInfos) {
 				for (JunctionUnit junction : junctionInfo.lsJunctionUnits) {
-					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3()) continue;
+					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3() && junction.getLength() < minIntronLen) continue;
 					
 					if (junction.getEndAbs() < junctionUnit.getStartAbs() && junction.getEndAbs() > lastEnd ) {
 						lastEnd = junction.getEndAbs();
@@ -675,7 +702,7 @@ public class GenerateNewIso {
 	
 	/** 获得该基因的起点，不考虑方向
 	 * 如果该基因前面没有基因，则向前延展extend bp长度
-	 *  */
+	 */
 	private int getGeneStart(int extend) {
 		int start = gffDetailGene.getStartAbs();
 		if (gffHashGene == null) {
@@ -711,7 +738,7 @@ public class GenerateNewIso {
 			int nextStart = Integer.MAX_VALUE;
 			for (JunctionInfo junctionInfo : lsJunctionInfos) {
 				for (JunctionUnit junction : junctionInfo.lsJunctionUnits) {
-					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3()) continue;
+					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3() && junctionUnit.getLength() < minIntronLen) continue;
 					
 					if (junction.getStartAbs() > junctionUnit.getEndAbs() && junction.getStartAbs() < nextStart ) {
 						nextStart = junction.getStartAbs();
@@ -747,9 +774,204 @@ public class GenerateNewIso {
 		return end;
 	}
 	
+	/** 看每个剪接位点是否可以成为一个连在一起的exon，然后重建RI位点 */
+	private void reconstructRI() {
+		List<JunctionUnit> lsJuncUnit = null;
+		try {
+			lsJuncUnit = getLsJuncUnitNoOverlap();
+		} catch (Exception e) {
+			logger.error("reconstructRI error " + gffDetailGene.getNameSingle() + " " + gffDetailGene.getRefID()
+					+ " " + gffDetailGene.getStartAbs() + " " + gffDetailGene.getEndAbs());
+			lsJuncUnit = getLsJuncUnitNoOverlap();
+			
+		}
+		
+		List<JunctionUnit> lsNeedReconstruct = new ArrayList<>();
+		for (JunctionUnit junctionUnit : lsJuncUnit) {
+			if (junctionUnit.getLength() > maxRIlen) {
+				continue;
+			}
+			
+			if (isContinuousExon(junctionUnit.getRefID(), junctionUnit.getStartAbs(), junctionUnit.getEndAbs())) {
+				lsNeedReconstruct.add(junctionUnit);
+			}
+		}
+		Map<JunctionUnit, GffGeneIsoInfo> mapJunc2IsoNeedReconstruct = getMapJunc2IsoNeedReconstruct(lsNeedReconstruct);
+		
+		List<GffGeneIsoInfo> lsIsoNew = new ArrayList<>();
+		for (JunctionUnit junctionUnit : mapJunc2IsoNeedReconstruct.keySet()) {
+			GffGeneIsoInfo iso = mapJunc2IsoNeedReconstruct.get(junctionUnit);
+			lsIsoNew.add(reconstructIso(junctionUnit, iso));
+		}
+		
+		for (GffGeneIsoInfo isoNew : lsIsoNew) {
+			gffDetailGene.addIsoSimple(isoNew);
+		}
+	}
+	
+	/** 去除overlap的junction，仅返回没有overlap的基因, for test */
+	protected List<JunctionUnit> getLsJuncUnitNoOverlap() {
+		Map<String, JunctionUnit> mapKey2Junc = new HashMap<>();
+		for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+			for (int i = 0; i < iso.size() - 1; i++) {
+				ExonInfo exonInfo1 = iso.get(i);
+				ExonInfo exonInfo2 = iso.get(i+1);
+				
+				JunctionUnit junctionUnitRaw = new JunctionUnit(iso.getRefID(), exonInfo1.getEndCis(), exonInfo2.getStartCis());
+				JunctionUnit junctionUnit = new JunctionUnit(iso.getRefID(), junctionUnitRaw.getStartAbs() + 1, junctionUnitRaw.getEndAbs() - 1);
+				junctionUnit.setCis5to3(iso.isCis5to3());
+				mapKey2Junc.put(getKey(junctionUnit), junctionUnit);
+			}
+		}
+		
+		//把juncUnit按照位置归类，归类成类似下图这种，然后每个类别里面获取短的
+		// ----------------|10==20-----|-----------|50==60-------|----------------------
+		//-----------------|---15===30|-----------|---55====80|-----------------------
+		List<JunctionUnit> lsJuncUnit = new ArrayList<>(mapKey2Junc.values());
+		Collections.sort(lsJuncUnit);
+		List<int[]> lsSub = ListAbs.getLsElementSep(gffDetailGene.isCis5to3(), lsJuncUnit);
+		ArrayListMultimap<String, JunctionUnit> mapLoc2LsJunUnit = ArrayListMultimap.create();
+		
+		Iterator<int[]> itInt = lsSub.iterator();
+		int[] sub = itInt.next();
+		int i = 0;
+		for (JunctionUnit junctionUnit : lsJuncUnit) {
+			i++;
+			if (junctionUnit.isCis5to3() && junctionUnit.getStartCis()  > sub[1] || (!junctionUnit.isCis5to3() && junctionUnit.getStartCis() < sub[0])) {
+				sub = itInt.next();
+			}
+			if (junctionUnit.getStartAbs() >= sub[0] && junctionUnit.getEndAbs() <= sub[1]) {
+				mapLoc2LsJunUnit.put(sub[0] + "_" + sub[1], junctionUnit);
+			}
+		}
+		
+		//获得没有overlap的junciton
+		List<JunctionUnit> lsJuncUnitSmall = new ArrayList<>();
+		for (String loc : mapLoc2LsJunUnit.keySet()) {
+			List<JunctionUnit> lsResultTmp = new ArrayList<>();
+			List<JunctionUnit> lsUnits = mapLoc2LsJunUnit.get(loc);
+			Collections.sort(lsUnits, new Comparator<JunctionUnit>() {
+				public int compare(JunctionUnit o1, JunctionUnit o2) {
+					Integer o1Len = o1.getLength(), o2Len = o2.getLength();
+					return o1Len.compareTo(o2Len);
+				}
+			});
+			for (JunctionUnit unit : lsUnits) {
+				boolean isOverlap = false;
+				for (JunctionUnit unitExist : lsResultTmp) {
+					if (unitExist.getStartAbs() < unit.getEndAbs() && unitExist.getEndAbs() > unit.getStartAbs()) {
+						isOverlap = true;
+						break;
+					}
+				}
+				
+				if (!isOverlap) {
+					lsResultTmp.add(unit);
+				}
+			}
+			
+			lsJuncUnitSmall.addAll(lsResultTmp);
+		}
+		return lsJuncUnitSmall;
+	}
+	
+	/**
+	 *  根据junction和iso的关系，返回junction 与 需要重建的iso的对照表
+	 * @param lsNeedReconstruct 给定可能需要重建的iso列表
+	 * @return
+	 */
+	protected Map<JunctionUnit, GffGeneIsoInfo> getMapJunc2IsoNeedReconstruct(	List<JunctionUnit> lsNeedReconstruct) {
+		Map<JunctionUnit, GffGeneIsoInfo> mapJunc2IsoNeedReconstruct = new HashMap<>();
+		for (JunctionUnit junctionUnit : lsNeedReconstruct) {
+			GffGeneIsoInfo isoNeedReconstruct = null;
+			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+				int startNum = iso.getNumCodInEle(junctionUnit.getStartCis());
+				int endNum = iso.getNumCodInEle(junctionUnit.getEndCis());
+				if (startNum == 0 || endNum == 0) continue;
+				
+				if (startNum > 0 && startNum == endNum) {
+					isoNeedReconstruct = null;
+					break;
+				} else if (startNum < 0 && startNum == endNum) {
+					int startDistance = iso.getCod2ExInStart(junctionUnit.getStartCis());
+					int endDistance = iso.getCod2ExInEnd(junctionUnit.getEndCis());
+					if (startDistance == 0 && endDistance == 0) {
+						if (isoNeedReconstruct == null || isoNeedReconstruct.size() < iso.size()) {
+							isoNeedReconstruct = iso;
+						}
+					}
+				}
+			}
+			
+			if (isoNeedReconstruct == null) continue;
+			mapJunc2IsoNeedReconstruct.put(junctionUnit, isoNeedReconstruct);
+		}
+		return mapJunc2IsoNeedReconstruct;
+	}
+	
+	/** 这个junction就来源于该iso，只要把该iso的那两个exon连上就行了 */
+	protected static GffGeneIsoInfo reconstructIso(JunctionUnit juncUnit, GffGeneIsoInfo iso) {
+		GffGeneIsoInfo isoNew = iso.clone();
+		isoNew.clearElements();
+		
+		int intronNum = Math.abs(iso.getNumCodInEle(juncUnit.getStartAbs())) - 1;
+		
+		for (int i = 0; i < iso.size(); i++) {
+			ExonInfo exonInfo = iso.get(i).clone();
+			if (i == intronNum) {
+				ExonInfo exonInfoNext = iso.get(i+1);
+				exonInfo.setEndCis(exonInfoNext.getEndCis());
+				i++;
+			}
+			isoNew.add(exonInfo);
+		}
+		return isoNew;
+	}
+	
 	public void clear() {
 		gffDetailGene = null;
 		gffHashGene = null;
 		mapReads = null;
+	}
+	
+	/** 有的基因同时包含两个方向的iso，这里我们选择多的方向的要过滤掉方向不同的iso */
+	public static GffDetailGene getGeneWithSameStrand(GffDetailGene gene) {
+		List<GffDetailGene> lsGenes = getlsGffDetailGenes(gene);
+		GffDetailGene geneResult = lsGenes.get(0);
+		if (lsGenes.size() > 1) {
+			GffDetailGene gene2 = lsGenes.get(1);
+			if (gene2.getLsCodSplit().size() >= geneResult.getLsCodSplit().size()) {
+				geneResult = gene2;
+			}
+		}
+		return geneResult;
+	}
+	
+	/**
+	 * <b>输入的GffDetailGene必须所有iso都是同一个parentGeneName，也就是说这些iso都来自于同一个基因</b><br><br>
+	 * 就算是输入的iso都是来自同一个基因，它们的方向依然可能相反，这是我在ensembl的文件中发现的问题<br><br>
+	 * 如果本GffDetailGene中包含正反两个方向的iso，则把两个方向的iso都返回<br>
+	 * 仅用于GFF3的结果，如NCBI的等<br>
+	 */
+	private static List<GffDetailGene> getlsGffDetailGenes(GffDetailGene gene) {
+		Map<Boolean, GffDetailGene> mapStrand2Gene = new HashMap<>();
+		for (GffGeneIsoInfo gffGeneIsoInfo : gene.getLsCodSplit()) {
+			String parentName = gffGeneIsoInfo.getParentGeneName();
+			GffDetailGene gffDetailGene = mapStrand2Gene.get(gffGeneIsoInfo.isCis5to3());
+			if (gffDetailGene == null) {
+				gffDetailGene = getGffDetailGeneClone(gene);
+				gffDetailGene.addItemName(parentName);
+				mapStrand2Gene.put(gffGeneIsoInfo.isCis5to3(), gffDetailGene);
+			}
+			gffDetailGene.addIsoSimple(gffGeneIsoInfo);
+		}
+		return new ArrayList<>(mapStrand2Gene.values());
+	}
+	
+	/** 返回一个和现在GffDetailGene一样的GffDetailGene */
+	private static GffDetailGene getGffDetailGeneClone(GffDetailGene gene) {
+		GffDetailGene gffDetailGene = gene.clone();
+		gffDetailGene.clearIso();
+		return gffDetailGene;
 	}
 }

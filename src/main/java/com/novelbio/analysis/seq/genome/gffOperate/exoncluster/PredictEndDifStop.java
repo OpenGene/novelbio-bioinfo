@@ -77,8 +77,11 @@ public class PredictEndDifStop extends SpliceTypePredict {
 
 	/** 待修正 */
 	@Override
-	public Align getDifSite() {
-		return new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+	public List<Align> getDifSite() {
+		Align align = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		List<Align> lsAligns = new ArrayList<>();
+		lsAligns.add(align);
+		return lsAligns;
 	}
 
 	@Override

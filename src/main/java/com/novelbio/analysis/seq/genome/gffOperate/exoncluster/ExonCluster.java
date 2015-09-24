@@ -657,7 +657,7 @@ public class ExonCluster implements Alignment {
 	 */
 	public List<SpliceTypePredict> getSplicingTypeLs() {
 		if (lsSpliceTypePredicts == null) {
-			if (getStartAbs() == 16441011) {
+			if (getStartAbs() == 70329988) {
 				logger.debug("");
 			}
 			lsSpliceTypePredicts = SpliceTypePredict.getSplicingTypeLs(this);

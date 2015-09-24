@@ -13,7 +13,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.rnaseq.ExonSplicingTest;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
-import com.novelbio.base.dataStructure.Alignment;
 
 /** 每一个大的exon内部可能会有有多个 exoncluster，那么把这多个exonCluster放到一起，一起来做差异可变剪接预测 */
 public class ExonClusterSite {
@@ -23,7 +22,6 @@ public class ExonClusterSite {
 	List<ExonSplicingTest> lsExonSplicingTests = new ArrayList<>();
 	
 	ExonCluster exonClusterCurrent;
-	
 	
 	public void add(ExonCluster exonCluster) {
 		lsExonCluster.add(exonCluster);
@@ -80,7 +78,7 @@ public class ExonClusterSite {
 	}
 	
 	public void setCompareConditionAndCalculate(String condition1, String condition2) {
-		if (exonClusterCurrent.getStartAbs() == 136862119) {
+		if (exonClusterCurrent.getStartAbs() == 70329988) {
 			logger.debug("");
 		}
 		for (ExonSplicingTest test : lsExonSplicingTests) {
@@ -90,7 +88,7 @@ public class ExonClusterSite {
 	}
 	
 	public List<ExonSplicingTest> getLsTestResult() {
-		if (exonClusterCurrent.getStartAbs() == 136862119) {
+		if (exonClusterCurrent.getStartAbs() == 70329988) {
 			logger.debug("");
 		}
 		

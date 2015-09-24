@@ -29,7 +29,7 @@ public class TophatJunction extends ListHashSearch<JunctionInfo, ListCodAbs<Junc
 ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(TophatJunction.class);
 	
-	private int intronMinLen = 25;
+	private int intronMinLen = 15;
 	private int junctionMinAnchorLen = 5;
 
 	Map<String, JunctionUnit> mapJunUnitKey2Unit = new HashMap<String, JunctionUnit>();
@@ -91,7 +91,6 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		if (lsAlign.size() <= 1) {
 			return;
 		}
-		//TODO 没有考虑junction adaptor
 		//消除intron的影响
 		List<Align> lsAlignNew = new ArrayList<>();
 		for (int i = 0; i < lsAlign.size(); i++) {
@@ -126,7 +125,8 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			if (cis5to3 != null) {
 				jun.setCis5to3(cis5to3);
 			}
-			jun.addReadsNum(condition, subGroup, (double)1/alignRecord.getMappedReadsWeight()/(size - 1));
+			
+			jun.addReadsNum(condition, subGroup, (double)1/alignRecord.getMappedReadsWeight());
 			lsJun.add(jun);
 			junNum[0] += (double)1/alignRecord.getMappedReadsWeight();
 		}

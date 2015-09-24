@@ -18,15 +18,15 @@ import com.novelbio.generalConf.PathDetailNBC;
  * @author zong0jie
  *
  */
-public class ManageSoftWareInfo {
-//	@Autowired
-//	RepoSoftwareInfo repoSoftwareInfo;
+public class MgmtSoftWareInfo {
+	@Autowired
+	RepoSoftwareInfo repoSoftwareInfo;
 	static Map<String, SoftWareInfo> mapKey2Info;
-	static ManageSoftWareInfo manageSoftWareInfo;
+	static MgmtSoftWareInfo manageSoftWareInfo;
 	
-	private ManageSoftWareInfo() {
+	private MgmtSoftWareInfo() {
 		fillMap();
-//		repoSoftwareInfo = (RepoSoftwareInfo)SpringFactory.getFactory().getBean("repoSoftwareInfo");
+		repoSoftwareInfo = (RepoSoftwareInfo)SpringFactoryBioinfo.getFactory().getBean("repoSoftwareInfo");
 	}
 	
 	private void fillMap() {
@@ -37,14 +37,14 @@ public class ManageSoftWareInfo {
 		if (!FileOperate.isFileExistAndBigThanSize(fileSoft, 0)) {
 			return;
 		}
-		updateInfo(fileSoft);
+		updateInfo(fileSoft, false);
 	}
 	
 	/**
 	 * 将配置信息导入数据库
 	 * @param txtFile 	 配置信息：第一行，item名称
 	 */
-	public void updateInfo(String txtFile) {
+	public void updateInfo(String txtFile, boolean updateToDB) {
 		ArrayList<String[]> lsInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 0);
 		String[] title = lsInfo.get(0);
 		Map<String, Integer> mapName2Col = new HashMap<>();
@@ -83,17 +83,18 @@ public class ManageSoftWareInfo {
 			m = mapName2Col.get("ispath");
 			softWareInfo.setInPath(info[m].trim().toLowerCase().equals("true"));
 			//升级
-			update(softWareInfo);
+			update(softWareInfo, updateToDB);
 		}
 	}
 
 	public SoftWareInfo findSoftwareByName(String softName) {
-		SoftWareInfo softWareInfo = mapKey2Info.get(softName.toLowerCase());
-		if (softWareInfo != null) {
-			return softWareInfo;
+		if (mapKey2Info != null && !mapKey2Info.isEmpty()) {
+			SoftWareInfo softWareInfo = mapKey2Info.get(softName.toLowerCase());
+			if (softWareInfo != null) {
+				return softWareInfo;
+			}
 		}
-		return null;
-//		return repoSoftwareInfo.findBySoftName(softName);
+		return repoSoftwareInfo.findBySoftName(softName);
 	}
 	public SoftWareInfo findSoftwareByName(SoftWare softWare) {
 		return findSoftwareByName(softWare.toString());
@@ -102,24 +103,24 @@ public class ManageSoftWareInfo {
 	 * 先查找有没有该项，没有就插入，有就升级
 	 * @param softWareInfo
 	 */
-	public void update(SoftWareInfo softWareInfo) {
-//		if (updateToDB) {
-//			SoftWareInfo softWareInfoS= repoSoftwareInfo.findBySoftName(softWareInfo.getName());
-//			if (softWareInfoS == null) {
-//				repoSoftwareInfo.save(softWareInfo);
-//			} else {
-//				if (!softWareInfoS.equalsDeep(softWareInfo)) {
-//					softWareInfo.setId(softWareInfoS.getId());
-//					repoSoftwareInfo.save(softWareInfo);
-//				}
-//			}
-//		}
+	public void update(SoftWareInfo softWareInfo, boolean updateToDB) {
+		if (updateToDB) {
+			SoftWareInfo softWareInfoS= repoSoftwareInfo.findBySoftName(softWareInfo.getName());
+			if (softWareInfoS == null) {
+				repoSoftwareInfo.save(softWareInfo);
+			} else {
+				if (!softWareInfoS.equalsDeep(softWareInfo)) {
+					softWareInfo.setId(softWareInfoS.getId());
+					repoSoftwareInfo.save(softWareInfo);
+				}
+			}
+		}
 		mapKey2Info.put(softWareInfo.getName().toLowerCase(), softWareInfo);
 	}
 	
-	public static ManageSoftWareInfo getInstance() {
+	public static MgmtSoftWareInfo getInstance() {
 		if (manageSoftWareInfo == null) {
-			manageSoftWareInfo = new ManageSoftWareInfo();
+			manageSoftWareInfo = new MgmtSoftWareInfo();
 		}
 		return manageSoftWareInfo;
 	}

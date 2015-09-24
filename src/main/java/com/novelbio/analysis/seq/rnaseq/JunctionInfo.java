@@ -102,11 +102,12 @@ public class JunctionInfo extends ListDetailAbs {
 		 *  value是为了地址传递才采用数组
 		 */
 		Map<String, Map<String, double[]>> mapCond2group2JunNum = new HashMap<>();
+		
 		/**
 		 * 根据正反向自动设定起点和终点
+		 * @param chrID
 		 * @param start 从1开始记数
 		 * @param end 从1开始记数
-		 * @param cis
 		 */
 		public JunctionUnit(String chrID, int start, int end) {
 			super(chrID, start + "_" +end, true);
@@ -114,6 +115,18 @@ public class JunctionInfo extends ListDetailAbs {
 			numberend = Math.max(start, end);
 		}
 		
+		/**
+		 * 根据正反向自动设定起点和终点
+		 * @param chrID
+		 * @param start 从1开始记数
+		 * @param end 从1开始记数
+		 * @param isCis5To3
+		 */
+		public JunctionUnit(String chrID, int start, int end, boolean isCis5To3) {
+			super(chrID, start + "_" +end, isCis5To3);
+			numberstart = Math.min(start, end);
+			numberend = Math.max(start, end);
+		}
 		/** 添加上一个Jun，如果上一个jun存在，则把readsNum的数字加到上一个Jun中*/
 		public void addJunBeforeAbs(JunctionUnit junBefore) {
 			if (junBefore == null) return;

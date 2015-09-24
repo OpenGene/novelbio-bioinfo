@@ -400,7 +400,7 @@ class CPATmain implements IntCmdSoft {
 	
 	private List<String> getLsCmd() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add("python");
+//		lsCmd.add("python");
 		lsCmd.add(exePath + "cpat.py");
 		ArrayOperate.addArrayToList(lsCmd, getFastaNeedPredict());
 		if (isModelSpecies) {
