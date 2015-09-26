@@ -369,7 +369,7 @@ class FastQReader implements Closeable {
 									if (FastQRecord.isPairedByName(fastQRecord[0], fastQRecord[1])) {
 										readRightRecord = true;
 										break;
-									}									
+									}
 								}
 							}
 							

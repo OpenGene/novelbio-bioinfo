@@ -255,6 +255,9 @@ public class FastQRecord implements Cloneable {
 		if (StringOperate.isRealNull(name1) || StringOperate.isRealNull(name2)) {
 			return false;
         }
-		return name1.split(" ")[0].equals(name2.split(" ")[0]);
+		String lname = name1.split(" ")[0].split("#")[0];
+		String rname = name2.split(" ")[0].split("#")[0];
+		return lname.equals(rname);
 	}
+	
 }

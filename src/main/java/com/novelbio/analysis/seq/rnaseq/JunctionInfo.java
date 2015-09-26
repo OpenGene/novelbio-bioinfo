@@ -3,8 +3,10 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.novelbio.base.SepSign;
 import com.novelbio.listOperate.ListDetailAbs;
@@ -91,10 +93,16 @@ public class JunctionInfo extends ListDetailAbs {
 	
 	public static class JunctionUnit extends ListDetailAbs {
 		/** 记载与该jun相邻的前一个jun，与基因的方向无关 */
-		Map<String, JunctionUnit> mapJunBefore = new HashMap<>();
+		Set<String> setJuncKeyBefore = new HashSet<>();
 		/**  记载与该jun相邻的后一个jun，与基因的方向无关 */
-		Map<String, JunctionUnit> mapJunAfter = new HashMap<>();
+		Set<String> setJuncKeyAfter = new HashSet<>();
 		
+//		/** 记载与该jun相邻的前一个jun，与基因的方向无关 */
+//		Map<String, JunctionUnit> mapJunBefore = new HashMap<>();
+//		/**  记载与该jun相邻的后一个jun，与基因的方向无关 */
+//		Map<String, JunctionUnit> mapJunAfter = new HashMap<>();
+		
+		boolean considerStrand;
 		/**
 		 * key1:condition<br>
 		 * key2:group<br>
@@ -127,38 +135,66 @@ public class JunctionInfo extends ListDetailAbs {
 			numberstart = Math.min(start, end);
 			numberend = Math.max(start, end);
 		}
+		
+		/** 是否考虑链特异性 */
+		public void setConsiderStrand(boolean considerStrand) {
+			this.considerStrand = considerStrand;
+		}
+		
 		/** 添加上一个Jun，如果上一个jun存在，则把readsNum的数字加到上一个Jun中*/
 		public void addJunBeforeAbs(JunctionUnit junBefore) {
 			if (junBefore == null) return;
 			
-			String key = junBefore.key(true);
-			JunctionUnit junBeforeExist = mapJunBefore.get(key);
-			if (junBeforeExist == null) {
-				mapJunBefore.put(key, junBefore);
-			} else {
-				junBeforeExist.addReadsJuncUnit(junBefore);
-			}
+			String key = junBefore.key();
+			setJuncKeyBefore.add(key);
+			
+//			String key2 = junBefore.key(true);
+//			JunctionUnit junBeforeExist = mapJunBefore.get(key2);
+//			if (junBeforeExist == null) {
+//				mapJunBefore.put(key2, junBefore);
+//			}
 		}
 		/** 添加下一个Jun，如果下一个jun存在，则把readsNum的数字加到下一个Jun中*/
 		public void addJunAfterAbs(JunctionUnit junAfter) {
 			if (junAfter == null) return;
 			
-			String key = junAfter.key(true);
-			JunctionUnit junAfterExist = mapJunAfter.get(key);
-			if (junAfterExist == null) {
-				mapJunAfter.put(key, junAfter);
-			} else {
-				junAfterExist.addReadsJuncUnit(junAfter);
-			}
+			String key = junAfter.key();
+			setJuncKeyAfter.add(key);
+			
+//			String key2 = junAfter.key(true);
+//			JunctionUnit junAfterExist = mapJunAfter.get(key2);
+//			if (junAfterExist == null) {
+//				mapJunAfter.put(key2, junAfter);
+//			}
 		}
 		
 		/** 没有则返回空的list */
-		public List<JunctionUnit> getLsJunAfterAbs() {
-			return new ArrayList<>(mapJunAfter.values());
+		public List<JunctionUnit> getLsJunAfterAbs(TophatJunction tophatJunction) {
+			List<JunctionUnit> lsJunctionUnits = new ArrayList<>();
+			for (String key : setJuncKeyAfter) {
+				JunctionUnit junctionUnit = tophatJunction.getJunctionSiteAll(key);
+				if (junctionUnit == null) {
+					throw new RuntimeException("cannot find junction unit " + key);
+				}
+				lsJunctionUnits.add(junctionUnit);
+			}
+			return lsJunctionUnits;
+			
+//			return new ArrayList<>(mapJunAfter.values());
 		}
 		/** 没有则返回空的list */
-		public List<JunctionUnit> getLsJunBeforeAbs() {
-			return new ArrayList<>(mapJunBefore.values());
+		public List<JunctionUnit> getLsJunBeforeAbs(TophatJunction tophatJunction) {
+			List<JunctionUnit> lsJunctionUnits = new ArrayList<>();
+			for (String key : setJuncKeyBefore) {
+				JunctionUnit junctionUnit = tophatJunction.getJunctionSiteAll(key);
+				if (junctionUnit == null) {
+					throw new RuntimeException("cannot find junction unit " + key);
+				}
+				lsJunctionUnits.add(junctionUnit);
+			}
+			return lsJunctionUnits;
+			
+//			return new ArrayList<>(mapJunBefore.values());
 		}
 		
 		public void setReadsNum(String condition, String group, int readsNum) {
@@ -244,6 +280,10 @@ public class JunctionInfo extends ListDetailAbs {
 				}
 			}
 			return numAll;
+		}
+		
+		protected String key() {
+			return key(considerStrand);
 		}
 		
 		/**

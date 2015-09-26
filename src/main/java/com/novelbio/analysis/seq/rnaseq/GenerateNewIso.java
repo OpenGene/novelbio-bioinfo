@@ -449,6 +449,8 @@ public class GenerateNewIso {
 			}
 
 			for (JunctionUnit junPrevTmp : lsJunPrevAfter) {
+				if (junPrevTmp.getLength() < minIntronLen) continue;
+				
 				if (beforExon) {
 					if (!setJunInfo.contains(junThis.key(false))) {
 						lsJun.add(0, junThis);
@@ -534,7 +536,13 @@ public class GenerateNewIso {
 		if (mapLoc2IsCovered.containsKey(keySite)) {
 			return mapLoc2IsCovered.get(keySite);
 		}
-		double[] regionFinal = mapReads.getRangeInfo(chrID, start, end, 0);
+		double[] regionFinal = null;
+		try {
+			regionFinal = mapReads.getRangeInfo(chrID, start, end, 0);
+
+		} catch (Exception e) {
+			regionFinal = mapReads.getRangeInfo(chrID, start, end, 0);
+		}
 		if (regionFinal == null) {
 			mapLoc2IsCovered.put(keySite, false);
 			return false;
@@ -671,7 +679,7 @@ public class GenerateNewIso {
 	
 	/** 选择前一个Junction Site */
 	private List<JunctionUnit> getJunPrev(JunctionUnit junctionUnit) {
-		List<JunctionUnit> lsJunctionUnits = junctionUnit.getLsJunBeforeAbs();
+		List<JunctionUnit> lsJunctionUnits = junctionUnit.getLsJunBeforeAbs(tophatJunctionNew);
 		//TODO 如果前面没有jun，是否要到tophatJunctionNew中去查找Jun
 		int start = getGeneStart(200);
 		if (start > junctionUnit.getStartAbs()) {
@@ -685,7 +693,7 @@ public class GenerateNewIso {
 			int lastEnd = 0;
 			for (JunctionInfo junctionInfo : lsJunctionInfos) {
 				for (JunctionUnit junction : junctionInfo.lsJunctionUnits) {
-					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3() && junction.getLength() < minIntronLen) continue;
+					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3()) continue;
 					
 					if (junction.getEndAbs() < junctionUnit.getStartAbs() && junction.getEndAbs() > lastEnd ) {
 						lastEnd = junction.getEndAbs();
@@ -723,7 +731,7 @@ public class GenerateNewIso {
 	
 	/** 选择后一个Junction Site，返回只有一个元素的list */
 	private List<JunctionUnit> getJunAfter(JunctionUnit junctionUnit) {
-		List<JunctionUnit> lsJunctionUnits= junctionUnit.getLsJunAfterAbs();
+		List<JunctionUnit> lsJunctionUnits= junctionUnit.getLsJunAfterAbs(tophatJunctionNew);
 		//TODO 如果后面没有jun，是否要到tophatJunctionNew中去查找Jun
 		int end = getGeneEnd(200);
 		if (end < junctionUnit.getEndAbs()) {
@@ -738,7 +746,7 @@ public class GenerateNewIso {
 			int nextStart = Integer.MAX_VALUE;
 			for (JunctionInfo junctionInfo : lsJunctionInfos) {
 				for (JunctionUnit junction : junctionInfo.lsJunctionUnits) {
-					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3() && junctionUnit.getLength() < minIntronLen) continue;
+					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3()) continue;
 					
 					if (junction.getStartAbs() > junctionUnit.getEndAbs() && junction.getStartAbs() < nextStart ) {
 						nextStart = junction.getStartAbs();
@@ -818,7 +826,9 @@ public class GenerateNewIso {
 				ExonInfo exonInfo2 = iso.get(i+1);
 				
 				JunctionUnit junctionUnitRaw = new JunctionUnit(iso.getRefID(), exonInfo1.getEndCis(), exonInfo2.getStartCis());
+				junctionUnitRaw.setConsiderStrand(considerStrand);
 				JunctionUnit junctionUnit = new JunctionUnit(iso.getRefID(), junctionUnitRaw.getStartAbs() + 1, junctionUnitRaw.getEndAbs() - 1);
+				junctionUnit.setConsiderStrand(considerStrand);
 				junctionUnit.setCis5to3(iso.isCis5to3());
 				mapKey2Junc.put(getKey(junctionUnit), junctionUnit);
 			}

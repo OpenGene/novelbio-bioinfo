@@ -80,8 +80,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("In", parentPath + "inclusion.bam");
 		exonJunction.setCompareGroups("Ex", "In");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
-		exonJunction.setResultFile(parentPath + "result2");
+		exonJunction.setResultFile(parentPath + "result25strand");
 		exonJunction.setJunctionMinAnchorLen(0);
+		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.run();
 		exonJunction = null;
 		return dateUtil.getElapseTime();
@@ -344,7 +345,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	public void running() {
-		tophatJunction.setIntronMinLen(15);
+		tophatJunction.setIntronMinLen(12);
 		if (!isCombine) {
 			for (String condition : mapCond2SamFile.keys()) {
 				if (mapCond2SamFile.get(condition).size() == 1) {

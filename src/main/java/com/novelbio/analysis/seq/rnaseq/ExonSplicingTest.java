@@ -601,12 +601,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		public double calculatePvalue() {
 			if (pvalueAvg < 0) {
 				pvalueExp = iSpliceTestExp.calculatePvalue();
-				try {
-					pvalueJun = iSpliceTestJun.calculatePvalue();
-
-				} catch (Exception e) {
-					pvalueJun = iSpliceTestJun.calculatePvalue();
-				}
+				pvalueJun = iSpliceTestJun.calculatePvalue();
 			
 				pvalueAvg = getPvalueCombine(pvalueExp, pvalueJun, false);
 				pvalueRootAvg = getPvalueCombine(pvalueExp, pvalueJun, true);

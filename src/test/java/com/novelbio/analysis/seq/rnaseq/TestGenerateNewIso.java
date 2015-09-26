@@ -229,7 +229,7 @@ public class TestGenerateNewIso  extends TestCase {
 	
 	@Test
 	public void testInfo1Cis() {
-		generateNewIso = new GenerateNewIso(null, null, StrandSpecific.NONE);
+		generateNewIso = new GenerateNewIso(null, null, StrandSpecific.NONE, false);
 		generateNewIso.setGffDetailGene(gffDetailGene1Cis);
 		for (JunctionUnit junctionUnit : lsJun1Cis) {
 			generateNewIso.reconstructIso(junctionUnit);
@@ -239,7 +239,7 @@ public class TestGenerateNewIso  extends TestCase {
 	
 	@Test
 	public void testInfo1Trans() {
-		generateNewIso = new GenerateNewIso(null, null, StrandSpecific.NONE);
+		generateNewIso = new GenerateNewIso(null, null, StrandSpecific.NONE, false);
 		generateNewIso.setGffDetailGene(gffDetailGene1Trans);
 		for (JunctionUnit junctionUnit : lsJun1Trans) {
 			generateNewIso.reconstructIso(junctionUnit);
@@ -252,7 +252,7 @@ public class TestGenerateNewIso  extends TestCase {
 	//TODＯ 还是有问题
 	@Test
 	public void testInfo2() {
-		generateNewIso = new GenerateNewIso(null, null, StrandSpecific.NONE);
+		generateNewIso = new GenerateNewIso(null, null, StrandSpecific.NONE, false);
 		generateNewIso.setGffDetailGene(gffDetailGene2Cis);
 		for (JunctionUnit junctionUnit : lsJun2Cis) {
 			generateNewIso.reconstructIso(junctionUnit);
@@ -263,7 +263,7 @@ public class TestGenerateNewIso  extends TestCase {
 	
 	@Test
 	public void testInfo2Trans() {
-		generateNewIso = new GenerateNewIso(null, null, StrandSpecific.NONE);
+		generateNewIso = new GenerateNewIso(null, null, StrandSpecific.NONE, false);
 		generateNewIso.setGffDetailGene(gffDetailGene2Trans);
 		for (JunctionUnit junctionUnit : lsJun2Trans) {
 			generateNewIso.reconstructIso(junctionUnit);

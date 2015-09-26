@@ -200,15 +200,6 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 
 			int notPairedNum = 0;
 			for (FastQRecord[] fastQRecord : fastQs[0].fastQRead.readlinesPE()) {
-				if (!FastQRecord.isPairedByName(fastQRecord[0], fastQRecord[1])) {
-					notPairedNum++;
-					if (notPairedNum > 100) {
-						throw new ExceptionFastq("input file is not pairend " 
-								+ FileOperate.getFileName(fastQs[0].getReadFileName()) + " " + FileOperate.getFileName(fastQs[1].getReadFileName()));
-	                }
-					continue;
-                }
-
 				readsNum++;
 				wait_To_Cope_AbsQueue();
 				if (flagStop) break;

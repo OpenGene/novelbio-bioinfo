@@ -2,14 +2,20 @@ package com.novelbio.test;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mirna.NovelMiRNADeep;
+import com.novelbio.analysis.seq.rnaseq.TophatJunction;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -20,18 +26,35 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-//		TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/public/nbcplatform/genome/species/9925/ncbi/ChromFa/chi_ref_CHIR_1.0_all_modify.mfa");
-//		TxtReadandWrite txtWrite = new TxtReadandWrite("/hdfs:/nbCloud/public/nbcplatform/genome/species/9925/ncbi/ChromFa/chi_ref_CHIR_1.0_all.mfa", true);
-//		for (String content : txtRead.readlines()) {
-//			content = content.trim();
-//			if (content.equals("")) {
-//				continue;
-//			}
-//			txtWrite.writefileln(content);
-//		}
-//		txtRead.close();
-//		txtWrite.close();
-		logger.error("test");
+		run("Q1B", "S45_07A_150500152_L001");
+		run("Q2A", "S45_07A_150500153_L003");
+		run("Q2B", "S45_07A_150500154_L001");
+		run("Q1A", "S45_07A_150500151_L002");
+	}
+	
+	private static void run(String group, String name) {
+		int i = 0;
+
+		try {
+			System.out.println("start run " + group + "\t" + name);
+
+			String parentPath = "/run/media/novelbio/4256740f-b44a-4500-89ab-61ce6448aeb6/F15FTSECKW0321_HUMcxvR/Raw/" + group + "/";
+			FastQ fastQ = new FastQ(parentPath + name + "_1.fq.gz");
+			FastQ fastQ2 = new FastQ(parentPath + name + "_2.fq.gz");
+			
+			for (FastQRecord[] fQRecords : fastQ.readlinesPE(fastQ2)) {
+				i++;
+				if (i%5000000 == 0) {
+					System.out.println(i);
+				}
+			}
+			System.out.println(group + "\t" + name + " is ok, linenum " + i);
+			fastQ.close();
+			fastQ2.close();
+		} catch (Exception e) {
+			System.out.println(group + "\t" + name + " is error, linenum " + i);
+		}
+
 	}
 	
 	protected static double chiSquareTestDataSetsComparison(int[] cond1, int[] cond2) {

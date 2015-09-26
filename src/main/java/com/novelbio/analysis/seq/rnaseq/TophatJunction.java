@@ -122,6 +122,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			int junStart = alignThis.getEndAbs();
 			int junEnd = alignNext.getStartAbs();
 			JunctionUnit jun = new JunctionUnit(chrID, junStart, junEnd);
+			jun.setConsiderStrand(strandSpecific != StrandSpecific.NONE);
 			if (cis5to3 != null) {
 				jun.setCis5to3(cis5to3);
 			}
@@ -162,13 +163,12 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	}
 	
 	private void addJun(JunctionUnit junThis, JunctionUnit junBefore, JunctionUnit junAfter) {
-		String juncUnitKey = junThis.key(strandSpecific != StrandSpecific.NONE);
+		String juncUnitKey = junThis.key();
 		if (mapJunUnitKey2Unit.containsKey(juncUnitKey)) {
 			JunctionUnit junThisExist = mapJunUnitKey2Unit.get(juncUnitKey);
 			junThisExist.addReadsJuncUnit(junThis);
 			//TODO 感觉有问题，就是before和after的引用是否正确，考虑从mapJunUnitKey2Unit中获取before和end的信息
-			junThisExist.addJunBeforeAbs(junBefore);
-			junThisExist.addJunAfterAbs(junAfter);
+			junThisExist.addJunBeforeAbs(junBefore); junThisExist.addJunAfterAbs(junAfter);
 		} else {
 			junThis.addJunBeforeAbs(junBefore); junThis.addJunAfterAbs(junAfter);
 			JunctionInfo juncInfo = new JunctionInfo(strandSpecific != StrandSpecific.NONE, junThis);
@@ -222,6 +222,18 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			return junctionUnit.getReadsNumAll();
 		}
 	}
+	
+	/**
+	 * 给定坐标和位点，找出全体条件下locsite,以及总共有多少reads支持
+	 * 0表示没有junction
+	 * @param chrID
+	 * @param locSite
+	 * @return
+	 */
+	public JunctionUnit getJunctionSiteAll(String key) {
+		return mapJunUnitKey2Unit.get(key);
+	}
+	
 	/**
 	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
 	 * 0表示没有junction
