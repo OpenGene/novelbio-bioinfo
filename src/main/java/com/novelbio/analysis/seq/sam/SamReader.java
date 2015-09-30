@@ -87,7 +87,7 @@ public class SamReader {
 				initialSamHeadAndReader(fileIndex);
 				initial = true;
 			} catch (Exception e) {
-				e.printStackTrace();
+				throw new ExceptionSamError("sam file error " + FileOperate.getFileName(fileName), e);
 			}
 		}
 	}

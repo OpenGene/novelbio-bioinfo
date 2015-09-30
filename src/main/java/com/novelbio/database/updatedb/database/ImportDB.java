@@ -34,7 +34,7 @@ public class ImportDB {
 //	String taxIDFile;
 	String GOPath;
 	
-	public static void main(String[] args) {
+	public static void main0(String[] args) {
 		Options opts = new Options();
 		opts.addOption("taxId", true, "taxId");
 		CommandLine cliParser = null;
@@ -62,6 +62,25 @@ public class ImportDB {
 
 		System.out.println("finish all");
 	}
+	
+	public static void main(String[] args) {
+		ImportPerLine.addTaxId(9925);
+		ImportPerLine.addTaxId(9940);
+		ImportPerLine.addTaxId(9606);
+		
+		String downloadPath = "/media/winE/NBCplatform/database/20150928/";
+		String GOPath = downloadPath + "GO/";
+		ImportDB importDB = new ImportDB();
+		importDB.setDownloadPath(downloadPath);
+		importDB.setGOPath(GOPath);
+
+		
+		importDB.updateNCBIID();
+		importDB.updateUniprotID();
+
+		System.out.println("finish all");
+	}
+	
 	public static void main2(String[] args) {
 		Options opts = new Options();
 		opts.addOption("taxId", true, "taxId");

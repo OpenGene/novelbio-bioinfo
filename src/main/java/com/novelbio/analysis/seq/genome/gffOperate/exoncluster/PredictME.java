@@ -15,15 +15,15 @@ import com.novelbio.base.dataStructure.Alignment;
 
 /** 判定本exonCluster是否为mutually exclusive */
 public class PredictME extends SpliceTypePredict {	
-	List<List<ExonInfo>> lsExonBefore;
 	
-	/** 可以和前面组成mutually exclusive的exon */
+	/** 可以和前面组成mutually exclusive的exon，意思当前exon为MXE的后一个exon */
 	List<List<ExonInfo>> lsExonThisBefore;
-	/** 可以和后面组成mutually exclusive的exon */
+	/** 可以和后面组成mutually exclusive的exon，意思当前exon为MXE的前一个exon */
 	List<List<ExonInfo>> lsExonThisAfter;
 	
 	List<List<ExonInfo>> lsExonAfter;
-			
+	List<List<ExonInfo>> lsExonBefore;
+
 	public PredictME(ExonCluster exonCluster) {
 		super(exonCluster);
 	}
@@ -214,14 +214,16 @@ public class PredictME extends SpliceTypePredict {
 			GffGeneIsoInfo gffGeneIsoInfo = entry.getKey();
 			List<ExonInfo> lsExonInfo = entry.getValue();
 			
-			if (lsExonInfo.size() == 0) {
-				continue;
-			}
+			//本位点必须没有exon
+			if (lsExonInfo.size() == 0) continue;
+			
+			//不能是开头和结尾的位点
 			if (gffGeneIsoInfo.indexOf(lsExonInfo.get(0)) == 0 
 					|| gffGeneIsoInfo.indexOf(lsExonInfo.get(lsExonInfo.size() - 1)) == gffGeneIsoInfo.size() - 1) {
 				continue;
 			}
 			
+			//上一个位点必须存在exon
 			List<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
 			if (lsExons != null && lsExons.size() == 0 ) {
 				lsExonThis.add(lsExonInfo);

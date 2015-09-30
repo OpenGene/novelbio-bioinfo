@@ -29,7 +29,7 @@ public interface ISpliceTestModule {
 	public double calculatePvalue();
 	
 	/** 默认开启标准化 */
-	public void setMakeSmallValueBigger(boolean makeSmallValueBigger);
+	public void setMakeSmallValueBigger(boolean makeSmallValueBigger, int numLessNeedBig, double fold);
 	
 	/**
 	 * 设定junction数量，小于该数量的不会进行分析
@@ -79,16 +79,17 @@ public interface ISpliceTestModule {
 
 class SpliceTestRepeat implements ISpliceTestModule {
 	boolean makeSmallValueBigger = true;
-	/** 将reads的数量扩大5倍，这样可以获得更多的差异 */
-	static int foldbig = 2;
-	/** 将reads的数量扩大3倍，这样可以获得更多的差异 */
-	static int foldMid = 2;
+
+	/** 将reads的数量扩大2倍，这样可以获得更多的差异 */
+	double fold = 2;
 	
 	int juncAllReadsNum = 25;
 	int juncSampleReadsNum = 10;
 	
 	/** 如果count数超过该值，就标准化 */
 	int normalizedNum = 200;
+	
+	int numLessNeedBig = 80;
 	
 	/** 本组比较中最大测序量的reads数 */
 	long maxReads = 0;
@@ -108,8 +109,10 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	List<int[]> lsCtrlValue = new ArrayList<>();
 	
 	@Override
-	public void setMakeSmallValueBigger(boolean makeSmallValueBigger) {
+	public void setMakeSmallValueBigger(boolean makeSmallValueBigger, int numLessNeedBig, double fold) {
 		this.makeSmallValueBigger = makeSmallValueBigger;
+		this.numLessNeedBig = numLessNeedBig;
+		this.fold = fold;
 	}
 	
 	/** 设定junction数量，小于该数量的不会进行分析
@@ -155,17 +158,15 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		}
 	}
 	
-	private int getFold(ArrayListMultimap<String, Double> mapCtrl2LsValue) {
+	private double getFold(ArrayListMultimap<String, Double> mapCtrl2LsValue) {
 		if (!makeSmallValueBigger) return 1;
 		
 		double valueAll = 0;
 		for (Double value : mapCtrl2LsValue.values()) {
 			valueAll += value;
 		}
-		if (valueAll < 30) {
-			return foldbig;
-		} else if (valueAll >= 20 && valueAll < 80) {
-			return foldMid;
+		if (valueAll < numLessNeedBig) {
+			return fold;
 		} else {
 			return 1;
 		}
@@ -178,7 +179,7 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	 * @return
 	 */
 	private List<List<Double>> normalizeLsDouble(Map<String, double[]> mapGroup2Value, 
-			ArrayListMultimap<String, Double> mapTreat2LsValue, int fold) {
+			ArrayListMultimap<String, Double> mapTreat2LsValue, double fold) {
 		List<List<Double>> lslsValue = new ArrayList<>();
 		for (String group : mapTreat2LsValue.keySet()) {
 			List<Double> lsDouble = mapTreat2LsValue.get(group);
@@ -517,17 +518,20 @@ class SpliceTestCombine implements ISpliceTestModule {
 	int juncAllReadsNum = 25;
 	int juncSampleReadsNum = 10;
 	
-	/** 将reads的数量扩大5倍，这样可以获得更多的差异 */
-	static int foldbig = 2;
-	/** 将reads的数量扩大3倍，这样可以获得更多的差异 */
-	static int foldMid = 2;
+	/** 将reads的数量扩大2倍，这样可以获得更多的差异 */
+	double fold = 2;
 	
 	int[] cond1;
 	int[] cond2;
 	
+	/** 数量小于这个值的就会扩大 */
+	int numLessNeedBig = 80;
+	
 	@Override
-	public void setMakeSmallValueBigger(boolean makeSmallValueBigger) {
+	public void setMakeSmallValueBigger(boolean makeSmallValueBigger, int numLessNeedBig, double fold) {
 		this.makeSmallValueBigger = makeSmallValueBigger;
+		this.numLessNeedBig = numLessNeedBig;
+		this.fold = fold;
 	}
 	
 	/** 设定junction数量，小于该数量的不会进行分析
@@ -596,14 +600,13 @@ class SpliceTestCombine implements ISpliceTestModule {
 			allNum += i;
 		}
 		
-		int fold = 1;
-		if (allNum < 30) {
-			fold = foldbig;
-		} else if (allNum >= 20 && allNum < 80) {
-			fold = foldMid;
+		double fold = 1;
+		if (allNum < numLessNeedBig) {
+			fold = this.fold;
 		}
+		
 		for (int i = 0; i < result.length; i++) {
-			result[i] = result[i] * fold;
+			result[i] = (int) (result[i] * fold);
 		}
 	
 	}

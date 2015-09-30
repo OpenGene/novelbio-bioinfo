@@ -326,7 +326,6 @@ public class GenerateNewIso {
 	public void reconstructIso(JunctionUnit junctionUnit) {
 		 for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			GffGeneIsoInfo gffGeneIsoInfoNew = getReconstructIso(junctionUnit, gffGeneIsoInfo);
-			gffGeneIsoInfoNew = getReconstructIso(junctionUnit, gffGeneIsoInfo);
 			if (gffGeneIsoInfoNew != null ) {
 				gffDetailGene.addIso(gffGeneIsoInfoNew);
 				break;
@@ -431,7 +430,7 @@ public class GenerateNewIso {
 	
 	/**
 	 * 根据GffGeneIsoInfo，在Junction的前后找，直到找到处于exon中的Jun，返回该Jun的位置，并将jun依次装入list中
-	 * @param beforExon
+	 * @param beforExon 找前面的还是后面的exon
 	 * @param junThis
 	 * @param lsJun
 	 * @param gffGeneIsoInfo
@@ -447,7 +446,7 @@ public class GenerateNewIso {
 				exonNum = getExonNum(beforExon, false, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
 				break;
 			}
-
+			
 			for (JunctionUnit junPrevTmp : lsJunPrevAfter) {
 				if (junPrevTmp.getLength() < minIntronLen) continue;
 				
@@ -694,6 +693,7 @@ public class GenerateNewIso {
 			for (JunctionInfo junctionInfo : lsJunctionInfos) {
 				for (JunctionUnit junction : junctionInfo.lsJunctionUnits) {
 					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3()) continue;
+					if (junction.getReadsNumAll() < newIsoReadsNum) continue;
 					
 					if (junction.getEndAbs() < junctionUnit.getStartAbs() && junction.getEndAbs() > lastEnd ) {
 						lastEnd = junction.getEndAbs();
@@ -747,6 +747,7 @@ public class GenerateNewIso {
 			for (JunctionInfo junctionInfo : lsJunctionInfos) {
 				for (JunctionUnit junction : junctionInfo.lsJunctionUnits) {
 					if (considerStrand && junction.isCis5to3() != junctionUnit.isCis5to3()) continue;
+					if (junction.getReadsNumAll() < newIsoReadsNum) continue;
 					
 					if (junction.getStartAbs() > junctionUnit.getEndAbs() && junction.getStartAbs() < nextStart ) {
 						nextStart = junction.getStartAbs();

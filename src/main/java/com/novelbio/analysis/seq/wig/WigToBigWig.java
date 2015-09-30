@@ -33,14 +33,16 @@ public class WigToBigWig implements IntCmdSoft {
 	}
 	
 	public void convert() {
-		String bigWigFileTmp = FileOperate.changeFileSuffix(bigWigFile, "_tmp", null);
-		List<String> lsCmd = getLsCmd(wigFile, txtMapChrId2Len, bigWigFileTmp);
+//		String bigWigFileTmp = FileOperate.changeFileSuffix(bigWigFile, "_tmp", null);
+		List<String> lsCmd = getLsCmd(wigFile, txtMapChrId2Len, bigWigFile);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(bigWigFile);
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd(wigFile + " WigToBigWig Error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}
-		FileOperate.moveFile(true, bigWigFileTmp, bigWigFile);
+//		FileOperate.moveFile(true, bigWigFileTmp, bigWigFile);
 	}
 	
 	private List<String> getLsCmd(String inFile, String chrMap, String outFile) {

@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.ExceptionNullParam;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -78,6 +79,7 @@ public class SamFileToWig implements IntCmdSoft {
 	}
 	
 	public void setSamFile(SamFile samFile) {
+		prefix = null;
 		if (samFile == null) {
 			throw new ExceptionNullParam("No Sam File");
 		}
@@ -114,7 +116,7 @@ public class SamFileToWig implements IntCmdSoft {
 	}
 	private final void run() throws IOException {
 		setOutPathAndPrefix();
-		String wigFile = outPath + prefix + ".wig";
+		String wigFile = PathDetail.getTmpPathWithSep() + prefix + DateUtil.getDateAndRandom() + ".wig";
 		outBigWigFile = outPath + prefix + ".bw";
 		String txtMapChrId2Len = outPath + prefix + DateUtil.getDateAndRandom();
 		Map<String, Long> mapChrId2Len = lsSamFiles.get(0).getMapChrID2Length();

@@ -25,7 +25,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonClusterExtract;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonClusterSite;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
@@ -48,7 +47,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.model.species.Species;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
@@ -62,7 +60,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	public static long wwwSimulation() {
-		String parentPath = "/media/winE/NBCsource/otherResource/www/simulation5/";
+		String parentPath = "/media/winE/NBCsource/otherResource/www/simulation10/";
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		
@@ -79,10 +77,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("Ex", parentPath + "exclusion.bam");
 		exonJunction.addBamSorted("In", parentPath + "inclusion.bam");
 		exonJunction.setCompareGroups("Ex", "In");
-//		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.setResultFile(parentPath + "result25strand");
 		exonJunction.setJunctionMinAnchorLen(0);
-		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
+//		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.run();
 		exonJunction = null;
 		return dateUtil.getElapseTime();
@@ -122,7 +119,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "ENSG00000186086";
+	private static String stopGeneName = "ENSG00000116983";
 		
 	GffHashGene gffHashGene = null;
 	/** 没有重建转录本的老iso的名字，用于后面计算可变剪接所在exon number的 */

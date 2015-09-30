@@ -172,7 +172,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	  }
 	   for (String content : txtgff.readlines()) {
 		   if(content.trim().equals("") || content.charAt(0) == '#') continue;
-
+		   
+		   if (content.contains("C_gene_segment")) {
+			   logger.debug("stop");
+		   }
+		   
 		   String[] ss = content.split("\t");//按照tab分开
 		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron")) {
 			  continue;

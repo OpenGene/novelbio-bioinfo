@@ -329,56 +329,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return lsPvalueInfo.get(0).pvalueAvg;
 	}
 	
-	public String[] toStringArray() {
-		ArrayList<String> lsResult = new ArrayList<String>();
-		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		lsResult.add(gffDetailGene.getNameSingle());
-		lsResult.add(getSpliceSite());
-		PvalueCalculate pvalueCalculate = lsPvalueInfo.get(0);
-		try {
-			lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
-
-		} catch (Exception e) {
-			lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
-		}
-		lsResult.add(pvalueCalculate.getStrInfo(false, false));
-		lsResult.add(pvalueCalculate.getStrInfo(false, true));
-		lsResult.add(pvalueCalculate.getStrInfo(true, false));
-		lsResult.add(pvalueCalculate.getStrInfo(true, true));
-		
-		lsResult.add(pvalueCalculate.getStrNormInfo(false));
-		lsResult.add(pvalueCalculate.getStrNormInfo(true));
-		lsResult.add(pvalueCalculate.getPvalueJun() + "");
-		lsResult.add(pvalueCalculate.getPvalueExp() + "");
-		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
-		
-		lsResult.add(pvalueCalculate.iSpliceTestExp.getSpliceIndex() + "");
-	
-		lsResult.add(pvalueCalculate.getPvalueRootAvg() + "");
-		lsResult.add(fdr + "");
-		//TODO
-		lsResult.add(getSplicingType().toString());
-//		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
-//		lsResult.add(geneID.getSymbol());
-//		lsResult.add(geneID.getDescription());
-		
-//		if (seqHash != null) {
-//			try {
-//				ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
-//				for (SeqFasta seqFasta : lsSeqFasta) {
-//					try {
-//						lsResult.add(seqFasta.toString());
-//					} catch (Exception e) {
-//						lsResult.add("");
-//					}
-//				}
-//			} catch (Exception e) {
-//			}
-//		}
-		return lsResult.toArray(new String[0]);
-	}
-
-	
 	public String[] toStringSeq() {		
 		if (seqHash == null) {
 			return null;
@@ -494,6 +444,55 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 	}
 	
+	public String[] toStringArray() {
+		ArrayList<String> lsResult = new ArrayList<String>();
+		GffDetailGene gffDetailGene = exonCluster.getParentGene();
+		lsResult.add(gffDetailGene.getNameSingle());
+		lsResult.add(getSpliceSite());
+		PvalueCalculate pvalueCalculate = lsPvalueInfo.get(0);
+		try {
+			lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
+
+		} catch (Exception e) {
+			lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
+		}
+		lsResult.add(pvalueCalculate.getStrInfo(false, false));
+		lsResult.add(pvalueCalculate.getStrInfo(false, true));
+		lsResult.add(pvalueCalculate.getStrInfo(true, false));
+		lsResult.add(pvalueCalculate.getStrInfo(true, true));
+		
+		lsResult.add(pvalueCalculate.getStrNormInfo(false));
+		lsResult.add(pvalueCalculate.getStrNormInfo(true));
+		lsResult.add(pvalueCalculate.getPvalueJun() + "");
+		lsResult.add(pvalueCalculate.getPvalueExp() + "");
+		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
+		
+		lsResult.add(pvalueCalculate.iSpliceTestExp.getSpliceIndex() + "");
+	
+		lsResult.add(pvalueCalculate.getPvalueRootAvg() + "");
+		lsResult.add(fdr + "");
+		//TODO
+		lsResult.add(getSplicingType().toString());
+//		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
+//		lsResult.add(geneID.getSymbol());
+//		lsResult.add(geneID.getDescription());
+		
+//		if (seqHash != null) {
+//			try {
+//				ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
+//				for (SeqFasta seqFasta : lsSeqFasta) {
+//					try {
+//						lsResult.add(seqFasta.toString());
+//					} catch (Exception e) {
+//						lsResult.add("");
+//					}
+//				}
+//			} catch (Exception e) {
+//			}
+//		}
+		return lsResult.toArray(new String[0]);
+	}
+
 	/** 获得标题 */
 	public static String[] getTitle(String condition1, String condition2) {
 		ArrayList<String> lsTitle = new ArrayList<String>();
@@ -540,8 +539,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public class PvalueCalculate implements Comparable<PvalueCalculate> {
 		boolean isCombine = true;
 		//TODO
-		int normExp = 200;
-		int junction = 200;
+		int normExp = 300;
+		int junction = 300;
 		SplicingAlternativeType splicingType;
 		ISpliceTestModule iSpliceTestExp;
 		ISpliceTestModule iSpliceTestJun;
@@ -577,7 +576,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			iSpliceTestExp = SpliceTestFactory.createSpliceModule(isCombine);
 			ArrayListMultimap<String, Double> lsExp1 = spliceType2ValueTreat.getLsExp(splicingType);
 			ArrayListMultimap<String, Double> lsExp2= spliceType2ValueCtrl.getLsExp(splicingType);
-			iSpliceTestExp.setMakeSmallValueBigger(true);
+			iSpliceTestExp.setMakeSmallValueBigger(true, 80, 2);
 			iSpliceTestExp.setJuncReadsNum(juncAllReadsNum, juncSampleReadsNum);
 
 			iSpliceTestExp.setLsRepeat2Value(mapCond_Group2ReadsNum, condTreat, lsExp1, condCtrl, lsExp2);
@@ -585,9 +584,14 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			iSpliceTestJun = SpliceTestFactory.createSpliceModule(isCombine);
 			ArrayListMultimap<String, Double> lsJunc1 = spliceType2ValueTreat.getLsJun(splicingType);
 			ArrayListMultimap<String, Double> lsJunc2 = spliceType2ValueCtrl.getLsJun(splicingType);
-			iSpliceTestJun.setMakeSmallValueBigger(false);
+			iSpliceTestJun.setMakeSmallValueBigger(false, 0, 0);
 			iSpliceTestJun.setJuncReadsNum(juncAllReadsNum, juncSampleReadsNum);
 			iSpliceTestJun.setLsRepeat2Value(mapCond_Group2JunNum, condTreat, lsJunc1, condCtrl, lsJunc2);
+			
+			if (this.splicingType == SplicingAlternativeType.mutually_exclusive) {
+				//如果是MXE，则将小与200的reads数都乘以1.5再标准化
+				iSpliceTestJun.setMakeSmallValueBigger(true, 200, 1.5);
+			}
 			
 			if (this.splicingType == SplicingAlternativeType.retain_intron) {
 				iSpliceTestExp.setNormalizedNum(20000);

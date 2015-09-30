@@ -16,7 +16,7 @@ public class TestSamHeadCreater {
 	
 	@Test
 	public void testCreaterAraBwa() {
-		String refSeq = "/home/novelbio/testJava/chrome/ara/chrAll.fa";
+		String refSeq = "src/test/resources/test_file/reference/ara/chrAll.fa";
 		SamHeadCreater samHeadCreater = new SamHeadCreater();
 		samHeadCreater.setRefSeq(refSeq);
 		samHeadCreater.setAttr("@HD\tVN:1.4\tSO:coordinate");

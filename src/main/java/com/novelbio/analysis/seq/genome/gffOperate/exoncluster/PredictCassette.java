@@ -28,13 +28,14 @@ public class PredictCassette extends SpliceTypePredict {
 	
 	/** 是否严格按照转录本来提取junction的信息 */
 	boolean isGetJuncStrict = true;
-	HashSet<GffGeneIsoInfo> setExistExonIso;
-	HashSet<GffGeneIsoInfo> setSkipExonIso;
+	Set<GffGeneIsoInfo> setExistExonIso;
+	Set<GffGeneIsoInfo> setSkipExonIso;
 	boolean isMulitCassette = false;
 	
 	/** 在差异exon两侧的exon */
 	List<ExonInfo> lsBG = new ArrayList<>();
 	
+	Align alignDisplay;
 	
 	public PredictCassette(ExonCluster exonCluster) {
 		super(exonCluster);
@@ -336,7 +337,25 @@ public class PredictCassette extends SpliceTypePredict {
 			String tmpBeforeAfter = beforeAfter[0] + SepSign.SEP_ID + beforeAfter[1];
 			setBeforeAfter.put(tmpBeforeAfter, gffGeneIsoInfo);
 		}
+		removeRedundantBG();
 		return setBeforeAfter;
+	}
+	
+	/** 去除重复位点 */
+	private void removeRedundantBG() {
+		if (lsBG.isEmpty()) {
+			return;
+		}
+		List<ExonInfo> lsBGnew = new ArrayList<>();//去除冗余的BG
+		Set<String> setSite = new HashSet<>();
+		for (ExonInfo exonInfo : lsBG) {
+			if (setSite.contains(exonInfo.getStartAbs() + SepSign.SEP_ID + exonInfo.getEndAbs())) {
+				continue;
+			}
+			setSite.add(exonInfo.getStartAbs() + SepSign.SEP_ID + exonInfo.getEndAbs());
+			lsBGnew.add(exonInfo);
+		}		
+		lsBG = lsBGnew;
 	}
 	
 	/** 

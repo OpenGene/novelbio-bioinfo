@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.dataOperate.FtpFetch;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -17,7 +17,7 @@ public class DownloadFile {
 	private static final Logger logger = Logger.getLogger(DownloadFile.class);
 	public static void main(String[] args) {
 		DownloadFile downloadFile = new DownloadFile();
-		downloadFile.setSaveto("/media/winE/NBCplatform/database");
+		downloadFile.setSaveto("/media/winE/NBCplatform/database/20150928");
 		downloadFile.download();
 	}
 	String saveto;
@@ -35,6 +35,7 @@ public class DownloadFile {
 	
 	public void setSaveto(String saveto) {
 		this.saveto = FileOperate.addSep(saveto);
+		FileOperate.createFolders(saveto);
 	}
 	
 	private void fillDownloadFile() {
@@ -66,56 +67,56 @@ public class DownloadFile {
 	}
 	
 	public void download() {
-//		for (String ftpFile : lsDownloadNCBI) {
-//			if (FileOperate.isFileExistAndBigThanSize(saveto + FileOperate.getFileName(ftpFile), 0)) {
-//				continue;
-//			}
-//			FtpFetch fetch = new FtpFetch();
-//			fetch.setDownLoadUrl(ftpFile);
-//			fetch.setSavePath(saveto);
-//			if (!fetch.downloadFile()) {
-//				logger.error("download error:" + ftpFile);
-//				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
-//			}
-//		}
-//		for (String ftpFile : lsUniprot) {
-//			if (FileOperate.isFileExistAndBigThanSize(saveto + FileOperate.getFileName(ftpFile), 0)) {
-//				continue;
-//			}
-//			FtpFetch fetch = new FtpFetch();
-//			fetch.setDownLoadUrl(ftpFile);
-//			fetch.setSavePath(saveto);
-//			if (!fetch.downloadFile()) {
-//				logger.error("download error:" + ftpFile);
-//				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
-//			}
-//		}
-		for (String gourl : lsGO) {
-			String fileName = FileOperate.getFileName(gourl);
-			if (FileOperate.isFileExistAndBigThanSize(saveto + fileName, 0)) {
+		for (String ftpFile : lsDownloadNCBI) {
+			if (FileOperate.isFileExistAndBigThanSize(saveto + FileOperate.getFileName(ftpFile), 0)) {
 				continue;
 			}
-			HttpFetch httpFetch = HttpFetch.getInstance();
-			httpFetch.setUri(gourl);
-			httpFetch.query();
-			if (!httpFetch.download(saveto + fileName)) {
-				logger.error("download error:" + gourl);
-				FileOperate.DeleteFileFolder(saveto + fileName);
+			FtpFetch fetch = new FtpFetch();
+			fetch.setDownLoadUrl(ftpFile);
+			fetch.setSavePath(saveto);
+			if (!fetch.downloadFile()) {
+				logger.error("download error:" + ftpFile);
+				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
 			}
 		}
-		for (String rapDBurl : lsRice) {
-			String fileName = FileOperate.getFileName(rapDBurl);
-			if (FileOperate.isFileExistAndBigThanSize(saveto + fileName, 0)) {
+		for (String ftpFile : lsUniprot) {
+			if (FileOperate.isFileExistAndBigThanSize(saveto + FileOperate.getFileName(ftpFile), 0)) {
 				continue;
 			}
-			HttpFetch httpFetch = HttpFetch.getInstance();
-			httpFetch.setUri(rapDBurl);
-			httpFetch.query();
-			if (!httpFetch.download(saveto + fileName)) {
-				logger.error("download error:" + rapDBurl);
-				FileOperate.DeleteFileFolder(saveto + fileName);
+			FtpFetch fetch = new FtpFetch();
+			fetch.setDownLoadUrl(ftpFile);
+			fetch.setSavePath(saveto);
+			if (!fetch.downloadFile()) {
+				logger.error("download error:" + ftpFile);
+				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
 			}
 		}
+//		for (String gourl : lsGO) {
+//			String fileName = FileOperate.getFileName(gourl);
+//			if (FileOperate.isFileExistAndBigThanSize(saveto + fileName, 0)) {
+//				continue;
+//			}
+//			HttpFetch httpFetch = HttpFetch.getInstance();
+//			httpFetch.setUri(gourl);
+//			httpFetch.query();
+//			if (!httpFetch.download(saveto + fileName)) {
+//				logger.error("download error:" + gourl);
+//				FileOperate.DeleteFileFolder(saveto + fileName);
+//			}
+//		}
+//		for (String rapDBurl : lsRice) {
+//			String fileName = FileOperate.getFileName(rapDBurl);
+//			if (FileOperate.isFileExistAndBigThanSize(saveto + fileName, 0)) {
+//				continue;
+//			}
+//			HttpFetch httpFetch = HttpFetch.getInstance();
+//			httpFetch.setUri(rapDBurl);
+//			httpFetch.query();
+//			if (!httpFetch.download(saveto + fileName)) {
+//				logger.error("download error:" + rapDBurl);
+//				FileOperate.DeleteFileFolder(saveto + fileName);
+//			}
+//		}
 		
 	}
 }
