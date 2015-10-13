@@ -415,22 +415,51 @@ public class PredictCassette extends SpliceTypePredict {
 	@Override
 	public List<Align> getDifSite() {
 		List<Align> lsAligns = new ArrayList<>();
+
+		Map<String, Align> mapKey2Align = new HashMap<>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
 			List<ExonInfo> lsExons = exonCluster.getIsoExon(gffGeneIsoInfo);
 			if (lsExons.size() > 1) {
 				for (ExonInfo exonInfo : lsExons) {
 					Align align = new Align(exonInfo);
 					align.setChrID(exonCluster.getRefID());
-					lsAligns.add(align);
-					break;
+					mapKey2Align.put(align.getStartAbs() + SepSign.SEP_ID + align.getEndAbs(), align);
 				}
 			}
 		}
-		if (lsAligns.isEmpty()) {
+				
+		if (mapKey2Align.isEmpty()) {
 			Align align = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
 			lsAligns.add(align);
+			return lsAligns;
 		}
 
+		List<Align> lsAlignTmp = new ArrayList<>(mapKey2Align.values());
+		Collections.sort(lsAlignTmp, new Comparator<Align>() {
+			public int compare(Align o1, Align o2) {
+				Integer start1 = o1.getStartAbs();
+				Integer end1 = o1.getEndAbs();
+				Integer start2 = o2.getStartAbs();
+				Integer end2 = o2.getEndAbs();
+				if (start1 != start2) {
+					return start1.compareTo(start2);
+				} else {
+					return end1.compareTo(end2);
+				}
+			}
+		});
+		
+		Align alignOld = lsAlignTmp.get(0);
+		lsAligns.add(alignOld);
+		for (int i = 1; i < lsAlignTmp.size(); i++) {
+			Align align = lsAlignTmp.get(i);
+			if (Align.isOverlap(align, alignOld)) {
+				continue;
+			} else {
+				lsAligns.add(align);
+				alignOld = align;
+			}
+		}
 		return lsAligns;
 	}
 

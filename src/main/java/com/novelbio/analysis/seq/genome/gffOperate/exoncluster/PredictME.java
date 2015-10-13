@@ -208,6 +208,8 @@ public class PredictME extends SpliceTypePredict {
 	 * @return
 	 */
 	private ArrayList<List<ExonInfo>> getLsExonThis(ExonCluster exonClusterBeforeOrAfter) {
+		if (exonClusterBeforeOrAfter == null) return new ArrayList<>();
+		
 		ArrayList<List<ExonInfo>> lsExonThis = new ArrayList<>();
 		
 		for (Entry<GffGeneIsoInfo, List<ExonInfo>> entry: exonCluster.getMapIso2LsExon().entrySet()) {

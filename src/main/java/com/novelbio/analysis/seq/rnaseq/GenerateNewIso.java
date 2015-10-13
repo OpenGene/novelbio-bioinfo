@@ -43,7 +43,7 @@ public class GenerateNewIso {
 	int maxRIlen = 4000;
 	
 	/** 是否重建RI位点 */
-	boolean isReconstructRI = true;
+	boolean isReconstructRI = false;
 	int longExon = 200;//超过100bp就认为是比较长的exon，就需要做判定了
 	int maxExonLen = 1000;
 	int catchNum = 50000;

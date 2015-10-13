@@ -637,7 +637,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	/** 将经过排序的exonlist合并，获得几个连续的exon，切分的很细
 	 * 返回的int[] 0: startAbs    1: endAbs
 	 *  */
-	private static ArrayList<int[]> getLsElementSepSingle(Boolean cis5to3, ArrayList<? extends ListDetailAbs> lsAll) {
+	public static ArrayList<int[]> getLsElementSepSingle(Boolean cis5to3, List<? extends Alignment> lsAll) {
 		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
 		int[] exonOld = new int[]{lsAll.get(0).getStartAbs(), lsAll.get(0).getEndAbs()};
 		lsExonBounder.add(exonOld);

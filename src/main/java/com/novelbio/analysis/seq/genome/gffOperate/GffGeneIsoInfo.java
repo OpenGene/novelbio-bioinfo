@@ -1569,7 +1569,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 划分好的ExonCluster里面每组的lsExon都是考虑
 	 * 了方向然后按照方向顺序装进去的 
 	 */
-	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3, List<GffGeneIsoInfo> lsGffGeneIsoInfos) {
+	public static ArrayList<ExonCluster> getExonClusterSingle(Boolean cis5To3, List<GffGeneIsoInfo> lsGffGeneIsoInfos) {
 		String chrID = lsGffGeneIsoInfos.get(0).getRefIDlowcase();
 		ArrayList<ExonCluster> lsResult = new ArrayList<ExonCluster>();
 		ArrayList<int[]> lsExonBound = ListAbs.getCombSep(cis5To3, lsGffGeneIsoInfos, false);
@@ -1588,6 +1588,73 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return lsResult;
 	}
+	
+	/**
+	 * 按照分组好的边界exon，将每个转录本进行划分，
+	 * 划分好的ExonCluster里面每组的lsExon都是考虑
+	 * 了方向然后按照方向顺序装进去的 
+	 */
+	public static ArrayList<ExonCluster> getExonCluster(Boolean cis5To3, List<GffGeneIsoInfo> lsGffGeneIsoInfos) {
+		String chrID = lsGffGeneIsoInfos.get(0).getRefIDlowcase();
+
+		ArrayList<ExonCluster> lsExonClusters = getExonClusterSingle(cis5To3, lsGffGeneIsoInfos);
+		List<ExonCluster> lsExonClustersNew = new ArrayList<>();
+		ExonCluster exonClusterBefore = null;
+		ExonCluster exonClusterBeforeReal = null;
+		int[] exonMultiSE = null;
+		
+		for (int i = 0; i < lsExonClusters.size(); i++) {
+			ExonCluster exonCluster = lsExonClusters.get(i);
+			if (exonClusterBefore == null) {
+				exonClusterBefore = exonCluster;
+				exonClusterBeforeReal = exonClusterBefore;
+				continue;
+			}
+			if (!exonClusterBefore.getMapIso2ExonIndexSkipTheCluster().isEmpty() 
+					&& exonClusterBefore.getMapIso2ExonIndexSkipTheCluster().equals(exonCluster.getMapIso2ExonIndexSkipTheCluster())) {
+				if (exonMultiSE == null) {
+					int start = Math.min(exonClusterBefore.getStartAbs(), exonCluster.getStartAbs());
+					int end = Math.max(exonClusterBefore.getEndAbs(), exonCluster.getEndAbs());
+					exonMultiSE = new int[]{start, end};
+				} else {
+					exonMultiSE[0] = Math.min(exonMultiSE[0], exonCluster.getStartAbs());
+					exonMultiSE[1] = Math.max(exonMultiSE[1], exonCluster.getEndAbs());
+				}
+				
+//				if (exonMultiSE[0] > exonMultiSE[1]) {
+//					System.out.println();
+//					logger.debug("");
+//				}
+			} else {
+				if (exonMultiSE != null) {
+					ExonCluster exonClusterNew = new ExonCluster(chrID, exonMultiSE[0], exonMultiSE[1], lsGffGeneIsoInfos, cis5To3);
+					exonClusterNew.setExonClusterBefore(exonClusterBeforeReal);
+					exonClusterNew.setExonClusterAfter(lsExonClusters.get(i));
+					exonClusterNew.initail();
+					lsExonClustersNew.add(exonClusterNew);
+					exonMultiSE = null;
+				}
+				if ( i >= 1) {
+					exonClusterBeforeReal = lsExonClusters.get(i - 1);
+				}
+			}
+			exonClusterBefore = exonCluster;
+		}
+		
+		//不是multise不需要统计这个
+//		if (exonMultiSE != null) {
+//			ExonCluster exonClusterNew = new ExonCluster(chrID, exonMultiSE[0], exonMultiSE[1], lsGffGeneIsoInfos, cis5To3);
+//			exonClusterNew.setExonClusterBefore(exonClusterBeforeReal);
+//			exonClusterNew.initail();
+//			lsExonClustersNew.add(exonClusterNew);
+//			exonMultiSE = null;
+//		}
+		
+		lsExonClusters.addAll(lsExonClustersNew);
+		
+		return lsExonClusters;
+	}
+	
 	/**
 	 * 设定DISTAL Promoter区域在TSS上游的多少bp外，默认1000
 	 * 目前仅和annotation的文字有关

@@ -47,6 +47,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.listOperate.ListAbs;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
@@ -77,7 +78,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("Ex", parentPath + "exclusion.bam");
 		exonJunction.addBamSorted("In", parentPath + "inclusion.bam");
 		exonJunction.setCompareGroups("Ex", "In");
-		exonJunction.setResultFile(parentPath + "result25strand");
+		exonJunction.setResultFile(parentPath + "result-sep-exon");
 		exonJunction.setJunctionMinAnchorLen(0);
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.run();
@@ -88,8 +89,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static long test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("11:65083629-65660215"));
+//		lsAligns.add(new Align("11:65083629-65660215"));
 //		lsAligns.add(new Align("1:7205126-27246005"));
+//		lsAligns.add(new Align("11", 1, 250088574));
 
 		DateUtil dateUtil = new DateUtil();
 //		dateUtil.setStartTime();
@@ -97,7 +99,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		Species species = new Species(9606);
 //		species.setVersion("hg19_GRCh37");
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(new GffHashGene("/media/winE/NBCsource/otherResource/www/GRCh38.v79/genes_modify2.gtf"));
+		gffChrAbs.setGffHash(new GffHashGene("/media/winE/NBCsource/otherResource/www/GRCh38.v79/genes_modify.gtf"));
 		ExonJunction exonJunction = new ExonJunction();
 //		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
@@ -110,7 +112,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("WT", parentPath + "WT.accepted.sorted.bam");
 		exonJunction.setCompareGroups("KD", "WT");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
-		exonJunction.setResultFile(parentPath + "result_20150918-new-pvalue-small");
+		exonJunction.setResultFile(parentPath + "result_20151007-mse");
 
 		exonJunction.run();
 		exonJunction = null;
@@ -119,7 +121,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
-	private static String stopGeneName = "ENSG00000116983";
+	private static String stopGeneName = "ENSG00000163531";
 		
 	GffHashGene gffHashGene = null;
 	/** 没有重建转录本的老iso的名字，用于后面计算可变剪接所在exon number的 */
@@ -181,7 +183,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	int juncAllReadsNum = 25;
 	int juncSampleReadsNum = 10;
 	/** pvalue超过这个值就不进行fdr计算 */
-	double fdrCutoff = 0.99;
+	double fdrCutoff = 1;
 	
 	/** 至少有15条reads支持的junction才会用于重建转录本 */
 	int newIsoReadsNum = 15;
@@ -704,9 +706,17 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		List<ExonSplicingTest> lsResult = new ArrayList<>();
 		
 		for (List<ExonClusterSite> lsIsoExonSplicingTests : lsSplicingTests) {
-			List<ExonSplicingTest> lsIsoExonSplicingResult = doTest(lsIsoExonSplicingTests);
-			lsIsoExonSplicingResult = combineMXE(lsIsoExonSplicingResult);
+			if (lsIsoExonSplicingTests.get(0).getCurrentExonCluster().getParentGene().getName().contains("AP003068.9")) {
+				logger.debug("");
+			}
 			
+			List<ExonSplicingTest> lsIsoExonSplicingResult = doTest(lsIsoExonSplicingTests);
+			if (lsIsoExonSplicingResult.isEmpty()) {
+				logger.info("gene " + lsIsoExonSplicingTests.get(0).getCurrentExonCluster().getParentGene().getNameSingle() + " have only unknown splicing site");
+				continue;
+			}
+			lsIsoExonSplicingResult = combineMXE(lsIsoExonSplicingResult);
+			lsIsoExonSplicingResult = combineMultiSE(lsIsoExonSplicingResult);
 			if (oneGeneOneSpliceEvent) {
 				lsResult.add(lsIsoExonSplicingResult.get(0));
 			} else {
@@ -726,7 +736,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		//去除相同位点，仅选择pvalue小的那一个
 		Map<String, ExonSplicingTest> mapKey2SpliceTest = new LinkedHashMap<>();
 		for (ExonSplicingTest exonSplicingTest : lsResult) {
-			if (exonSplicingTest.getExonCluster().getStartAbs() == 70329831) {
+			if (exonSplicingTest.getExonCluster().getStartAbs() == 204984027) {
 				logger.debug("");
 			}
 			String key = exonSplicingTest.getSpliceSite().trim();
@@ -879,6 +889,89 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		return lsFinal;
 	}
 	
+	/** 去除重复的multise */
+	private 	List<ExonSplicingTest> combineMultiSE(List<ExonSplicingTest> lsTestResult) {
+		if (lsTestResult.get(0).getExonCluster().getParentGene().getName().contains(stopGeneName)) {
+			logger.debug("");
+		}
+		
+		List<ExonSplicingTest> lsResult = new ArrayList<>();
+		
+		List<Align> lsAlignMultiSE = new ArrayList<>();
+		Map<Align, ExonSplicingTest> mapAlign2Exon = new HashMap<>();
+		for (ExonSplicingTest exonSplicingTest : lsTestResult) {
+			if (exonSplicingTest.getSplicingType() == SplicingAlternativeType.cassette_multi) {
+				Align alignMultiSE = exonSplicingTest.getSpliceSiteAlignDisplay();
+				alignMultiSE.setCis5to3(exonSplicingTest.getExonCluster().isCis5to3());
+				mapAlign2Exon.put(alignMultiSE, exonSplicingTest);
+				lsAlignMultiSE.add(alignMultiSE);
+			} else {
+				lsResult.add(exonSplicingTest);
+			}
+		}
+		
+		if (lsAlignMultiSE.isEmpty()) {
+			return lsResult;
+		}
+		
+		if (lsTestResult.get(0).getExonCluster().isCis5to3()) {
+			Collections.sort(lsAlignMultiSE, new CompCisAlign());
+		} else {
+			Collections.sort(lsAlignMultiSE, new CompTransAlign());
+		}
+		
+		/** 将multiSE进行分组，因为是这个样子的
+		 * --------------10==20---------------50==60-------------------
+		 * 在本组内就存在 10==20 和 50==60 以及 10==60 三组，这时候我们需要将最长的那个挑出来
+		 */
+		List<int[]> lsSep = ListAbs.getLsElementSep(lsTestResult.get(0).getExonCluster().isCis5to3(), lsAlignMultiSE);
+		ArrayListMultimap<int[], Align> mapSite2LsAlign = ArrayListMultimap.create();
+		for (int[] is : lsSep) {
+			for (Align align : lsAlignMultiSE) {
+				if (align.getStartAbs() >= is[0] && align.getEndAbs() <= is[1]) {
+					mapSite2LsAlign.put(is, align);
+				}
+			}
+		}
+		
+		for (int[] is : mapSite2LsAlign.keys()) {
+			List<Align> lsAligns = mapSite2LsAlign.get(is);
+			Align alignMax = lsAligns.get(0);
+			for (Align align : lsAligns) {
+				if (alignMax.getLength() < align.getLength()) {
+					alignMax = align;
+				}
+			}
+			lsResult.add(mapAlign2Exon.get(alignMax));
+		}
+		
+		return lsResult;
+	}
+	
+	static class CompCisAlign implements Comparator<Align> {
+		public int compare(Align o1, Align o2) {
+			Integer o1start = o1.getStartAbs(), o2start = o2.getStartAbs();
+			Integer o1end = o1.getEndAbs(), o2end = o2.getEndAbs();
+			if (o1start != o2start) {
+				return o1start.compareTo(o2start);
+			} else {
+				return o1end.compareTo(o2end);
+			}
+		}
+	}
+	
+	static class CompTransAlign implements Comparator<Align> {
+		public int compare(Align o1, Align o2) {
+			Integer o1start = o1.getStartCis(), o2start = o2.getStartCis();
+			Integer o1end = o1.getEndCis(), o2end = o2.getEndCis();
+			if (o1start != o2start) {
+				return -o1start.compareTo(o2start);
+			} else {
+				return -o1end.compareTo(o2end);
+			}
+		}
+	}
+	
 	private int middle(ExonSplicingTest exonSplicingTest) {
 		return (exonSplicingTest.getExonCluster().getStartAbs() + exonSplicingTest.getExonCluster().getEndAbs())/2;
 	}
@@ -945,6 +1038,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private Map<SplicingAlternativeType, int[]> statisticsSplicingEvent() {
 		Map<SplicingAlternativeType, int[]> mapSplicingType2Num = new LinkedHashMap<SplicingAlternativeType, int[]>();
 		for (SplicingAlternativeType exonSplicingType : SplicingAlternativeType.getMapName2SplicingEvents().values()) {
+			if (exonSplicingType == SplicingAlternativeType.unknown) {
+				continue;
+			}
 			mapSplicingType2Num.put(exonSplicingType, new int[2]);
 		}
 		SplicingAlternativeType exonSplicingType = null;

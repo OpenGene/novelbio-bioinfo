@@ -91,7 +91,7 @@ public class ExonClusterSite {
 		if (exonClusterCurrent.getStartAbs() == 70329988) {
 			logger.debug("");
 		}
-		
+
 		List<ExonSplicingTest> lsRI = new ArrayList<>();
 		List<ExonSplicingTest> lsOther = new ArrayList<>();
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTests) {

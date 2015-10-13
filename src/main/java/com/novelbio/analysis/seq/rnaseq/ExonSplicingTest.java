@@ -86,7 +86,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 显示最后区域的，主要是给MXE使用 */
 	Align alignDisplay;
 	
-	private static final String debug = "ENSG00000189409";
+	private static final String debug = "ENSG00000163531";
 	
 	public ExonSplicingTest(ExonCluster exonCluster) {
 		this.exonCluster = exonCluster;
@@ -159,6 +159,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		if (exonCluster.getParentGene().getName().contains(debug)) {
 			logger.debug("stop");
 		}
+
 		mapCond_Group2JunNum = tophatJunction.mapCondition_Group2JunNum;
 		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
 			spliceTypePredict.setTophatJunction(tophatJunction);
@@ -594,8 +595,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			}
 			
 			if (this.splicingType == SplicingAlternativeType.retain_intron) {
-				iSpliceTestExp.setNormalizedNum(20000);
-				iSpliceTestJun.setNormalizedNum(20000);
+				iSpliceTestExp.setNormalizedNum(200000);
+				iSpliceTestJun.setNormalizedNum(200000);
 			} else {
 				iSpliceTestExp.setNormalizedNum(normExp);
 				iSpliceTestJun.setNormalizedNum(junction);
@@ -628,9 +629,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			double expPro = getPvaluePropExp();
 						
 			if (isRootAvg) {
-				if (splicingType == SplicingAlternativeType.retain_intron) {
-					return pvalueCounts;
-				}
+//				if (splicingType == SplicingAlternativeType.retain_intron) {
+//					return pvalueCounts;
+//				}
 				
 				if (pvalueJunctionProp >= 0 && pvalueJunctionProp <= 1) {
 					double pvalueLog = Math.log10(pvalueExp) * (1-pvalueJunctionProp) +  Math.log10(pvalueCounts) * pvalueJunctionProp;

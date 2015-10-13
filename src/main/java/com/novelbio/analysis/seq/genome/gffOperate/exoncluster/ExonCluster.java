@@ -62,6 +62,17 @@ public class ExonCluster implements Alignment {
 		this.isCis5To3 = isCis5To3;
 	}
 	
+	public ExonCluster(String chrID, List<GffGeneIsoInfo> colGeneIsoInfosParent, Boolean isCis5To3) {
+		this.chrID = chrID;
+		this.colGeneIsoInfosParent = colGeneIsoInfosParent;
+		this.isCis5To3 = isCis5To3;
+	}
+	
+	public void setStartEnd(int start, int end) {
+		this.startLoc = Math.min(start, end);
+		this.endLoc = Math.max(start, end);
+	}
+
 	public void initail() {
 		for (GffGeneIsoInfo gffGeneIsoInfo : colGeneIsoInfosParent) {
 			if (gffGeneIsoInfo.isCis5to3() != isCis5To3
@@ -91,6 +102,16 @@ public class ExonCluster implements Alignment {
 				logger.error("出错拉，请检查该基因：" + gffGeneIsoInfo.getName() );
 			}
 		}
+		
+//		boolean isEmpty = true;
+//		for (List<ExonInfo> ls : mapIso2LsExon.values()) {
+//			if (!ls.isEmpty()) {
+//				isEmpty = false;
+//			}
+//		}
+//		if (isEmpty) {
+//			logger.debug("");
+//		}
 	}
 	
 	public String getRefID() {

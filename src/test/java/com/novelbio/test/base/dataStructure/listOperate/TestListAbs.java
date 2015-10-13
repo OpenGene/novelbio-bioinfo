@@ -106,17 +106,17 @@ public class TestListAbs extends TestCase {
 		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, true);
 		//<----------20--30-----------------40-50----52-54--------------60----70----------80-------90---<
 		//<----------20---33----35-36----------------------------------55------69-------71---82---84--92---<
-		isoTrans1.add(new ExonInfo(false, 20, 30));
-		isoTrans1.add(new ExonInfo(false, 40, 50));
-		isoTrans1.add(new ExonInfo(false, 52, 54));
-		isoTrans1.add(new ExonInfo(false, 60, 70));
-		isoTrans1.add(new ExonInfo(false, 80, 90));
+		isoTrans1.add(new ExonInfo(true, 20, 30));
+		isoTrans1.add(new ExonInfo(true, 40, 50));
+		isoTrans1.add(new ExonInfo(true, 52, 54));
+		isoTrans1.add(new ExonInfo(true, 60, 70));
+		isoTrans1.add(new ExonInfo(true, 80, 90));
 		
-		isoTrans2.add(new ExonInfo(false, 20, 33));
-		isoTrans2.add(new ExonInfo(false, 35, 36));
-		isoTrans2.add(new ExonInfo(false, 55, 69));
-		isoTrans2.add(new ExonInfo(false, 71, 82));
-		isoTrans2.add(new ExonInfo(false, 84, 92));
+		isoTrans2.add(new ExonInfo(true, 20, 33));
+		isoTrans2.add(new ExonInfo(true, 35, 36));
+		isoTrans2.add(new ExonInfo(true, 55, 69));
+		isoTrans2.add(new ExonInfo(true, 71, 82));
+		isoTrans2.add(new ExonInfo(true, 84, 92));
 		
 		ArrayList<GffGeneIsoInfo> lsIso = new ArrayList<GffGeneIsoInfo>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);

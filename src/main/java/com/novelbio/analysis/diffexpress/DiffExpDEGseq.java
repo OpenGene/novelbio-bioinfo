@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -31,6 +32,13 @@ import freemarker.template.Template;
 public class DiffExpDEGseq extends DiffExpAbs {
 	private static final Logger logger = Logger.getLogger(DiffExpDEGseq.class);
 	String outPutSuffix = "_Path";
+	
+	String outTmp = FileOperate.addSep(PathDetail.getTmpPathRandom());
+	/** key: 输出文件的临时路径
+	 * value: 输出文件的实际路径
+	 */
+	Map<String, String> mapTmp2Out = new HashMap<>();
+	
 	
 	protected String generateScript() {
 		Map<String,Object> mapData = new HashMap<String, Object>();
@@ -126,9 +134,17 @@ OutDir=6
 			tmpResult[3] = comparePair[1];//SampleControl
 			tmpResult[4] = getSampleCol(mapSample2LsCol.get(comparePair[1]).size());//SampleControlNum
 			tmpResult[5] = comparePair[1];//SampleControlName
-			String outPath = fileName.replace("\\", "/") + outPutSuffix;
-			FileOperate.createFolders(outPath);
-			tmpResult[6] = FileHadoop.convertToLocalPath(outPath);//OutDir
+			
+			String outPathReal = fileName.replace("\\", "/") + outPutSuffix;
+			
+			String parentPath = FileOperate.getParentPathNameWithSep(fileName);
+			String tmpPath = outPathReal.replace(parentPath, outTmp);
+			
+			mapTmp2Out.put(tmpPath, outPathReal);
+			FileOperate.createFolders(tmpPath);
+			
+			
+			tmpResult[6] = FileHadoop.convertToLocalPath(tmpPath);//OutDir
 			lsResult.add(tmpResult);
 		}
 		return lsResult;
@@ -164,6 +180,10 @@ OutDir=6
 	@Override
 	protected void run() {
 		Rrunning("DEGseq");
+		for (String tmpFile : mapTmp2Out.keySet()) {
+			String realFile = mapTmp2Out.get(tmpFile);
+			FileOperate.moveFile(true, tmpFile, realFile);
+		}
 	}
 
 	@Override
