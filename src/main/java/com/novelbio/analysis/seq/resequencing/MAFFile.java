@@ -31,7 +31,7 @@ public class MAFFile {
 
 		final String vcfFilePath = "/home/novelbio/VCF";
 		ArrayList<String[]> lsFile = new ArrayList<>();
-		lsFile = FileOperate.getFoldFileName(vcfFilePath, "DPfilter", "vcf");
+		lsFile = FileOperate.getFoldFileName(vcfFilePath, "format", "vcf");
 		ExecutorService pool = Executors.newFixedThreadPool(5);
 		int fileno = 1;
 		for (String[] arrFile : lsFile) {
@@ -48,8 +48,7 @@ public class MAFFile {
 						VCFFileReader reader = new VCFFileReader(file, false);
 						Species species = new Species(9606, "hg19_GRCh37");
 						GffChrAbs gffChrAbs = new GffChrAbs(species);
-						mafFilePath = "//home//novelbio//VCF//"
-								+ file.getName() + ".maf"; // S084103_IPVSS084103_Ca.maf
+						mafFilePath = "//home//novelbio//VCF//" + file.getName() + ".maf"; // S084103_IPVSS084103_Ca.maf
 						txtWrite = new TxtReadandWrite(mafFilePath, true);
 						MAFFile mafFile = new MAFFile();
 						txtWrite.writefile(mafFile.MAFFileHead() + "\n");
