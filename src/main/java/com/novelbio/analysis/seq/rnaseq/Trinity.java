@@ -167,6 +167,15 @@ public class Trinity implements IntCmdSoft {
 	 */
 	String grid_computing_module;
 	
+	
+	/**
+	 * suggested max memory to use by Trinity where limiting can be enabled.
+	 * 	(default: 20G) => yields command
+	 */
+	int maxMemory = 20;
+	
+	
+	
 	public Trinity() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.trinity);
 		this.exePath = softWareInfo.getExePathRun();
@@ -205,12 +214,28 @@ public class Trinity implements IntCmdSoft {
 		}
 		return new String[]{"--JM", JellyfishMemory + "G"};
 	}
+	
+	private String[] getMaxMemory() {
+		if (maxMemory <= 0) {
+			return null;
+		}
+		return new String[]{"--max_memory", maxMemory + "G"};
+	}
+	
 	/**
 	 * (Jellyfish Memory) number of GB of system memory to use for k-mer counting by jellyfish (eg. 10G)
 	 * 默认60G
 	 */
 	public void setJellyfishMemory(int jellyfishMemory) {
 		JellyfishMemory = jellyfishMemory;
+	}
+	
+	/**
+	 * (Memory) uggested max memory to use by Trinity where limiting can be enabled (eg. 20G)
+	 * 默认20G
+	 */
+	public void setMaxMemory (int maxMemory) {
+		maxMemory = maxMemory;
 	}
 	
 	/** 务必先设定Left再设定Right */
@@ -539,7 +564,6 @@ public class Trinity implements IntCmdSoft {
 	public void setBflyHeapSpaceMax(int bflyHeapSpaceMax) {
 		this.bflyHeapSpaceMax = bflyHeapSpaceMax;
 	}
-
 	private String[] getBflyHeapSpaceInit() {
 		if (bflyHeapSpaceInit <= 0) {
 			return null;
@@ -595,7 +619,10 @@ public class Trinity implements IntCmdSoft {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "Trinity");
 		ArrayOperate.addArrayToList(lsCmd, getSeqType());
-		ArrayOperate.addArrayToList(lsCmd, getJellyfishMemory() );
+		// trinity_v2.1.1 取消了此参数
+		// ArrayOperate.addArrayToList(lsCmd, getJellyfishMemory() );
+		
+		ArrayOperate.addArrayToList(lsCmd, getMaxMemory() );
 		lsCmd.addAll(getFastQ());
 		ArrayOperate.addArrayToList(lsCmd, getSS_lib_type());
 		ArrayOperate.addArrayToList(lsCmd, getOutput());
