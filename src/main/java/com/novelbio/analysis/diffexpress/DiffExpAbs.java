@@ -507,7 +507,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 			//防止R还没输出结果就去读取
 			try { Thread.sleep(50); } catch (Exception e) { }
 			
-			fileName = FileOperate.changeFileSuffix(fileName, "", "xls");
+			fileName = FileOperate.changeFileSuffix(fileName, "_alldiff", "xls");
 			TxtReadandWrite txtOutFinal = new TxtReadandWrite(fileName, true);
 			lsResult = addInputDataAndAnno(groupPaire, lsResult, mapGroup2LsColId);
 			txtOutFinal.ExcelWrite(lsResult);

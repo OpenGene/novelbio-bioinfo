@@ -558,8 +558,8 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * 其中Upper Quartile的单位是1/100
 	 * exonlength的单位是kb
 	 */
-	public List<String[]> getLsUQRPKMs() {
-		return geneExpTable.getLsAllCountsNum(EnumExpression.UQRPKM);
+	public List<String[]> getLsUQPMs() {
+		return geneExpTable.getLsAllCountsNum(EnumExpression.UQPM);
 	}
 	/** 返回ncRNA的情况，只有NCBI的模式物种，本项目才有意义 */
 	public List<String[]> getLsNCrnaStatistics() {
@@ -591,17 +591,17 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * 其中Upper Quartile的单位是1/100
 	 * exonlength的单位是kb
 	 */
-	public List<String[]> getLsUQRPKMsCurrent() {
-		return geneExpTable.getLsCountsNum(EnumExpression.UQRPKM);
+	public List<String[]> getLsUQPMsCurrent() {
+		return geneExpTable.getLsCountsNum(EnumExpression.UQPM);
 	}
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
 	public void writeToFile(String resultExpPrefix, boolean isCountNCrna) {
-		String suffixRPKM = "All_RPKM", suffixUQRPKM = "All_UQRPKM", 
-				suffixCounts = "All_Counts", tpm = "All_TPM", ncrna = "All_ncRNA_Statistics;";
+		String suffixRPKM = "All_RPKM_exp", suffixUQRPKM = "All_UQ_exp", 
+				suffixCounts = "All_Counts_exp", tpm = "All_TPM_exp", ncrna = "All_ncRNA_Statistics;";
 		if (isCalculateFPKM()) {
-			suffixRPKM = "All_FPKM";
-			suffixUQRPKM = "All_UQFPKM";
-			suffixCounts = "All_Fragments";
+			suffixRPKM = "All_FPKM_exp";
+			suffixUQRPKM = "All_UQ_exp";
+			suffixCounts = "All_Fragments_exp";
 		}
 		if (!resultExpPrefix.endsWith("/") && !resultExpPrefix.endsWith("\\")) {
 			suffixRPKM = "_" + suffixRPKM;
@@ -619,7 +619,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		
 		List<String[]> lsTpm = getLsTPMs();
 		List<String[]> lsRpkm = getLsRPKMs();
-		List<String[]> lsUQRpkm = getLsUQRPKMs();
+		List<String[]> lsUQRpkm = getLsUQPMs();
 		List<String[]> lsCounts2 = getLsCounts();
 		if (isCountNCrna) {
 			List<String[]> lsNCRNA = getLsNCrnaStatistics();
@@ -646,12 +646,12 @@ public class RPKMcomput implements AlignmentRecorder {
 		outPathPrefix = FileOperate.getPathName(outPathPrefix) + "tmp/";
 		FileOperate.createFolders(outPathPrefix);
 		String fileNamePrefix = outPathPrefix + geneExpTable.getCurrentCondition();
-		String suffixRPKM = "_RPKM", suffixUQRPKM = "_UQRPKM", suffixAllReads = "_AllReads",
-				suffixCounts = "_Counts", suffixTpm = "_TPM", suffixNCrna = "_ncRNA_Statistics";
+		String suffixRPKM = "_RPKM_exp", suffixUQRPKM = "_UQ_exp", suffixAllReads = "_AllReads_exp",
+				suffixCounts = "_Counts_exp", suffixTpm = "_TPM_exp", suffixNCrna = "_ncRNA_Statistics";
 		if (isCalculateFPKM()) {
-			suffixRPKM = "_FPKM";
-			suffixUQRPKM = "_UQFPKM";
-			suffixCounts = "_Fragments";
+			suffixRPKM = "_FPKM_exp";
+			suffixUQRPKM = "_UQ_exp";
+			suffixCounts = "_Fragments_exp";
 		}
 		
 		String outTPM = fileNamePrefix + suffixTpm + ".txt";
@@ -664,7 +664,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		List<String[]> lsCounts = getLsCountsCurrent();
 		List<String[]> lsTpm = getLsTPMsCurrent();
 		List<String[]> lsRpkm = getLsRPKMsCurrent();
-		List<String[]> lsUQRpkm = getLsUQRPKMsCurrent();
+		List<String[]> lsUQRpkm = getLsUQPMsCurrent();
 		if (isCountNCrna) {
 			List<String[]> lsNCrna = getLsNCrnaStatisticsCurrent();
 			TxtReadandWrite txtWriteNCrna = new TxtReadandWrite(outNcRNA, true);
@@ -693,12 +693,12 @@ public class RPKMcomput implements AlignmentRecorder {
 	public boolean isExistTmpResultAndReadExp(String outPathPrefix, boolean isCountNCrna) {
 		outPathPrefix = FileOperate.getPathName(outPathPrefix) + "tmp/";
 		String fileNamePrefix = outPathPrefix + geneExpTable.getCurrentCondition();
-		String suffixRPKM = "_RPKM", suffixUQRPKM = "_UQRPKM", suffixAllReads = "_AllReads",
-				suffixCounts = "_Counts", suffixTpm = "_TPM", suffixNCrna = "_ncRNA_Statistics";
+		String suffixRPKM = "_RPKM_exp", suffixUQRPKM = "_UQ_exp", suffixAllReads = "_AllReads_exp",
+				suffixCounts = "_Counts_exp", suffixTpm = "_TPM_exp", suffixNCrna = "_ncRNA_Statistics";
 		if (isCalculateFPKM()) {
-			suffixRPKM = "_FPKM";
-			suffixUQRPKM = "_UQFPKM";
-			suffixCounts = "_Fragments";
+			suffixRPKM = "_FPKM_exp";
+			suffixUQRPKM = "_UQ_exp";
+			suffixCounts = "_Fragments_exp";
 		}
 		
 		String outTPM = fileNamePrefix + suffixTpm + ".txt";

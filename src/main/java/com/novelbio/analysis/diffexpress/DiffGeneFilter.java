@@ -219,7 +219,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	
 	/** 获得筛选差异后的文件名 */
 	public static String getDifGeneFileName(String excelFileName) {
-		return FileOperate.changeFileSuffix(excelFileName, "-Dif", null);
+		return FileOperate.changeFileSuffix(excelFileName, "_diff", null);
 	}
 	
 	/**
