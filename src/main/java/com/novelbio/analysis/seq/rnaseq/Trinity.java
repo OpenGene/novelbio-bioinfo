@@ -172,7 +172,7 @@ public class Trinity implements IntCmdSoft {
 	 * suggested max memory to use by Trinity where limiting can be enabled.
 	 * 	(default: 20G) => yields command
 	 */
-	int maxMemory = 20;
+	int maxRunMemory = 10;
 	
 	
 	
@@ -216,10 +216,10 @@ public class Trinity implements IntCmdSoft {
 	}
 	
 	private String[] getMaxMemory() {
-		if (maxMemory <= 0) {
+		if (maxRunMemory <= 0) {
 			return null;
 		}
-		return new String[]{"--max_memory", maxMemory + "G"};
+		return new String[]{"--max_memory", maxRunMemory + "G"};
 	}
 	
 	/**
@@ -231,11 +231,11 @@ public class Trinity implements IntCmdSoft {
 	}
 	
 	/**
-	 * (Memory) uggested max memory to use by Trinity where limiting can be enabled (eg. 20G)
-	 * 默认20G
+	 * (Memory) uggested max memory to use by Trinity where limiting can be enabled (eg. 10G)
+	 * 默认10G
 	 */
 	public void setMaxMemory (int maxMemory) {
-		maxMemory = maxMemory;
+		maxRunMemory = maxMemory;
 	}
 	
 	/** 务必先设定Left再设定Right */
