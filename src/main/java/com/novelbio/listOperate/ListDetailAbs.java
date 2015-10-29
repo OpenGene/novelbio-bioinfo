@@ -1,6 +1,7 @@
 package com.novelbio.listOperate;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -24,7 +25,7 @@ import com.novelbio.base.dataStructure.Alignment;
  * 条目方向 cis5to3
  * @author zong0jie
  */
-public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetailAbs> {
+public class ListDetailAbs implements Alignment, Cloneable {
 	private static final Logger logger = Logger.getLogger(ListDetailAbs.class);
 
 	/** 父树 */
@@ -402,37 +403,44 @@ public class ListDetailAbs implements Alignment, Cloneable, Comparable<ListDetai
 		}
 		return result;
 	}
-	@Override
-	public int compareTo(ListDetailAbs o) {
-		Integer o1startCis = getStartCis(); Integer o1endCis = getEndCis();
-		Integer o2startCis = o.getStartCis(); Integer o2endCis = o.getEndCis();
-		
-		Integer o1startAbs = getStartAbs(); Integer o1endAbs = getEndAbs();
-		Integer o2startAbs = o.getStartAbs(); Integer o2endAbs = o.getEndAbs();
-		
-		if (isCis5to3() == null) {
-			int result = o1startAbs.compareTo(o2startAbs);
-			if (result == 0) {
-				return o1endAbs.compareTo(o2endAbs);
-			}
-			return result;
-		}
-		
-		else if (isCis5to3()) {
-			int result = o1startCis.compareTo(o2startCis);
-			if (result == 0) {
-				return o1endCis.compareTo(o2endCis);
-			}
-			return result;
-		}
-		else {
+	
+	/** 有方向的排序 */
+	public static class ListDetailAbsCompareStrand implements Comparator<Alignment> {
+
+		@Override
+        public int compare(Alignment o1, Alignment o2) {
+			Integer o1startCis = o1.getStartCis(); Integer o1endCis = o1.getEndCis();
+			Integer o2startCis = o2.getStartCis(); Integer o2endCis = o2.getEndCis();
+			
+			if (o1.isCis5to3() == null || o1.isCis5to3()) {
+				int result = o1startCis.compareTo(o2startCis);
+				if (result == 0) {
+					return o1endCis.compareTo(o2endCis);
+				}
+				return result;
+			} else {
 				int result = - o1startCis.compareTo(o2startCis);
 				if (result == 0) {
 					return - o1endCis.compareTo(o2endCis);
 				}
 				return result;
 			}
+        }
+		
 	}
-
+	/** 没有方向的排序 */
+	public static class ListDetailAbsCompareNoStrand implements Comparator<Alignment> {
+		@Override
+        public int compare(Alignment o1, Alignment o2) {
+			Integer o1startAbs = o1.getStartAbs(); Integer o1endAbs = o1.getEndAbs();
+			Integer o2startAbs = o2.getStartAbs(); Integer o2endAbs = o2.getEndAbs();
+			int result = o1startAbs.compareTo(o2startAbs);
+			if (result == 0) {
+				return o1endAbs.compareTo(o2endAbs);
+			}
+			return result;
+ 
+        }
+	}
 	
 }

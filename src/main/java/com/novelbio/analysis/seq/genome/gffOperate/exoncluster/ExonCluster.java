@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -661,16 +660,42 @@ public class ExonCluster implements Alignment {
 		}
 		return lsExonTmp;
 	}
-	/** 返回所有SpliceType的类型 */
+	
+	/** 返回所有SpliceType的类型
+	 * 
+	 * @param minDifLen 小于5bp 的 alt5, alt3 都可以删除
+	 * @return
+	 */
 	public Set<SplicingAlternativeType> getSplicingTypeSet() {
+		return getSplicingTypeSet(0);
+	}
+	
+	/** 返回所有SpliceType的类型
+	 * 
+	 * @param minDifLen 小于5bp 的 alt5, alt3 都可以删除
+	 * @return
+	 */
+	public Set<SplicingAlternativeType> getSplicingTypeSet(int minDifLen) {
 		Set<SplicingAlternativeType> setSpliceTypePredicts = new HashSet<SplicingAlternativeType>();
 		List<SpliceTypePredict> lsSpliceTypePredicts = getSplicingTypeLs();
 		for (SpliceTypePredict spliceTypePredict : lsSpliceTypePredicts) {
-			setSpliceTypePredicts.add(spliceTypePredict.getType());
+			SplicingAlternativeType spliceType = spliceTypePredict.getType();
+			if ((spliceType == SplicingAlternativeType.alt5 || spliceType == SplicingAlternativeType.alt3)
+					&& minDifLen > 0 && getLen(spliceTypePredict.getDifSite()) < minDifLen) {
+				continue;
+            }
+			setSpliceTypePredicts.add(spliceType);
 		}
 		return setSpliceTypePredicts;
 	}
 	
+	private int getLen(List<? extends Alignment> lsAlign) {
+		int len = 0;
+		for (Alignment alignment : lsAlign) {
+	        	len += alignment.getLength();
+        }
+		return len;
+	}
 	/**
 	 * 获得本exoncluster的剪接类型
 	 * 如果返回空的list，说明不能做差异可变剪接分析
@@ -678,9 +703,6 @@ public class ExonCluster implements Alignment {
 	 */
 	public List<SpliceTypePredict> getSplicingTypeLs() {
 		if (lsSpliceTypePredicts == null) {
-			if (getStartAbs() == 70329988) {
-				logger.debug("");
-			}
 			lsSpliceTypePredicts = SpliceTypePredict.getSplicingTypeLs(this);
 		}
 		return lsSpliceTypePredicts;

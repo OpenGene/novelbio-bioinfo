@@ -190,6 +190,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	int intronMinLen = 25;
 	
+	/** 小于6bp的alt5和alt3都可能是假的 */
+	int minDifLen = 6;
+	
 	public ExonJunction() {
 //		List<Align> lsAligns = new ArrayList<>();
 //		lsAligns.add(new Align("chr1:145663570-145864207"));
@@ -571,7 +574,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			logger.debug("stop");
 		}
 		//TODO
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGene);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGene, minDifLen);
 		List<ExonClusterSite> lsExonSplicingTestResult = exonClusterExtract.getLsDifExonSite();
 		if (!lsExonSplicingTestResult.isEmpty()) {
 			for (ExonClusterSite exonSite : lsExonSplicingTestResult) {

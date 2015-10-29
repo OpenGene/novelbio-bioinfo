@@ -26,6 +26,7 @@ import com.novelbio.base.SepSign;
 import com.novelbio.listOperate.ListAbs;
 import com.novelbio.listOperate.ListCodAbs;
 import com.novelbio.listOperate.ListCodAbsDu;
+import com.novelbio.listOperate.ListDetailAbs.ListDetailAbsCompareStrand;
 
 /** 根据junction reads，产生新的iso
  * 暂时没有考虑链特异性测序
@@ -839,7 +840,7 @@ public class GenerateNewIso {
 		// ----------------|10==20-----|-----------|50==60-------|----------------------
 		//-----------------|---15===30|-----------|---55====80|-----------------------
 		List<JunctionUnit> lsJuncUnit = new ArrayList<>(mapKey2Junc.values());
-		Collections.sort(lsJuncUnit);
+		Collections.sort(lsJuncUnit, new ListDetailAbsCompareStrand());
 		List<int[]> lsSub = ListAbs.getLsElementSep(gffDetailGene.isCis5to3(), lsJuncUnit);
 		ArrayListMultimap<String, JunctionUnit> mapLoc2LsJunUnit = ArrayListMultimap.create();
 		

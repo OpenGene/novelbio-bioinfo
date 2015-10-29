@@ -13,7 +13,7 @@ import com.novelbio.listOperate.ListDetailAbs;
  * @author zong0jie
  *
  */
-public class ExonInfo extends ListDetailAbs {
+public class ExonInfo extends ListDetailAbs implements Comparable<ExonInfo> {
 	public ExonInfo() {}
 	/**
 	 * 根据正反向自动设定起点和终点
@@ -93,5 +93,24 @@ public class ExonInfo extends ListDetailAbs {
 	public String toString() {
 		return getRefID() + "\t" + getStartCis() + "\t" + getEndCis();
 	}
+	@Override
+    public int compareTo(ExonInfo o) {
+		Integer o1startCis = getStartCis(); Integer o1endCis = getEndCis();
+		Integer o2startCis = o.getStartCis(); Integer o2endCis = o.getEndCis();
+		
+		if (isCis5to3() == null || isCis5to3()) {
+			int result = o1startCis.compareTo(o2startCis);
+			if (result == 0) {
+				return o1endCis.compareTo(o2endCis);
+			}
+			return result;
+		} else {
+			int result = - o1startCis.compareTo(o2startCis);
+			if (result == 0) {
+				return - o1endCis.compareTo(o2endCis);
+			}
+			return result;
+		}
+    }
 }
 

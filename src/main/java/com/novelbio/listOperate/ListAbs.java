@@ -8,13 +8,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 
 import org.apache.log4j.Logger;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.listOperate.ListDetailAbs.ListDetailAbsCompareNoStrand;
+import com.novelbio.listOperate.ListDetailAbs.ListDetailAbsCompareStrand;
 /**
  * 考虑将其拆分成为三个不同的list，一个cis，一个trans，一个null
  * @author zong0jie
@@ -630,7 +631,11 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 			}
 			lsAll.addAll(listAbs.lsElement);
 		}
-		Collections.sort(lsAll);
+		if (cis5to3 == null) {
+			Collections.sort(lsAll, new ListDetailAbsCompareNoStrand());
+		} else {
+			Collections.sort(lsAll, new ListDetailAbsCompareStrand());
+		}
 		return lsAll;
 	}
 	

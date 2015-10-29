@@ -181,6 +181,12 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		mapOutFileName2Compare.put(fileName, comparePair);
 		calculate = false;
 	}
+	
+	/** 将输入的名字修改为指定的输出名字 */
+	private String getAllDifFileName(String filename) {
+		return FileOperate.changeFileSuffix(filename, "_alldiff", "xls");
+	}
+	
 	/**
 	 * 设定输出比较组总差异基因个数、上调以及下调差异基因个数
 	 * @param compareGroup
@@ -240,17 +246,6 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 //		else {
 //			return false;
 //		}
-	}
-	
-	/**
-	 * <b>调用{@link #calculateResult()} 后才能调用</b><br>
-	 * 返回文件名，以及对应的比较<br>
-	 * key：文件全名<br>
-	 * value：对应的比较。譬如 String[]{Treat, Control}
-	 * @return
-	 */
-	public Map<String, String[]> getMapOutFileName2Compare() {
-		return mapOutFileName2Compare;
 	}
 	
 	/**
@@ -590,12 +585,13 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	 */
 	public List<String> plotDifParams() {
 		ArrayList<String> lsOutFile = new ArrayList<>(); 
-		Map<String, String[]> mapExcelName2Compare = getMapOutFileName2Compare();
 		mapCompare2DifResultInfo.clear();
 		
-		for (String excelName : mapExcelName2Compare.keySet()) {
-			String[] compare = mapExcelName2Compare.get(excelName); 
-			mapCompare2DifResultInfo.put(getCompare(compare), new DiffGeneFilter(excelName));
+		for (String excelName : mapOutFileName2Compare.keySet()) {
+			String[] compare = mapOutFileName2Compare.get(excelName);
+			String prefix = FileOperate.getFileNameSep(excelName)[0];
+			String filename = getAllDifFileName(excelName);
+			mapCompare2DifResultInfo.put(getCompare(compare), new DiffGeneFilter(filename, prefix));
 		}
 //		String[] threshold = DiffGeneVocalno.setThreshold(mapExcelName2DifResultInfo.values());
 		//画图，出差异基因的表格
@@ -615,8 +611,6 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	private String getCompare(String[] compare) {
 		return compare[0] + "vs" + compare[1];
 	}
-	
-	
 	
 	public double getLogFC() {
 		return logFCcutoff;

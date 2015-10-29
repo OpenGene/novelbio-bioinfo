@@ -6,7 +6,7 @@ import com.novelbio.listOperate.ListDetailAbs;
  * @author zong0jie
  *
  */
-public class ListDetailBin extends ListDetailAbs {
+public class ListDetailBin extends ListDetailAbs implements Comparable<ListDetailBin> {
 	String description = "";
 	double score = 0;
 
@@ -52,15 +52,12 @@ public class ListDetailBin extends ListDetailAbs {
 	}
 
 	@Override
-	public int compareTo(ListDetailAbs o) {
-		ListDetailBin listDetailBin = (ListDetailBin)o;
+	public int compareTo(ListDetailBin listDetailBin) {
 		if (getScore() > listDetailBin.getScore()) {
 			return 1;
-		}
-		else if (getScore() < listDetailBin.getScore()) {
+		} else if (getScore() < listDetailBin.getScore()) {
 			return -1;
-		}
-		else {
+		} else {
 			return 0;
 		}
 	}

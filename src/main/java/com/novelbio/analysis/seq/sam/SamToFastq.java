@@ -108,61 +108,51 @@ public class SamToFastq implements AlignmentRecorder {
 		}
 	}
 	
-	//TODO 待测试
 	@Override
 	public void addAlignRecord(AlignRecord alignRecord) {
 		if (alignRecord instanceof SamRecord) {
-			addSamRecord((SamRecord)alignRecord);
+			SamRecord samRecord = (SamRecord)alignRecord;
+			if (isCanAddSamRecord(samRecord)) {
+				addAlignRecordSam(samRecord);
+            }
 		} else {
-			addNormalRecord(alignRecord);
+			throw new ExceptionSamError("samtofastq can only support samrecord!");
 		}
 	}
 	
-	private void addSamRecord(SamRecord samRecord) {
+	protected boolean isCanAddSamRecord(SamRecord samRecord) {
 		//比对到多个位置的，只取其中一条
 		if (samRecord.getMappedReadsWeight() > 1 && samRecord.getMapIndexNum() != 1) {
-			return;
+			return false;
 		}
 		
 		if (samToFastqType == EnumSamToFastqType.UnmappedReads) {
+			if (samRecord.isMapped() && (isPairend && samRecord.isMateMapped())) {
+				return false;
+			}
+		} else if (samToFastqType == EnumSamToFastqType.UnmappedReadsBoth) {
 			if (samRecord.isMapped() || (isPairend && samRecord.isMateMapped())) {
-				return;
+				return false;
 			}
 		} else if (samToFastqType == EnumSamToFastqType.MappedReads) {
-			if (!samRecord.isMapped() && 
-					(!isPairend || 
-							(isPairend && !samRecord.isMateMapped())
-							)
-					) {
-				return;
+			if (!samRecord.isMapped() && (isPairend && !samRecord.isMateMapped())) {
+				return false;
 			}
 		} else if (samToFastqType == EnumSamToFastqType.MappedReadsPairend) {
 			if (!samRecord.isMapped() || (isPairend && !samRecord.isMateMapped())) {
-				return;
+				return false;
+			}
+		} else if (samToFastqType == EnumSamToFastqType.MappedReadsOnlyOne) {
+			if (isPairend 
+					&& (
+							(samRecord.isMapped() && samRecord.isMateMapped())
+							|| (!samRecord.isMapped() && !samRecord.isMateMapped())
+							)
+			) {
+				return false;
 			}
 		}
-		addAlignRecordSam(samRecord);
-	}
-
-	private void addNormalRecord(AlignRecord alignRecord) {
-		if (samToFastqType == EnumSamToFastqType.UnmappedReads) {
-			if (alignRecord.isMapped()) {
-				return;
-			}
-		} else if (samToFastqType == EnumSamToFastqType.MappedReads) {
-		if (!alignRecord.isMapped()) {
-				return;
-			}
-		} else if (samToFastqType == EnumSamToFastqType.MappedReadsPairend) {
-			if (!alignRecord.isMapped()) {
-				return;
-			}
-		}
-		addAlignRecordNormal(alignRecord);
-	}
-	
-	private void addAlignRecordNormal(AlignRecord alignRecord) {
-		fastQ1.writeFastQRecord(alignRecord.toFastQRecord());
+		return true;
 	}
 	
 	private void addAlignRecordSam(SamRecord samRecord) {
@@ -178,6 +168,10 @@ public class SamToFastq implements AlignmentRecorder {
 			} else {
 				try {
 					assertPairedMates(firstRecord, samRecord);
+					if (firstSeenMates.size() > 1000000) {
+						throw new ExceptionSamError("here are more than" + firstSeenMates.size() + "reads cannot find their mate, "
+								+ "maybe you should rerun the task using \"unpaired\" parameter");
+                    }
 				} catch (Exception e) {
 					//同一条reads比对两次就会有这个结果，没关系继续放入hashmap
 					firstSeenMates.put(currentReadName, samRecord);
@@ -289,9 +283,13 @@ public class SamToFastq implements AlignmentRecorder {
 		/** Mapped Reads，双端测序只要有一段比对上就算是比对上了 */
 		MappedReads("_Mapped"),
 		/** 双端测序只提取两端都比对上的 */
-		MappedReadsPairend("_MappedBoth"),
+		MappedReadsPairend("_BothMapped"),
+		/** 双端测序一端比上另一端没比上 */
+		MappedReadsOnlyOne("_OnlyOneMapped"),
+		/** 双端测序只要有一个没比对上的 */
+		UnmappedReads("_UnMapped"),
 		/** 双端测序两端都没比对上的 */
-		UnmappedReads("_UnMapped");
+		UnmappedReadsBoth("_BothUnMapped");
 		
 		String suffix;
 		EnumSamToFastqType(String suffix) {

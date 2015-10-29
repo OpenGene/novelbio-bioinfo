@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -12,21 +11,25 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.hg.doc.fa;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.base.dataStructure.ArrayOperate;
 
 /** 专门用来提取exoncluster的类 */
 public class ExonClusterExtract {
 	GffDetailGene gene;
+	int minDifLen = 6;
 	
-	public ExonClusterExtract(GffDetailGene gene) {
+	/**
+	 * @param gene
+	 * @param minDifLen 小于6bp的altstart和altend都有必要删除，很可能是假的
+	 */
+	public ExonClusterExtract(GffDetailGene gene, int minDifLen) {
 		this.gene = gene;
+		this.minDifLen = minDifLen;
 	}
 	
 	/**
@@ -149,7 +152,7 @@ public class ExonClusterExtract {
 				continue;
 			}
 			
-			if (exonClusters.isSameExonInExistIso()) {
+			if (exonClusters.isSameExonInExistIso() || exonClusters.getSplicingTypeSet(minDifLen).isEmpty()) {
 				continue;
 			}
 			lsResult.add(exonClusters);

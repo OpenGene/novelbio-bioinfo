@@ -35,7 +35,11 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	public double upfc = 1;
 	public double downfc = -1;
 	
+	/** 输入的文件全名 */
 	String excelFileName;
+	/** 需要输出的文件前缀 */
+	String excelPrefix;
+	
 	List<Double> lsFDR = new ArrayList<Double>();
 	List<Double> lsPvalue = new ArrayList<Double>();
 	List<Double> lsLogFC = new ArrayList<Double>();
@@ -57,8 +61,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	/** 上下调基因的数量，注意，必须在调用{@link #getDifGeneNum()}后才能使用 */
 	int[] upDownNum = new int[2];
 	
-	public DiffGeneFilter(String excelName) {
+	public DiffGeneFilter(String excelName, String excelPrefix) {
 		this.excelFileName = excelName;
+		this.excelPrefix = excelPrefix;
 		lslsInfo = ExcelTxtRead.readLsExcelTxtls(excelName, 0);
 		QUANUM = lslsInfo.size()/10;
 		List<String> lsTitle = lslsInfo.get(0);
@@ -198,7 +203,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @return
 	 */
 	public String writeDifGene() {
-		String outFile = getDifGeneFileName(excelFileName);
+		String outFile = getDifGeneFileName(excelFileName, excelPrefix);
 		List<List<String>> lsResult = getLsDifGene();
 		
 		FileOperate.DeleteFileFolder(outFile);
@@ -218,8 +223,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	}
 	
 	/** 获得筛选差异后的文件名 */
-	public static String getDifGeneFileName(String excelFileName) {
-		return FileOperate.changeFileSuffix(excelFileName, "_diff", null);
+	public static String getDifGeneFileName(String excelFileName, String excelPrefix) {
+		String fileName = FileOperate.getPathName(excelFileName) + excelPrefix;
+		return FileOperate.changeFileSuffix(fileName, "_diff", "xls");
 	}
 	
 	/**

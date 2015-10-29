@@ -53,7 +53,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		gffDetailGeneCis.addIso(isoTrans2);
 		gffDetailGeneCis.addIso(isoTrans3);
 
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis, 5);
 		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
@@ -102,7 +102,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		gffDetailGeneCis.addIso(isoTrans2);
 		gffDetailGeneCis.addIso(isoTrans3);
 
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis, 5);
 		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
@@ -152,7 +152,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		gffDetailGeneCis.addIso(isoTrans2);
 		gffDetailGeneCis.addIso(isoTrans3);
 
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis, 5);
 		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
@@ -201,7 +201,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		gffDetailGeneCis.addIso(isoTrans2);
 		gffDetailGeneCis.addIso(isoTrans3);
 
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis, 5);
 		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
@@ -259,7 +259,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		gffDetailGeneCis.addIso(isoTrans3);
 		gffDetailGeneCis.addIso(isoTrans4);
 
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis, 5);
 		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			if (exonCluster.getStartAbs() == 40) {
