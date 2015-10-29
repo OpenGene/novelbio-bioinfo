@@ -30,7 +30,7 @@ public class StringTie  implements IntCmdSoft {
 	List<String> lsMergeSamFile;
 	
 	/** Stringtie所在路径 */
-	String ExePathStringTie = "";
+	String ExePathStringTie = "/home/novelbio/bianlianle/software/";
 	
 	/** 重构的最短转录本的长度 */
 	int minIsoLen = 200;
@@ -69,16 +69,17 @@ public class StringTie  implements IntCmdSoft {
 	/** fpkm小于该数值的新转录本就过滤掉 */
 	double fpkmFilter = 10;
 	
-	/** 是否只输出心转录本 */
-	boolean isJustNovTran = false;
+	/** 是否只输出参考转录本的fpkm值 */
+	boolean isRefFPKM = false;
 	
 	/** 最后获得的结果 */
 	List<String> lsStringTieResult = new ArrayList<String>();
 	
 	List<String> lsCmd = new ArrayList<>();
 	public  StringTie() {
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.stringtie);
-		this.ExePathStringTie = softWareInfo.getExePathRun();
+//		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.stringtie);
+//		this.ExePathStringTie = softWareInfo.getExePathRun();
+		this.ExePathStringTie = ExePathStringTie;
 	}
 	/** 是否使用以前跑出来的结果，默认为ture<br>
 	 * 意思就是如果以前跑出来过结果，这次就直接跳过
@@ -124,7 +125,13 @@ public class StringTie  implements IntCmdSoft {
 	public void setJustOutRefIso(boolean justOutRefIso) {
 		this.justOutRefIso = justOutRefIso;
 	}
-	
+	private String[] getJustOutRefIso() {
+		if (justOutRefIso) {
+			return new String[]{"-C", threadNum + ""};
+		} else {
+			return null;
+		}
+	}
 	public void setGtfFile(String gtfFile) {
 		this.gtfFile = gtfFile;
 	}
@@ -153,13 +160,13 @@ public class StringTie  implements IntCmdSoft {
 	}
 	
 	/** 是否用上四分之一位点标准化 */
-	public void setIsJustNovTran(boolean isJustNovTran) {
-		this.isJustNovTran = isJustNovTran;
+	public void setIsRefFPKM(boolean isRefFPKM) {
+		this.isRefFPKM = isRefFPKM;
 	}
 	/** do not assemble any transcripts on these reference sequence(s) */
-	private String getIsJustNovTran() {
-		if (isJustNovTran) {
-			return "-x";
+	private String getIsRefFPKM() {
+		if (isRefFPKM) {
+			return "-e";
 		} else {
 			return null;
 		}
@@ -363,7 +370,7 @@ public class StringTie  implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
 		ArrayOperate.addArrayToList(lsCmd, getMinAssBaseCov());
 		ArrayOperate.addArrayToList(lsCmd, getMinJuncCoverage());
-		addLsCmdStr(lsCmd, getIsJustNovTran());
+		addLsCmdStr(lsCmd, getIsRefFPKM());
 		lsCmd.add(bamFileName);
 		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefixCmd(prefix));
 		return lsCmd;
