@@ -494,9 +494,17 @@ public class CufflinksGTF implements IntCmdSoft {
 		PatternOperate patGeneName = new PatternOperate(geneNamereg, false);
 		Map<String, Double> mapIso2Fpkm = new HashMap<String, Double>();
 		Map<String, String> mapIso2GeneName = new HashMap<String, String>();
+		
+		double fpkm = 0.0;
 		for (String content : txtRead.readlines()) {
+			if (content.startsWith("#")) {
+				continue;
+			}
 			String transId = patTransId.getPatFirst(content);
-			double fpkm = Double.parseDouble(patFpkm.getPatFirst(content));
+			String TranFpkm = patFpkm.getPatFirst(content);
+			if ((TranFpkm != null)) {
+				fpkm = Double.parseDouble(TranFpkm);
+			}
 			String geneName = patGeneName.getPatFirst(content);
 			mapIso2Fpkm.put(transId, fpkm);
 			if (geneName != null) {
@@ -570,7 +578,6 @@ public class CufflinksGTF implements IntCmdSoft {
 	
 	private void deleteMergeFile() {
 		if (!mergeBamFileByPrefix) return;
-		
 		if (lsMergeSamFile.size() > 0) {
 			for (String mergedSamFile : lsMergeSamFile) {
 				FileOperate.delFile(mergedSamFile);
