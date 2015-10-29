@@ -283,10 +283,7 @@ public class StringTie  implements IntCmdSoft {
 			outGtf = outGTFPath;
 		} else {
 			cmdOperate.setRedirectInToTmp(true);
-			cmdOperate.addCmdParamInput(bamFile);
-			cmdOperate.setRedirectOutToTmp(true);
-			cmdOperate.addCmdParamOutput(getOutPathPrefix(prefix));
-			
+			cmdOperate.addCmdParamInput(bamFile);			
 			cmdOperate.run();
 			if (cmdOperate.isFinishedNormal()) {
 				outGtf = outGTFPath;
@@ -302,7 +299,6 @@ public class StringTie  implements IntCmdSoft {
 		this.lsCmd.add(cmdOperate.getCmdExeStr());
 		
 		if (outGtf != null) {
-			
 			String outGtfModify = FileOperate.changeFileSuffix(outGtf, "_filterWithFPKMlessThan" + fpkmFilter, null);
 			CufflinksGTF.filterGtfFile(outGtf, outGtfModify, fpkmFilter, isoLenFilter);
 			outGtf = outGtfModify;
