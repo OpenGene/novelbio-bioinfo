@@ -93,6 +93,7 @@ public class ChrSeqHash extends SeqHashAbs {
 		try {
 			return getSeqInfoExp(chrID, startlocation, endlocation);
 		} catch (IOException e) {
+			e.printStackTrace();
 			return null;
 		}
 	}
@@ -106,13 +107,25 @@ public class ChrSeqHash extends SeqHashAbs {
 	 * @return
 	 * @throws IOException
 	 */
-	private SeqFasta getSeqInfoExp(String chrID, long startlocation, long endlocation) throws IOException {
+	private SeqFasta getSeqInfoExp(String chrId, long startlocation, long endlocation) throws IOException {
 		if (randomChrFileInt == null) {
 			throw new ExceptionSeqFasta("no file exist: " + chrFile);
 		}
+		String chrIDLowcase = chrId.toLowerCase();
+		long chrLength = getChrLength(chrId);
+		if (startlocation <= 0) startlocation = 1;
+		if (endlocation <= 0 || endlocation > chrLength) endlocation = chrLength;
 		
-		chrID = chrID.toLowerCase();
-		long[] startEndReal = getStartEndReal(chrID, startlocation, endlocation);
+		long start = startlocation - 1;
+		//如果位点超过了范围，那么修正位点
+		if (start < 0 || start >= chrLength || endlocation < 1 || endlocation < start) {
+			throw new ExceptionSeqFasta(chrIDLowcase + " " + start + " " + endlocation + " chromosome location error");
+		}
+		if (endlocation - start > maxExtractSeqLength) {
+			throw new ExceptionSeqFasta(chrIDLowcase + " " + start + " " + endlocation + " cannot extract sequence longer than " + maxExtractSeqLength + "bp");
+		}
+		
+		long[] startEndReal = getStartEndReal(chrIDLowcase, startlocation, endlocation);
 		if (startEndReal == null) return null;
 		long startReal = startEndReal[0]; long endReal = startEndReal[1];
 		
@@ -120,12 +133,12 @@ public class ChrSeqHash extends SeqHashAbs {
 		randomChrFileInt.seek(startReal);
 		randomChrFileInt.read(readInfo);
 		SeqFasta seqFasta = new SeqFasta();
-		seqFasta.setName(chrID + "_" + startlocation + "_" + endlocation);
+		seqFasta.setName(chrId + "_" + startlocation + "_" + endlocation);
 		StringBuilder sequence = new StringBuilder();
 
-		int basesPerLine = mapChrID2LenRow.get(chrID);
-		int terminatorLength = mapChrID2LenRowEnter.get(chrID) - basesPerLine;
-		int lineNum = getBias(startlocation, mapChrID2LenRow.get(chrID));
+		int basesPerLine = mapChrID2LenRow.get(chrIDLowcase);
+		int terminatorLength = mapChrID2LenRowEnter.get(chrIDLowcase) - basesPerLine;
+		int lineNum = getBias(startlocation, mapChrID2LenRow.get(chrIDLowcase));
 		
 		//when the lineNum is 0, it means at the end of the line.
 		if (lineNum == 0) lineNum = basesPerLine;
@@ -136,13 +149,13 @@ public class ChrSeqHash extends SeqHashAbs {
 			if (isBase) {
 				byte c = readInfo[i];
 				if ((int)c <= 0) {
-					logger.error("error: " + chrID + " " + startlocation + " " + endlocation );
+					logger.error("error: " + chrId + " " + startlocation + " " + endlocation );
 					return null;
 				}
 				
 				char seq = (char)c;
 				if (seq == '\r' || seq == '\n' || seq == ' ') {
-					throw new ExceptionSeqFasta("error find enter symbol: " + chrFile + "\t" + chrID + " " + startlocation + " " + endlocation);
+					throw new ExceptionSeqFasta("error find enter symbol: " + chrFile + "\t" + chrId + " " + startlocation + " " + endlocation);
 				}
 				sequence.append(seq);
 				if (lineNum == basesPerLine) {
@@ -175,18 +188,8 @@ public class ChrSeqHash extends SeqHashAbs {
 		if (!mapChrID2Length.containsKey(chrIDLowcase)) {
 			throw new ExceptionSeqFasta( "no chromosome ID: "+ chrID);
 		}
-		long chrLength = getChrLength(chrIDLowcase);
-		if (start <= 0) start = 1;
-		if (end <= 0 || end > chrLength) end = chrLength;
 		
 		start--;
-		//如果位点超过了范围，那么修正位点
-		if (start < 0 || start >= chrLength || end < 1 || end < start) {
-			throw new ExceptionSeqFasta(chrIDLowcase + " " + start + " " + end + " chromosome location error");
-		}
-		if (end - start > maxExtractSeqLength) {
-			throw new ExceptionSeqFasta(chrIDLowcase + " " + start + " " + end + " cannot extract sequence longer than " + maxExtractSeqLength + "bp");
-		}
 		
 		long startChr = mapChrID2Start.get(chrIDLowcase);
 		int lengthRow = mapChrID2LenRow.get(chrIDLowcase);

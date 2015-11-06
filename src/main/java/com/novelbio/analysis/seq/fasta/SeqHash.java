@@ -134,7 +134,7 @@ public class SeqHash implements SeqHashInt {
 	
 	@Override
 	public SeqFasta getSeq(String seqName) {
-		SeqFasta seqFasta = seqHashAbs.getSeq(seqName, 0 , 0);
+		SeqFasta seqFasta = seqHashAbs.getSeq(seqName);
 		seqFasta.setName(seqName);
 		return seqFasta;
 	}

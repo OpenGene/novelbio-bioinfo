@@ -253,15 +253,22 @@ public class Trinity implements IntCmdSoft {
 		List<String> lsFq = new ArrayList<>();
 		if (isSingleEnd()) {
 			lsFq.add("--single");
-			if (!lsLeftFq.isEmpty()) lsFq.addAll(lsLeftFq);
-			if (!lsRightFq.isEmpty()) lsFq.addAll(lsRightFq);			
+			List<String> lsFqs = new ArrayList<>();
+			if (!lsLeftFq.isEmpty()) lsFqs.addAll(lsLeftFq);
+			if (!lsRightFq.isEmpty()) lsFqs.addAll(lsRightFq);
+			lsFq.add(combineLsFq(lsFqs));
 		} else {//双端
 			lsFq.add("--left");
-			lsFq.addAll(lsLeftFq);
+			lsFq.add(combineLsFq(lsLeftFq));
 			lsFq.add("--right");
-			lsFq.addAll(lsRightFq);
+			lsFq.add(combineLsFq(lsRightFq));
 		}
 		return lsFq;
+	}
+	
+	private String combineLsFq(List<String> lsFq) {
+		String[] ss = lsFq.toArray(new String[0]);
+		return ArrayOperate.cmbString(ss, ",").trim();
 	}
 	
 	private boolean isSingleEnd() {

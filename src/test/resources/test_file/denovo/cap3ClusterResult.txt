@@ -1,0 +1,73 @@
+Number of segment pairs = 1309457210; number of pairwise comparisons = 114723466
+'+' means given segment; '-' means reverse complement
+
+Overlaps            Containments  No. of Constraints Supporting Overlap
+
+******************* Contig 1 ********************
+TRINITY_DN28859_c0_g1_i1@@32R_24h+
+                    TRINITY_DN42866_c0_g1_i1@@32R_18h+ is in TRINITY_DN28859_c0_g1_i1@@32R_24h+
+                    TRINITY_DN8320_c0_g2_i1@@32R_96h+ is in TRINITY_DN28859_c0_g1_i1@@32R_24h+
+                    TRINITY_DN8320_c0_g1_i1@@32R_96h+ is in TRINITY_DN28859_c0_g1_i1@@32R_24h+
+******************* Contig 2 ********************
+TRINITY_DN28868_c0_g1_i1@@32R_24h-
+TRINITY_DN25970_c0_g3_i2@@32R_96h+
+                    TRINITY_DN25970_c0_g3_i1@@32R_96h+ is in TRINITY_DN25970_c0_g3_i2@@32R_96h+
+                    TRINITY_DN47898_c0_g1_i1@@32R_168h+ is in TRINITY_DN25970_c0_g3_i2@@32R_96h+
+TRINITY_DN25970_c0_g1_i1@@32R_96h+
+                    TRINITY_DN25970_c0_g2_i1@@32R_96h+ is in TRINITY_DN25970_c0_g1_i1@@32R_96h+
+                    TRINITY_DN25970_c0_g1_i2@@32R_96h+ is in TRINITY_DN25970_c0_g1_i1@@32R_96h+
+TRINITY_DN40754_c0_g1_i1@@32R_48h-
+******************* Contig 3 ********************
+TRINITY_DN28875_c0_g1_i1@@32R_24h-
+                    TRINITY_DN32521_c0_g1_i1@@32R_168h+ is in TRINITY_DN28875_c0_g1_i1@@32R_24h-
+******************* Contig 4 ********************
+TRINITY_DN28804_c0_g1_i1@@32R_24h+
+TRINITY_DN4601_c0_g1_i1@@32R_96h+
+******************* Contig 5 ********************
+TRINITY_DN28850_c0_g1_i1@@32R_24h+
+                    TRINITY_DN46738_c0_g1_i1@@32R_96h- is in TRINITY_DN28850_c0_g1_i1@@32R_24h+
+                    TRINITY_DN46730_c0_g1_i1@@32R_168h+ is in TRINITY_DN28850_c0_g1_i1@@32R_24h+
+******************* Contig 6 ********************
+TRINITY_DN28894_c0_g1_i1@@32R_24h+
+TRINITY_DN34663_c0_g1_i1@@32R_18h+
+TRINITY_DN40249_c0_g1_i1@@32R_48h+
+TRINITY_DN43064_c0_g1_i1@@32R_96h-
+TRINITY_DN46430_c0_g1_i1@@32R_168h-
+******************* Contig 7 ********************
+TRINITY_DN28898_c0_g1_i1@@32R_24h+
+TRINITY_DN48000_c0_g1_i1@@32R_168h+
+                    TRINITY_DN22332_c0_g1_i1@@32R_96h+ is in TRINITY_DN48000_c0_g1_i1@@32R_168h+
+******************* Contig 8 ********************
+TRINITY_DN28886_c0_g1_i1@@32R_24h+
+TRINITY_DN37446_c0_g1_i1@@32R_168h-
+TRINITY_DN36294_c0_g1_i1@@32R_18h-
+                    TRINITY_DN62280_c0_g1_i1@@32R_96h+ is in TRINITY_DN36294_c0_g1_i1@@32R_18h-
+                    TRINITY_DN29703_c0_g1_i1@@32R_24h- is in TRINITY_DN36294_c0_g1_i1@@32R_18h-
+TRINITY_DN29098_c0_g1_i1@@32R_24h+
+                    TRINITY_DN54524_c0_g1_i1@@32R_168h+ is in TRINITY_DN29098_c0_g1_i1@@32R_24h+
+TRINITY_DN36831_c0_g1_i1@@32R_168h+
+TRINITY_DN44103_c0_g1_i1@@32R_48h-
+TRINITY_DN27460_c0_g1_i1@@32R_24h+
+                    TRINITY_DN44925_c0_g1_i1@@32R_96h+ is in TRINITY_DN27460_c0_g1_i1@@32R_24h+
+                    TRINITY_DN47957_c0_g1_i1@@32R_168h+ is in TRINITY_DN27460_c0_g1_i1@@32R_24h+
+                    TRINITY_DN60470_c0_g1_i1@@32R_96h- is in TRINITY_DN27460_c0_g1_i1@@32R_24h+
+                    TRINITY_DN35154_c0_g1_i1@@32R_18h- is in TRINITY_DN27460_c0_g1_i1@@32R_24h+
+                    TRINITY_DN33977_c0_g1_i1@@32R_168h- is in TRINITY_DN27460_c0_g1_i1@@32R_24h+
+                    TRINITY_DN31665_c0_g1_i1@@32R_48h+ is in TRINITY_DN33977_c0_g1_i1@@32R_168h-
+                    TRINITY_DN34436_c0_g1_i1@@32R_48h+ is in TRINITY_DN33977_c0_g1_i1@@32R_168h-
+                    TRINITY_DN23936_c0_g1_i1@@32R_18h- is in TRINITY_DN33977_c0_g1_i1@@32R_168h-
+                    TRINITY_DN55199_c0_g1_i1@@32R_96h+ is in TRINITY_DN23936_c0_g1_i1@@32R_18h-
+TRINITY_DN52244_c0_g1_i1@@32R_96h+
+TRINITY_DN31652_c0_g1_i1@@32R_18h-
+******************* Contig 9 ********************
+TRINITY_DN11257_c0_g2_i1@@32R_24h+
+TRINITY_DN11257_c0_g1_i1@@32R_24h+
+                    TRINITY_DN50926_c0_g1_i1@@32R_48h+ is in TRINITY_DN11257_c0_g1_i1@@32R_24h+
+                    TRINITY_DN53805_c0_g1_i1@@32R_96h+ is in TRINITY_DN11257_c0_g1_i1@@32R_24h+
+                    TRINITY_DN6583_c0_g1_i1@@32R_18h+ is in TRINITY_DN11257_c0_g1_i1@@32R_24h+
+TRINITY_DN39049_c0_g1_i1@@32R_168h-
+TRINITY_DN30596_c0_g1_i1@@32R_18h+
+                    TRINITY_DN74463_c0_g1_i1@@32R_96h- is in TRINITY_DN30596_c0_g1_i1@@32R_18h+
+TRINITY_DN4236_c1_g1_i1@@32R_24h+
+                    TRINITY_DN41469_c0_g1_i1@@32R_48h- is in TRINITY_DN4236_c1_g1_i1@@32R_24h+
+DETAILED DISPLAY OF CONTIGS

@@ -147,6 +147,12 @@ public class CombineTab {
 		mapFileName2ConditionAbbr.put(condTxt,codName);
 		runningFlag = false;
 	}
+	
+	/** 总共几个文件来取交集 */
+	public int getAllFileNum() {
+		return mapFileName2ConditionAbbr.size();
+	}
+	
 	/**
 	 * 
 	 *  获得每个文件名, 对于每个文件，设定它的ID列

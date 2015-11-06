@@ -25,7 +25,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 
 /**
  * 输入文件必须不能排序
- * @author zomg0jie
+ * @author zong0jie
  */
 public class RefSeqCounts implements AlignmentRecorder {
 	public static void main(String[] args) {

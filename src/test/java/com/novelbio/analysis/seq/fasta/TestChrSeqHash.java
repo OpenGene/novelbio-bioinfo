@@ -12,7 +12,7 @@ import org.junit.Test;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class TestChrSeqHash {
-	String filePath = "/media/nbfs/nbCloud/public/nbcplatform/genome/species/9925/ncbi/ChromFa/chi_ref_CHIR_1.0_chrall2.fa";
+	String filePath = "src/test/resources/test_file/reference/testTrinity.fa";
 	
 	@Test
 	public void testGetSeq() throws IOException {
@@ -22,43 +22,87 @@ public class TestChrSeqHash {
 				new IndexedFastaSequenceFile(FileOperate.getFile(filePath));
 		
 		ChrSeqHash chrSeqHash = new ChrSeqHash(filePath);
-		
-		ReferenceSequence ref = indexedFastaSequenceFileRaw.getSubsequenceAt("chr14", 7374508, 7378508);
+		SeqFastaHash seqFastaHash = new SeqFastaHash(filePath);
+		ReferenceSequence ref = indexedFastaSequenceFileRaw.getSubsequenceAt("Contig1", 62, 235);
 		String seq1 = getSeq(ref.getBases());
-		ReferenceSequence ref2 = indexedFastaSequenceFile.getSubsequenceAt("chr14", 7374508, 7378508);
+		ReferenceSequence ref2 = indexedFastaSequenceFile.getSubsequenceAt("Contig1", 62, 235);
 		String seq2 = getSeq(ref2.getBases());
-		SeqFasta seqFasta = chrSeqHash.getSeq("chr14", 7374508, 7378508);
+		SeqFasta seqFasta = chrSeqHash.getSeq("Contig1", 62, 235);
 		String seq3 = seqFasta.toString();
+		SeqFasta seqFasta2 = seqFastaHash.getSeq("Contig1", 62, 235);
+		String seq4 = seqFasta2.toString();
 		
 		Assert.assertEquals(seq1, seq2);
 		Assert.assertEquals(seq1, seq3);
-		
+		Assert.assertEquals(seq1, seq4);
 		//==================
-		ref = indexedFastaSequenceFileRaw.getSubsequenceAt("chr16", 77674508, 77678508);
-		seq1 = getSeq(ref.getBases());
-		ref2 = indexedFastaSequenceFile.getSubsequenceAt("chr16", 77674508, 77678508);
-		seq2 = getSeq(ref2.getBases());
-		seqFasta = chrSeqHash.getSeq("chr16", 77674508, 77678508);
-		seq3 = seqFasta.toString();
 		
+		ref = indexedFastaSequenceFileRaw.getSubsequenceAt("Contig7", 654, 1754);
+		seq1 = getSeq(ref.getBases());
+		ref2 = indexedFastaSequenceFile.getSubsequenceAt("Contig7", 654, 1754);
+		seq2 = getSeq(ref2.getBases());
+		seqFasta = chrSeqHash.getSeq("Contig7", 654, 1754);
+		seq3 = seqFasta.toString();
+		seqFasta2 = seqFastaHash.getSeq("Contig7", 654, 1754);
+		seq4 = seqFasta2.toString();
+
 		Assert.assertEquals(seq1, seq2);
 		Assert.assertEquals(seq1, seq3);
+		Assert.assertEquals(seq1, seq4);
 		//=======================
-		ref = indexedFastaSequenceFileRaw.getSubsequenceAt("chr1", 1, 15654);
-		seq1 = getSeq(ref.getBases());
-		ref2 = indexedFastaSequenceFile.getSubsequenceAt("chr1", 1, 15654);
-		seq2 = getSeq(ref2.getBases());
-		seqFasta = chrSeqHash.getSeq("chr1", 1, 15654);
-		seq3 = seqFasta.toString();
 		
+		ref = indexedFastaSequenceFileRaw.getSubsequenceAt("Contig1", 1, 12);
+		seq1 = getSeq(ref.getBases());
+		ref2 = indexedFastaSequenceFile.getSubsequenceAt("Contig1", 1, 12);
+		seq2 = getSeq(ref2.getBases());
+		seqFasta = chrSeqHash.getSeq("Contig1", 1, 12);
+		seq3 = seqFasta.toString();
+		seqFasta2 = seqFastaHash.getSeq("Contig1", 1, 12);
+		seq4 = seqFasta2.toString();
+
 		Assert.assertEquals(seq1, seq2);
 		Assert.assertEquals(seq1, seq3);
+		Assert.assertEquals(seq1, seq4);
+		//=======================
+		
+		ref = indexedFastaSequenceFileRaw.getSubsequenceAt("Contig1", 1, 88);
+		seq1 = getSeq(ref.getBases());
+		ref2 = indexedFastaSequenceFile.getSubsequenceAt("Contig1", 1, 88);
+		seq2 = getSeq(ref2.getBases());
+		seqFasta = chrSeqHash.getSeq("Contig1", 1, 88);
+		seq3 = seqFasta.toString();
+		seqFasta2 = seqFastaHash.getSeq("Contig1", 1, 88);
+		seq4 = seqFasta2.toString();
+
+		Assert.assertEquals(seq1, seq2);
+		Assert.assertEquals(seq1, seq3);
+		Assert.assertEquals(seq1, seq4);
+		//=======================
+		seqFasta = chrSeqHash.getSeq("Contig2");
+		seq3 = seqFasta.toString();
+		seqFasta2 = seqFastaHash.getSeq("Contig2");
+		seq4 = seqFasta2.toString();
+		
+		Assert.assertEquals(seq1, seq2);
+		Assert.assertEquals(seq3, seq4);
+		
+		//=======================
+		seqFasta = chrSeqHash.getSeq("Contig1");
+		seq3 = seqFasta.toString();
+		seqFasta2 = seqFastaHash.getSeq("Contig1");
+		seq4 = seqFasta2.toString();
+		
+		Assert.assertEquals(seq1, seq2);
+		Assert.assertEquals(seq3, seq4);
 		
 		
+
 		
 		indexedFastaSequenceFileRaw.close();
 		indexedFastaSequenceFile.close();
 		chrSeqHash.close();
+		seqFastaHash.close();
+
 	}
 	
 	private String getSeq(byte[] readInfo) {

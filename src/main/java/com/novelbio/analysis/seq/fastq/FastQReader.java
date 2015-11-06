@@ -241,8 +241,8 @@ class FastQReader implements Closeable {
 										break;
 									} catch (Exception e) {}
 									if (errorNum[0] > 10000) {
-										throw new ExceptionFastq(txtSeqFile.getFileName() + "fastq file error on line: " 
-												+ lineNum[0]/4 + " error number larger than 10000");
+										throw new ExceptionFastq(txtSeqFile.getFileName() + "fastq file may error, error on line: " 
+												+ lineNum[0]/4 + " many lines were error");
 									}
 								}
 							}
@@ -439,8 +439,8 @@ class FastQReader implements Closeable {
 								errorNum[0]++;
 							}
 							if (i > 1000 || errorNum[0] > 100) {
-								logger.error("many reads are not paired， please check the file: " + getFileName());
-								throw new ExceptionFastq("input file is not pairend");
+								logger.error(FastQReader.class.toString() + " many reads are not paired， please check the file: " + getFileName());
+								throw new ExceptionFastq(FastQReader.class.toString() + " input file is not pairend");
 							}
 						}
 
@@ -448,7 +448,7 @@ class FastQReader implements Closeable {
 							if (!itFqPE.hasNext()) {
 								return null;
 							} else {
-								throw new ExceptionFastq("input file is not pairend");
+								throw new ExceptionFastq(FastQReader.class.toString() + " input file is not pairend");
 							}
 						}
 						return new FastQRecord[] { fqLeft, fqRight };

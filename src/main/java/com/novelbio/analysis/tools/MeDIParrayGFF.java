@@ -310,7 +310,7 @@ public class MeDIParrayGFF {
 	/**
 	 * 连续三根探针值大于2则认为甲基化
 	 * @param lsInput
-	 * @param outFile
+	 * @param outClusterFile
 	 * @return
 	 * @throws Exception
 	 */
@@ -358,7 +358,7 @@ public class MeDIParrayGFF {
 	 * 给定输入文件，就是挑选出的三个探针连在一起的甲基化芯片分析结果
 	 * 去除冗余，将三个探针连在一起的只保留最中间的一条探针
 	 * @param inFile
-	 * @param outFile
+	 * @param outClusterFile
 	 */
 	private ArrayList<String[]> copeFinal(ArrayList<String[]> lsInput) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();

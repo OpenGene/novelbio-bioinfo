@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.AGene2Go;
@@ -26,13 +27,12 @@ import com.novelbio.database.model.modgo.GOInfoAbs;
 import com.novelbio.database.model.modkegg.KeggInfo;
 import com.novelbio.database.model.modkegg.KeggInfoAbs;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.model.species.Species.EnumSpeciesType;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 import com.novelbio.database.service.servgeneanno.ManageGeneInfo;
 import com.novelbio.database.service.servgeneanno.ManageNCBIUniID;
 
 public class GeneIDabs implements GeneIDInt {
-	private static final Logger logger = Logger.getLogger(GeneIDabs.class);
+	private static final Logger logger = LoggerFactory.getLogger(GeneIDabs.class);
 	static Map<Integer, String> hashDBtype = new HashMap<Integer, String>();
 	// //////////////////// service 层
 	static ManageNCBIUniID servNCBIUniID = ManageNCBIUniID.getInstance();
@@ -381,7 +381,13 @@ public class GeneIDabs implements GeneIDInt {
 		}
 
 		if (symbol == null || symbol.equals("")) {
-			symbol = getGenUniID(ageneUniID, getDatabaseType(ageneUniID.getTaxID())).getAccID();
+			AgeneUniID geneUniId = getGenUniID(ageneUniID, getDatabaseType(ageneUniID.getTaxID()));
+			if (geneUniId != null) {
+				symbol = geneUniId.getAccID();
+			} else {
+				logger.error(" cannot find gene symbol of {}", getAccID());
+				symbol = getAccID();
+			}
 		}
 		return symbol;
 	}

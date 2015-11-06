@@ -1,19 +1,19 @@
 package com.novelbio.analysis.seq.denovo;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.tools.ant.types.CommandlineJava.SysProperties;
+import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqFastaReader;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -41,7 +41,7 @@ public class CAP3Cluster implements IntCmdSoft {
 	Map<String, String> mapPrefix2TrinityFile;
 
 	/** 输出文件路径及名称 */
-	String outFile;
+	String outClusterFile;
 	String outDir;
 	/** overlap区域允许的最大gap长度，默认 20 */
 	int overlapGapLen = OVERLAPGAPLEN;
@@ -52,16 +52,15 @@ public class CAP3Cluster implements IntCmdSoft {
 	/** clip 位置reads支持数，默认 3 */
 	int readsSupportNum = READSSUPPORTNUM;
 	/** 聚类后序列结果序列长度阈值，也就是说，保留序列长度大于此阈值的序列*/
-	int minSeqLen;
+	int minSeqLen = 200;
 	String outMergedFile;
-	String finalClusterResult = outDir + "All-Unigene.final.fa";
+	String finalClusterResult;
 	
 	
 	public CAP3Cluster() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cap3);
 		this.exePath = softWareInfo.getExePathRun();
 	}
-	
 	
 	/**
 	 * 设定需要聚类的序列文件
@@ -77,12 +76,9 @@ public class CAP3Cluster implements IntCmdSoft {
 	public void setMinSeqLen(int minSeqLen) {
 		this.minSeqLen = minSeqLen;
 	}
+	/** 输出文件夹路径，结尾可以不是 "/" */
 	public void setOutDir(String outDir) {
-		this.outDir = outDir;
-	}
-	/** 输出文件名 */
-	public void setOutFile(String outFile) {
-		this.outFile = outFile;
+		this.outDir = FileOperate.addSep(outDir);
 	}
 	/** 设定overlap区域允许的最大gap长度，默认20  */
 	public void setOverlapGapLen(int overlapGapLen) {
@@ -108,43 +104,73 @@ public class CAP3Cluster implements IntCmdSoft {
 			this.readsSupportNum = readsSupportNum;
 		}
 	}
+	
+	private String[] getFastaNeedCluster(String fastaNeedCluster) {
+		return new String[]{fastaNeedCluster};
+	}
+	private String[] getOverlapGapLen() {
+		return new String[]{"-f", overlapGapLen + ""};
+	}
+	private String[] getOverlapLenCutff() {
+		return new String[] {"-o", overlapLenCutff + ""};
+	}
+	private String[] getOverlapIdePerCutff() {
+		return new String[] {"-p", overlapIdePerCutff + ""};
+	}
+	private String[] getReadsSupportNum() {
+		return new String[] {"-z", readsSupportNum + ""};
+	}
+	private String[] getOutFile() {
+		return new String[]{">", outClusterFile};
+	}
+	
+	private List<String> getLsCmd(String fastaNeedCluster) {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(exePath + "cap3");
+		ArrayOperate.addArrayToList(lsCmd, getFastaNeedCluster(fastaNeedCluster));
+		ArrayOperate.addArrayToList(lsCmd, getOverlapGapLen());
+		ArrayOperate.addArrayToList(lsCmd, getOverlapLenCutff());
+		ArrayOperate.addArrayToList(lsCmd, getOverlapIdePerCutff());
+		ArrayOperate.addArrayToList(lsCmd, getReadsSupportNum());
+		ArrayOperate.addArrayToList(lsCmd, getOutFile());
+		return lsCmd;
+	}
 
 	public void run() {
-		outFile = outDir + "All-Trinity.cap3.result.txt";
-		String clusterFinalResultFa = getResultClusterFa();
-		if (!FileOperate.isFileExistAndBigThanSize(clusterFinalResultFa, 0)) {
-			outMergedFile = CAP3Cluster.mergeTrinity(mapPrefix2TrinityFile, getOutMergedFile());	
+		outClusterFile = outDir + "All.cap3.cluster.txt";
+		finalClusterResult = outDir + "All-Unigene.final.fa";
+		outMergedFile = getOutMergedFile();
+		
+		String outTransFile = outDir + "All-cap3-transcripts.fa";
+		
+		if (!FileOperate.isFileExistAndBigThanSize(outMergedFile, 0)) {
+			CAP3Cluster.mergeTrinity(mapPrefix2TrinityFile, outMergedFile);
+        }
+		
+		if (!FileOperate.isFileExistAndBigThanSize(outClusterFile, 0)) {
 			CmdOperate cmdOperate = new CmdOperate(getLsCmd(outMergedFile));
 			cmdOperate.setRedirectInToTmp(true);
 			cmdOperate.addCmdParamInput(outMergedFile);	
 			cmdOperate.runWithExp("CAP3 error:");
-			ContigId2TranId contigIDToTranID = new ContigId2TranId();
-			contigIDToTranID.setCAP3ResultFile(outFile);
-			contigIDToTranID.setCAP3ResultSingletsFile(outMergedFile.concat(".cap.singlets"));
-			contigIDToTranID.setOutContigIDToTranIDFile(FileOperate.changeFileSuffix(outFile, "_GeneId2AllTransId", "txt"));
-			contigIDToTranID.generateCompareTab();
 		}
-		finalClusterResult = filterFaLength(clusterFinalResultFa);
-		getStatisticsFile();
-		getGeneIDToTranID();
+		
+		Set<String> setGeneId = generateResultClusterFaAndGetFilteredGeneName();
+				
+		ContigId2TranId contigIDToTranID = new ContigId2TranId();
+		contigIDToTranID.setCAP3File(outClusterFile, setGeneId);
+		contigIDToTranID.setOutContigIDToTranIDFile(FileOperate.changeFileSuffix(outClusterFile, "_gene2trans", "list"));
+		contigIDToTranID.generateCompareTab();
+		Set<String> setTransId = contigIDToTranID.getSetTransId();
+		generateTranscriptFa(setTransId, outMergedFile, outTransFile);
+		generateStatisticsFile();
 	}
-	private void getGeneIDToTranID() {
-		// TODO Auto-generated method stub
-		String geneToTranID = outDir + "GeneIDToTranIDList.txt";
-		TxtReadandWrite txtSinglets = new TxtReadandWrite(finalClusterResult);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(geneToTranID, true);
-		for (String content : txtSinglets.readlines()) {
-			if (content.startsWith(">")) {
-				String geneId = content.substring(1);
-				txtWrite.writefileln(geneId + "\t" + geneId);
-			}
-		}
-		txtSinglets.close();
-		txtWrite.close();		
+	
+	public String getOutTransFile() {
+		return outDir + "All-cap3-transcripts.fa";
 	}
-
+	
 	//统计聚类后序列N50信息
-	private String getStatisticsFile() {
+	private String generateStatisticsFile() {
 		String statisticsFile = outDir + "statistics.xls";
 		N50AndSeqLen n50AndSeqLen = new N50AndSeqLen(finalClusterResult);
 		n50AndSeqLen.doStatistics();
@@ -167,37 +193,60 @@ public class CAP3Cluster implements IntCmdSoft {
 		}
 		return outMergedFile;
 	}
-	private String getOutDir() {
-		return outDir;
+
+	/**
+	 * 把cap.contigs和cap.singlets合并为一个文件，同时返回过滤掉的序列名
+	 * @return
+	 */
+	protected Set<String> generateResultClusterFaAndGetFilteredGeneName() {
+		Set<String> setGeneId = new HashSet<>();
+				
+		String capResultContigsFile = FileOperate.changeFileSuffix(outMergedFile, ".cap3.contigs", "fa");
+		String capResultSingletsFile = FileOperate.changeFileSuffix(outMergedFile, ".cap3.singlets", "fa");
+		SeqFastaReader seqContigsReader = new SeqFastaReader(capResultContigsFile);
+		SeqFastaReader seqSingletsReader = new SeqFastaReader(capResultSingletsFile);
+
+		TxtReadandWrite txtWrite = new TxtReadandWrite(finalClusterResult, true);
+		for (SeqFasta content : seqContigsReader.readlines()) {
+			if (content.Length() >= minSeqLen) {
+				txtWrite.writefileln(content.toStringNRfasta());
+				setGeneId.add(content.getSeqName());
+            }
+		}
+		seqSingletsReader.close();
+		for (SeqFasta content : seqSingletsReader.readlines()) {
+			if (content.Length() >= minSeqLen) {
+				txtWrite.writefileln(content.toStringNRfasta());
+				setGeneId.add(content.getSeqName());
+            }
+		}
+		seqSingletsReader.close();
+		txtWrite.close();
+		return setGeneId;
 	}
-	private List<String> getLsCmd(String fastaNeedCluster) {
-		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(exePath + "cap3");
-		ArrayOperate.addArrayToList(lsCmd, getFastaNeedCluster(fastaNeedCluster));
-		ArrayOperate.addArrayToList(lsCmd, getOverlapGapLen());
-		ArrayOperate.addArrayToList(lsCmd, getOverlapLenCutff());
-		ArrayOperate.addArrayToList(lsCmd, getOverlapIdePerCutff());
-		ArrayOperate.addArrayToList(lsCmd, getReadsSupportNum());
-		ArrayOperate.addArrayToList(lsCmd, getOutFile());
-		return lsCmd;
-	}
-	private String[] getFastaNeedCluster(String fastaNeedCluster) {
-		return new String[]{fastaNeedCluster};
-	}
-	private String[] getOutFile() {
-		return new String[]{">", outFile};
-	}
-	private String[] getOverlapGapLen() {
-		return new String[]{"-f", overlapGapLen + ""};
-	}
-	private String[] getOverlapLenCutff() {
-		return new String[] {"-o", overlapLenCutff + ""};
-	}
-	private String[] getOverlapIdePerCutff() {
-		return new String[] {"-p", overlapIdePerCutff + ""};
-	}
-	private String[] getReadsSupportNum() {
-		return new String[] {"-z", readsSupportNum + ""};
+	
+	/** 将所有聚类为转录本的序列放到一起
+	 * 
+	 * 	 ******************* Contig 1 ********************<br>
+		c19_Smj-0h_g1_i1+<br>
+		 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                   c12562_Sye-1h_g1_i1- is in c19_Smj-0h_g1_i1+<br>
+		c14069_Sye-12h_g1_i1+<br>
+		c10986_Smj-6h_g1_i2+<br>
+		其中  c19_Smj-0h_g1_i1，c14069_Sye-12h_g1_i1，c10986_Smj-6h_g1_i2三个为无冗余转录本
+	 * @param setTransId 最后聚类得到的无冗余转录本，其中一个基因有多个转录本
+	 * @param allTransFile 聚类之前的全体转录本
+	 * @param transFile 提取出来的无冗余转录本
+	 */
+	protected void generateTranscriptFa(Set<String> setTransId, String allTransFile, String transFile) {
+		SeqFastaReader seqFastaReader = new SeqFastaReader(allTransFile);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(transFile);
+		for (SeqFasta seqFasta : seqFastaReader.readlines()) {
+			if (setTransId.contains(seqFasta.getSeqName())) {
+				txtWrite.writefileln(seqFasta.toStringNRfasta());
+			}
+		}
+		seqFastaReader.close();
+		txtWrite.close();
 	}
 
 	public List<String> getCmdExeStr() {
@@ -208,70 +257,49 @@ public class CAP3Cluster implements IntCmdSoft {
 		return lsResult;
 	}
 
-	/** 返回聚类好的文件 */
-	public String getResultClusterFa() {
-		String clusterFinalResultFa = getOutMergedFile().concat(".cluster.final.fa");
-		if (FileOperate.isFileExistAndBigThanSize(clusterFinalResultFa, 0)) {
-			return clusterFinalResultFa;
+	/** 合并文件，并将序列名后添加样本名，用SepSign.SEP_INFO 进行分割
+	 * 注意，一个prefix必须只有一个file对应
+	 * @param mapPrefix2TrinityFile 样本名 value: Trinity拼接好的文件
+	 * @param outMergeResult 合并的输出文件名
+	 * @return 返回输出的结果文件名
+	 */
+	protected static void mergeTrinity(Map<String, String> mapPrefix2TrinityFile, String outMergeResult) {
+		if (mapPrefix2TrinityFile.isEmpty()) {
+			return;
+		} else if (mapPrefix2TrinityFile.size() == 1) {
+			return;
 		}
-		String capResultContigsFile = getOutMergedFile().concat(".cap.contigs");
-		String capResultSingletsFile = getOutMergedFile().concat(".cap.singlets");
-		TxtReadandWrite txtContigsRead = new TxtReadandWrite(capResultContigsFile);
-		TxtReadandWrite txtSingletsRead = new TxtReadandWrite(capResultSingletsFile);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(clusterFinalResultFa, true);
-		for (String content : txtContigsRead.readlines()) {
-			txtWrite.writefileln(content);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outMergeResult, true);
+		for (String prefix : mapPrefix2TrinityFile.keySet()) {
+			String trinityFa = mapPrefix2TrinityFile.get(prefix);
+			TxtReadandWrite txtRead = new TxtReadandWrite(trinityFa);
+			for (String content : txtRead.readlines()) {
+				if (content.startsWith(">")) {
+					content = content.split(" ")[0] + SepSign.SEP_INFO + prefix;
+				}
+				txtWrite.writefileln(content);
+			}
+			txtRead.close();
 		}
-		txtContigsRead.close();
-		for (String content : txtSingletsRead.readlines()) {
-			txtWrite.writefileln(content);
-		}
-		txtSingletsRead.close();
 		txtWrite.close();
-		return clusterFinalResultFa;
 	}
 	
-	//TODO 返回转录本的fasta文件
-	public String getResultTranscriptFasta() {
-		String transcriptFaFile = outMergedFile.concat("transcript.fa");
-		SeqHash seqHash = new SeqHash(outMergedFile);
-		ContigId2TranId contigId2TranId = new ContigId2TranId();
-		TxtReadandWrite txtContigToTranIDRead = new TxtReadandWrite(contigId2TranId.outContigIDToTranIDFileName);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(transcriptFaFile, true);
-		for (String content : txtContigToTranIDRead.readlines()) {
-			SeqFasta seqnameFasta =  seqHash.getSeq(content.split(" ")[1]);
-			txtWrite.writefileln(seqnameFasta.toString());
-		}
-		txtContigToTranIDRead.close();
-		txtWrite.close();
-		return transcriptFaFile;
-	}
-
-	public String filterFaLength(String inputFa) {
-		SeqHash seqHash = new SeqHash(inputFa);
-		String filterResult = outDir + "All-Unigene.final.fa";
-		TxtReadandWrite txtWrite = new TxtReadandWrite(filterResult, true);
-		List<String> lsSeqName = seqHash.getLsSeqName();
-		for (String seqName : lsSeqName) {
-			SeqFasta seqnameFasta =  seqHash.getSeq(seqName);
-			if (seqnameFasta.Length() >= minSeqLen) {
-				txtWrite.writefileln(seqnameFasta.toStringNRfasta(60));
-			}
-		}
-		txtWrite.close();
-		return filterResult;
-	}
+}
 
 /**
  * 对Cap3的输入输出文件做一系列处理，合并输入文件，以及
- * 根据CAP3输出结果，提取Contig 对应 转录组本ID信息，存在HashMap中 */
-public class ContigId2TranId {
+ * 根据CAP3输出结果，提取Contig 对应 转录组本ID信息，写入文本 */
+class ContigId2TranId {
 	/** CAP3结果文件名称*/
 	String cap3ResultFile;
-	/** CAP3 输出的Singlets 文件名称*/
-	String cap3ResultSingletsFile;
+	/** 需要保留的基因名，不在里面的基因一般是因为长度太短而被过滤掉 */
+	Set<String> setGeneId = new HashSet<>();
+	
 	/** 存放Contigs ID 对应 Transcript ID 关系*/
 	ArrayListMultimap<String, String> mapGeneId2LsTransId = ArrayListMultimap.create();
+	/** 用于将结果输出的时候可以按照顺序进行 */
+	Set<String> setKeys = new LinkedHashSet<>();
+	Set<String> setTransId = new LinkedHashSet<>();
 	
 	/** 待输出的 Contig ID 对应Transcript ID 列表结果文件名称*/
 	String outContigIDToTranIDFileName;
@@ -290,13 +318,13 @@ public class ContigId2TranId {
 	    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                  c11380_Sye-1h_g1_i1- is in c17938_Sye-12h_g1_i1+<br>
 	    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;                  c9074_Smj-0h_g1_i1+ is in c17938_Sye-12h_g1_i1+<br>
 	 */
-	public void setCAP3ResultFile(String excelCAP3ResultFileName) {
+	public void setCAP3File(String excelCAP3ResultFileName, Set<String> setGeneId) {
 		this.cap3ResultFile = excelCAP3ResultFileName;
+		if (setGeneId != null) {
+			this.setGeneId = setGeneId;
+        }
 	}
-	/** CAP3 输出的Singlets 文件，是个聚类好的fasta文件 */
-	public void setCAP3ResultSingletsFile(String excelCAP3ResultSingletsFileName) {
-		this.cap3ResultSingletsFile = excelCAP3ResultSingletsFileName;
-	}
+	
 	/** 输出的 Contig ID 对应Transcript ID 列表结果文件名称*/
 	public void setOutContigIDToTranIDFile(String outContigIDToTranIDFileName) {
 		this.outContigIDToTranIDFileName = outContigIDToTranIDFileName;
@@ -304,7 +332,6 @@ public class ContigId2TranId {
 	
 	public void generateCompareTab() {
 		generateContigIDToTranID();
-		generateSingletsIDToTranID(cap3ResultSingletsFile);
 		writeCompareTab();
 	}
 	
@@ -325,71 +352,50 @@ public class ContigId2TranId {
 	private void generateContigIDToTranID() {
 		TxtReadandWrite txtContig = new TxtReadandWrite(cap3ResultFile);
 		String geneId = null;
+		boolean isStart = false;
 		for (String content : txtContig.readlines()) {
+			if (!isStart && !content.startsWith("*")) {
+				continue;
+			} else {
+				isStart = true;
+			}
+			
 			if (content.startsWith("DETAILED DISPLAY OF CONTIGS")) {
 				break;
 			} else if (content.startsWith("*")) {
 				geneId = content.replace("*", "").replace(" ", "");
-			} else if (content.startsWith("c")) {
+			} else if (!content.startsWith(" ") && !content.startsWith("\t")) {//不以空行开头的
 				String transId = content.substring(0, content.length() - 1);
-				mapGeneId2LsTransId.put(geneId, transId);
+				if (setGeneId.isEmpty() || setGeneId.contains(geneId)) {
+					mapGeneId2LsTransId.put(geneId, transId);
+					setKeys.add(geneId);
+                }
 			}	
 		}
 		txtContig.close();
-	}
 
-	/**提取Singlets文件中的序列ID信息 */
-	private void generateSingletsIDToTranID(String cap3ResultSingletsFile) {
-		TxtReadandWrite txtSinglets = new TxtReadandWrite(cap3ResultSingletsFile);
-		for (String content : txtSinglets.readlines()) {
-			if (content.startsWith(">")) {
-				String geneId = content.substring(1);
-				if (!mapGeneId2LsTransId.containsKey(geneId)) {
-					mapGeneId2LsTransId.put(geneId, geneId);
-				}
-			}
-		}
-		txtSinglets.close();
-	}	
-	
+		for (String geneSingleId : setGeneId) {
+			if (!setKeys.contains(geneSingleId)) {
+				mapGeneId2LsTransId.put(geneSingleId, geneSingleId);
+            }
+        }
+	}
 	
 	/**用来输出Contig 对应 转录组本ID信息 */
 	private void writeCompareTab() {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outContigIDToTranIDFileName,true);  //
-		for (String geneId : mapGeneId2LsTransId.keySet()) {
+		for (String geneId : setKeys) {
 			List<String> lsTransId = mapGeneId2LsTransId.get(geneId);
 			for (String transId : lsTransId) {
 				txtWrite.writefileln(geneId + "\t" + transId);
+				setTransId.add(transId);
 			}
 		}
 		txtWrite.close();
 	}
-}
-	/** 合并文件，并将序列名后添加样本名，用SepSign.SEP_INFO 进行分割
-	 * 注意，一个prefix必须只有一个file对应
-	 * @param mapPrefix2TrinityFile 样本名 value: Trinity拼接好的文件
-	 * @param outMergeResult 合并的输出文件名
-	 * @return 返回输出的结果文件名
-	 */
-	protected static String mergeTrinity(Map<String, String> mapPrefix2TrinityFile, String outMergeResult) {
-		if (mapPrefix2TrinityFile.size() == 0) {
-			return null;
-		} else if (mapPrefix2TrinityFile.size() == 1) {
-			return outMergeResult;
-		}
-		TxtReadandWrite txtWrite = new TxtReadandWrite(outMergeResult, true);
-		for (String prefix : mapPrefix2TrinityFile.keySet()) {
-			String trinityFa = mapPrefix2TrinityFile.get(prefix);
-			TxtReadandWrite txtRead = new TxtReadandWrite(trinityFa);
-			for (String content : txtRead.readlines()) {
-				if (content.startsWith(">")) {
-					content = content.split(" ")[0] + SepSign.SEP_INFO + prefix;
-				}
-				txtWrite.writefileln(content);
-			}
-			txtRead.close();
-		}
-		txtWrite.close();
-		return outMergeResult;
-	}
+	
+	/** 返回聚类之后，去冗余的转录本 */
+	public Set<String> getSetTransId() {
+	    return setTransId;
+    }
 }
