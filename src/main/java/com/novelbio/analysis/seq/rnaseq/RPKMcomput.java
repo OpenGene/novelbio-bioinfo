@@ -163,6 +163,18 @@ public class RPKMcomput implements AlignmentRecorder {
 	public void addAlignRecord(AlignRecord alignRecord) {
 		if (!alignRecord.isMapped() || (isUniqueMapped && !alignRecord.isUniqueMapping())) return;
 		List<SamRecord> lSamRecords = null;
+		
+		if (mapKey2SamRecord.size() > 1000000) {
+			for (SamRecord samRecord : mapKey2SamRecord.values()) {
+				if (samRecord.isFirstRead()) {
+					List<SamRecord> lsSamRecords = new ArrayList<>();
+					lsSamRecords.add(samRecord);
+					addAlignRecord(lsSamRecords);
+				}
+			}
+			mapKey2SamRecord.clear();
+		}
+		
 		try {
 			lSamRecords = isSelectedReads(alignRecord);
 		} catch (Exception e) {
@@ -201,9 +213,6 @@ public class RPKMcomput implements AlignmentRecorder {
 			addInMapGeneName2Cond2ReadsCounts(geneName, lsSamRecords.get(0).getMappedReadsWeight()*setGeneName.size());
 		}
 		currentReadsNum += (double)1/lsSamRecords.get(0).getMappedReadsWeight();
-		if ((int)currentReadsNum % 50000 == 0) {
-			removeSetOverDue();
-		}
 	}
 	
 	/** 挑选出配对的samRecord，如果不满足配对条件，则返回单条SamRecord */
@@ -320,7 +329,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * 移除setSamReads中过时的reads
 	 */
 	private void removeSetOverDue() {
-		if (isPairend && calculateFPKM && mapKey2SamRecord.size() > 100) {
+		if (isPairend && calculateFPKM && mapKey2SamRecord.size() > 10000) {
 			logger.debug(mapKey2SamRecord.size() + "\t" +parNum);
 		}
 //		if (isPairend && setSamReads.size() <= numForFragment) return;
