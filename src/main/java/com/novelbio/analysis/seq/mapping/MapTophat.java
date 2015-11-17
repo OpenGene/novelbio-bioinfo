@@ -4,9 +4,7 @@ import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.log4j.Logger;
@@ -14,6 +12,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
@@ -70,6 +69,7 @@ public class MapTophat implements MapRNA {
 	
 	int intronLenMin = 50;
 	int intronLenMax = 500000;
+	
 	/** 序列中包含的全部indel长度，默认为3 */
 	int indelLen = 6;
 	int mismatch = 3;
@@ -85,11 +85,11 @@ public class MapTophat implements MapRNA {
 	
 	/** 输出文件 */
 	String outPathPrefix = "";
+	
+	String chrIndexFile;
 	/** bowtie就是用来做索引的 */
-	MapBowtie mapBowtie = new MapBowtie();
-	GffChrAbs gffChrAbs;
-	boolean booSetIntronMin = false;
-	boolean booSetIntronMax = false;
+	MapIndexMaker indexBowtie;
+
 	
 	int sensitiveLevel = MapBowtie.Sensitive_Sensitive;
 	
@@ -102,22 +102,21 @@ public class MapTophat implements MapRNA {
 	
 	/** 第二次mapping所使用的命令 */
 	List<String> 	lsCmdMapping2nd = new ArrayList<>();
-	public MapTophat() {
+	public MapTophat(GffChrAbs gffChrAbs) {
 		SoftWareInfo softMapSplice = new SoftWareInfo(SoftWare.tophat);
 		this.ExePathTophat = softMapSplice.getExePathRun();
+				
+		if (gffChrAbs == null ||  gffChrAbs.getGffHashGene() == null) return;
+
+		this.gtfFile = gffChrAbs.getGtfFile();
+		
+		int[] intronMinMax = getIntronMinMax(gffChrAbs.getGffHashGene(), this.intronLenMin, this.intronLenMax);
+		this.intronLenMin = intronMinMax[0];
+		this.intronLenMax = intronMinMax[1];
 	}
 	
-	/**
-	 * 是否使用bowtie2进行分析
-	 * 
-	 * @param bowtie2
-	 */
 	public void setBowtieVersion(SoftWare bowtieVersion) {
-		mapBowtie.setSubVersion(bowtieVersion);
-	}
-	/** 输入的gffChrAbs中只需要含有GffHashGene即可 */
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		this.gffChrAbs = gffChrAbs;
+		this.bowtieVersion = bowtieVersion;
 	}
 	
 	/**
@@ -133,7 +132,7 @@ public class MapTophat implements MapRNA {
 	}
 
 	public void setRefIndex(String chrFile) {
-		mapBowtie.setChrIndex(chrFile);
+		this.chrIndexFile = chrFile;
 	}
 	
 	/** 设定reads的敏感性，越敏感速度越慢
@@ -159,7 +158,7 @@ public class MapTophat implements MapRNA {
 		this.indelLen = indelLen;
 	}
 	@Override
-	public SoftWare getBowtieVersion() {
+	public SoftWare getSoftWare() {
 		return bowtieVersion;
 	}
 	/**
@@ -169,12 +168,10 @@ public class MapTophat implements MapRNA {
 	 */
 	public void setIntronLenMax(int intronLenMax) {
 		this.intronLenMax = intronLenMax;
-		booSetIntronMax = true;
 	}
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
 	public void setIntronLenMin(int intronLenMin) {
 		this.intronLenMin = intronLenMin;
-		booSetIntronMin = true;
 	}
 	/** anchor上的mismithch，默认为0，最多设置为1 */
 	public void setAnchorMismatch(int anchorMismatch) {
@@ -284,30 +281,6 @@ public class MapTophat implements MapRNA {
 	}
 	private String[] getAnchorMismatch() {
 		return new String[]{"-m", anchorMismatch + ""};
-	}
-	private void setIntronLen() {
-		if (booSetIntronMax && booSetIntronMin) {
-			return;
-		}
-		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-			ArrayList<Integer> lsIntronSortedS2M = gffChrAbs.getGffHashGene().getLsIntronSortedS2M();
-			if (lsIntronSortedS2M.size() < 50) {
-				return;
-			}
-			int intronLenMin = lsIntronSortedS2M.get(50);
-			int intronLenMax = lsIntronSortedS2M.get(lsIntronSortedS2M.size() - 10);
-			if (intronLenMin < this.intronLenMin) {
-				this.intronLenMin = intronLenMin;
-				booSetIntronMin = true;
-			}
-			if (intronLenMin < 20) {
-				this.intronLenMin = 20;
-			}
-			if (intronLenMax*2 < this.intronLenMax) {
-				this.intronLenMax = intronLenMax*2;
-				booSetIntronMax = true;
-			}
-		}
 	}
 	
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
@@ -420,20 +393,15 @@ public class MapTophat implements MapRNA {
 		return lsCmd;
 	}
 	
-	private void setGTFfile() {
-		if (gtfFile == null || FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
-			logger.info("not need to generate GTF");
-			return;
-		}
-		if (gffChrAbs != null) {
-			this.gtfFile = gffChrAbs.getGtfFile();;
-		}
-	}
 	/**
 	 * 返回链的方向
 	 * @return
 	 */
 	private String[] getStrandSpecifictype() {
+		if (lsRightFq == null || lsRightFq.isEmpty()) {
+			return null;
+		}
+		
 		String[] cmd = null;
 		if (strandSpecifictype == StrandSpecific.NONE) {
 			
@@ -449,12 +417,12 @@ public class MapTophat implements MapRNA {
 	 * 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf
 	 */
 	public void mapReads() {
-		mapBowtie.setSubVersion(bowtieVersion);
-		mapBowtie.IndexMake();
+		indexBowtie = MapIndexMaker.createIndexMaker(bowtieVersion);
+		indexBowtie.setChrIndex(chrIndexFile);
+		indexBowtie.IndexMake();
+		
 		IndexGffMake();
 		
-		setIntronLen();
-
 		lsCmdMapping2nd.clear();
 
 		String prefix = FileOperate.getFileName(outPathPrefix);
@@ -529,7 +497,7 @@ public class MapTophat implements MapRNA {
 		ArrayOperate.addArrayToList(lsCmd, getMaxCoverageIntron());
 		ArrayOperate.addArrayToList(lsCmd, getMaxSegmentIntron());
 		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefix());
-		lsCmd.add(mapBowtie.getChrNameWithoutSuffix());
+		lsCmd.add(indexBowtie.getIndexName());
 		lsCmd.addAll(getLsFqFile());
 		return lsCmd;
 	}
@@ -543,7 +511,7 @@ public class MapTophat implements MapRNA {
 	public List<String> getCmdExeStr() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("tophat version: " + getVersionTophat());
-		lsCmd.add(bowtieVersion.toString() + " version: " + mapBowtie.getVersion());
+		lsCmd.add(bowtieVersion.toString() + " version: " + indexBowtie.getVersion());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {
@@ -651,9 +619,11 @@ public class MapTophat implements MapRNA {
 
 		return version;
 	}
+	
 	public String getVersionBowtie() {
-		return mapBowtie.getVersion();
+		return indexBowtie.getVersion();
 	}
+	
 	@Override
 	public String getFinishName() {
 		String prefix = FileOperate.getFileName(outPathPrefix);
@@ -666,7 +636,6 @@ public class MapTophat implements MapRNA {
 	}
 	
 	public void IndexGffMake() {
-		setGTFfile();
 		if (!FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
 			return;
 		}
@@ -674,7 +643,7 @@ public class MapTophat implements MapRNA {
 		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
 			return;
 		}
-		String indexGffPref = mapBowtie.getChrNameWithoutSuffix() + FileOperate.getFileName(gtfFile);
+		String indexGffPref = indexBowtie.getIndexName() + FileOperate.getFileName(gtfFile);
 		String lockPath = indexGffPref.replace(PathDetailNBC.getGenomePath(), "");
 		lockPath = FileOperate.removeSplashHead(lockPath, false).replace("/", "_").replace("\\", "_").replace(".", "_");
 		InterProcessMutex lock = CuratorNBC.getInterProcessMutex(lockPath);
@@ -742,13 +711,13 @@ public class MapTophat implements MapRNA {
 	}
 	
 	private String getIndexFinishedFlag() {
-		return FileOperate.changeFileSuffix(FileOperate.getPathName(mapBowtie.getChrNameWithoutSuffix()) + 
+		return FileOperate.changeFileSuffix(FileOperate.getPathName(indexBowtie.getIndexName()) + 
 				FileOperate.getFileNameSep(gtfFile)[0] + "_folder" + FileOperate.getSepPath()
 				+ FileOperate.getFileNameSep(gtfFile)[0], "_indexFinished", "");
 	}
 	
 	private String getIndexGffOut() {
-		return FileOperate.getPathName(mapBowtie.getChrNameWithoutSuffix()) + 
+		return FileOperate.getPathName(indexBowtie.getIndexName()) + 
 				FileOperate.getFileNameSep(gtfFile)[0] + "_folder" + FileOperate.getSepPath()
 				+ FileOperate.getFileNameSep(gtfFile)[0];
 	}
@@ -759,8 +728,33 @@ public class MapTophat implements MapRNA {
 		lsCmd.add("-G");
 		lsCmd.add(gtfFile);
 		lsCmd.add("--transcriptome-index=" + getIndexGffOut());
-		lsCmd.add(mapBowtie.getChrNameWithoutSuffix());
+		lsCmd.add(indexBowtie.getIndexName());
 		return lsCmd;
 	}
 	
+	protected static int[] getIntronMinMax(GffHashGene gffHashGene, int intronMinDefault, int intronMaxDefault) {
+		int[] result = new int[]{intronMinDefault, intronMaxDefault};
+		
+		if (gffHashGene == null) {
+			return result;
+		}
+		
+		ArrayList<Integer> lsIntronSortedS2M = gffHashGene.getLsIntronSortedS2M();
+		if (lsIntronSortedS2M.size() < 50) {
+			return result;
+		}
+		int intronLenMin = lsIntronSortedS2M.get(50);
+		int intronLenMax = lsIntronSortedS2M.get(lsIntronSortedS2M.size() - 10);
+		if (intronLenMin < result[0]) {
+			result[0] = intronLenMin;
+		}
+		if (intronLenMin < 20) {
+			result[0] = 20;
+		}
+		if (intronLenMax*2 < result[1]) {
+			result[1] = intronLenMax*2;
+		}
+		
+		return result;
+	}
 }

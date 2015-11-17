@@ -77,7 +77,7 @@ public class PredictAltEnd extends PredictAltStartEnd {
 
 			//去除2B的情况
 //			if ((exonCluster.isCis5to3() && end > edge3Max) || (!exonCluster.isCis5to3() && end < edge3Max) || !setEdge5.contains(start)) {
-			if (!setEdge5.contains(end)) {
+			if (!setEdge5.contains(start)) {
 				lsSite.add(align);
 				lslsExonInfos.add(lsExonInfo);
 			}

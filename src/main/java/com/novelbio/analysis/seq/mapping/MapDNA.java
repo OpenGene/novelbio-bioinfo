@@ -2,11 +2,8 @@ package com.novelbio.analysis.seq.mapping;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
-import org.apache.curator.framework.api.CuratorEvent;
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
@@ -14,16 +11,9 @@ import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamToBamSort;
 import com.novelbio.base.ExceptionNullParam;
-import com.novelbio.base.PathDetail;
-import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.cmd.ExceptionCmd;
-import com.novelbio.base.curator.CuratorNBC;
-import com.novelbio.base.dataOperate.DateUtil;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.service.SpringFactoryBioinfo;
-import com.novelbio.generalConf.PathDetailNBC;
 
 /**
  * 设定了自动化建索引的方法，并且在mapping失败后会再次建索引
@@ -53,6 +43,7 @@ public abstract class MapDNA implements MapDNAint {
 	SoftWare softWare;
 	boolean writeToBam = true;
 	
+	MapIndexMaker indexMraker;
 	
 	public void setChrIndex(String chrFile) {
 		this.chrFile = chrFile;
@@ -117,7 +108,9 @@ public abstract class MapDNA implements MapDNAint {
 	 * @return
 	 */
 	public SamFile mapReads() {
-		IndexMake();
+		indexMraker = MapIndexMaker.createIndexMaker(softWare);
+		indexMraker.setChrIndex(chrFile);
+		indexMraker.IndexMake();
 		
 		SamFile samFile = mapping();
 		if (!writeToBam || samFile == null) {
@@ -171,95 +164,6 @@ public abstract class MapDNA implements MapDNAint {
 		}
 		return resultSamName;
 	}
-	
-	public void IndexMake() {
-		System.out.println();
-		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
-			return;
-		}
-		
-		String lockPath = chrFile.replace(PathDetailNBC.getGenomePath(), "");
-		lockPath = FileOperate.removeSplashHead(lockPath, false).replace("/", "_").replace("\\", "_").replace(".", "_");
-		InterProcessMutex lock = CuratorNBC.getInterProcessMutex(lockPath);
-		try {
-			lock.acquire();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		tryMakeIndex();
-		try {
-			lock.release();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	private void tryMakeIndex() {
-		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
-			return;
-		}
-		try {
-			try {
-				makeIndex();
-			} catch (Exception e) {
-				makeIndex();
-			}
-		} catch (Exception e) {
-			logger.error("index make error:" + chrFile);
-			deleteIndex();
-			throw new RuntimeException("index make error:" + chrFile, e);
-		}
-	}
-	
-	/**
-	 * 构建索引
-	 * @parcam force 默认会检查是否已经构建了索引，是的话则返回。
-	 * 如果face为true，则强制构建索引
-	 * @return
-	 */
-	protected void makeIndex() {
-		String parentPath = FileOperate.getParentPathNameWithSep(chrFile);
-		List<String> lsCmd = getLsCmdIndex();
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.setRedirectInToTmp(true);
-		cmdOperate.setRedirectOutToTmp(true);
-		String runInfoPath = FileOperate.getParentPathNameWithSep(outFileName);
-		FileOperate.createFolders(runInfoPath);
-		
-		cmdOperate.setStdOutPath(runInfoPath + "IndexMake_Stdout.txt", false, true);
-		cmdOperate.setStdErrPath(runInfoPath + "IndexMake_Stderr.txt", false, true);
-
-		cmdOperate.setOutRunInfoFileName(runInfoPath + "IndexMaking.txt");
-		
-		for (String path : lsCmd) {
-			if (path.equals(chrFile)) {
-				cmdOperate.addCmdParamInput(chrFile, false);
-			} else if (path.startsWith(parentPath)) {
-				cmdOperate.addCmdParamOutput(path, false);
-			}
-		}
-		cmdOperate.addCmdParamOutput(chrFile, false);
-		cmdOperate.run();
-		if(!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd(softWare.toString() + " index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
-		}
-		TxtReadandWrite txtWriteFinishFlag = new TxtReadandWrite(getIndexFinishedFlag(), true);
-		txtWriteFinishFlag.writefileln("finished");
-		txtWriteFinishFlag.close();
-	}
-	
-	private String getIndexFinishedFlag() {
-		String suffix = softWare.toString();
-		if (softWare == SoftWare.bwa_aln || softWare == SoftWare.bwa_mem) {
-			suffix = "bwa";
-		}
-		return FileOperate.changeFileSuffix(chrFile, "_indexFinished_" + suffix, "");
-	}
-
-	protected abstract List<String> getLsCmdIndex();
-	/** 删除关键的索引文件，意思就是没有建成索引 */
-	protected abstract void deleteIndex();
-	
-	protected abstract boolean isIndexExist();
 		
 	/**
 	 * 目前只有bwa和bowtie2两种

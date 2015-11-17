@@ -14,7 +14,13 @@ public enum MappingReadsType {
 		/** 非unique Mapping */
 		RepeatMapped,
 		JunctionUniqueMapped, 
-		JunctionAllMapped;
+		JunctionAllMapped,
+		
+		AllBase,
+		MappedBase,
+		UnMappedBase,
+		UniqueMappedBase,
+		RepeatMappedBase;
 		
 //		public static void main(String[] args) {
 //			for (MappingReadsType type : MappingReadsType.values()) {

@@ -46,13 +46,13 @@ public class ExonClusterSite {
 	
 	public void generateExonTestUnit(int juncAllReadsNum, int juncSampleReadsNum, Set<String> setIsoName_No_Reconstruct,
 			double pvalueJunctionProp, boolean isCombine, Map<String, Map<String, double[]>> mapCond_group2ReadsNum, Set<String> setCondition,
-			TophatJunction tophatJunction) {
+			TophatJunction tophatJunction, int minDifLen) {
 		for (ExonCluster exonCluster : lsExonCluster) {
 			if (exonCluster.getLsIsoExon().size() == 1 || exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {
 				continue;
 			}
 
-			ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster);
+			ExonSplicingTest exonSplicingTest = new ExonSplicingTest(exonCluster, minDifLen);
 			exonSplicingTest.setJuncReadsNum(juncAllReadsNum, juncSampleReadsNum);
 			exonSplicingTest.setSetIsoName_No_Reconstruct(setIsoName_No_Reconstruct);
 			exonSplicingTest.setPvalueJunctionProp(pvalueJunctionProp);
@@ -95,6 +95,10 @@ public class ExonClusterSite {
 		List<ExonSplicingTest> lsRI = new ArrayList<>();
 		List<ExonSplicingTest> lsOther = new ArrayList<>();
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTests) {
+			if (exonSplicingTest.isTestEmpty()) {
+				continue;
+			}
+			
 			exonSplicingTest.getAndCalculatePvalue();
 			if (exonSplicingTest.getSplicingType() == SplicingAlternativeType.retain_intron) {
 				lsRI.add(exonSplicingTest);

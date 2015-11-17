@@ -70,12 +70,9 @@ public class TestMapRNA {
 		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
 		lsLeftFq.add(new FastQ("/hdfs:/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_1_Small.fq.gz"));
 		lsRightFq.add(new FastQ("/hdfs:/nbCloud/public/test/RNASeqMap/MouseRNA_KO_L1_2_Small.fq.gz"));
-		mapRNA = new MapTophat();
-
 		Species species = new Species(9606);
-//		species.setVersion("tair10");
+		mapRNA = new MapTophat(new GffChrAbs(species));
 	
-		mapRNA.setGffChrAbs(new GffChrAbs(species));
 		mapRNA.setRefIndex(species.getIndexChr(SoftWare.bowtie2));
 		mapRNA.setGtf_Gene2Iso("");
 		mapRNA.setOutPathPrefix("/hdfs:/nbCloud/public/test/RNASeqMap/human");

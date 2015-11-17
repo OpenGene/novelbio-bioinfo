@@ -21,15 +21,13 @@ import com.novelbio.base.dataStructure.Alignment;
 /** 专门用来提取exoncluster的类 */
 public class ExonClusterExtract {
 	GffDetailGene gene;
-	int minDifLen = 6;
 	
 	/**
 	 * @param gene
 	 * @param minDifLen 小于6bp的altstart和altend都有必要删除，很可能是假的
 	 */
-	public ExonClusterExtract(GffDetailGene gene, int minDifLen) {
+	public ExonClusterExtract(GffDetailGene gene) {
 		this.gene = gene;
-		this.minDifLen = minDifLen;
 	}
 	
 	/**
@@ -152,7 +150,7 @@ public class ExonClusterExtract {
 				continue;
 			}
 			
-			if (exonClusters.isSameExonInExistIso() || exonClusters.getSplicingTypeSet(minDifLen).isEmpty()) {
+			if (exonClusters.isSameExonInExistIso()) {
 				continue;
 			}
 			lsResult.add(exonClusters);
@@ -437,7 +435,18 @@ public class ExonClusterExtract {
 			return lsResult;
 		}
 		
-		for (GffGeneIsoInfo gffGeneIsoInfo : gene.getLsCodSplit()) {
+		//将外显子按照个数从大到小排序，这样方便检出最多的same group
+		List<GffGeneIsoInfo> lsGeneIsoInfos = new ArrayList<>(gene.getLsCodSplit());
+		Collections.sort(lsGeneIsoInfos, new Comparator<GffGeneIsoInfo>() {
+			public int compare(GffGeneIsoInfo o1, GffGeneIsoInfo o2) {
+				Integer o1Size = o1.size();
+				Integer o2Size = o2.size();
+				return -o1Size.compareTo(o2Size);
+			}
+		});
+		
+		
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsGeneIsoInfos) {
 			flagGetNexIso = false;
 			for (IsoGroup isoGroup : lsIsoGroup) {
 				if (isoGroup.getSameEdgeProp(gffGeneIsoInfo) >= prop) {

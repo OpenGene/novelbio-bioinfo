@@ -40,4 +40,7 @@ public interface AlignRecord extends Alignment{
 	 * tophat的结果，一条reads如果mapping至多个位置，在文件中就会出现多次，所以返回可能大于1
 	 * */
 	public int getMappedReadsWeight();
+	
+	/** 获得碱基长度 */
+	public int getLengthReal();
 }

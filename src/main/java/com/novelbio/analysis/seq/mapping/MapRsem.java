@@ -5,7 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
@@ -30,7 +31,7 @@ import com.novelbio.database.model.species.Species;
  *
  */
 public class MapRsem implements MapRNA {
-	private static final Logger logger = Logger.getLogger(MapRsem.class);
+	private static final Logger logger = LoggerFactory.getLogger(MapRsem.class);
 	
 	Species species;
 	GffChrSeq gffChrSeq = null;
@@ -59,20 +60,14 @@ public class MapRsem implements MapRNA {
 	/** rsem 到 rpkm是增加了10^6 倍 */
 	int foldRsem2RPKM = 1000000;
 	
-	public MapRsem() {
+	public MapRsem(GffChrAbs gffChrAbs) {
 		SoftWareInfo softWareInfoRsem = new SoftWareInfo();
 		softWareInfoRsem.setName(SoftWare.rsem);
 		SoftWareInfo softWareInfoBowtie = new SoftWareInfo();
 		softWareInfoBowtie.setName(SoftWare.bowtie);
 		this.exePathRsem = softWareInfoRsem.getExePathRun();
 		this.exePathBowtie = softWareInfoBowtie.getExePathRun();
-	}
-
-	/**
-	 * 设定Gff文件
-	 * @param gffFile
-	 */
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		
 		this.gffChrAbs = gffChrAbs;
 		if (gffChrAbs == null) {
 			return;
@@ -80,6 +75,7 @@ public class MapRsem implements MapRNA {
 		gffChrSeq = new GffChrSeq(gffChrAbs);
 		this.species = gffChrAbs.getSpecies();
 	}
+	
 	/**
 	 * 设定refFile
 	 * @param refFile
@@ -102,7 +98,7 @@ public class MapRsem implements MapRNA {
 	/** 没用 */
 	public void setMismatch(int mismatch) {}
 	
-	public SoftWare getBowtieVersion() {
+	public SoftWare getSoftWare() {
 		return SoftWare.bowtie;
 	}
 	/** 产生全新的reference */

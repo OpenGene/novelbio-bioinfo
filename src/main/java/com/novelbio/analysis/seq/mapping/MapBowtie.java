@@ -80,10 +80,6 @@ public class MapBowtie extends MapDNA {
 		this.sensitive = sensitive;
 	}
 	
-	private String getChrFile() {
-		return chrFile;
-	}
-	
 	/** 获得没有后缀名的序列，不带引号 */
 	protected String getChrNameWithoutSuffix() {
 		return getChrNameWithoutSuffix(chrFile);
@@ -141,15 +137,6 @@ public class MapBowtie extends MapDNA {
 		}
 		return lsCmd;
 	}
-	
-//	private String[] getOutFileName() {
-//		outFileName = addSamToFileName(outFileName);
-//		if (outFileName.equals("")) {
-//			outFileName = FileOperate.changeFileSuffix(lsLeftFq.get(0).getReadFileName(), "_result", "sam");
-//		}
-//		String outName = MapBwa.addSamToFileName(outFileName);
-//		return new String[]{"-S", outName};
-//	}
 
 	private String getOffset() {
 		if (lsLeftFq.get(0).getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
@@ -249,42 +236,6 @@ public class MapBowtie extends MapDNA {
 		return true;
 	}
 	
-	protected boolean isIndexExist() {
-		return isIndexExist(chrFile, softWare);
-	}
-	
-	public static boolean isIndexExist(String chrFile, SoftWare softWare) {
-		boolean isIndexExist = false;
-		if (softWare == SoftWare.bowtie) {
-			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix(chrFile) + ".3.ebwt");
-		} else if (softWare == SoftWare.bowtie2) {
-			isIndexExist = FileOperate.isFileExist(getChrNameWithoutSuffix(chrFile) + ".3.bt2") 
-					|| FileOperate.isFileExist(getChrNameWithoutSuffix(chrFile) + ".3.bt2l");
-
-		}
-		return isIndexExist;
-	}
-	
-	protected void deleteIndex() {
-		if (softWare == SoftWare.bowtie) {
-			FileOperate.delFile(getChrNameWithoutSuffix() + ".3.ebwt");
-		} else if (softWare == SoftWare.bowtie2) {
-			FileOperate.delFile(getChrNameWithoutSuffix() + ".3.bt2");
-		}
-	}
-	
-	protected List<String> getLsCmdIndex() {
-		List<String> lsCmd = new ArrayList<>();
-		if (softWare == SoftWare.bowtie) {
-			lsCmd.add(ExePathBowtie + "bowtie-build");
-		} else if (softWare == SoftWare.bowtie2) {
-			lsCmd.add(ExePathBowtie + "bowtie2-build");
-		}
-		lsCmd.add(getChrFile());
-		lsCmd.add(getChrNameWithoutSuffix());
-		return lsCmd;
-	}
-	
 	protected SamFile mapping() {
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
@@ -368,62 +319,11 @@ public class MapBowtie extends MapDNA {
 	@Override
 	public List<String> getCmdExeStr() {
 		List<String> lsResult = new ArrayList<>();
-		lsResult.add(softWare.toString() + " version: " + getVersion());
+		lsResult.add(softWare.toString() + " version: " + indexMraker.getVersion());
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		lsResult.add(cmdOperate.getCmdExeStr());
 		return lsResult;
-	}
-//	/**
-//	 * 将sam文件压缩成bam文件，然后做好统计并返回
-//	 * @param outSamFile
-//	 * @return
-//	 */
-//	@Override
-//	protected SamFile copeAfterMapping() {
-//		if (!FileOperate.isFileExistAndBigThanSize(outFileName, 1)) {
-//			return null;
-//		}
-//		SamFile samFile = new SamFile(outFileName);
-//		SamFile bamFile = samFile.convertToBam(lsAlignmentRecorders, true);
-//		samFile.close();
-//		deleteFile(samFile.getFileName(), bamFile.getFileName());
-//		return bamFile;
-//	}
-//	
-//	/**
-//	 * 删除sai文件
-//	 * @param samFileName
-//	 */
-//	private void deleteFile(String samFile, String bamFile) {
-//		double samFileSize = FileOperate.getFileSize(samFile);
-//		if (FileOperate.isFileExistAndBigThanSize(bamFile, samFileSize/15)) {
-//			FileOperate.delFile(samFile);
-//		}
-//	}
-	
-	public String getVersion() {
-		String version = null;
-		try {
-			String bowtie = "";
-			if (softWare == SoftWare.bowtie) {
-				bowtie = "bowtie";
-			} else if (softWare == SoftWare.bowtie2) {
-				bowtie = "bowtie2";
-			}
-			List<String> lsCmdVersion = new ArrayList<>();
-			lsCmdVersion.add(this.ExePathBowtie + bowtie);
-			lsCmdVersion.add("--version");
-			CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
-			cmdOperate.setGetLsStdOut();
-			cmdOperate.run();
-			List<String> lsInfo = cmdOperate.getLsStdOut();
-			version = lsInfo.get(0).toLowerCase().split("version")[1].trim();
-		} catch (Exception e) {
-			logger.error("cannot get bowtie version", e);
-		}
-		return version;
-
 	}
 	
 	

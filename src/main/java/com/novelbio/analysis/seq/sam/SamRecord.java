@@ -118,6 +118,9 @@ public class SamRecord implements AlignRecord {
 	@Override
 	public boolean isUniqueMapping() {
 		Object attrXT = samRecord.getAttribute("XT");
+		if (samRecord.getMappingQuality() < 10) {
+			return false;
+		}
 		if (attrXT != null) {
 			if (!attrXT.equals('R'))
 				return true;
@@ -177,7 +180,7 @@ public class SamRecord implements AlignRecord {
 	
 	/**
 	 * 本序列在本文件中出现了几次，
-	 * 意思就是如果是非unique mapping，但是该Reads只出现一次，则返回1，譬如BWA
+	 * 意思就是如果是非unique mapping，但是该Reads只出现一次，则返回1，譬如BWA<br>
 	 * 如果是Tophat，则会出现多次，则返回多次的信息
 	 */
 	public Integer getMappingNum() {

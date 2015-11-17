@@ -14,6 +14,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
+import com.novelbio.analysis.seq.mapping.MapIndexMaker;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
@@ -36,7 +37,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	/** miRDeep2是调用bowtie实现的 */
 	static SoftWare softWareMap = SoftWare.bowtie;
 	
-	MapDNAint mapBowtie;
+	MapIndexMaker indexMaker;
 	int miRNAminLen = 18;
 	String mirDeepPath = "";
 	/** 输入的fasta格式，从bed文件转变而来，也可直接设定 */
@@ -64,7 +65,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	public NovelMiRNADeep() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.mirDeep);
 		mirDeepPath = softWareInfo.getExePathRun();
-		mapBowtie = MapDNA.creatMapDNA(softWareMap);
+		indexMaker = MapIndexMaker.createIndexMaker(softWareMap);
 	}
 	
 	@Override
@@ -105,7 +106,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 */
 	public void setSpeciesChrIndex(Species species) {
 		this.chromFaIndexBowtie = species.getIndexChr(softWareMap);
-		mapBowtie.setChrIndex(chromFaIndexBowtie);
+		indexMaker.setChrIndex(chromFaIndexBowtie);
 	}
 	/**
 	 * 设定待比对的物种index文件路径
@@ -113,7 +114,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 */
 	public void setSpeciesChrIndex(String chromFaIndexBowtie) {
 		this.chromFaIndexBowtie = chromFaIndexBowtie;
-		mapBowtie.setChrIndex(chromFaIndexBowtie);
+		indexMaker.setChrIndex(chromFaIndexBowtie);
 	}
 	/**
 	 * 设定一个随机的report的类型，采用日期时间+随机数的方式
@@ -259,7 +260,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 			return;
 		}
 		
-		mapBowtie.IndexMake();
+		indexMaker.IndexMake();
 		
 		String bedSeqFileName = "";
 		if (!FileOperate.isFileExistAndBigThanSize(fastaInput, 0)) {

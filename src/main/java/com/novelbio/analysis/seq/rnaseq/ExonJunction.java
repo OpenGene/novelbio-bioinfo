@@ -56,7 +56,7 @@ import com.novelbio.listOperate.ListAbs;
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
-		long timeEclipse1 = wwwSimulation();
+		long timeEclipse1 = test2();
 		System.out.println(timeEclipse1);
 	}
 	
@@ -85,7 +85,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction = null;
 		return dateUtil.getElapseTime();
 	}
-	
+
 	public static long test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
@@ -119,6 +119,45 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		return dateUtil.getElapseTime();
 	}
 	
+	
+	public static long test2() {
+		//TODO
+		List<Align> lsAligns = new ArrayList<>();
+//		lsAligns.add(new Align("11:65083629-65660215"));
+//		lsAligns.add(new Align("1:7205126-27246005"));
+//		lsAligns.add(new Align("11", 1, 250088574));
+
+		DateUtil dateUtil = new DateUtil();
+//		dateUtil.setStartTime();
+//		System.out.println("start");
+//		Species species = new Species(9606);
+//		species.setVersion("hg19_GRCh37");
+		GffChrAbs gffChrAbs = new GffChrAbs();
+		gffChrAbs.setGffHash(new GffHashGene("/media/winE/iii/hg19_filter.psl.gtf"));
+		ExonJunction exonJunction = new ExonJunction();
+//		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
+		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
+		exonJunction.setgenerateNewIso(true);
+		exonJunction.setNewIsoReadsNum(15);
+		exonJunction.setLsReadRegion(lsAligns);
+		exonJunction.setOneGeneOneSpliceEvent(false);
+		String parentPath = "/media/winE/iii/";
+		exonJunction.addBamSorted("ctr", parentPath + "ctr1.chr20_51504-1271232.bam");
+		exonJunction.addBamSorted("ctr", parentPath + "ctr2.chr20_51504-1271232.bam");
+		exonJunction.addBamSorted("ctr", parentPath + "ctr3.chr20_51504-1271232.bam");
+
+		exonJunction.addBamSorted("h2", parentPath + "H1.chr20_51504-1271232.bam");
+		exonJunction.addBamSorted("h2", parentPath + "H2.chr20_51504-1271232.bam");
+		exonJunction.addBamSorted("h2", parentPath + "H3.chr20_51504-1271232.bam");
+
+		exonJunction.setCompareGroups("ctr", "h2");
+//		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
+		exonJunction.setResultFile(parentPath + "result_20151007");
+
+		exonJunction.run();
+		exonJunction = null;
+		return dateUtil.getElapseTime();
+	}
 	
 	private static Logger logger = Logger.getLogger(ExonJunction.class);
 	private static String stopGeneName = "ENSG00000163531";
@@ -574,13 +613,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			logger.debug("stop");
 		}
 		//TODO
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGene, minDifLen);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGene);
 		List<ExonClusterSite> lsExonSplicingTestResult = exonClusterExtract.getLsDifExonSite();
 		if (!lsExonSplicingTestResult.isEmpty()) {
 			for (ExonClusterSite exonSite : lsExonSplicingTestResult) {
 				exonSite.generateExonTestUnit(juncAllReadsNum, juncSampleReadsNum,
 						setIsoName_No_Reconstruct, pvalueJunctionProp, isCombine,
-						mapCond_group2ReadsNum, setCondition, tophatJunction);
+						mapCond_group2ReadsNum, setCondition, tophatJunction, minDifLen);
 				
 			}
 		}

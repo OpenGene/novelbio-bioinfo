@@ -6,11 +6,9 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataStructure.Alignment;
  /**
   * BedSeq每一行的信息<br>
@@ -378,6 +376,14 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 			return true;
 		}
 		return false;
+	}
+	@Override
+	public int getLengthReal() {
+		SeqFasta seqFasta = getSeqFasta();
+		if (seqFasta != null) {
+			return seqFasta.Length();
+		}
+		return 0;
 	}
 	
 }

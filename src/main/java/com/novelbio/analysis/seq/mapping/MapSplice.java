@@ -23,7 +23,7 @@ public class MapSplice implements MapRNA {
 	
 	String exePath = "";
 	/** bowtie就是用来做索引的 */
-	MapBowtie mapBowtie = new MapBowtie();
+	MapIndexMaker indexBowtie = MapIndexMaker.createIndexMaker(SoftWare.bowtie);
 	String chrFile;
 	
 	String outFile;
@@ -52,14 +52,11 @@ public class MapSplice implements MapRNA {
 	/** 第二次mapping所使用的命令 */
 	List<String> lsCmdMapping2nd = new ArrayList<>();
 	
-	public MapSplice() {
+	public MapSplice(GffChrAbs gffChrAbs) {
 		SoftWareInfo softMapSplice = new SoftWareInfo();
 		softMapSplice.setName(SoftWare.mapsplice);
 		this.exePath = softMapSplice.getExePathRun();
-	}
-	
-	@Override
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		
 		if (gffChrAbs != null && gffChrAbs.getSpecies() != null && gffChrAbs.getSpecies().getTaxID() != 0) {
 			this.species = gffChrAbs.getSpecies();
 		}
@@ -89,7 +86,7 @@ public class MapSplice implements MapRNA {
 	@Override
 	public void setRefIndex(String chrFile) {
 		this.chrFile = chrFile;
-		mapBowtie.setChrIndex(chrFile);
+		indexBowtie.setChrIndex(chrFile);
 	}
 	
 	@Override
@@ -149,8 +146,7 @@ public class MapSplice implements MapRNA {
 	@Override
 	public void mapReads() {
 		prepareReads();
-		mapBowtie.setSubVersion(getBowtieVersion());
-		mapBowtie.IndexMake();
+		indexBowtie.IndexMake();
 		lsCmdMapping2nd.clear();
 
 		String prefix = FileOperate.getFileName(outFile);
@@ -269,7 +265,7 @@ public class MapSplice implements MapRNA {
 		return new String[]{"-c", fileRefSep};
 	}
 	private String[] getIndex() {
-		return new String[]{"-x", mapBowtie.getChrNameWithoutSuffix()};
+		return new String[]{"-x", indexBowtie.getIndexName()};
 	}
 	private String[] getThreadNum() {
 		return new String[]{"-p", threadNum + ""};
@@ -335,7 +331,7 @@ public class MapSplice implements MapRNA {
 	
 	
 	@Override
-	public SoftWare getBowtieVersion() {
+	public SoftWare getSoftWare() {
 		return SoftWare.bowtie;
 	}
 	
@@ -351,12 +347,13 @@ public class MapSplice implements MapRNA {
 		String version = ss[ss.length-1];
 		return version;
 	}
+	
 	@Override
 	public List<String> getCmdExeStr() {
 		prepareReads();
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("MapSplice version: " + getVersionMapSplice());
-		lsCmd.add(getBowtieVersion().toString() + " version: " + mapBowtie.getVersion());
+		lsCmd.add(getSoftWare().toString() + " version: " + indexBowtie.getVersion());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {
@@ -368,7 +365,7 @@ public class MapSplice implements MapRNA {
 	public void clear() {
 		exePath = "";
 		/** bowtie就是用来做索引的 */
-		mapBowtie = new MapBowtie();
+		indexBowtie = null;
 		chrFile = null;
 		
 		outFile = null;

@@ -9,7 +9,6 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /** 每次都要new一个，不要连续用 */
 public interface MapRNA extends IntCmdSoft {
-	public void setGffChrAbs(GffChrAbs gffChrAbs);
 	
 	/** 设定index或与index相关的ref */
 	public void setRefIndex(String chrFile);
@@ -58,7 +57,7 @@ public interface MapRNA extends IntCmdSoft {
 
 	/** 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf */
 	public void mapReads();
-	SoftWare getBowtieVersion();
+	SoftWare getSoftWare();
 	
 	/**
 	 * Tophat:<br>用gtf文件辅助mapping

@@ -660,14 +660,14 @@ public class ExonCluster implements Alignment {
 		}
 		return lsExonTmp;
 	}
-	
-	/** 返回所有SpliceType的类型
-	 * 
-	 * @param minDifLen 小于5bp 的 alt5, alt3 都可以删除
-	 * @return
-	 */
+	/** 返回所有SpliceType的类型 */
 	public Set<SplicingAlternativeType> getSplicingTypeSet() {
-		return getSplicingTypeSet(0);
+		Set<SplicingAlternativeType> setSpliceTypePredicts = new HashSet<SplicingAlternativeType>();
+		List<SpliceTypePredict> lsSpliceTypePredicts = getSplicingTypeLs();
+		for (SpliceTypePredict spliceTypePredict : lsSpliceTypePredicts) {
+			setSpliceTypePredicts.add(spliceTypePredict.getType());
+		}
+		return setSpliceTypePredicts;
 	}
 	
 	/** 返回所有SpliceType的类型

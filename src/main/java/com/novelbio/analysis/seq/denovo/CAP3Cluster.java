@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaReader;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.SepSign;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -201,8 +202,8 @@ public class CAP3Cluster implements IntCmdSoft {
 	protected Set<String> generateResultClusterFaAndGetFilteredGeneName() {
 		Set<String> setGeneId = new HashSet<>();
 				
-		String capResultContigsFile = FileOperate.changeFileSuffix(outMergedFile, ".cap3.contigs", "fa");
-		String capResultSingletsFile = FileOperate.changeFileSuffix(outMergedFile, ".cap3.singlets", "fa");
+		String capResultContigsFile = outMergedFile + ".cap.contigs";
+		String capResultSingletsFile = outMergedFile + ".cap.singlets";
 		SeqFastaReader seqContigsReader = new SeqFastaReader(capResultContigsFile);
 		SeqFastaReader seqSingletsReader = new SeqFastaReader(capResultSingletsFile);
 
@@ -239,7 +240,7 @@ public class CAP3Cluster implements IntCmdSoft {
 	 */
 	protected void generateTranscriptFa(Set<String> setTransId, String allTransFile, String transFile) {
 		SeqFastaReader seqFastaReader = new SeqFastaReader(allTransFile);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(transFile);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(transFile, true);
 		for (SeqFasta seqFasta : seqFastaReader.readlines()) {
 			if (setTransId.contains(seqFasta.getSeqName())) {
 				txtWrite.writefileln(seqFasta.toStringNRfasta());
@@ -360,12 +361,22 @@ class ContigId2TranId {
 				isStart = true;
 			}
 			
+			if (StringOperate.isRealNull(content)) 
+				continue;
+			
 			if (content.startsWith("DETAILED DISPLAY OF CONTIGS")) {
 				break;
 			} else if (content.startsWith("*")) {
 				geneId = content.replace("*", "").replace(" ", "");
 			} else if (!content.startsWith(" ") && !content.startsWith("\t")) {//不以空行开头的
-				String transId = content.substring(0, content.length() - 1);
+				String transId = null;
+				try {
+					transId = content.substring(0, content.length() - 1);
+
+				} catch (Exception e) {
+					transId = content.substring(0, content.length() - 1);
+
+				}
 				if (setGeneId.isEmpty() || setGeneId.contains(geneId)) {
 					mapGeneId2LsTransId.put(geneId, transId);
 					setKeys.add(geneId);

@@ -233,7 +233,7 @@ public class SoftWareInfo {
 	public static enum SoftWare {
 		blast,
 		bwa_aln, bwa_mem, bowtie, bowtie2, 
-		tophat, hisat, rsem, mapsplice, rseqc, trinity,
+		tophat, hisat2, rsem, mapsplice, rseqc, trinity,
 		
 		/** 联配软件 */
 		muscle,
@@ -258,7 +258,7 @@ public class SoftWareInfo {
 				mapStr2MapSoftware.put("bwa_aln", bwa_aln);
 				mapStr2MapSoftware.put("bwa_mem", bwa_mem);
 				mapStr2MapSoftware.put("bowtie2", bowtie2);
-				mapStr2MapSoftware.put("hisat", hisat);
+				mapStr2MapSoftware.put("hisat", hisat2);
 			}
 			return mapStr2MapSoftware;
 		}

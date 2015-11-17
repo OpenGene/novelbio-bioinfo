@@ -11,7 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.commons.math3.stat.descriptive.moment.Mean;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
@@ -43,7 +44,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 我觉得这种要被过滤掉
  */
 public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
-	private static final Logger logger = Logger.getLogger(ExonSplicingTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(ExonSplicingTest.class);
 		
 	/** 实验组和对照组的junction reads数量加起来小于这个数，就返回1 */
 	static int junctionReadsMinNum = 10;
@@ -86,10 +87,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	/** 显示最后区域的，主要是给MXE使用 */
 	Align alignDisplay;
 	
+	int minLen;
+	
 	private static final String debug = "ENSG00000163531";
 	
-	public ExonSplicingTest(ExonCluster exonCluster) {
+	public ExonSplicingTest(ExonCluster exonCluster, int minLen) {
 		this.exonCluster = exonCluster;
+		this.minLen = minLen;
 	}
 	/** 显示最后区域的，如 chr1:23456-34567，主要是给MXE使用 */
 	public void setAlignDisplay(Align alignDisplay) {
@@ -218,6 +222,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return spliceType2Value;
 	}
 	
+	/** 是否不需要做检验，主要是检验alt3和alt5是否特别短，只有几bp，这种在ion proton中常见 */
+	public boolean isTestEmpty() {
+		return exonCluster.getSplicingTypeSet(minLen).isEmpty();
+	}
+	
 	/** 计算并获得pvalue */
 	public Double getAndCalculatePvalue() {
 		if (exonCluster.getParentGene().getName().contains(debug)) {
@@ -226,7 +235,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		if (!lsPvalueInfo.isEmpty()) {
 			return lsPvalueInfo.get(0).calculatePvalue();
 		}
-		for (SplicingAlternativeType splicingType : exonCluster.getSplicingTypeSet()) {
+		
+		for (SplicingAlternativeType splicingType : exonCluster.getSplicingTypeSet(minLen)) {
 			PvalueCalculate pvaCalculate = new PvalueCalculate();
 			pvaCalculate.setCombine(isCombine);
 			pvaCalculate.setSpliceType2Value(splicingType, condition1, mapCondition2SpliceInfo.get(condition1), 
@@ -235,6 +245,20 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			pvaCalculate.calculatePvalue();
 			lsPvalueInfo.add(pvaCalculate);
 		}
+		
+		if (lsPvalueInfo.isEmpty()) {
+			logger.error("cannot find splicing site: {}", exonCluster.getParentGene().getNameSingle());
+			PvalueCalculate pvaCalculate = new PvalueCalculate();
+			pvaCalculate.pvalueAvg = 1;
+			pvaCalculate.pvalueAvg = 1;
+			pvaCalculate.pvalueAvg = 1;
+
+			pvaCalculate.pvalueAvg = 1;
+
+			lsPvalueInfo.add(pvaCalculate);
+			return 1.0;
+		}
+		
 		Collections.sort(lsPvalueInfo, new Comparator<PvalueCalculate>() {
 			public int compare(PvalueCalculate o1, PvalueCalculate o2) {
 				int[] readsInfo1 = o1.getReadsInfo();
@@ -560,6 +584,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			this.isCombine = isCombine;
 		}
 		
+		public void setNotSignificant() {
+			pvalueAvg = 1;
+			pvalueRootAvg = 1;
+			pvalueJun = 1;
+			pvalueExp = 1;
+		}
+		
 		/** 返回junction的reads信息 */
 		public int[] getReadsInfo() {
 			return iSpliceTestJun.getReadsInfo();
@@ -731,7 +762,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
  * @author zong0jie
  */
 class SpliceType2Value {
-	private static final Logger logger = Logger.getLogger(SpliceType2Value.class);
+	private static final Logger logger = LoggerFactory.getLogger(SpliceType2Value.class);
 
 	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<SplicingAlternativeType>();
 	Map<SplicingAlternativeType, ArrayListMultimap<String, Double>> mapSplicingType2_MapGroup2LsExpValue = new HashMap<>();

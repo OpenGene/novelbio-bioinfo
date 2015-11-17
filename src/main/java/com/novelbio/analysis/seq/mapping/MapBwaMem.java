@@ -9,12 +9,9 @@ import org.springframework.stereotype.Component;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamRGroup;
-import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -263,7 +260,7 @@ public class MapBwaMem extends MapDNA {
 		generateTmpPath();
 		combSeq();
 		List<String> lsCmdResult = new ArrayList<>();
-		lsCmdResult.add("bwa version: " + MapBwaAln.getVersion(bwaMemParam.getExePath()));
+		lsCmdResult.add("bwa version: " + indexMraker.getVersion());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmdResult.add(cmdOperate.getCmdExeStr());
 		return lsCmdResult;
@@ -303,24 +300,5 @@ public class MapBwaMem extends MapDNA {
 	@Override
 	@Deprecated
 	public void setMapLibrary(MapLibrary mapLibrary) {}
-	
-	protected List<String> getLsCmdIndex() {
-		MapBwaAln mapBwaAln = new MapBwaAln();
-		mapBwaAln.setChrIndex(chrFile);
-		mapBwaAln.setExePath(bwaMemParam.getExePath());
-		List<String> lsCmd = mapBwaAln.getLsCmdIndex();
-		mapBwaAln = null;
-		return lsCmd;
-	}
-	
-	@Override
-	protected void deleteIndex() {
-		MapBwaAln.deleteIndexBwa(chrFile);
-	}
-
-	@Override
-	protected boolean isIndexExist() {
-		return MapBwaAln.isIndexExist(chrFile);
-	}
 	
 }

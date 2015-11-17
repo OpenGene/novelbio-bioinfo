@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.CategoryAxis;
@@ -29,6 +28,8 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.general.DatasetUtilities;
 import org.jfree.ui.RectangleEdge;
 import org.jfree.ui.RectangleInsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.GeneExpTable;
@@ -47,7 +48,7 @@ import com.novelbio.base.plot.PlotBar;
  * 根据需求判定是否需要执行{@link #initial()}
  *  */
 public class SamFileStatistics implements AlignmentRecorder {
-	private static final Logger logger = Logger.getLogger(SamFileStatistics.class);
+	private static final Logger logger = LoggerFactory.getLogger(SamFileStatistics.class);
 	/** 写入文本中InsertSize的Item  */
 	private static final String INSERTSIZE = "InsertSize";
 	private static final String title = "Statistics";
@@ -56,6 +57,8 @@ public class SamFileStatistics implements AlignmentRecorder {
 	GeneExpTable expChrDist;
 	
 	double allReadsNum = 0;
+	double allReadsBase = 0;
+	
 	double mappingRate = 0;
 	double uniqueMappingRate = 0;
 	
@@ -144,6 +147,8 @@ public class SamFileStatistics implements AlignmentRecorder {
 	private Double getReadsNumRaw(MappingReadsType mappingType) {
 		if (mappingType == MappingReadsType.All) {
 			return allReadsNum;
+		} else if (mappingType == MappingReadsType.AllBase) {
+			return allReadsBase;
 		}
 		return expStatistics.getGeneExp(mappingType.toString(), EnumExpression.Counts, prefix);
 	}
@@ -186,12 +191,10 @@ public class SamFileStatistics implements AlignmentRecorder {
 		expStatistics.setCurrentCondition(prefix);
 		expStatistics.addLsGeneName(MappingReadsType.getLsReadsInfoType());
 		
-		expStatistics.addGeneExp(MappingReadsType.UnMapped.toString(), 0);
-		expStatistics.addGeneExp(MappingReadsType.UniqueMapped.toString(), 0);
-		expStatistics.addGeneExp(MappingReadsType.JunctionUniqueMapped.toString(), 0);
-		expStatistics.addGeneExp(MappingReadsType.RepeatMapped.toString(), 0);
-		expStatistics.addGeneExp(MappingReadsType.JunctionAllMapped.toString(), 0);
-		
+		for (String type : MappingReadsType.getLsReadsInfoType()) {
+			expStatistics.addGeneExp(type, 0);
+		}
+
 		expChrDist = new GeneExpTable("ChrId");
 		expChrDist.setCurrentCondition(prefix);
 		if (standardData != null) {
@@ -205,26 +208,36 @@ public class SamFileStatistics implements AlignmentRecorder {
 	public void addAlignRecord(AlignRecord samRecord) {
 		if (!samRecord.isMapped()) {
 			allReadsNum ++;
+			double baseNum = samRecord.getLengthReal();
+			allReadsBase += baseNum;
 			expStatistics.addGeneExp(MappingReadsType.UnMapped.toString(), 1);
+			expStatistics.addGeneExp(MappingReadsType.UnMappedBase.toString(), baseNum);
 			return;
 		}
+		
 		int readsMappedWeight = samRecord.getMappedReadsWeight();
 		if (readsMappedWeight == 0) {
 			readsMappedWeight = 1;
 			logger.debug("reads mapped weight = 0: " + samRecord.toString());
 		}
+		
+		double baseNum = samRecord.getLengthReal()/readsMappedWeight;
 		double readsNum = (double)1/readsMappedWeight;
+		allReadsBase += baseNum;
 		allReadsNum += readsNum;
+		
 //		mappedReadsNum = mappedReadsNum + (double)1/readsMappedWeight;
 		setChrReads(readsMappedWeight, samRecord);
 		if (samRecord.isUniqueMapping()) {
 			expStatistics.addGeneExp(MappingReadsType.UniqueMapped.toString(), 1);
+			expStatistics.addGeneExp(MappingReadsType.UniqueMappedBase.toString(), baseNum);
 			if (samRecord.isJunctionCovered()) {
 				expStatistics.addGeneExp(MappingReadsType.JunctionUniqueMapped.toString(), 1);
 			}
 		}
 		else {
 			expStatistics.addGeneExp(MappingReadsType.RepeatMapped.toString(), readsNum);
+			expStatistics.addGeneExp(MappingReadsType.RepeatMappedBase.toString(), baseNum);
 		}
 		if (samRecord.isJunctionCovered()) {
 			expStatistics.addGeneExp(MappingReadsType.JunctionAllMapped.toString(), readsNum);
@@ -264,6 +277,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	public void summary() {
 		isCalculated = true;
 		summeryReadsNum();
+		summeryBaseNum();
 		if (correctChrReadsNum) {
 			expChrDist.modifyByAllReadsNum();
 		}
@@ -302,7 +316,37 @@ public class SamFileStatistics implements AlignmentRecorder {
 			insertSize = (int) (insertSizeAll/insertNum);
 		}
 	}
+	
+	/** 将所有reads数量四舍五入转变为long，同时矫正由double转换为long时候可能存在的偏差 */
+	private void summeryBaseNum() {
+		allReadsBase = Math.round(allReadsBase);
+		long unmappedBase = Math.round(getReadsNumRaw(MappingReadsType.UnMappedBase));
+		
+		long mappedBase = Math.round(allReadsBase - unmappedBase);
 
+		//double 转换可能会有1的误差
+		if (allReadsBase != mappedBase + unmappedBase) {
+			if (Math.abs(mappedBase + unmappedBase - allReadsBase) > 1000) {
+				logger.error("statistic error, mappedBaseNum: {} unmappedBaseNum: {} allBaseNum: " + allReadsBase , mappedBase + "", unmappedBase+ "" );
+			}
+			unmappedBase = (long)allReadsBase - mappedBase;
+		}
+		expStatistics.setGeneExp(MappingReadsType.UnMappedBase.toString(), unmappedBase);
+		expStatistics.setGeneExp(MappingReadsType.MappedBase.toString(), mappedBase);
+
+		long uniqMappedBaseNum = Math.round(getReadsNumRaw(MappingReadsType.UniqueMappedBase));
+		long repeatMappedBaseNum = Math.round(getReadsNumRaw(MappingReadsType.RepeatMappedBase));
+
+		if (mappedBase != uniqMappedBaseNum + repeatMappedBaseNum) {
+			if (Math.abs(mappedBase - uniqMappedBaseNum - repeatMappedBaseNum) > 100) {
+				logger.error("statistic error, mappedReadsNum: {} uniqMappedReadsNum: {} repeatMappedReadsNum: " + repeatMappedBaseNum, mappedBase,  uniqMappedBaseNum);
+			}
+			repeatMappedBaseNum = mappedBase - uniqMappedBaseNum;
+		}
+		expStatistics.setGeneExp(MappingReadsType.UniqueMappedBase.toString(), uniqMappedBaseNum);
+		expStatistics.setGeneExp(MappingReadsType.RepeatMappedBase.toString(), repeatMappedBaseNum);
+	}
+	
 	/**
 	 * 返回reads的分布情况统计
 	 * @param resultData 实际reads在染色体上分布的map
@@ -383,6 +427,13 @@ public class SamFileStatistics implements AlignmentRecorder {
 			long repeatMapping = getReadsNum(MappingReadsType.RepeatMapped);
 			long junctionAllMappedReads = getReadsNum(MappingReadsType.JunctionAllMapped);
 			long junctionUniqueMapping = getReadsNum(MappingReadsType.JunctionUniqueMapped);
+			
+			long allBases = getReadsNum(MappingReadsType.AllBase);
+			long unMappedBase = getReadsNum(MappingReadsType.UnMappedBase);
+			long mappedBase = getReadsNum(MappingReadsType.MappedBase);
+			long uniqueMappingBase = getReadsNum(MappingReadsType.UniqueMappedBase);
+			long repeatMappingBase = getReadsNum(MappingReadsType.RepeatMappedBase);
+
 
 			lsTable.add(new String[] { MappingReadsType.All.toString(), allReads + "" });
 			lsTable.add(new String[] { MappingReadsType.UnMapped.toString(), unMapped + "" });
@@ -397,6 +448,15 @@ public class SamFileStatistics implements AlignmentRecorder {
 				lsTable.add(new String[] {MappingReadsType.JunctionAllMapped.toString(), junctionAllMappedReads + "" });
 				lsTable.add(new String[] {MappingReadsType.JunctionUniqueMapped.toString(), junctionUniqueMapping + "" });
 			}
+			
+			lsTable.add(new String[] { MappingReadsType.AllBase.toString(), allBases + "" });
+			lsTable.add(new String[] { MappingReadsType.UnMappedBase.toString(), unMappedBase + "" });
+			lsTable.add(new String[] { MappingReadsType.MappedBase.toString(), mappedBase + "" });
+			if (!(allBases == repeatMappingBase && repeatMappingBase < 1)) {
+				lsTable.add(new String[] {MappingReadsType.UniqueMappedBase.toString(), uniqueMappingBase + "" });
+				lsTable.add(new String[] {MappingReadsType.RepeatMappedBase.toString(), repeatMappingBase + "" });
+			}
+
 			if (insertSize > 0 && insertSize < 1000) {
 				lsTable.add(new String[] { INSERTSIZE, insertSize + "" });
 			}

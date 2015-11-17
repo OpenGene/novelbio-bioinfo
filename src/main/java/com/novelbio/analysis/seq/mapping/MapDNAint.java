@@ -35,11 +35,7 @@ public interface MapDNAint extends IntCmdSoft {
 	 * @param Platform
 	 */
 	public void setSampleGroup(String sampleID, String LibraryName, String SampleName, String Platform);
-	/**
-	 * 构建索引
-	 * @return
-	 */
-	public void IndexMake();
+
 	/**
 	 * mapping
 	 * @return

@@ -53,7 +53,56 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		gffDetailGeneCis.addIso(isoTrans2);
 		gffDetailGeneCis.addIso(isoTrans3);
 
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis, 5);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
+		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
+		for (ExonCluster exonCluster : lsExonClusters) {
+			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
+				SpliceTypePredict spliceTypeCS = new PredictCassette(exonCluster);
+				assertEquals(true, spliceTypeCS.isSpliceType());
+				
+				SpliceTypePredict spliceTypeME= new PredictME(exonCluster);
+				assertEquals(false, spliceTypeME.isSpliceType());
+				
+				SpliceTypePredict spliceTypeAS= new PredictAltEnd(exonCluster);
+				assertEquals(false, spliceTypeAS.isSpliceType());
+			}
+			if (exonCluster.getStartAbs() == 20) {
+				SpliceTypePredict spliceTypeAlt5= new PredictAlt5(exonCluster);
+				assertEquals(true, spliceTypeAlt5.isSpliceType());
+				SpliceTypePredict spliceTypeS= new PredictAltStart(exonCluster);
+				assertEquals(true, spliceTypeS.isSpliceType());
+			}
+		}
+	}
+	
+	@Test
+	public void testStartEndTrue1_1() {
+		gffDetailGeneCis.clearIso();
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans3 = GffGeneIsoInfo.createGffGeneIso("Iso3", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+
+		//<----------------------20--31--------------40-50----------------------------------------80-90---<
+		//<------10--16------------------------------40-50-------------65-----72
+		//<------10--16-------20--30--------------40-50----------60----70-------------------------80---90----<
+		isoTrans1.add(new ExonInfo( true, 20, 31));
+		isoTrans1.add(new ExonInfo( true, 40, 50));
+		isoTrans1.add(new ExonInfo( true, 80, 90));
+		
+		isoTrans2.add(new ExonInfo( true, 10, 16));
+		isoTrans2.add(new ExonInfo( true, 40, 50));
+		isoTrans2.add(new ExonInfo( true, 65, 72));
+		
+		isoTrans3.add(new ExonInfo( true, 10, 16));
+		isoTrans3.add(new ExonInfo( true, 20, 30));
+		isoTrans3.add(new ExonInfo( true, 40, 50));
+		isoTrans3.add(new ExonInfo( true, 60, 70));
+		isoTrans3.add(new ExonInfo( true, 80, 90));
+		gffDetailGeneCis.addIso(isoTrans1);
+		gffDetailGeneCis.addIso(isoTrans2);
+		gffDetailGeneCis.addIso(isoTrans3);
+
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
 		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
@@ -76,6 +125,133 @@ public class TestPredictSpliceStartEnd extends TestCase {
 	}
 	
 	@Test
+	public void testStartEndTrue1_2() {
+		gffDetailGeneCis.clearIso();
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans3 = GffGeneIsoInfo.createGffGeneIso("Iso3", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans4 = GffGeneIsoInfo.createGffGeneIso("Iso4", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+
+		//<----------------------20--31--------------40-50----------------------------------------80-90---<
+		//<------10--16------------------------------40-50-------------65-----72
+		//<------10--16-------20--30--------------40-50-------------65-----72
+		//<------10--16-------20--30--------------40-50----------60----70------------------80---90----<
+		isoTrans1.add(new ExonInfo( true, 20, 31));
+		isoTrans1.add(new ExonInfo( true, 40, 50));
+		isoTrans1.add(new ExonInfo( true, 80, 90));
+		
+		isoTrans2.add(new ExonInfo( true, 10, 16));
+		isoTrans2.add(new ExonInfo( true, 40, 50));
+		isoTrans2.add(new ExonInfo( true, 65, 72));
+		
+		isoTrans3.add(new ExonInfo( true, 10, 16));
+		isoTrans3.add(new ExonInfo( true, 20, 30));
+		isoTrans3.add(new ExonInfo( true, 40, 50));
+		isoTrans3.add(new ExonInfo( true, 65, 72));
+		
+		isoTrans4.add(new ExonInfo( true, 10, 16));
+		isoTrans4.add(new ExonInfo( true, 20, 30));
+		isoTrans4.add(new ExonInfo( true, 40, 50));
+		isoTrans4.add(new ExonInfo( true, 60, 70));
+		isoTrans4.add(new ExonInfo( true, 80, 90));
+		
+		
+		gffDetailGeneCis.addIso(isoTrans1);
+		gffDetailGeneCis.addIso(isoTrans2);
+		gffDetailGeneCis.addIso(isoTrans3);
+		gffDetailGeneCis.addIso(isoTrans4);
+
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
+		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
+		for (ExonCluster exonCluster : lsExonClusters) {
+			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
+				SpliceTypePredict spliceTypeCS = new PredictCassette(exonCluster);
+				assertEquals(true, spliceTypeCS.isSpliceType());
+				
+				SpliceTypePredict spliceTypeME= new PredictME(exonCluster);
+				assertEquals(false, spliceTypeME.isSpliceType());
+				
+				SpliceTypePredict spliceTypeAS= new PredictAltEnd(exonCluster);
+				assertEquals(true, spliceTypeAS.isSpliceType());
+			}
+			if (exonCluster.getStartAbs() == 20) {
+				SpliceTypePredict spliceTypeAlt5= new PredictAlt5(exonCluster);
+				assertEquals(true, spliceTypeAlt5.isSpliceType());
+				SpliceTypePredict spliceTypeS= new PredictAltStart(exonCluster);
+				assertEquals(true, spliceTypeS.isSpliceType());
+			}
+		}
+	}
+	
+	@Test
+	public void testStartEndTrue1_3() {
+		gffDetailGeneCis.clearIso();
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans3 = GffGeneIsoInfo.createGffGeneIso("Iso3", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans4 = GffGeneIsoInfo.createGffGeneIso("Iso4", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans5 = GffGeneIsoInfo.createGffGeneIso("Iso5", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+
+		//<----------------------20--31--------------40-50----------------------------------------80-90---<
+		//<------10--16------------------------------40-50-------------65-----72
+		//<------10--16-------20--30--------------40-50-------------65-----72
+		//<------10--16-------20--30--------------40-50----------60----70------------------80---90----<
+		//<------10--16-------20--30--------------40-50-------------65-----72--------------80---90---<
+
+		isoTrans1.add(new ExonInfo( true, 20, 31));
+		isoTrans1.add(new ExonInfo( true, 40, 50));
+		isoTrans1.add(new ExonInfo( true, 80, 90));
+		
+		isoTrans2.add(new ExonInfo( true, 10, 16));
+		isoTrans2.add(new ExonInfo( true, 40, 50));
+		isoTrans2.add(new ExonInfo( true, 65, 72));
+		
+		isoTrans3.add(new ExonInfo( true, 10, 16));
+		isoTrans3.add(new ExonInfo( true, 20, 30));
+		isoTrans3.add(new ExonInfo( true, 40, 50));
+		isoTrans3.add(new ExonInfo( true, 65, 72));
+		
+		isoTrans4.add(new ExonInfo( true, 10, 16));
+		isoTrans4.add(new ExonInfo( true, 20, 30));
+		isoTrans4.add(new ExonInfo( true, 40, 50));
+		isoTrans4.add(new ExonInfo( true, 60, 70));
+		isoTrans4.add(new ExonInfo( true, 80, 90));
+		
+		isoTrans5.add(new ExonInfo( true, 10, 16));
+		isoTrans5.add(new ExonInfo( true, 20, 30));
+		isoTrans5.add(new ExonInfo( true, 40, 50));
+		isoTrans5.add(new ExonInfo( true, 65, 72));
+		isoTrans5.add(new ExonInfo( true, 80, 90));
+		
+		gffDetailGeneCis.addIso(isoTrans1);
+		gffDetailGeneCis.addIso(isoTrans2);
+		gffDetailGeneCis.addIso(isoTrans3);
+		gffDetailGeneCis.addIso(isoTrans4);
+		gffDetailGeneCis.addIso(isoTrans5);
+
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
+		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
+		for (ExonCluster exonCluster : lsExonClusters) {
+			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
+				SpliceTypePredict spliceTypeCS = new PredictCassette(exonCluster);
+				assertEquals(true, spliceTypeCS.isSpliceType());
+				
+				SpliceTypePredict spliceTypeME= new PredictME(exonCluster);
+				assertEquals(false, spliceTypeME.isSpliceType());
+				
+				SpliceTypePredict spliceTypeAS= new PredictAltEnd(exonCluster);
+				assertEquals(false, spliceTypeAS.isSpliceType());
+			}
+			if (exonCluster.getStartAbs() == 20) {
+				SpliceTypePredict spliceTypeAlt5= new PredictAlt5(exonCluster);
+				assertEquals(true, spliceTypeAlt5.isSpliceType());
+				SpliceTypePredict spliceTypeS= new PredictAltStart(exonCluster);
+				assertEquals(true, spliceTypeS.isSpliceType());
+			}
+		}
+	}
+	
+	@Test
 	public void testStartEndTrue2() {
 		gffDetailGeneCis.clearIso();
 		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
@@ -83,7 +259,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		GffGeneIsoInfo isoTrans3 = GffGeneIsoInfo.createGffGeneIso("Iso3", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
 
 		//<------------------18------30--------------40-50----------------------------------------80-90---<
-		//<------10--16------------------------------40-50-----------60--72
+		//<------10--16------------------------------40-50----------60--72
 		//<------10--16-------20--30--------------40-50----------60-70-------------------------80---90----<
 		isoTrans1.add(new ExonInfo( true, 18, 30));
 		isoTrans1.add(new ExonInfo( true, 40, 50));
@@ -102,7 +278,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		gffDetailGeneCis.addIso(isoTrans2);
 		gffDetailGeneCis.addIso(isoTrans3);
 
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis, 5);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
 		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
@@ -113,13 +289,13 @@ public class TestPredictSpliceStartEnd extends TestCase {
 				assertEquals(false, spliceTypeME.isSpliceType());
 				
 				SpliceTypePredict spliceTypeAS= new PredictAltEnd(exonCluster);
-				assertEquals(true, spliceTypeAS.isSpliceType());
+				assertEquals(false, spliceTypeAS.isSpliceType());
 			}
 			if (exonCluster.getStartAbs() == 18) {
 				SpliceTypePredict spliceTypeAlt3 = new PredictAlt3(exonCluster);
 				assertEquals(false, spliceTypeAlt3.isSpliceType());
 				SpliceTypePredict spliceTypeS= new PredictAltStart(exonCluster);
-				assertEquals(true, spliceTypeS.isSpliceType());
+				assertEquals(false, spliceTypeS.isSpliceType());
 			}
 		}
 	}
@@ -138,7 +314,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		isoTrans1.add(new ExonInfo( false, 40, 50));
 		isoTrans1.add(new ExonInfo( false, 18, 30));
 		
-		isoTrans2.add(new ExonInfo( false, 60, 72));
+		isoTrans2.add(new ExonInfo( false, 55, 72));
 		isoTrans2.add(new ExonInfo( false, 40, 50));
 		isoTrans2.add(new ExonInfo( false, 10, 16));
 
@@ -152,7 +328,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		gffDetailGeneCis.addIso(isoTrans2);
 		gffDetailGeneCis.addIso(isoTrans3);
 
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis, 5);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
 		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
@@ -169,7 +345,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 				SpliceTypePredict spliceTypeAlt3 = new PredictAlt3(exonCluster);
 				assertEquals(false, spliceTypeAlt3.isSpliceType());
 				SpliceTypePredict spliceTypeS= new PredictAltEnd(exonCluster);
-				assertEquals(true, spliceTypeS.isSpliceType());
+				assertEquals(false, spliceTypeS.isSpliceType());
 			}
 		}
 	}
@@ -201,7 +377,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		gffDetailGeneCis.addIso(isoTrans2);
 		gffDetailGeneCis.addIso(isoTrans3);
 
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis, 5);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
 		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			if (exonCluster.getStartAbs() == 60 && exonCluster.getEndAbs() == 72) {
@@ -212,7 +388,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 				assertEquals(false, spliceTypeME.isSpliceType());
 				
 				SpliceTypePredict spliceTypeAS= new PredictAltEnd(exonCluster);
-				assertEquals(true, spliceTypeAS.isSpliceType());
+				assertEquals(false, spliceTypeAS.isSpliceType());
 			}
 			if (exonCluster.getStartAbs() == 20) {
 				SpliceTypePredict spliceTypeAS= new PredictAlt5(exonCluster);
@@ -234,7 +410,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		//<----------20--30--------------40-50----------------------------------------80-90---<
 		//<----------20--30--------------------------------------------------------------80-90---<
 		//<----------20--30--------------40-50----------60--70
-		//<----------20--30--------------40-50----------60--70-------------------------80---90----<
+		//<----------20--30--------------40-50----------60--70---------------------80---90----<
 		isoTrans1.add(new ExonInfo( true, 10, 20));
 		isoTrans1.add(new ExonInfo( true, 20, 30));
 		isoTrans1.add(new ExonInfo( true, 40, 50));
@@ -259,7 +435,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		gffDetailGeneCis.addIso(isoTrans3);
 		gffDetailGeneCis.addIso(isoTrans4);
 
-		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis, 5);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
 		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
 		for (ExonCluster exonCluster : lsExonClusters) {
 			if (exonCluster.getStartAbs() == 40) {

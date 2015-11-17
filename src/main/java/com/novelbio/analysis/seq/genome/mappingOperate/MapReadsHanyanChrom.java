@@ -62,27 +62,30 @@ class MapReadsAddAlignRecordHanyan extends MapReadsAddAlignRecord {
 	 * 本位点的信息，用于下一次判断是否是同一位点
 	 */
 	protected int[] addLoc(AlignRecord alignRecord ,int[] tmpOld, int[] chrBpReads, ChrMapReadsInfo chrMapReadsInfo) {
-		//需要根据方向来筛选reads
-		if (mapReads.FilteredStrand != null) {
-			GffCodGene gffCodGene = gffHashGene.searchLocation(alignRecord.getRefID(), alignRecord.getStartAbs());
-			//如果位点一在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
-			if (gffCodGene.isInsideLoc() 
-					&& mapReads.FilteredStrand == (gffCodGene.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
-				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
-			}
-			GffCodGene gffCodGene2 = gffHashGene.searchLocation(alignRecord.getRefID(), alignRecord.getEndAbs());
-			//如果位点二在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
-			if (gffCodGene2.isInsideLoc() 
-					&& mapReads.FilteredStrand == (gffCodGene2.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
-				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
-			}
-			
-			if (!gffCodGene.isInsideLoc() && !gffCodGene2.isInsideLoc()) {
-				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
-			}
-			return tmpOld;
-		} else {
-			return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
-		}
+		//TODO
+//		//需要根据方向来筛选reads
+//		if (mapReads.FilteredStrand != null) {
+//			GffCodGene gffCodGene = gffHashGene.searchLocation(alignRecord.getRefID(), alignRecord.getStartAbs());
+//			//如果位点一在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
+//			if (gffCodGene.isInsideLoc() 
+//					&& mapReads.FilteredStrand == (gffCodGene.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
+//				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
+//			}
+//			GffCodGene gffCodGene2 = gffHashGene.searchLocation(alignRecord.getRefID(), alignRecord.getEndAbs());
+//			//如果位点二在基因内，并且reads方向相对于基因的方向与目的相同，则进行加和分析
+//			if (gffCodGene2.isInsideLoc() 
+//					&& mapReads.FilteredStrand == (gffCodGene2.getGffDetailThis().isCis5to3() == alignRecord.isCis5to3() ) ) {
+//				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
+//			}
+//			
+//			if (!gffCodGene.isInsideLoc() && !gffCodGene2.isInsideLoc()) {
+//				return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
+//			}
+//			return tmpOld;
+//		} else {
+//			return super.addLoc(alignRecord, tmpOld, chrBpReads, chrMapReadsInfo);
+//		}
+		
+		return null;
 	}
 }

@@ -4,7 +4,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,6 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRGroup;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -29,11 +29,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 @Component
 @Scope("prototype")
 public class MapBwaAln extends MapDNA {
-	public static void main(String[] args) {
-		MapBwaAln mm = new MapBwaAln();
-		System.out.println(mm.getVersion("/media/hdfs/nbCloud/public/nbcplatform/BioInfoTools/bioinfo/"));
-	}
-	private static final Logger logger = Logger.getLogger(MapBwaAln.class);
+	private static final Logger logger = LoggerFactory.getLogger(MapBwaAln.class);
 	/**
 	 * 在此大小以下的genome直接读入内存以帮助快速mapping
 	 * 单位，KB
@@ -386,21 +382,14 @@ public class MapBwaAln extends MapDNA {
 		CmdOperate cmdOperate = new CmdOperate(lsCmdLeft);
 		cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_saiLeftStderrInfo", "txt"), false, true);
 		cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runSaiLeftInfo", "txt"));
-		cmdOperate.run();
+		cmdOperate.runWithExp("bwa aln error:");
 		
 		if (isPairEnd()) {
 			List<String> lsCmdRight = getLsCmdAln(false);
 			cmdOperate = new CmdOperate(lsCmdRight);
 			cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_saiRightStderrInfo", "txt"), false, true);
 			cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runSaiRightInfo", "txt"));
-			cmdOperate.run();
-		}
-		
-		if (cmdOperate.isFinishedNormal() || cmdOperate.getRunTime() > overTime) {
-			return;
-		}
-		if(!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("bwa aln error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+			cmdOperate.runWithExp("bwa aln error:");
 		}
 	}
 	
@@ -502,70 +491,15 @@ public class MapBwaAln extends MapDNA {
 			FileOperate.DeleteFileFolder(getSai(2));
 		}
 	}
-
-	@Override
-	protected boolean isIndexExist() {
-		return isIndexExist(chrFile);
-	}
-	@Override
-	protected void deleteIndex() {
-		deleteIndexBwa(chrFile);
-	}
 	
-	public static boolean isIndexExist(String chrFile) {
-		return FileOperate.isFileExist(chrFile + ".bwt");
-	}
-	protected static void deleteIndexBwa(String chrFile) {
-		FileOperate.delFile(chrFile + ".bwt");
-	}
-	protected List<String> getLsCmdIndex() {
-//		linux命令如下 
-//	 	bwa index -p prefix -a algoType -c  chrFile
-//		-c 是solid用
-
-		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(ExePath + "bwa");
-		lsCmd.add("index");
-		ArrayOperate.addArrayToList(lsCmd, getChrLen(chrFile));
-		lsCmd.add(chrFile);
-		return lsCmd;
-	}
-	
-	/**
-	 * 根据基因组大小判断采用哪种编码方式
-	 * @return 已经在前后预留空格，直接添加上idex就好
-	 * 小于500MB的用 -a is
-	 * 大于500MB的用 -a bwtsw
-	 */
-	private static String[] getChrLen(String chrFile) {
-		long size = FileOperate.getFileSizeLong(chrFile);
-		if (size/1024/1024 > 500) {
-			return new String[]{"-a", "bwtsw"};
-		} else {
-			return new String[]{"-a", "is"};
-		}
-	}
-	
-	public static String getVersion(String exePath) {
-		List<String> lsCmdVersion = new ArrayList<>();
-		lsCmdVersion.add(exePath + "bwa");
-		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
-		cmdOperate.run();
-		String version = null;
-		try {
-			List<String> lsInfo = cmdOperate.getLsErrOut();
-			version = lsInfo.get(2).toLowerCase().replace("version:", "").trim();
-		} catch (Exception e) { }
-		return version;
-	}
 	@Override
 	public List<String> getCmdExeStr() {
 		generateTmpPath();
 		boolean isSetSucess = setSeqName();
 		List<String> lsCmdResult = new ArrayList<>();
-		String version = getVersion(this.ExePath);
+		String version = indexMraker.getVersion();
 		if (version != null) {
-			lsCmdResult.add("bwa version: " + getVersion(this.ExePath));
+			lsCmdResult.add("bwa version: " + indexMraker.getVersion());
 		}
 		List<String> lsCmd = getLsCmdAln(true);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
