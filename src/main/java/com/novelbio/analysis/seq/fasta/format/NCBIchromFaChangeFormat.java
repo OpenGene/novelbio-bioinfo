@@ -36,7 +36,11 @@ public class NCBIchromFaChangeFormat {
 		this.regx = regx;
 	}
 	
-	/** 将一个染色体文件按照染色体的名称分成若干染色体文件 */
+	/** 将一个染色体文件按照染色体的名称分成若干染色体文件
+	 * 
+	 * @param outFilePrefix 输入的是文件前缀，如果输入 /home/novelbio/test
+	 * 则结果为  /home/novelbio/testchr1, /home/novelbio/testchr2 这种
+	 */
 	public void writeToSepFile(String outFilePrefix) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(chrFile);
 		TxtReadandWrite txtWrite = null;

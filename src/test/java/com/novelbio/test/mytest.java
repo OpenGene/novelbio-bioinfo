@@ -1,24 +1,33 @@
 package com.novelbio.test;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.mirna.NovelMiRNADeep;
-import com.novelbio.analysis.seq.rnaseq.TophatJunction;
+import com.novelbio.analysis.seq.mirna.MiRNACount;
+import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.SepSign;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.SpeciesFile;
+import com.novelbio.database.model.species.Species;
+import com.novelbio.generalConf.PathDetailNBC;
 
 
 public class mytest {
@@ -26,10 +35,25 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		run("Q1B", "S45_07A_150500152_L001");
-		run("Q2A", "S45_07A_150500153_L003");
-		run("Q2B", "S45_07A_150500154_L001");
-		run("Q1A", "S45_07A_150500151_L002");
+		FastQ fastQ = new FastQ("/media/nbfs/nbCloud/public/AllProject/project_54ffd6d0e4b0b3b73a8cd400/task_54ffe000e4b081224e6dbc54/QualityControl_result/Col_filtered_1.fq.gz");
+		FastQ fastQ2 = new FastQ("/media/nbfs/nbCloud/public/AllProject/project_54ffd6d0e4b0b3b73a8cd400/task_54ffe000e4b081224e6dbc54/QualityControl_result/Col_filtered_2.fq.gz");
+
+		FastQ fastQWrite = new FastQ("/home/novelbio/git/NBCplatform/src/test/resources/test_file/fastq/PE/arabidopsis_rna_1.fq.gz", true);
+		FastQ fastQWrite2 = new FastQ("/home/novelbio/git/NBCplatform/src/test/resources/test_file/fastq/PE/arabidopsis_rna_2.fq.gz", true);
+		
+		int i = 0;
+		for (FastQRecord[] fqs : fastQ.readlinesPE(fastQ2)) {
+			if (i++ > 100000) {
+				break;
+			}
+			fastQWrite.writeFastQRecord(fqs[0]);
+			fastQWrite2.writeFastQRecord(fqs[1]);
+		}
+		
+		fastQ.close();
+		fastQ2.close();
+		fastQWrite.close();
+		fastQWrite2.close();
 	}
 	
 	private static void run(String group, String name) {

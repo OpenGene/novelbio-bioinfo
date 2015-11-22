@@ -247,14 +247,7 @@ public class Species implements Cloneable {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromSeqFile();
 	}
-	public String getChromSeqSep() {
-		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
-			return null;
-		}
-		
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getChromSeqFileSep();
-	}
+
 	/** 获得这个species在本version下的全体GffDB */
 	public Map<String, String> getMapGffDBAll() {
 		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {

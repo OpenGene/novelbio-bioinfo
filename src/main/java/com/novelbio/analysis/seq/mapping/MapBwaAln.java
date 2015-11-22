@@ -38,8 +38,6 @@ public class MapBwaAln extends MapDNA {
 	private static final int GENOME_SIZE_IN_MEMORY = 500000;
 	/** 临时文件，如sai文件等的保存路径 */
 	String tmpPath;
-	/** bwa所在路径 */
-	String ExePath = "";
 	String[] sampleGroup;
 	String leftCombFq;
 	String rightCombFq;
@@ -67,12 +65,7 @@ public class MapBwaAln extends MapDNA {
 	boolean readInMemory = true;
 	
 	public MapBwaAln() {
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_aln);
-		softWare = SoftWare.bwa_aln;
-		this.ExePath = softWareInfo.getExePathRun();
-	}
-	void setExePath(String exePath) {
-		ExePath = exePath;
+		super(SoftWare.bwa_aln);
 	}
 	/**
 	 * 设置左端的序列，设置会把以前的清空
@@ -250,7 +243,7 @@ public class MapBwaAln extends MapDNA {
 	 * @return 没有则返回null
 	 */
 	private String readInMemory() {
-		if (FileOperate.getFileSizeLong(chrFile)/1024 < GENOME_SIZE_IN_MEMORY || readInMemory) {
+		if (FileOperate.isFileExistAndBigThanSize(indexMaker.getChrFile(), 0) && FileOperate.getFileSizeLong(indexMaker.getChrFile())/1024 < GENOME_SIZE_IN_MEMORY || readInMemory) {
 			return "-P";
 		}
 		return null;
@@ -395,7 +388,7 @@ public class MapBwaAln extends MapDNA {
 	
 	private List<String> getLsCmdAln(boolean firstOrSecond) {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(ExePath + "bwa");
+		lsCmd.add(indexMaker.getExePath() + "bwa");
 		lsCmd.add("aln");
 		ArrayOperate.addArrayToList(lsCmd, getMismatch());
 		ArrayOperate.addArrayToList(lsCmd, getGapNum());
@@ -404,7 +397,7 @@ public class MapBwaAln extends MapDNA {
 		ArrayOperate.addArrayToList(lsCmd, getSeedSize());
 		ArrayOperate.addArrayToList(lsCmd, getOpenPanalty());
 		addLsCmd(lsCmd, getFastQoffset());
-		lsCmd.add(chrFile);
+		lsCmd.add(indexMaker.getIndexName());
 		if (firstOrSecond) {
 			lsCmd.add(leftCombFq);
 			lsCmd.add(">");
@@ -455,7 +448,7 @@ public class MapBwaAln extends MapDNA {
 	
 	private List<String> getLsCmdSam() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(this.ExePath + "bwa");
+		lsCmd.add(indexMaker.getExePath() + "bwa");
 		if (isPairEnd()) {
 			lsCmd.add("sampe");
 			ArrayOperate.addArrayToList(lsCmd, sampleGroup);
@@ -463,7 +456,7 @@ public class MapBwaAln extends MapDNA {
 			addLsCmd(lsCmd, readInMemory());
 			lsCmd.add("-n"); lsCmd.add(10+"");
 			lsCmd.add("-N"); lsCmd.add(10+"");
-			lsCmd.add(chrFile);
+			lsCmd.add(indexMaker.getIndexName());
 			lsCmd.add(getSai(1));
 			lsCmd.add(getSai(2));
 			lsCmd.add(leftCombFq);
@@ -472,7 +465,7 @@ public class MapBwaAln extends MapDNA {
 			lsCmd.add("samse");
 			ArrayOperate.addArrayToList(lsCmd, sampleGroup);
 			lsCmd.add("-n"); lsCmd.add(50+"");
-			lsCmd.add(chrFile);
+			lsCmd.add(indexMaker.getIndexName());
 			lsCmd.add(getSai(1));
 			lsCmd.add(leftCombFq);
 		}
@@ -497,9 +490,9 @@ public class MapBwaAln extends MapDNA {
 		generateTmpPath();
 		boolean isSetSucess = setSeqName();
 		List<String> lsCmdResult = new ArrayList<>();
-		String version = indexMraker.getVersion();
+		String version = indexMaker.getVersion();
 		if (version != null) {
-			lsCmdResult.add("bwa version: " + indexMraker.getVersion());
+			lsCmdResult.add("bwa version: " + indexMaker.getVersion());
 		}
 		List<String> lsCmd = getLsCmdAln(true);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);

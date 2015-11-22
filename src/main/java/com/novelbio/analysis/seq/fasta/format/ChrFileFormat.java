@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.novelbio.analysis.seq.fasta.ChrSeqHash;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGetChrId;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -32,8 +33,32 @@ public class ChrFileFormat {
 	Set<String> setChrIdInclude;
 	Set<String> setChrIdExclude;
 	
+	/**
+	 * @param setChrId chrId 统统小写
+	 */
 	public void setIncludeChrId(Set<String> setChrId) {
 		this.setChrIdInclude = setChrId;
+	}
+	
+	public void setGffFile(String gffFile) {
+		if (!FileOperate.isFileExistAndBigThanSize(gffFile, 0)) return;
+		
+		GffGetChrId gffGetChrId = new GffGetChrId();
+		setChrIdInclude = new HashSet<>();
+		TxtReadandWrite txtRead = new TxtReadandWrite(gffFile);
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith("#")) {
+				continue;
+			}
+			String[] ss = content.split("\t");
+			if (ss.length > 4 ) {
+				gffGetChrId.getChrID(ss);
+				if (ss[2].equals("gene")) {
+					setChrIdInclude.add(gffGetChrId.getChrID(ss).toLowerCase());
+				}
+			}
+		}
+		txtRead.close();
 	}
 	
 	public void setRefSeq(String refSeq) {
@@ -63,9 +88,7 @@ public class ChrFileFormat {
 	}
 	
 	public void rebuild() {
-		if (setChrIdInclude == null) {
-			setChrIdInclude = new HashSet<>();
-		}
+		if (setChrIdInclude == null) setChrIdInclude = new HashSet<>();
 		
 		if (StringOperate.isRealNull(outSeq)) {
 			outSeq = refseq;
@@ -74,7 +97,7 @@ public class ChrFileFormat {
 		Map<String, Long> mapChrId2Len = chrSeqHash.getMapChrLength();
 		chrSeqHash.close();
 		Set<String> setChrIdByLenAndGff = cutChrIdByLenAndGff(mapChrId2Len);
-		Set<String> setChrIdFinal = maxNum > 0 ? cutChrIdBySort(mapChrId2Len, setChrIdInclude, setChrIdByLenAndGff) : setChrIdByLenAndGff;
+		Set<String> setChrIdFinal = maxNum > 0 ? cutChrIdBySort(mapChrId2Len, setChrIdByLenAndGff) : setChrIdByLenAndGff;
 		
 		extractSeq(setChrIdFinal);
 		
@@ -103,12 +126,12 @@ public class ChrFileFormat {
 	}
 	
 	/** 将染色体长度从小到大排列，仅保留最长的 {@link #maxNum} 条染色体 */
-	protected Set<String> cutChrIdBySort(Map<String, Long> mapChrId2Len, Set<String> setChrInclude, Set<String> setChrIdNeedToFilter) {
+	protected Set<String> cutChrIdBySort(Map<String, Long> mapChrId2Len, Set<String> setChrIdNeedToFilter) {
 		Set<String> setChrId = new HashSet<>();
-		setChrId.addAll(setChrInclude);
+		setChrId.addAll(setChrIdInclude);
 		List<String[]> lsChrId2Len = new ArrayList<>();
 		for (String chrId : mapChrId2Len.keySet()) {
-			if (!setChrIdNeedToFilter.contains(chrId) || setChrInclude.contains(chrId)) {
+			if (!setChrIdNeedToFilter.contains(chrId) || setChrIdInclude.contains(chrId)) {
 				continue;
 			}
 			lsChrId2Len.add(new String[]{chrId, mapChrId2Len.get(chrId) + ""});
@@ -122,7 +145,7 @@ public class ChrFileFormat {
 		});
 		int i = 1;
 		for (String[] string : lsChrId2Len) {
-			if (i++ > maxNum - setChrInclude.size()) {
+			if (i++ > maxNum - setChrIdInclude.size()) {
 				break;
 			}
 			setChrId.add(string[0]);

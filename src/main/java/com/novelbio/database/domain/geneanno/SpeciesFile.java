@@ -282,8 +282,6 @@ public class SpeciesFile {
 			return null;
 		}
 		//如果文件里面的染色体，或者说contig太多，就会将短的去掉
-		int maxSeqNum = 4000;
-		int minLen = 5000;
 		String chromeSeq = EnumSpeciesFile.chromSeqFile.getSavePath(taxID, this) + chromSeq;
 		if (FileOperate.isFileExistAndBigThanSize(chromeSeq, 0)) {
 			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
@@ -295,56 +293,7 @@ public class SpeciesFile {
 			FastaDictMake fastaDictMake = new FastaDictMake(chromeSeq, fastaDict);
 			fastaDictMake.makeDict();
 		}
-		ChrSeqHash chrSeqHash = new ChrSeqHash(chromeSeq, "");
-		Map<String, Long> mapChrID2ChrLen = chrSeqHash.getMapChrLength();
-		chrSeqHash.close();
 		
-		if (mapChrID2ChrLen.size() > maxSeqNum) {
-			ChrFileFormat chrFileFormat = new ChrFileFormat();
-			Set<String> setChrId = readGffFile(getGffFile());			
-			chrFileFormat.setIncludeChrId(setChrId);
-			chrFileFormat.setRefSeq(chromeSeq);
-			chrFileFormat.setResultSeq(chromeSeq);
-			chrFileFormat.setMinLen(minLen);
-			chrFileFormat.setMaxNum(maxSeqNum);
-			chrFileFormat.rebuild();
-		}
-		
-		return chromeSeq;
-	}
-	
-	private Set<String> readGffFile(String gffFile) {
-		GffGetChrId gffGetChrId = new GffGetChrId();
-		Set<String> setGff = new HashSet<>();
-		TxtReadandWrite txtRead = new TxtReadandWrite(gffFile);
-		for (String content : txtRead.readlines()) {
-			if (content.startsWith("#")) {
-				continue;
-			}
-			String[] ss = content.split("\t");
-			if (ss.length > 4 ) {
-				gffGetChrId.getChrID(ss);
-				if (ss[2].equals("gene")) {
-					setGff.add(gffGetChrId.getChrID(ss).toLowerCase());
-				}
-			}
-		}
-		txtRead.close();
-		return setGff;
-	}
-	
-	/** 获得分割的文件夹
-	 * 如果不存在就创建一个新的
-	 * @return
-	 */
-	public String getChromSeqFileSep() {
-		String chromeSeq = EnumSpeciesFile.ChromSepPath.getSavePath(taxID, this);
-		if (!FileOperate.isFileFoldExist(chromeSeq)) {
-			FileOperate.createFolders(chromeSeq);
-			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
-			ncbIchromFaChangeFormat.setChromFaPath(getChromSeqFile(), "");
-			ncbIchromFaChangeFormat.writeToSepFile(chromeSeq);
-		}
 		return chromeSeq;
 	}
 	
@@ -412,10 +361,6 @@ public class SpeciesFile {
 		FileOperate.DeleteFileFolder(chromeSeq);
 		FileOperate.DeleteFileFolder(chromeSeq + ".fai");
 		FileOperate.DeleteFileFolder(FileOperate.changeFileSuffix(chromeSeq, "", "fai"));
-		
-		//删除分割好的chromosome
-		String chromeSeqSep = EnumSpeciesFile.ChromSepPath.getSavePath(taxID, this);
-		FileOperate.DeleteFileFolder(chromeSeqSep);
 		
 		//删除创建的索引
 		List<String> lsSoftMappingName = getLsAllSoftMappingName();

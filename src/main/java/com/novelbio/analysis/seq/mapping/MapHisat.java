@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.beust.jcommander.internal.Lists;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -163,7 +163,7 @@ Options (defaults in parentheses):
  *
  */
 public class MapHisat implements MapRNA {
-	private static Logger logger = Logger.getLogger(MapHisat.class);
+	private static Logger logger = LoggerFactory.getLogger(MapHisat.class);
 	
 	public static final int InputFileFormat_FQ = 21;
 	public static final int InputFileFormat_Qseq = 22;
@@ -178,7 +178,7 @@ public class MapHisat implements MapRNA {
 	 *  --sensitive            -D 15 -R 2 -N 0 -L 22 -i S,1,1.15 (default) <br>
 	 *  --very-sensitive       -D 20 -R 3 -N 0 -L 20 -i S,1,0.50 
 	 *  */
-	int sensitive = MapBowtie.Sensitive_Sensitive;
+	int sensitive = MapBowtie2.Sensitive_Sensitive;
 	
 	/** 输入文件格式，一共可以是四种 <br>
 	 * 1. FASTQ <br>
@@ -221,7 +221,7 @@ public class MapHisat implements MapRNA {
 		softMapSplice.setName(SoftWare.hisat2);
 		this.exePathHist = softMapSplice.getExePathRun();
 		
-		if (gffChrAbs.getGffHashGene() == null) return;
+		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null) return;
 		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();
 		spliceTxt = PathDetail.getTmpPathRandom() + FileOperate.getFileName(gffHashGene.getGffFilename());
 		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
@@ -293,13 +293,13 @@ public class MapHisat implements MapRNA {
 	}
 	
 	private String[] getSensitive() {
-		if(sensitive == MapBowtie.Sensitive_Very_Fast) {
+		if(sensitive == MapBowtie2.Sensitive_Very_Fast) {
 			return new String[]{"--very-fast"};
-		} else if (sensitive == MapBowtie.Sensitive_Fast) {
+		} else if (sensitive == MapBowtie2.Sensitive_Fast) {
 			return new String[]{"--fast"};
-		} else if (sensitive == MapBowtie.Sensitive_Very_Sensitive) {
+		} else if (sensitive == MapBowtie2.Sensitive_Very_Sensitive) {
 			return new String[]{"--very-sensitive"};
-		} else if(sensitive == MapBowtie.Sensitive_Sensitive) {
+		} else if(sensitive == MapBowtie2.Sensitive_Sensitive) {
 			return new String[]{"--sensitive"};
 		}
 		return null;
@@ -472,7 +472,7 @@ public class MapHisat implements MapRNA {
 	}
 	
 	public static Map<String, Integer> getMapSensitive() {
-		return MapBowtie.getMapSensitive();
+		return MapBowtie2.getMapSensitive();
 	}
 	
 	public static void index(String chrFile) {

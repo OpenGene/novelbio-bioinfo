@@ -51,7 +51,7 @@ public class TestMapDNA {
 		copyFile();
 		
 		CmdOperate.setTmpPath("/home/novelbio/tmp");
-		mapDNA = new MapBowtie();
+		mapDNA = new MapBowtie2();
 		String leftFqName = parentPath + "fastq/PE/L_correct.1.fq";
 		String rightFqName = parentPath + "fastq/PE/R_correct.2.fq";
 		mapDNA.setChrIndex(referenceFile);

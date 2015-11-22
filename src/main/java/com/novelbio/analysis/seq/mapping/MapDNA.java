@@ -38,15 +38,18 @@ public abstract class MapDNA implements MapDNAint {
 	boolean isNeedSort = false;
 	String outFileName = "";
 	String prefix;
-	/** 待比对的染色体 */
-	String chrFile = "";
-	SoftWare softWare;
+
 	boolean writeToBam = true;
 	
-	MapIndexMaker indexMraker;
+	MapIndexMaker indexMaker;
 	
+	public MapDNA(SoftWare softWare) {
+		indexMaker = MapIndexMaker.createIndexMaker(softWare);
+	}
+	
+	/** 待比对的染色体 */
 	public void setChrIndex(String chrFile) {
-		this.chrFile = chrFile;
+		indexMaker.setChrIndex(chrFile);
 	}
 	/** 因为mapping完后会将sam文件转成bam文件，这时候就可以顺带的做一些工作 */
 	public void setLsAlignmentRecorders(List<AlignmentRecorder> lsAlignmentRecorders) {
@@ -108,9 +111,7 @@ public abstract class MapDNA implements MapDNAint {
 	 * @return
 	 */
 	public SamFile mapReads() {
-		indexMraker = MapIndexMaker.createIndexMaker(softWare);
-		indexMraker.setChrIndex(chrFile);
-		indexMraker.IndexMake();
+		indexMaker.IndexMake();
 		
 		SamFile samFile = mapping();
 		if (!writeToBam || samFile == null) {
@@ -176,9 +177,10 @@ public abstract class MapDNA implements MapDNAint {
 			mapSoftware = (MapDNAint)SpringFactoryBioinfo.getFactory().getBean(MapBwaAln.class);
 		} else if (softMapping == SoftWare.bwa_mem) {
 			mapSoftware = (MapDNAint)SpringFactoryBioinfo.getFactory().getBean(MapBwaMem.class);
-		} else if (softMapping == SoftWare.bowtie || softMapping == SoftWare.bowtie2) {
+		} else if (softMapping == SoftWare.bowtie) {
 			mapSoftware = (MapDNAint)SpringFactoryBioinfo.getFactory().getBean(MapBowtie.class);
-			((MapBowtie)mapSoftware).setSubVersion(softMapping);
+		} else if (softMapping == SoftWare.bowtie2) {
+			mapSoftware = (MapDNAint)SpringFactoryBioinfo.getFactory().getBean(MapBowtie2.class);
 		} else {
 			throw new ExceptionNullParam("No Such Param:" + softMapping.toString());
 		}

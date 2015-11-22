@@ -221,6 +221,8 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess> impleme
 	public void initial() {
 		mapMiRNApre2Value = new LinkedHashMap<String, Double>();
 		mapMirMature2Value = new LinkedHashMap<String, Double>();
+		countsMatureAll = 0;
+		countsPreAll = 0;
 	}
 	
 	/**

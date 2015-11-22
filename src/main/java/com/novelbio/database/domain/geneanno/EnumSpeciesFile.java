@@ -43,17 +43,17 @@ public enum EnumSpeciesFile {
 		}
 	},
 	
-	ChromSepPath("Chrom_Sep") {
-		public String getSavePath(int taxId, SpeciesFile speciesFile) {
-			validateSpeciesFile(taxId, speciesFile);
-			
-			String basePath = PathDetailNBC.getGenomePath();
-			String pathToVersion = speciesFile.getPathToVersion();
-			if(StringOperate.isRealNull(pathToVersion))
-				return null;
-			return basePath + folder + FileOperate.getSepPath() + pathToVersion;
-		}
-	},
+//	ChromSepPath("Chrom_Sep") {
+//		public String getSavePath(int taxId, SpeciesFile speciesFile) {
+//			validateSpeciesFile(taxId, speciesFile);
+//			
+//			String basePath = PathDetailNBC.getGenomePath();
+//			String pathToVersion = speciesFile.getPathToVersion();
+//			if(StringOperate.isRealNull(pathToVersion))
+//				return null;
+//			return basePath + folder + FileOperate.getSepPath() + pathToVersion;
+//		}
+//	},
 	
 	COG("COG") {
 		public String getSavePath(int taxId, SpeciesFile speciesFile) {

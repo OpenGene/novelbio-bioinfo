@@ -29,10 +29,8 @@ public class MapBwaMem extends MapDNA {
 	MapParamBwaMem bwaMemParam = new MapParamBwaMem();
 	
 	public MapBwaMem() {
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.bwa_mem);
-		softWare = SoftWare.bwa_mem;
-		String exePath = softWareInfo.getExePathRun();
-		bwaMemParam.setExePath(exePath);
+		super(SoftWare.bwa_mem);
+		bwaMemParam.setExePath(indexMaker.getExePath());
 	}
 	
 	/**指定线程数**/
@@ -203,7 +201,7 @@ public class MapBwaMem extends MapDNA {
 		List<String> lsCmd = new ArrayList<String>();
 		lsCmd.addAll(bwaMemParam.getLsCmd());
 		
-		lsCmd.add(chrFile);
+		lsCmd.add(indexMaker.getChrFile());
 		lsCmd.addAll(getLsFqFile());
 		lsCmd.add(">");
 		lsCmd.add(outFileName);
@@ -260,7 +258,7 @@ public class MapBwaMem extends MapDNA {
 		generateTmpPath();
 		combSeq();
 		List<String> lsCmdResult = new ArrayList<>();
-		lsCmdResult.add("bwa version: " + indexMraker.getVersion());
+		lsCmdResult.add("bwa version: " + indexMaker.getVersion());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmdResult.add(cmdOperate.getCmdExeStr());
 		return lsCmdResult;

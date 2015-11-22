@@ -12,14 +12,13 @@ import org.springframework.stereotype.Component;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
+//TODO 没写好
 @Component
 @Scope("prototype")
 public class MapBowtie extends MapDNA {
@@ -29,9 +28,6 @@ public class MapBowtie extends MapDNA {
 	public static final int Sensitive_Sensitive = 13;
 	public static final int Sensitive_Very_Sensitive = 14;
 
-	/** bowtie所在路径 */
-	String ExePathBowtie = "";
-	
 	List<String> lsSampleGroup = new ArrayList<>();
 	/** 非unique mapping的话，取几个 */
 	int mappingNum = 0;
@@ -53,43 +49,17 @@ public class MapBowtie extends MapDNA {
 	MapLibrary mapLibrary = MapLibrary.PairEnd;
 	
 	public MapBowtie() {
-		//默认bowtie2
-		softWare = SoftWare.bowtie2;
-		SoftWareInfo softWareInfo = new SoftWareInfo(softWare);
-		this.ExePathBowtie = softWareInfo.getExePathRun();
+		super(SoftWare.bowtie);
 	}
 
 	public void setLocal(boolean isLocal) {
 		this.isLocal = isLocal;
-	}
-	
-	/** 设定是bowtie还是bowtie2 */
-	public void setSubVersion(SoftWare bowtieVersion) {
-		if (bowtieVersion == null || (bowtieVersion != SoftWare.bowtie && bowtieVersion != SoftWare.bowtie2)) {
-			throw new ExceptionNullParam("Error Param BowtieVersion: " + bowtieVersion.toString());
-		}
-		if (this.softWare == bowtieVersion) {
-			return;
-		}
-		this.softWare = bowtieVersion;
-		SoftWareInfo softWareInfo = new SoftWareInfo(bowtieVersion);
-		this.ExePathBowtie = softWareInfo.getExePathRun();
 	}
 
 	public void setSensitive(int sensitive) {
 		this.sensitive = sensitive;
 	}
 	
-	/** 获得没有后缀名的序列，不带引号 */
-	protected String getChrNameWithoutSuffix() {
-		return getChrNameWithoutSuffix(chrFile);
-	}
-	
-	/** 获得没有后缀名的序列，不带引号 */
-	private static String getChrNameWithoutSuffix(String chrFile) {
-		String chrFileName = FileOperate.getParentPathNameWithSep(chrFile) + FileOperate.getFileNameSep(chrFile)[0];
-		return chrFileName;
-	}
 	public void setMapLibrary(MapLibrary mapLibrary) {
 		this.mapLibrary = mapLibrary;
 	}
@@ -268,7 +238,7 @@ public class MapBowtie extends MapDNA {
 	/** 目前只能做bowtie2的mapping */
 	private List<String> getLsCmdMapping() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(ExePathBowtie + "bowtie2");
+		lsCmd.add(indexMaker.getExePath() + "bowtie2");
 		if (isLocal) {
 			lsCmd.add("--local");
 			if (sensitive == Sensitive_Very_Fast) {
@@ -305,7 +275,7 @@ public class MapBowtie extends MapDNA {
 		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
 		ArrayOperate.addArrayToList(lsCmd, getInsertSize());
 		ArrayOperate.addArrayToList(lsCmd, getMultiHit());
-		lsCmd.add("-x"); lsCmd.add(getChrNameWithoutSuffix());
+		lsCmd.add("-x"); lsCmd.add(indexMaker.getIndexName());
 		lsCmd.addAll(getLsFqFile());
 //		ArrayOperate.addArrayToList(lsCmd, getOutFileName());
 		return lsCmd;
@@ -319,7 +289,7 @@ public class MapBowtie extends MapDNA {
 	@Override
 	public List<String> getCmdExeStr() {
 		List<String> lsResult = new ArrayList<>();
-		lsResult.add(softWare.toString() + " version: " + indexMraker.getVersion());
+		lsResult.add(SoftWare.bowtie.toString() + " version: " + indexMaker.getVersion());
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		lsResult.add(cmdOperate.getCmdExeStr());

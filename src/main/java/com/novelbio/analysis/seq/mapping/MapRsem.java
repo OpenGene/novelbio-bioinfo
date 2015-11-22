@@ -68,10 +68,10 @@ public class MapRsem implements MapRNA {
 		this.exePathRsem = softWareInfoRsem.getExePathRun();
 		this.exePathBowtie = softWareInfoBowtie.getExePathRun();
 		
-		this.gffChrAbs = gffChrAbs;
 		if (gffChrAbs == null) {
 			return;
 		}
+		this.gffChrAbs = gffChrAbs;
 		gffChrSeq = new GffChrSeq(gffChrAbs);
 		this.species = gffChrAbs.getSpecies();
 	}

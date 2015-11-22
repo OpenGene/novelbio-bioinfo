@@ -3,7 +3,6 @@ package com.novelbio.analysis.seq.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -13,7 +12,6 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
 
 public class MapSplice implements MapRNA {
 	/** mapping文件的后缀，包含 ".bam" 字符串 */
@@ -23,8 +21,7 @@ public class MapSplice implements MapRNA {
 	
 	String exePath = "";
 	/** bowtie就是用来做索引的 */
-	MapIndexMaker indexBowtie = MapIndexMaker.createIndexMaker(SoftWare.bowtie);
-	String chrFile;
+	IndexMapSplice indexMaker;
 	
 	String outFile;
 	int indelLen = 6;
@@ -42,7 +39,6 @@ public class MapSplice implements MapRNA {
 	boolean fusion = false;
 	String gtfFile;
 	int seedLen = 22;
-	Species species;
 	
 	/** 将没有mapping上的reads用bowtie2比对到基因组上，仅用于proton数据 */
 	boolean mapUnmapedReads = false;
@@ -56,14 +52,10 @@ public class MapSplice implements MapRNA {
 		SoftWareInfo softMapSplice = new SoftWareInfo();
 		softMapSplice.setName(SoftWare.mapsplice);
 		this.exePath = softMapSplice.getExePathRun();
-		
-		if (gffChrAbs != null && gffChrAbs.getSpecies() != null && gffChrAbs.getSpecies().getTaxID() != 0) {
-			this.species = gffChrAbs.getSpecies();
+		indexMaker = (IndexMapSplice)MapIndexMaker.createIndexMaker(SoftWare.mapsplice);
+		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
+			indexMaker.setGffHashGene(gffChrAbs.getGffHashGene());
 		}
-	}
-	
-	public void setSpecies(Species species) {
-		this.species = species;
 	}
 	
 	/**
@@ -85,8 +77,7 @@ public class MapSplice implements MapRNA {
 	/** 这个输入的应该是一个包含分割Chr文件的文件夹 */
 	@Override
 	public void setRefIndex(String chrFile) {
-		this.chrFile = chrFile;
-		indexBowtie.setChrIndex(chrFile);
+		indexMaker.setChrIndex(chrFile);
 	}
 	
 	@Override
@@ -135,8 +126,6 @@ public class MapSplice implements MapRNA {
 		this.lsRightFq = lsRightFastQs;
 		isPrepare = false;
 	}
-
-
 	
 	@Override
 	public void setMismatch(int mismatch) {
@@ -146,7 +135,7 @@ public class MapSplice implements MapRNA {
 	@Override
 	public void mapReads() {
 		prepareReads();
-		indexBowtie.IndexMake();
+		indexMaker.IndexMake();
 		lsCmdMapping2nd.clear();
 
 		String prefix = FileOperate.getFileName(outFile);
@@ -251,21 +240,11 @@ public class MapSplice implements MapRNA {
 	}
 	
 	private String[] getRefseq() {
-		String fileRefSep = null;
-		if (species != null) {
-			fileRefSep = species.getChromSeqSep();
-		} else {
-			fileRefSep = FileOperate.addSep(FileOperate.changeFileSuffix(chrFile, "_sep", ""));
-			if (!FileOperate.isFileDirectory(fileRefSep)) {
-				NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
-				ncbIchromFaChangeFormat.setChromFaPath(chrFile, "");
-				ncbIchromFaChangeFormat.writeToSepFile(fileRefSep);
-			}
-		}
+		String fileRefSep = indexMaker.getChrSepFolder();
 		return new String[]{"-c", fileRefSep};
 	}
 	private String[] getIndex() {
-		return new String[]{"-x", indexBowtie.getIndexName()};
+		return new String[]{"-x", indexMaker.getIndexName()};
 	}
 	private String[] getThreadNum() {
 		return new String[]{"-p", threadNum + ""};
@@ -353,7 +332,7 @@ public class MapSplice implements MapRNA {
 		prepareReads();
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("MapSplice version: " + getVersionMapSplice());
-		lsCmd.add(getSoftWare().toString() + " version: " + indexBowtie.getVersion());
+		lsCmd.add(getSoftWare().toString() + " version: " + indexMaker.getVersion());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {
@@ -365,8 +344,7 @@ public class MapSplice implements MapRNA {
 	public void clear() {
 		exePath = "";
 		/** bowtie就是用来做索引的 */
-		indexBowtie = null;
-		chrFile = null;
+		indexMaker = null;
 		
 		outFile = null;
 		indelLen = 6;
@@ -384,7 +362,6 @@ public class MapSplice implements MapRNA {
 		fusion = false;
 		gtfFile = null;
 		seedLen = 22;
-		species = null;
 		
 		/** 将没有mapping上的reads用bowtie2比对到基因组上，仅用于proton数据 */
 		mapUnmapedReads = false;

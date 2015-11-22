@@ -57,10 +57,6 @@ public class MapTophat implements MapRNA {
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
 	List<FastQ> lsRightFq = new ArrayList<FastQ>();
-	/** bowtie所在路径 */
-	String ExePathTophat = "";
-	/** 默认用bowtie2 做mapping */
-	SoftWare bowtieVersion = SoftWare.bowtie2;
 	
 	/** 在junction 的一头上至少要搭到多少bp的碱基 */
 	int anchorLength = 10;
@@ -88,10 +84,10 @@ public class MapTophat implements MapRNA {
 	
 	String chrIndexFile;
 	/** bowtie就是用来做索引的 */
-	MapIndexMaker indexBowtie;
+	IndexTophat indexMaker;
 
 	
-	int sensitiveLevel = MapBowtie.Sensitive_Sensitive;
+	int sensitiveLevel = MapBowtie2.Sensitive_Sensitive;
 	
 	/** 将没有mapping上的reads用bowtie2比对到基因组上，仅用于proton数据 */
 	boolean mapUnmapedReads = false;
@@ -102,10 +98,10 @@ public class MapTophat implements MapRNA {
 	
 	/** 第二次mapping所使用的命令 */
 	List<String> 	lsCmdMapping2nd = new ArrayList<>();
+	
 	public MapTophat(GffChrAbs gffChrAbs) {
-		SoftWareInfo softMapSplice = new SoftWareInfo(SoftWare.tophat);
-		this.ExePathTophat = softMapSplice.getExePathRun();
-				
+		indexMaker = (IndexTophat)MapIndexMaker.createIndexMaker(SoftWare.tophat);
+		indexMaker.setBowtieVersion(SoftWare.bowtie2);	
 		if (gffChrAbs == null ||  gffChrAbs.getGffHashGene() == null) return;
 
 		this.gtfFile = gffChrAbs.getGtfFile();
@@ -116,7 +112,7 @@ public class MapTophat implements MapRNA {
 	}
 	
 	public void setBowtieVersion(SoftWare bowtieVersion) {
-		this.bowtieVersion = bowtieVersion;
+		indexMaker.setBowtieVersion(bowtieVersion);
 	}
 	
 	/**
@@ -159,7 +155,7 @@ public class MapTophat implements MapRNA {
 	}
 	@Override
 	public SoftWare getSoftWare() {
-		return bowtieVersion;
+		return indexMaker.getBowtieSoft();
 	}
 	/**
 	 * 内含子最长多少，默认500000，需根据不同物种进行设置
@@ -307,10 +303,10 @@ public class MapTophat implements MapRNA {
 
 	/** 是否使用bowtie2进行分析 */
 	private String getBowtie() {
-		if (bowtieVersion == SoftWare.bowtie) {
+		if (indexMaker.getBowtieSoft() == SoftWare.bowtie) {
 			return "--bowtie1";
 		}
-		else if (bowtieVersion == SoftWare.bowtie2) {
+		else if (indexMaker.getBowtieSoft() == SoftWare.bowtie2) {
 			return null;
 		}
 		return null;
@@ -337,13 +333,13 @@ public class MapTophat implements MapRNA {
 	}
 	
 	private String getSensitive() {
-		if (sensitiveLevel == MapBowtie.Sensitive_Fast) {
+		if (sensitiveLevel == MapBowtie2.Sensitive_Fast) {
 			return "--b2-fast";
-		} else if (sensitiveLevel == MapBowtie.Sensitive_Very_Fast) {
+		} else if (sensitiveLevel == MapBowtie2.Sensitive_Very_Fast) {
 			return "--b2-very-fast";
-		} else if (sensitiveLevel == MapBowtie.Sensitive_Sensitive) {
+		} else if (sensitiveLevel == MapBowtie2.Sensitive_Sensitive) {
 			return "--b2-sensitive";
-		} else if (sensitiveLevel == MapBowtie.Sensitive_Very_Sensitive) {
+		} else if (sensitiveLevel == MapBowtie2.Sensitive_Very_Sensitive) {
 			return "--b2-very-sensitive";
 		}
 		return null;
@@ -388,7 +384,7 @@ public class MapTophat implements MapRNA {
 	private List<String> getGtfFile() {
 		List<String> lsCmd = new ArrayList<>();
 		if (FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
-			lsCmd.add("--transcriptome-index=" + getIndexGffOut());
+			lsCmd.add("--transcriptome-index=" + indexMaker.getIndexGff());
 		}
 		return lsCmd;
 	}
@@ -417,12 +413,10 @@ public class MapTophat implements MapRNA {
 	 * 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf
 	 */
 	public void mapReads() {
-		indexBowtie = MapIndexMaker.createIndexMaker(bowtieVersion);
-		indexBowtie.setChrIndex(chrIndexFile);
-		indexBowtie.IndexMake();
-		
-		IndexGffMake();
-		
+		indexMaker.setChrIndex(chrIndexFile);
+		indexMaker.setGtfFile(gtfFile);
+		indexMaker.IndexMake();
+				
 		lsCmdMapping2nd.clear();
 
 		String prefix = FileOperate.getFileName(outPathPrefix);
@@ -476,7 +470,7 @@ public class MapTophat implements MapRNA {
 		 * /winE/NBC/Project/RNASeq_GF110614/rawdata/data/Col_L2_2.fq
 		 */
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(ExePathTophat + "tophat"); addLsCmdParam(lsCmd, getBowtie());
+		lsCmd.add(indexMaker.getExePath() + "tophat"); addLsCmdParam(lsCmd, getBowtie());
 		if (isPairend()) {
 			ArrayOperate.addArrayToList(lsCmd, getInsert());
 		}
@@ -485,7 +479,7 @@ public class MapTophat implements MapRNA {
 		ArrayOperate.addArrayToList(lsCmd, getIntronLenMin());
 		ArrayOperate.addArrayToList(lsCmd, getIntronLenMax());
 		lsCmd.addAll(getGtfFile());
-		if (bowtieVersion == SoftWare.bowtie2) {
+		if (indexMaker.getBowtieSoft() == SoftWare.bowtie2) {
 			ArrayOperate.addArrayToList(lsCmd, getMismatch());
 			lsCmd.addAll(getIndelLen());
 			addLsCmdParam(lsCmd, getSensitive());
@@ -497,7 +491,7 @@ public class MapTophat implements MapRNA {
 		ArrayOperate.addArrayToList(lsCmd, getMaxCoverageIntron());
 		ArrayOperate.addArrayToList(lsCmd, getMaxSegmentIntron());
 		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefix());
-		lsCmd.add(indexBowtie.getIndexName());
+		lsCmd.add(indexMaker.getIndexName());
 		lsCmd.addAll(getLsFqFile());
 		return lsCmd;
 	}
@@ -510,8 +504,8 @@ public class MapTophat implements MapRNA {
 	@Override
 	public List<String> getCmdExeStr() {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add("tophat version: " + getVersionTophat());
-		lsCmd.add(bowtieVersion.toString() + " version: " + indexBowtie.getVersion());
+		lsCmd.add("tophat version: " + indexMaker.getVersion());
+		lsCmd.add(indexMaker.getBowtieSoft().toString() + " version: " + indexMaker.getVersionBowtie());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {
@@ -602,28 +596,6 @@ public class MapTophat implements MapRNA {
 		}
 	}
 	
-	public String getVersionTophat() {
-		String version = null;
-		try {
-			List<String> lsCmdVersion = new ArrayList<>();
-			lsCmdVersion.add(ExePathTophat + "tophat");
-			lsCmdVersion.add("--version");
-			CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
-			cmdOperate.setGetLsStdOut();
-			cmdOperate.run();
-			List<String> lsInfo = cmdOperate.getLsStdOut();
-			version = lsInfo.get(0).toLowerCase().replace("tophat", "").trim();
-		} catch (Exception e) {
-			logger.error("getversion error", e);
-		}
-
-		return version;
-	}
-	
-	public String getVersionBowtie() {
-		return indexBowtie.getVersion();
-	}
-	
 	@Override
 	public String getFinishName() {
 		String prefix = FileOperate.getFileName(outPathPrefix);
@@ -634,104 +606,7 @@ public class MapTophat implements MapRNA {
 			return parentPath + prefix + TophatAllSuffix;
 		}
 	}
-	
-	public void IndexGffMake() {
-		if (!FileOperate.isFileExistAndBigThanSize(gtfFile, 0.1)) {
-			return;
-		}
-		
-		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
-			return;
-		}
-		String indexGffPref = indexBowtie.getIndexName() + FileOperate.getFileName(gtfFile);
-		String lockPath = indexGffPref.replace(PathDetailNBC.getGenomePath(), "");
-		lockPath = FileOperate.removeSplashHead(lockPath, false).replace("/", "_").replace("\\", "_").replace(".", "_");
-		InterProcessMutex lock = CuratorNBC.getInterProcessMutex(lockPath);
-		try {
-			lock.acquire();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		tryMakeIndex();
-		
-//		try {
-//			Thread.sleep(1000);
-//		} catch (InterruptedException e) {
-//			e.printStackTrace();
-//		}
-		
-		try {
-			lock.release();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-//		CuratorNBC.deleteInterProcessMutexPath(lockPath);
-	}
-	
-	private void tryMakeIndex() {
-		if (FileOperate.isFileExist(getIndexFinishedFlag())) {
-			return;
-		}
-		try {
-			try {
-				makeIndex();
-			} catch (Exception e) {
-				makeIndex();
-			}
-		} catch (Exception e) {
-			logger.error("index make error:" + gtfFile);
-			throw new RuntimeException("index make error:" + gtfFile, e);
-		}
-	}
-	
-	/**
-	 * 构建索引
-	 * @parcam force 默认会检查是否已经构建了索引，是的话则返回。
-	 * 如果face为true，则强制构建索引
-	 * @return
-	 */
-	protected void makeIndex() {
-		List<String> lsCmd = getLsCmdIndex();
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.setRedirectOutToTmp(true);
-		String runInfoPath = FileOperate.getParentPathNameWithSep(outPathPrefix);
-		FileOperate.createFolders(runInfoPath);
-		cmdOperate.setStdOutPath(runInfoPath + "IndexGtfMake_Stdout.txt", false, true);
-		cmdOperate.setStdErrPath(runInfoPath + "IndexGtfMake_Stderr.txt", false, true);
-		cmdOperate.setOutRunInfoFileName(runInfoPath + "IndexGtfMaking.txt");
-		cmdOperate.addCmdParamOutput(getIndexGffOut());
-		cmdOperate.run();
-		if(!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("tophat index error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
-		}
-		TxtReadandWrite txtWriteFinishFlag = new TxtReadandWrite(getIndexFinishedFlag(), true);
-		txtWriteFinishFlag.writefileln("finished");
-		txtWriteFinishFlag.close();
 
-	}
-	
-	private String getIndexFinishedFlag() {
-		return FileOperate.changeFileSuffix(FileOperate.getPathName(indexBowtie.getIndexName()) + 
-				FileOperate.getFileNameSep(gtfFile)[0] + "_folder" + FileOperate.getSepPath()
-				+ FileOperate.getFileNameSep(gtfFile)[0], "_indexFinished", "");
-	}
-	
-	private String getIndexGffOut() {
-		return FileOperate.getPathName(indexBowtie.getIndexName()) + 
-				FileOperate.getFileNameSep(gtfFile)[0] + "_folder" + FileOperate.getSepPath()
-				+ FileOperate.getFileNameSep(gtfFile)[0];
-	}
-	
-	private List<String> getLsCmdIndex() {
-		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(ExePathTophat + "tophat");
-		lsCmd.add("-G");
-		lsCmd.add(gtfFile);
-		lsCmd.add("--transcriptome-index=" + getIndexGffOut());
-		lsCmd.add(indexBowtie.getIndexName());
-		return lsCmd;
-	}
-	
 	protected static int[] getIntronMinMax(GffHashGene gffHashGene, int intronMinDefault, int intronMaxDefault) {
 		int[] result = new int[]{intronMinDefault, intronMaxDefault};
 		
