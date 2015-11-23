@@ -243,7 +243,7 @@ public class SoftWareInfo {
 		
 		wigToBigwig,
 		miranada, RNAhybrid, mirDeep, miReap,
-		samtools, picard, GATK, cufflinks,
+		samtools, picard, GATK, cufflinks,stringtie,
 		macs, sicer,
 		emboss,
 		misa,
