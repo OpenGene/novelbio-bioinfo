@@ -20,6 +20,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -164,6 +165,8 @@ Options (defaults in parentheses):
  */
 public class MapHisat implements MapRNA {
 	private static Logger logger = LoggerFactory.getLogger(MapHisat.class);
+	/** mapping文件的后缀，包含 ".bam" 字符串 */
+	public static final String MapSpliceSuffix = "_hisat2.bam";
 	
 	public static final int InputFileFormat_FQ = 21;
 	public static final int InputFileFormat_Qseq = 22;
@@ -212,9 +215,10 @@ public class MapHisat implements MapRNA {
 	List<FastQ> lsLeftFq = new ArrayList<>();
 	List<FastQ> lsRightFq = new ArrayList<>();
 	
-	String chrFile;
 	String spliceTxt;
 	String outputSam = "";
+	
+	IndexHisat2 indexHisat2 = (IndexHisat2)MapIndexMaker.createIndexMaker(SoftWare.hisat2);
 	
 	public MapHisat(GffChrAbs gffChrAbs) {
 		SoftWareInfo softMapSplice = new SoftWareInfo();
@@ -260,6 +264,8 @@ public class MapHisat implements MapRNA {
 		ArrayOperate.addArrayToList(lsCmd, getIndex());
 		ArrayOperate.addArrayToList(lsCmd, getInputFileFormat());
 		lsCmd.add(getPhred());
+		
+		ArrayOperate.addArrayToList(lsCmd, getStrandSpecifictype());
 		ArrayOperate.addArrayToList(lsCmd, getSensitive());
 		ArrayOperate.addArrayToList(lsCmd, getAlignNum());
 		ArrayOperate.addArrayToList(lsCmd, getOutSam());
@@ -267,7 +273,7 @@ public class MapHisat implements MapRNA {
 	}
 	
 	private String[] getIndex() {
-		return new String[]{"-x", chrFile};
+		return new String[]{"-x", indexHisat2.getIndexName()};
 	}
 	
 	private String[] getInputFileFormat() {
@@ -320,21 +326,9 @@ public class MapHisat implements MapRNA {
 		return new String[]{"-S",outputSam};
 	}
 	
-	/** 获得没有后缀名的序列，不带引号 */
-	protected String getChrNameWithoutSuffix() {
-		return getChrNameWithoutSuffix(chrFile);
-	}
-	
-	/** 获得没有后缀名的序列，不带引号 */
-	private static String getChrNameWithoutSuffix(String chrFile) {
-		String chrFileName = FileOperate.getParentPathNameWithSep(chrFile) + FileOperate.getFileNameSep(chrFile)[0];
-		return chrFileName;
-	}
-
 	@Override
 	public void setRefIndex(String chrFile) {
-		this.chrFile = chrFile;
-		
+		indexHisat2.setChrIndex(chrFile);
 	}
 
 	@Override
@@ -396,6 +390,22 @@ public class MapHisat implements MapRNA {
 
 	@Override
 	public void mapReads() {
+		indexHisat2.IndexMake();
+
+		String prefix = FileOperate.getFileName(outputSam);
+		String parentPath = FileOperate.getParentPathNameWithSep(outputSam);
+		String mapHisatBam = parentPath + prefix + MapSpliceSuffix;
+		if (!FileOperate.isFileExistAndBigThanSize(mapHisatBam, 1_000_000) ||
+				!FileOperate.isFileExistAndBigThanSize(mapHisatBam, 1_000)
+				) {
+			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
+			cmdOperate.setRedirectOutToTmp(true);
+			cmdOperate.addCmdParamOutput(outputSam);
+			cmdOperate.run();
+			if (!cmdOperate.isFinishedNormal()) {
+				throw new ExceptionCmd("error running hisat:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
+			}
+		}
 	}
 
 	@Override
@@ -413,8 +423,7 @@ public class MapHisat implements MapRNA {
 
 	@Override
 	public String getFinishName() {
-		// TODO Auto-generated method stub
-		return null;
+		return outputSam;
 	}
 	
 	private static void setSpliceTxt(GffHashGene gffHashGene, String spliceTxt) {

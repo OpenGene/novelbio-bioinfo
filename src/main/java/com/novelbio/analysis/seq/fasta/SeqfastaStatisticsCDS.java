@@ -36,6 +36,7 @@ public class SeqfastaStatisticsCDS {
 	public int getMstartAAlen() {
 		return MstartAAlen;
 	}
+	/** 最长aa所在的orf */
 	public int getOrfAllLen() {
 		return orfAllLen;
 	}
@@ -100,7 +101,7 @@ public class SeqfastaStatisticsCDS {
 		int tmpMstartAAlen = 0;
 		
 		int tmpStart = 0;
-		
+		int tmpMStart = 0;
 		boolean mStart = false;
 		
 		char[] aachar = aaseq.toCharArray();
@@ -110,7 +111,7 @@ public class SeqfastaStatisticsCDS {
 				setAllLen(tmpStart, tmpAllAAlen, orf, cis5to3);
 				tmpAllAAlen = 0;
 				
-				setMstartAALen(tmpStart, tmpMstartAAlen, orf, cis5to3);
+				setMstartAALen(tmpMStart, tmpMstartAAlen, orf, cis5to3);
 				tmpMstartAAlen = 0;
 				
 				mStart = false;
@@ -120,15 +121,15 @@ public class SeqfastaStatisticsCDS {
 				tmpAllAAlen++;
 				if (mStart) {
 					tmpMstartAAlen++;
-				}
-				else if (CodeInfo.AA1_Met.equals(c+"") && !mStart) {
+				} else if (CodeInfo.AA1_Met.equals(c+"") && !mStart) {
 					mStart = true;
+					tmpMStart = i + 1;
 					tmpMstartAAlen++;
 				}
 			}
 		}
 		setAllLen(tmpStart, tmpAllAAlen, orf, cis5to3);
-		if (setMstartAALen(tmpStart, tmpMstartAAlen, orf, cis5to3)) {
+		if (setMstartAALen(tmpMStart, tmpMstartAAlen, orf, cis5to3)) {
 			fullCds = false;
 		}
 	}

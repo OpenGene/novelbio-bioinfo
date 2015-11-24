@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.analysis.seq.denovo.ClusterSeq;
+import com.novelbio.analysis.seq.denovo.ClusterCDhit;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -23,11 +24,12 @@ public class TrinityCopeIso extends TrinityClusterIso {
 	public static final String geneNamePrefix = "NovelBio";
 	
 	public static void main(String[] args) {
-//		TrinityCopeIso trinityModify = new TrinityCopeIso();
-//		trinityModify.setInFileName("/media/winE/NBC/Project/Project_WH/Trinity_tmp2013-07-150307-18080.fasta");
-//		trinityModify.setOutTrinityGeneFile("/media/winE/NBC/Project/Project_WH/Trinity_Out_Gene.fasta");
-//		trinityModify.setOutTrinityIsoFile("/media/winE/NBC/Project/Project_WH/Trinity_Out_Iso.fasta");
-//		trinityModify.cope();
+		TrinityCopeIso trinityModify = new TrinityCopeIso();
+		trinityModify.setInFileName("/home/novelbio/下载/Dip-1trinity.Trinity.fasta");
+		trinityModify.setOutTrinityGeneFile("/home/novelbio/下载/Dip_Gene.fasta");
+		trinityModify.setOutTrinityIsoFile("/home/novelbio/下载/Dip_Iso.fasta");
+		trinityModify.setOutTrinityGeneName2Iso("/home/novelbio/下载/Dip_gene2Iso.txt");
+		trinityModify.cope();
 		
 		
 		
@@ -76,9 +78,9 @@ public class TrinityCopeIso extends TrinityClusterIso {
 				int isoNum = 1;
 				for (SeqFasta seqFasta : lsSeqFastasNew) {
 					seqFasta.setName(geneNameNew + "." + isoNum);
-					isoNum++;
 					txtWriteIso.writefileln(seqFasta.toStringNRfasta());
 					txtWriteGene2Iso.writefileln(geneNameNew + "\t" + geneNameNew + "." + isoNum);
+					isoNum++;
 				}
 				SeqFasta seqLongestIso = getLongestIso(lsSeqFastasNew);
 				seqLongestIso.setName(geneNameNew);
@@ -100,7 +102,7 @@ public class TrinityCopeIso extends TrinityClusterIso {
 	private ArrayListMultimap<String, SeqFasta> getClusteredGene2LsIso(List<SeqFasta> lsSeqFastas) {
 		//cluster
 		String txtFile = PathDetail.getRworkspaceTmp() + "tmpTrinityCluster" + DateUtil.getDateAndRandom();
-		ClusterSeq clusterSeq = new ClusterSeq();
+		ClusterCDhit clusterSeq = new ClusterCDhit();
 		clusterSeq.setSeqHash(lsSeqFastas);
 		clusterSeq.setOutFileName(txtFile);
 		clusterSeq.setIdentityThrshld(identity);
@@ -121,9 +123,7 @@ public class TrinityCopeIso extends TrinityClusterIso {
 				if (geneNameLast != null && seqFastaName.startsWith(geneNameLast)) {
 					mapGeneName2LsSeqFasta.put(i+" ", seqFasta);
 				} else {
-					String[] ss = seqFastaName.split("_");
-					geneNameLast = ss[0] + "_" + ss[1];
-					
+					geneNameLast = seqFastaName.split(SepSign.SEP_INFO_SIMPLE)[0];					
 					i++;
 					mapGeneName2LsSeqFasta.put(i+" ", seqFasta);
 				}				

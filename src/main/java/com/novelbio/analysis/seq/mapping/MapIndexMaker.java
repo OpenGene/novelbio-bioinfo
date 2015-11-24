@@ -620,6 +620,7 @@ class IndexMapSplice extends MapIndexMaker {
 }
 
 class IndexHisat2 extends MapIndexMaker {
+	
 	public IndexHisat2() {
 		super(SoftWare.hisat2);
 	}

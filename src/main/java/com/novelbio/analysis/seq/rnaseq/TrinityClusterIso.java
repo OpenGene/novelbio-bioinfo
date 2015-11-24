@@ -6,8 +6,10 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
 
+/** 用CD-HIT的来对 trinity 的结果进行聚类 */
 public abstract class TrinityClusterIso {
 	public static final String geneNamePrefix = "NovelBio";
 	/** trinity得到的fasta文件 */
@@ -52,12 +54,33 @@ public abstract class TrinityClusterIso {
 		lsTmpFileName.clear();
 		SeqFastaHash seqFastaHash = new SeqFastaHash(inTrinityFile);
 		for (SeqFasta seqFasta : seqFastaHash.getSeqFastaAll()) {
-			seqFasta.setName(seqFasta.getSeqName().split(" ")[0]);
-			String[] ss = seqFasta.getSeqName().split("_");
-			String geneName = ss[0] + "_" + ss[1];
-			mapGeneID2LsSeqFasta.put(geneName, seqFasta);
+			String geneName = seqFasta.getSeqName().split(" ")[0];
+			String[] geneName2IsoName = getGeneName2IsoName(geneName);
+			seqFasta.setName(geneName2IsoName[1]);
+			
+			mapGeneID2LsSeqFasta.put(geneName2IsoName[0], seqFasta);
 		}
 		seqFastaHash.close();
+	}
+	
+	/** 给定trinityname，如 TRINITY_DN27976_c2_g9_i18<br>
+	 * 返回 genename和isoname的数组，如 DN27976_c2_g9 和 DN27976_c2_g9@i18
+	 * @param trinityName
+	 * @return
+	 */
+	protected static String[] getGeneName2IsoName(String trinityName) {
+		String geneName = trinityName;
+		String isoName = "";
+		if (geneName.toLowerCase().startsWith("trinity_")) {
+			geneName = geneName.substring("trinity_".length());
+		}
+		String[] names = geneName.split("_");
+		geneName = names[0];
+		isoName = names[names.length - 1];
+		for (int i = 1; i < names.length - 1; i++) {
+			geneName =geneName + "_" + names[i];
+		}
+		return new String[]{geneName, geneName + SepSign.SEP_INFO_SIMPLE + isoName};
 	}
 	
 	/** 聚类并将结果写入文本 */

@@ -14,7 +14,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class TestChrFileFormat {
-	String parentPath = "/home/novelbio/NBCresource/";
+	String parentPath = "src/test/resources/test_file/reference/ara/";
+	String gffFile = parentPath + "TAIR10_Gff3_simple_with_contig.gtf.gz";
+	String refSeq = parentPath + "chrAll.fa";
 	
 	@Test
 	public void testGetChrId() {
@@ -39,8 +41,6 @@ public class TestChrFileFormat {
 	
 	@Test
 	public void testCutChrIdByLenAndGff() {
-		String gffFile = parentPath + "/ref_CHIR_1.0_top_level_modify.gff3.tar.gz";
-		String refSeq = parentPath + "/chi_ref_CHIR_1.0_chrall2.fa";
 		int minLen = 1000;
 		int maxNum = 3000;
 		ChrSeqHash chrSeqHash = new ChrSeqHash(refSeq, "");
@@ -54,6 +54,7 @@ public class TestChrFileFormat {
 		chrFileFormat.setMinLen(minLen);
 		
 		Set<String> setChrIdGffAndLen = chrFileFormat.cutChrIdByLenAndGff(mapChrId2Len);
+		Assert.assertEquals(6, setChrIdGffAndLen.size());
 		// 选中的染色体是否都在gff中或者比指定的长
 		for (String chrId : setChrIdGffAndLen) {
 			Assert.assertEquals(true, setGffChrId.contains(chrId) || mapChrId2Len.get(chrId) >= minLen);
@@ -68,10 +69,8 @@ public class TestChrFileFormat {
 	
 	@Test
 	public void testCutChrIdByLenAndGffAndNum() {
-		String gffFile = parentPath + "/ref_CHIR_1.0_top_level_modify.gff3.tar.gz";
-		String refSeq = parentPath + "/chi_ref_CHIR_1.0_chrall2.fa";
 		int minLen = 1000;
-		int maxNum = 3000;
+		int maxNum = 5;
 		ChrSeqHash chrSeqHash = new ChrSeqHash(refSeq, "");
 		Map<String, Long> mapChrId2Len = chrSeqHash.getMapChrLength();
 		chrSeqHash.close();
@@ -83,22 +82,22 @@ public class TestChrFileFormat {
 		chrFileFormat.setMinLen(minLen);
 		
 		Set<String> setChrIdGffAndLen = chrFileFormat.cutChrIdByLenAndGff(mapChrId2Len);
-		Set<String> setChrIdGffAndLenAndSort = chrFileFormat.cutChrIdBySort(mapChrId2Len, setGffChrId, setChrIdGffAndLen);
+		Set<String> setChrIdGffAndLenAndSort = chrFileFormat.cutChrIdBySort(mapChrId2Len, setChrIdGffAndLen);
 		// 选中的染色体是否都在gff中或者比指定的长
 		for (String chrId : setChrIdGffAndLenAndSort) {
 			Assert.assertEquals(true, setGffChrId.contains(chrId) || mapChrId2Len.get(chrId) >= minLen);
 		}
-		Assert.assertEquals(true, setChrIdGffAndLenAndSort.size() <= 3000);
+		Assert.assertEquals(true, setChrIdGffAndLenAndSort.size() == 5);
 	}
 	
 	@Test
 	public void testExtractSeq() {
-		String refSeq = parentPath + "/testChromosome";
 		String refSeqResult = FileOperate.changeFileSuffix(refSeq, "_modify", null);
 		FileOperate.DeleteFileFolder(refSeqResult);
 		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
+		
 		Set<String> setChrId = new HashSet<>();
-		setChrId.add("eee"); setChrId.add("bbb"); setChrId.add("ccc");
+		setChrId.add("chr2"); setChrId.add("contig1"); setChrId.add("contig3");
 		
 		ChrFileFormat chrFileFormat = new ChrFileFormat();
 		chrFileFormat.setRefSeq(refSeq);
@@ -118,16 +117,18 @@ public class TestChrFileFormat {
 			Assert.assertEquals(true, setChrId.contains(chrId));
 		}
 		Assert.assertEquals(setChrId.size(), mapChrId2LenNew.size());
+		
+		FileOperate.DeleteFileFolder(refSeqResult);
+		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
 	}
 	
 	@Test
 	public void testChrSeqWithOutGff() {
-		String refSeq = parentPath + "/chi_ref_CHIR_1.0_chrall2.fa";
 		String refSeqResult = FileOperate.changeFileSuffix(refSeq, "_modify", null);
 		FileOperate.DeleteFileFolder(refSeqResult);
 		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
 		
-		int minLen = 5000;
+		int minLen = 1000;
 		
 		ChrFileFormat chrFileFormat = new ChrFileFormat();
 		chrFileFormat.setRefSeq(refSeq);
@@ -150,12 +151,13 @@ public class TestChrFileFormat {
 		}
 		chrSeqHash.close();
 		chrSeqHash2.close();
+		
+		FileOperate.DeleteFileFolder(refSeqResult);
+		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
 	}
 	
 	@Test
 	public void testChrSeqWithGffNoNumLimit() {
-		String gffFile = parentPath + "/ref_CHIR_1.0_top_level_modify.gff3.tar.gz";
-		String refSeq = parentPath + "/chi_ref_CHIR_1.0_chrall2.fa";
 		String refSeqResult = FileOperate.changeFileSuffix(refSeq, "_modifyGffNoLimit", null);
 		FileOperate.DeleteFileFolder(refSeqResult);
 		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
@@ -186,17 +188,19 @@ public class TestChrFileFormat {
 		
 		chrSeqHash.close();
 		chrSeqHash2.close();
+		
+		FileOperate.DeleteFileFolder(refSeqResult);
+		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
 	}
 	
 	@Test
 	public void testChrSeqWithGffWithLimit() {
-		String gffFile = parentPath + "/ref_CHIR_1.0_top_level_modify.gff3.tar.gz";
-		String refSeq = parentPath + "/chi_ref_CHIR_1.0_chrall2.fa";
 		String refSeqResult = FileOperate.changeFileSuffix(refSeq, "_modifyGffWithLimit", null);
 		FileOperate.DeleteFileFolder(refSeqResult);
 		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
 		int minLen = 200;
-		int maxNum = 1000;
+		int maxNum = 4;
+		int realNum = 5;//gff文件中有五条
 		Set<String> setChrId = readGffFile(gffFile);
 		
 		ChrFileFormat chrFileFormat = new ChrFileFormat();
@@ -219,9 +223,12 @@ public class TestChrFileFormat {
 				Assert.assertEquals(false, mapChrId2LenNew.containsKey(chrId));
 			}		
 		}
-		Assert.assertEquals(maxNum, mapChrId2LenNew.size());
+		Assert.assertEquals(realNum, mapChrId2LenNew.size());
 		chrSeqHash.close();
 		chrSeqHash2.close();
+		
+		FileOperate.DeleteFileFolder(refSeqResult);
+		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
 	}
 	
 	private Set<String> readGffFile(String gffFile) {
@@ -235,7 +242,8 @@ public class TestChrFileFormat {
 			String[] ss = content.split("\t");
 			if (ss.length > 4 ) {
 				gffGetChrId.getChrID(ss);
-				if (ss[2].equals("gene")) {
+				ss[2] = ss[2].toLowerCase();
+				if (ss[2].equals("gene") || ss[2].equals("exon") || ss[2].equals("cds")) {
 					setGff.add(gffGetChrId.getChrID(ss).toLowerCase());
 				}
 			}

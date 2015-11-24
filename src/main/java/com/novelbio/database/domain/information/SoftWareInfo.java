@@ -239,7 +239,7 @@ public class SoftWareInfo {
 		muscle,
 		
 		cpat,
-		cap3,
+		cap3, cdhit,
 		
 		wigToBigwig,
 		miranada, RNAhybrid, mirDeep, miReap,

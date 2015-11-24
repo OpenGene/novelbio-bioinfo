@@ -218,7 +218,6 @@ public class MapSplice implements MapRNA {
 		} else {
 			return parentPath + prefix + MapSpliceAllSuffix;
 		}
-	
 	}
 	
 	private FastQ deCompressFq(FastQ fastQ) {

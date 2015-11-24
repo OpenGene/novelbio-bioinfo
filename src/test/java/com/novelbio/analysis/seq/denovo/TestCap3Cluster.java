@@ -66,7 +66,7 @@ public class TestCap3Cluster {
 	
 	@Test
 	public void testGenerateClusterFa() {
-		CAP3Cluster cap3Cluster = new CAP3Cluster();
+		ClusterCAP3 cap3Cluster = new ClusterCAP3();
 		cap3Cluster.outMergedFile = "src/test/resources/test_file/denovo/merged";
 		cap3Cluster.finalClusterResult = "src/test/resources/test_file/denovo/final.fa";
 		cap3Cluster.setOutDir("src/test/resources/test_file/denovo");

@@ -143,12 +143,11 @@ public class FastaGetCDSFromProtein {
 	private GffGeneIsoInfo getGffGeneIsoInfo(BlastSeqFastaCompare blastSeqFasta) {
 		int atgSite, uagSite;
 		boolean startWithM = isStartWithM(blastSeqFasta);
-		atgSite = blastSeqFasta.getStartQuery() * 3 + blastSeqFasta.orf;
-		uagSite = blastSeqFasta.getEndQuery() * 3 + blastSeqFasta.orf;
+		atgSite = blastSeqFasta.getStartQuery() * 3 + blastSeqFasta.orf + 1;
+		uagSite = blastSeqFasta.getEndQuery() * 3 + blastSeqFasta.orf;//+3
 		if (!startWithM) {
 			atgSite = scanAtgSite(blastSeqFasta.orf, atgSite);
 		}
-		atgSite = atgSite + 1;//修改为从1开始，因为GffGeneIso里面都是从1开始记数的
 		uagSite = scanUagSite(blastSeqFasta.orf, uagSite);
 		
 		GffGeneIsoInfo gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(seqFasta.SeqName, seqFasta.SeqName, GeneType.mRNA, blastSeqFasta.cis5to3);
@@ -164,7 +163,11 @@ public class FastaGetCDSFromProtein {
 		return false;
 	}
 	
-	/** 从比对的最近的位点向前扫描，直到扫描到最远的UAG位点，同时将UAG后面一位标记为ATG */
+	/** 从比对的最近的位点向前扫描，直到扫描到最远的UAG位点，同时将UAG后面一位标记为ATG
+	 * @param orf
+	 * @param alignAtgSite 从1开始计算
+	 * @return
+	 */
 	private int scanAtgSite(int orf, int alignAtgSite) {
 		char[] seq = seqFasta.SeqSequence.toUpperCase().toCharArray();
 		for (int i = alignAtgSite - 1; i >= 0; i = i - 3) {
@@ -174,11 +177,18 @@ public class FastaGetCDSFromProtein {
 			}
 			//找到了终止位点
 			else if (isUAG(new char[]{seq[i], seq[i + 1], seq[i + 2]})) {
-				return i + 3;
+				return i + 4;
 			}
 		}
 		return alignAtgSite;
 	}
+	
+	/**
+	 * 
+	 * @param orf
+	 * @param alignUagSite 从1开始计算
+	 * @return
+	 */
 	private int scanUagSite(int orf, int alignUagSite) {
 		char[] seq = seqFasta.SeqSequence.toUpperCase().toCharArray();
 		int finishSite = 0;
@@ -249,7 +259,7 @@ public class FastaGetCDSFromProtein {
 		int atgsite = 0;
 		for (int orf = 0; orf < 3; orf++) {
 			proteinSeqTranslate = seqFasta.toStringAA(cis5to3, orf);
-			atgsite = FQrecordFilterAdaptor.trimAdaptorR(proteinSeqTranslate, proteinStartSite, 0, 3, 1, 80,20);
+			atgsite = FQrecordFilterAdaptor.trimAdaptorR(proteinSeqTranslate, proteinStartSite, 0, 3, 1, 80,20) + 1;
 			if (atgsite >= 0 && atgsite < proteinSeqTranslate.length()) {
 				compareInfo = new CompareInfo();
 				compareInfo.atgAASite = atgsite;

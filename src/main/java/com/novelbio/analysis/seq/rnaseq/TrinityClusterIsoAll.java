@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.analysis.seq.denovo.ClusterSeq;
+import com.novelbio.analysis.seq.denovo.ClusterCDhit;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -57,7 +57,7 @@ public class TrinityClusterIsoAll extends TrinityClusterIso {
 	private ArrayListMultimap<String, SeqFasta> getClusteredGene2LsIso(List<SeqFasta> lsSeqFastas) {
 		//cluster
 		String txtFile = PathDetail.getRworkspaceTmp() + "tmpTrinityCluster" + DateUtil.getDateAndRandom();
-		ClusterSeq clusterSeq = new ClusterSeq();
+		ClusterCDhit clusterSeq = new ClusterCDhit();
 		clusterSeq.setSeqHash(lsSeqFastas);
 		clusterSeq.setOutFileName(txtFile);
 		clusterSeq.setIdentityThrshld(identity);
