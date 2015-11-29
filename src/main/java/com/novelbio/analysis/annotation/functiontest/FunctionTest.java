@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
-import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.FisherTest;
@@ -27,7 +27,7 @@ import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public abstract class FunctionTest implements Cloneable {
-	private static final Logger logger = Logger.getLogger(FunctionTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(FunctionTest.class);
 	
 	public static final String FUNCTION_GO_NOVELBIO = "gene ontology";
 	public static final String FUNCTION_GO_ELIM = "gene ontology elim";
@@ -41,11 +41,11 @@ public abstract class FunctionTest implements Cloneable {
 	List<Integer> lsBlastTaxId = null;
 	double blastEvalue = 1e-10;
 	
-	Set<GeneID> setGeneIDsBG = null;
+//	Set<GeneID> setGeneIDsBG = null;
 	/** genUniID item,item格式  */
 	List<GeneID2LsItem> lsTest = null;
-	/** genUniID item,item格式
-	 * key: geneUniID
+	/** genUniID item,item格式<br>
+	 * key: geneUniID key为小写
 	 * value:GeneID2LsItem
 	 *  */
 	Map<String, GeneID2LsItem> mapBGGeneID2Items = null;
@@ -155,6 +155,47 @@ public abstract class FunctionTest implements Cloneable {
 		txtOut.close();
 	}
 	
+	/** 读取gene2Item的文件，用来增加注释
+	 * 第一列是geneName，第二列是goId */
+	public void readGene2ItemAnnoFile(String goAnnoFile) {
+		if (mapBGGeneID2Items == null) mapBGGeneID2Items = new HashMap<>();
+		
+		TxtReadandWrite txtRead = new TxtReadandWrite(goAnnoFile);
+		ArrayListMultimap<String, String> mapGeneName2LsGO = ArrayListMultimap.create();
+		int i = 0;
+		for (String content : txtRead.readlines()) {
+			i++;
+			
+			if (content.startsWith("#")) continue;
+			String[] ss = content.split("\t");
+			//判断第一行是否为标题
+			if (i == 1 && !ss[1].contains(":")) {
+				continue;
+			}
+			mapGeneName2LsGO.put(ss[0], ss[1]);
+		}
+		txtRead.close();
+		
+		for (String geneId : mapGeneName2LsGO.keys()) {
+			List<String> lsItemId = mapGeneName2LsGO.get(geneId);
+			GeneID geneID = new GeneID(geneId, taxID);
+			String geneUniId = geneID.getGeneUniID();
+			GeneID2LsItem geneID2LsItem = mapBGGeneID2Items.get(geneUniId.toLowerCase());
+
+			if (geneID2LsItem == null) {
+				geneID2LsItem = generateGeneID2LsItem();
+				mapBGGeneID2Items.put(geneUniId.toLowerCase(), geneID2LsItem);
+			}
+			for (String itemId : lsItemId) {
+				geneID2LsItem.addItemID(itemId);
+			}
+		}
+		
+		BGnum = mapBGGeneID2Items.size();
+	}
+	
+	protected abstract GeneID2LsItem generateGeneID2LsItem();
+	
 	/**
 	 * 第一时间设定
 	 * 读取背景文件，指定读取某一列
@@ -162,11 +203,7 @@ public abstract class FunctionTest implements Cloneable {
 	 */
 	public void setLsBGAccID(String fileName, int colNum) {
 		lsTestResult = new ArrayList<StatisticTestResult>();
-		if (setGeneIDsBG == null) {
-			setGeneIDsBG = new HashSet<GeneID>();
-		}
-		setGeneIDsBG.clear();
-		
+		mapBGGeneID2Items = new LinkedHashMap<String, GeneID2LsItem>();
 		if (!FileOperate.isFileExist(fileName)) {
 			logger.error("no File exist: "+ fileName);
 		}
@@ -176,17 +213,28 @@ public abstract class FunctionTest implements Cloneable {
 		} catch (Exception e) {
 			logger.error("BG accID file is not correct: "+ fileName);
 		}
+		int numAll = accID.size();
+		int num = 0;
 		for (String[] strings : accID) {
-			GeneID copedID = new GeneID(strings[0], taxID, false);
+			num++;
+			
+			GeneID geneId = new GeneID(strings[0], taxID, false);
 			if (isBlast()) {
-				copedID.setBlastInfo(blastEvalue, lsBlastTaxId);
+				geneId.setBlastInfo(blastEvalue, lsBlastTaxId);
 			}
-			setGeneIDsBG.add(copedID);
+			
+			if (num % 200 == 0) {
+				logger.info("总共{}个基因，已经找了{}个基因", numAll + "", num+ "" );
+			}
+			GeneID2LsItem geneID2LsItem = convert2Item(geneId);
+			if (geneID2LsItem == null) {
+				continue;
+			}
+			mapBGGeneID2Items.put(geneId.getGeneUniID().toLowerCase(), geneID2LsItem);
 		}
-		mapBGGeneID2Items = convert2Item(setGeneIDsBG);
 		BGnum = mapBGGeneID2Items.size();
 	}
-	
+
 	/**
 	 * 补充BG的基因，因为BG可能没有cover 输入的testGene
 	 * 不过我觉得没必要这样做
@@ -209,28 +257,6 @@ public abstract class FunctionTest implements Cloneable {
 			convert2ItemFromBG(geneID, true);
 		}
 		BGnum = mapBGGeneID2Items.size();
-	}
-	
-	/**
-	 * @param lsGeneID
-	 * @return key 自动转换为小写
-	 */
-	private Map<String, GeneID2LsItem> convert2Item(Collection<GeneID> lsGeneID) {
-		Map<String, GeneID2LsItem> mapGeneID2LsItem = new LinkedHashMap<String, GeneID2LsItem>();
-		int num = 0;
-		int numAll = lsGeneID.size();
-		for (GeneID geneID : lsGeneID) {
-			num++;
-			GeneID2LsItem geneID2LsItem = convert2Item(geneID);
-			if (geneID2LsItem == null) {
-				continue;
-			}
-			mapGeneID2LsItem.put(geneID.getGeneUniID().toLowerCase(), geneID2LsItem);
-			if (num % 200 == 0) {
-				logger.info("总共 " + numAll + " 个基因， 已经找了" + num + "个基因" );
-			}
-		}
-		return mapGeneID2LsItem;
 	}
 	
 	public ArrayList<StatisticTestItem2Gene> getItem2GenePvalue() {
@@ -362,9 +388,6 @@ public abstract class FunctionTest implements Cloneable {
 			if (tmpresult != null) {
 				mapBGGeneID2Items.put(geneID.getGeneUniID().toLowerCase(), tmpresult);
 			}
-		}
-		if (tmpresult != null && tmpresult.geneID == null) {
-			tmpresult.geneID = geneID;
 		}
 		return tmpresult;
 	}
@@ -542,7 +565,6 @@ public abstract class FunctionTest implements Cloneable {
 		FunctionTest functionTest = null;
 		try {
 			functionTest = (FunctionTest)super.clone();
-			functionTest.setGeneIDsBG = setGeneIDsBG;
 			functionTest.BGfile = BGfile;
 			functionTest.BGnum = BGnum;
 			functionTest.blastEvalue = blastEvalue;

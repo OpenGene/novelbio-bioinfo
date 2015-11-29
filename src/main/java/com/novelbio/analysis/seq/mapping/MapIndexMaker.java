@@ -22,7 +22,6 @@ import com.novelbio.base.curator.CuratorNBC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.EnumSpeciesFile;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.generalConf.PathDetailNBC;
@@ -39,7 +38,9 @@ public abstract class MapIndexMaker {
 	SoftWare softWare;
 	
 	private String version;
-
+	
+	boolean isLock = true;
+	
 	public MapIndexMaker(SoftWare softWare) {
 		SoftWareInfo softWareInfo = new SoftWareInfo(softWare);
 		this.exePath = softWareInfo.getExePathRun();
@@ -48,6 +49,10 @@ public abstract class MapIndexMaker {
 	
 	public String getExePath() {
 		return exePath;
+	}
+	/** 是否加入全局锁 */
+	public void setLock(boolean isLock) {
+		this.isLock = isLock;
 	}
 	
 	public void setChrIndex(String chrFile) {
@@ -58,9 +63,12 @@ public abstract class MapIndexMaker {
 			return;
 		}
 		
-		InterProcessMutex lock = CuratorNBC.getInterProcessMutex(getLockPath());
+		InterProcessMutex lock = null;
 		try {
-			lock.acquire();
+			if (isLock) {
+				lock = CuratorNBC.getInterProcessMutex(getLockPath());
+				lock.acquire();
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -70,7 +78,9 @@ public abstract class MapIndexMaker {
 			throw e;
 		} finally {
 			try {
-				lock.release();
+				if (isLock) {
+					lock.release();
+				}
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
@@ -79,7 +89,7 @@ public abstract class MapIndexMaker {
 	}
 	
 	protected String getLockPath() {
-		String lockPath = chrFile.replace(PathDetailNBC.getGenomePath(), "");
+		String lockPath = chrFile.replace(PathDetailNBC.getGenomePath(), "") + softWare.toString();
 		lockPath = FileOperate.removeSplashHead(lockPath, false).replace("/", "_").replace("\\", "_").replace(".", "_");
 		return lockPath;
 	}
@@ -137,6 +147,11 @@ public abstract class MapIndexMaker {
 		}
 		cmdOperate.addCmdParamOutput(chrFile, false);
 		cmdOperate.runWithExp(softWare.toString() + " index error:");
+		generateFinishFlag();
+	}
+	
+	/** 产生文件结束的flag */
+	protected void generateFinishFlag() {
 		TxtReadandWrite txtWriteFinishFlag = new TxtReadandWrite(getIndexFinishedFlag(), true);
 		txtWriteFinishFlag.writefileln("finished");
 		txtWriteFinishFlag.close();
@@ -195,9 +210,9 @@ public abstract class MapIndexMaker {
 		}
 		return indexMaker;
 	}
-}
+	
 
-class IndexBwa extends MapIndexMaker {
+public static class IndexBwa extends MapIndexMaker {
 	public IndexBwa() {
 		super(SoftWare.bwa_mem);
 	}
@@ -237,6 +252,7 @@ class IndexBwa extends MapIndexMaker {
 		List<String> lsCmdVersion = new ArrayList<>();
 		lsCmdVersion.add(exePath + "bwa");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setTerminateWriteTo(false);
 		cmdOperate.run();
 		String version = null;
 		try {
@@ -249,7 +265,7 @@ class IndexBwa extends MapIndexMaker {
 	}
 }
 
-class IndexBowtie extends MapIndexMaker {
+public static class IndexBowtie extends MapIndexMaker {
 	public IndexBowtie() {
 		super(SoftWare.bowtie);
 	}
@@ -280,6 +296,7 @@ class IndexBowtie extends MapIndexMaker {
 		lsCmdVersion.add(exePath + "bowtie");
 		lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setTerminateWriteTo(false);
 		cmdOperate.setGetLsStdOut();
 		cmdOperate.runWithExp("get bowtie version error:");
 		List<String> lsInfo = cmdOperate.getLsStdOut();
@@ -294,7 +311,7 @@ class IndexBowtie extends MapIndexMaker {
 	
 }
 
-class IndexBowtie2 extends MapIndexMaker {
+public static class IndexBowtie2 extends MapIndexMaker {
 	public IndexBowtie2() {
 		super(SoftWare.bowtie2);
 	}
@@ -319,6 +336,7 @@ class IndexBowtie2 extends MapIndexMaker {
 		lsCmdVersion.add(exePath + "bowtie2");
 		lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setTerminateWriteTo(false);
 		cmdOperate.setGetLsStdOut();
 		cmdOperate.runWithExp("get bowtie2 version error:");
 		List<String> lsInfo = cmdOperate.getLsStdOut();
@@ -333,14 +351,17 @@ class IndexBowtie2 extends MapIndexMaker {
 	}
 }
 
-class IndexTophat extends MapIndexMaker {
+public static class IndexTophat extends MapIndexMaker {
 	private static final Logger logger = LoggerFactory.getLogger(MapIndexMaker.class);
 	
 	String exePathBowtie;
 	MapIndexMaker indexBowtie;
 	String tophatVersion;
 	
-	String gtfFile;	
+	String gtfFile;
+	
+	/** 把gtf文件拷贝到染色体文件下去，只有当gtf由数据库提供时才需要移动位置 */
+	boolean moveGtfToChr;
 	
 	public IndexTophat() {
 		super(SoftWare.tophat);
@@ -353,8 +374,9 @@ class IndexTophat extends MapIndexMaker {
 		indexBowtie = MapIndexMaker.createIndexMaker(bowtieSoft);
 	}
 	
-	public void setGtfFile(String gtfFile) {
+	public void setGtfFile(String gtfFile, boolean moveGtfToChr) {
 		this.gtfFile = gtfFile;
+		this.moveGtfToChr = moveGtfToChr;
 	}
 	
 	public SoftWare getBowtieSoft() {
@@ -362,6 +384,16 @@ class IndexTophat extends MapIndexMaker {
 	}
 	
 	protected void tryMakeIndex() {
+		//把数据库记录的gtf文件复制到chrFile的同一个文件夹下
+		if (!StringOperate.isRealNull(gtfFile) && moveGtfToChr) {
+			String chrPath = FileOperate.getPathName(chrFile);
+			String gtfNew = chrPath + FileOperate.getFileName(gtfFile);
+			if (!FileOperate.isFileExistAndBigThanSize(gtfNew, 0)) {
+				FileOperate.copyFile(gtfFile, gtfNew, false);
+			}
+			gtfFile = gtfNew;
+		}
+		
 		try {
 			try {
 				makeIndex();
@@ -452,15 +484,15 @@ class IndexTophat extends MapIndexMaker {
 			return null;
 		}
 		
-		return FileOperate.changeFileSuffix(FileOperate.getPathName(indexBowtie.getIndexName()) + 
-				FileOperate.getFileNameSep(gtfFile)[0] + "_folder" + FileOperate.getSepPath()
-				+ FileOperate.getFileNameSep(gtfFile)[0], "_" + indexBowtie.softWare.toString() + "_indexFinished", "");
+		return FileOperate.changeFileSuffix(getGffFolder() + FileOperate.getFileNameSep(gtfFile)[0], "_" + indexBowtie.softWare.toString() + "_tophat_indexFinished", "");
 	}
 	
 	public String getIndexGff() {
-		return FileOperate.getPathName(indexBowtie.getIndexName()) + 
-				FileOperate.getFileNameSep(gtfFile)[0] + "_folder" + FileOperate.getSepPath()
-				+ FileOperate.getFileNameSep(gtfFile)[0];
+		return getGffFolder() + FileOperate.getFileNameSep(gtfFile)[0];
+	}
+	
+	private String getGffFolder() {
+		return gtfFile + "_" + indexBowtie.softWare.toString() + "_tophat_folder" + FileOperate.getSepPath();
 	}
 	
 	protected List<String> getLsCmdIndex() {
@@ -485,6 +517,7 @@ class IndexTophat extends MapIndexMaker {
 			lsCmdVersion.add(exePath + "tophat");
 			lsCmdVersion.add("--version");
 			CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+			cmdOperate.setTerminateWriteTo(false);
 			cmdOperate.setGetLsStdOut();
 			cmdOperate.run();
 			List<String> lsInfo = cmdOperate.getLsStdOut();
@@ -498,81 +531,109 @@ class IndexTophat extends MapIndexMaker {
 	
 }
 
-class IndexMapSplice extends MapIndexMaker {
+public static class IndexMapSplice extends MapIndexMaker {
 	/** mapsplice的后缀名，因为mapsplice要求文本中的序列不能太多，譬如小于4000条 */
 	private static final String mapSpliceSuffix = ".novelbio_mapSplice_suffix";
-	private static int maxSeqNum = 4000;
+	protected static int maxSeqNum = 4000;
 	private static int minLen = 1000;
+	
+	MapIndexMaker indexBowtie = MapIndexMaker.createIndexMaker(SoftWare.bowtie);
 
 	Set<String> setChrInclude;
-	String chrResult;
+	String chrRaw;
 	String chrSepFold;
 	
+	/** 有的chr文件中会包含太多的 chrId，譬如 trinity的结果会产生几万个 chrId
+	 * 而mapsplice要求 每个chr一个文本，所以这里我们为了防止文本产生太多，需要将含有太多 chr 的染色体文件进行过滤，仅保留长的几千个文件 */
+	boolean modifyChrFile = false;
+	
 	public IndexMapSplice() {
-		super(SoftWare.bowtie);
+		super(SoftWare.mapsplice);
 	}
 	
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		if (gffHashGene == null) return;
 		setChrInclude = gffHashGene.getMapChrID2LsGff().keySet();
 	}
+
+	/**
+	 * 构建索引
+	 * @parcam force 默认会检查是否已经构建了索引，是的话则返回。
+	 * 如果face为true，则强制构建索引
+	 * @return
+	 */
+	protected void makeIndex() {
+		generateChrIndex();
+		generateChrSepFold();
+		indexBowtie.setChrIndex(chrFile);
+		if (!indexBowtie.isIndexFinished()) {
+			indexBowtie.IndexMake();
+		}
+		generateFinishFlag();
+	}
 	
-//	protected boolean isIndexFinished() {
-//		return FileOperate.isFileExist(getIndexFinishedFlag()) && FileOperate.isFileFoldExist(chrSepFold);
-//	}
 	
 	/** 用这个来标记index是否完成 */
 	protected String getIndexFinishedFlag() {
+		return getIndexFinishedFlag(chrFile);
+	}
+	
+	/** 用这个来标记index是否完成 */
+	private String getIndexFinishedFlag(String chrFile) {
 		String suffix = softWare.toString();
 		if (softWare == SoftWare.bwa_aln || softWare == SoftWare.bwa_mem) {
 			suffix = "bwa";
 		}
-		return FileOperate.changeFileSuffix(chrResult, "_indexFinished_" + suffix, "");
+		return FileOperate.changeFileSuffix(chrFile, "_indexFinished_" + suffix, "");
 	}
 	
 	@Override
 	protected List<String> getLsCmdIndex() {
-		generateChrIndex();
-		generateChrSepFold();
-		
-		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(exePath + "bowtie-build");
-		lsCmd.add(chrResult);
-		lsCmd.add(getChrNameWithoutSuffix(chrResult));
-		return lsCmd;
+		//TODO 用不到了，因为 makeIndex 已经被重写了
+		return null;
 	}
 	
 	@Override
-	public void setChrIndex(String chrFile) {
-		super.setChrIndex(chrFile);
-		chrResult = chrFile;
-		if (!chrFile.contains(mapSpliceSuffix)) {
-			chrResult = FileOperate.changeFileSuffix(chrFile, mapSpliceSuffix, null);
+	public void setChrIndex(String chrRaw) {
+		this.chrRaw = chrRaw;
+		if (chrRaw.contains(mapSpliceSuffix) || FileOperate.isFileExistAndBigThanSize(getIndexFinishedFlag(chrRaw), 0)) {
+			//输入的就是mapsplice的chr文件，或者该chrFile已经有建好了 mapsplice的索引，那么就直接使用该chrResult作为索引
+			chrFile = chrRaw;
+		} else {
+			//先判定 修正过的chrFile是否存在，如果存在则返回
+			//如果不存在，则标记需要生成 修正的chrFile
+			chrFile = FileOperate.changeFileSuffix(chrRaw, mapSpliceSuffix, null);
+			modifyChrFile = true;
+			if (!FileOperate.isFileExistAndBigThanSize(chrFile, 0)) {
+				ChrSeqHash chrSeqHash = new ChrSeqHash(chrRaw, "");
+				Map<String, Long> mapChrID2ChrLen = chrSeqHash.getMapChrLength();
+				chrSeqHash.close();
+				if (mapChrID2ChrLen.size() <= maxSeqNum) {
+					chrFile = chrRaw;
+					modifyChrFile = false;
+				}
+			}
 		}
-		chrSepFold = FileOperate.addSep(FileOperate.changeFileSuffix(chrResult, "_sep_fold", ""));
+		chrSepFold = FileOperate.addSep(FileOperate.changeFileSuffix(chrFile, "_sep_fold", ""));
 	}
 	
 	/** 将染色体文件进行过滤，仅保留4000来条染色体，因为太多的话mapsplice可能会报错 */
 	private void generateChrIndex() {
-
-		if (FileOperate.isFileExistAndBigThanSize(chrResult, 0)) {
-			super.setChrIndex(chrResult);
+		if (FileOperate.isFileExistAndBigThanSize(chrFile, 0)) {
+			super.setChrIndex(chrFile);
+			return;
 		}
-		
-		ChrSeqHash chrSeqHash = new ChrSeqHash(chrFile, "");
-		Map<String, Long> mapChrID2ChrLen = chrSeqHash.getMapChrLength();
-		chrSeqHash.close();
-		
-		if (mapChrID2ChrLen.size() > maxSeqNum) {
+
+		if (modifyChrFile) {
 			ChrFileFormat chrFileFormat = new ChrFileFormat();
 			chrFileFormat.setIncludeChrId(setChrInclude);
-			chrFileFormat.setRefSeq(chrFile);
-			chrFileFormat.setResultSeq(chrResult);
+			chrFileFormat.setRefSeq(chrRaw);
+			chrFileFormat.setResultSeq(chrFile);
 			chrFileFormat.setMinLen(minLen);
 			chrFileFormat.setMaxNum(maxSeqNum);
 			chrFileFormat.rebuild();
 		} else {
-			FileOperate.copyFile(chrFile, chrResult, true);
+			FileOperate.copyFile(chrRaw, chrFile, true);
 		}
 	}
 	/** 生成一个文件夹，其中每条染色体一个文件 */
@@ -580,7 +641,7 @@ class IndexMapSplice extends MapIndexMaker {
 		if (!FileOperate.isFileFoldExist(chrSepFold)) {
 			FileOperate.createFolders(chrSepFold);
 			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
-			ncbIchromFaChangeFormat.setChromFaPath(chrResult, "");
+			ncbIchromFaChangeFormat.setChromFaPath(chrFile, "");
 			ncbIchromFaChangeFormat.writeToSepFile(chrSepFold);
 		}
 	}
@@ -591,7 +652,7 @@ class IndexMapSplice extends MapIndexMaker {
 	
 	@Override
 	public String getIndexName() {
-		return getChrNameWithoutSuffix(chrResult);
+		return getChrNameWithoutSuffix(chrFile);
 	}
 	
 	/** 获得没有后缀名的序列，不带引号 */
@@ -606,6 +667,7 @@ class IndexMapSplice extends MapIndexMaker {
 		lsCmdVersion.add(exePath + "bowtie");
 		lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setTerminateWriteTo(false);
 		cmdOperate.setGetLsStdOut();
 		cmdOperate.runWithExp("get bowtie version error:");
 		List<String> lsInfo = cmdOperate.getLsStdOut();
@@ -619,7 +681,7 @@ class IndexMapSplice extends MapIndexMaker {
 	
 }
 
-class IndexHisat2 extends MapIndexMaker {
+public static class IndexHisat2 extends MapIndexMaker {
 	
 	public IndexHisat2() {
 		super(SoftWare.hisat2);
@@ -646,6 +708,7 @@ class IndexHisat2 extends MapIndexMaker {
 		lsCmdVersion.add(exePath + "hisat2");
 		lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setTerminateWriteTo(false);
 		cmdOperate.setGetLsStdOut();
 		cmdOperate.runWithExp("get hisat2 version error:");
 		List<String> lsInfo = cmdOperate.getLsStdOut();
@@ -657,4 +720,5 @@ class IndexHisat2 extends MapIndexMaker {
 		return version;
 	}
 
+}
 }

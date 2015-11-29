@@ -1,16 +1,13 @@
 package com.novelbio.analysis.annotation.functiontest;
 
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.HashMultimap;
 import com.novelbio.database.domain.geneanno.AGene2Go;
-import com.novelbio.database.domain.geneanno.GOtype.GORelation;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 
@@ -38,7 +35,6 @@ public class GeneID2LsGoLevel extends GeneID2LsGo {
 		} else {
 			lsGo = geneID.getGene2GO(goType);
 		}
-		this.geneID = geneID;
 		this.geneUniID = geneID.getGeneUniID();
 		for (Go2Term go2Term : selectGo(lsGo)) {
 			setItemID.add(go2Term.getGoID());

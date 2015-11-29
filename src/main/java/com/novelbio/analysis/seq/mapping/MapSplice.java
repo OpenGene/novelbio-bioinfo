@@ -6,6 +6,7 @@ import java.util.List;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.mapping.MapIndexMaker.IndexMapSplice;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -319,6 +320,7 @@ public class MapSplice implements MapRNA {
 		lsCmdVersion.add(exePath + "mapsplice.py");
 		lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setTerminateWriteTo(false);
 		cmdOperate.run();
 		List<String> lsInfo = cmdOperate.getLsErrOut();
 		String[] ss = lsInfo.get(0).trim().split(" ");

@@ -41,7 +41,11 @@ public class KEGGPathwayFunTest extends FunctionTest {
 		}
 		return lsGeneID2LsItem;
 	}
-
+	
+	protected GeneID2LsItem generateGeneID2LsItem() {
+		return new GeneID2LsPath();
+	}
+	
 	@Override
 	protected StatisticTestGene2Item creatStatisticTestGene2Item() {
 		return new StatisticTestGene2Path();

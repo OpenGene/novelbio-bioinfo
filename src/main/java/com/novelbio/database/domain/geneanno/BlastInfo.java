@@ -46,7 +46,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	private double evalue = 100;
 	private double score = 0;
 	private int alignLen = 0;
-	
+	@Indexed
 	protected int queryTax;
 	protected int queryIDtype;
 	protected int subjectTax;
@@ -152,7 +152,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 	private void query(int taxIDQ, boolean isAccIDQ, int taxIDS, boolean isAccIDS, String[] blastInfo) {
 		GeneID geneIDQ;
 		if (isAccIDQ) {
-			geneIDQ = new GeneID(blastInfo[0], taxIDQ);
+			geneIDQ = new GeneID(GeneID.removeDot(blastInfo[0]), taxIDQ);
 		} else {
 			geneIDQ = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[0], taxIDQ);
 			if (geneIDQ.getAccID_With_DefaultDB() == null) {
@@ -161,7 +161,7 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		}
 		
 		if (isAccIDS) {
-			geneIDS = new GeneID(blastInfo[1], taxIDS, blastInfo[1].contains("|"));
+			geneIDS = new GeneID(GeneID.removeDot(blastInfo[1]), taxIDS, blastInfo[1].contains("|"));
 		} else {
 			geneIDS = new GeneID(GeneID.IDTYPE_GENEID, blastInfo[1], taxIDS);
 			if (geneIDS.getAccID_With_DefaultDB() == null) {

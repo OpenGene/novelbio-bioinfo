@@ -15,4 +15,7 @@ public interface RepoBlastFileInfo extends PagingAndSortingRepository<BlastFileI
 	
 	@Query(value="{ 'fileName' : ?0}")
 	List<BlastFileInfo> findByFileName(String fileName);
+	
+	@Query(value="{ 'queryTaxID' : ?0}")
+	List<BlastFileInfo> findByQueryTaxID(int queryTaxID);
 }

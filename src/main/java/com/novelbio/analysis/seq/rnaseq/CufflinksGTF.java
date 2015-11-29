@@ -603,6 +603,7 @@ public class CufflinksGTF implements IntCmdSoft {
 		List<String> lsCmdVersion = new ArrayList<>();
 		lsCmdVersion.add(ExePathCufflinks + "cufflinks");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setTerminateWriteTo(false);
 		cmdOperate.run();
 		List<String> lsInfo = cmdOperate.getLsErrOut();
 		String cufflinksVersion = "";

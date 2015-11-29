@@ -8,6 +8,7 @@ import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
 import com.novelbio.analysis.annotation.cog.EnumCogType;
 import com.novelbio.database.domain.geneanno.AGene2Go;
+import com.novelbio.database.domain.geneanno.BlastInfo;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.kegg.KGpathway;
@@ -101,10 +102,24 @@ class StatisticTestGene2GO extends StatisticTestGene2Item {
 		lsTmpFinal.add(geneID.getSymbol());
 		lsTmpFinal.add(geneID.getDescription());
 		if (blast) {
-			if (geneID.getLsBlastInfos().size() > 0) {
-				lsTmpFinal.add(geneID.getLsBlastInfos().get(0).getEvalue() + "");
-				lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getSymbol());
-				lsTmpFinal.add(geneID.getLsBlastGeneID().get(0).getDescription());
+			List<BlastInfo> lsBlastInfo = geneID.getLsBlastInfos();
+			if (!lsBlastInfo.isEmpty()) {
+				GeneID geneBlastFirst = lsBlastInfo.get(0).getGeneIDS();
+				String evalue = lsBlastInfo.get(0).getEvalue() + "";
+				String symbol = geneBlastFirst.getSymbol();
+				String description = geneBlastFirst.getDescription();
+				for (int i = 1; i < lsBlastInfo.size(); i++) {
+					BlastInfo blastInfo = lsBlastInfo.get(i);
+					GeneID geneBlast = blastInfo.getGeneIDS();
+					if (geneBlast != null) {
+						evalue += "," + blastInfo.getEvalue();
+						symbol += "," + geneBlast.getSymbol();
+					}
+				}
+				
+				lsTmpFinal.add(evalue);
+				lsTmpFinal.add(symbol);
+				lsTmpFinal.add(description);
 			} else {
 				lsTmpFinal.add("");
 				lsTmpFinal.add("");

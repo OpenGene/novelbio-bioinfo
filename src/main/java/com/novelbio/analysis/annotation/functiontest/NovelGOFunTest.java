@@ -79,6 +79,10 @@ public class NovelGOFunTest extends FunctionTest {
 		return mapGeneID2LsItem;
 	}
 	
+	protected GeneID2LsItem generateGeneID2LsItem() {
+		return GeneID2LsGo.getInstance(GOlevel);
+	}
+	
 	@Override
 	protected StatisticTestGene2Item creatStatisticTestGene2Item() {
 		return new StatisticTestGene2GO(GOlevel);

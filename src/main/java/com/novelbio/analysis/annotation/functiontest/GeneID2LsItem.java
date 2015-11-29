@@ -5,7 +5,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.annotation.cog.COGanno;
@@ -21,14 +22,13 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 public abstract class GeneID2LsItem {
-	private static final Logger logger = Logger.getLogger(GeneID2LsItem.class);
+	private static final Logger logger = LoggerFactory.getLogger(GeneID2LsItem.class);
 	
 	String geneUniID;
 	/** 内部为GO:00001 或 PATHID:00001
 	 * 均为大写
 	 * */
 	Set<String> setItemID = new HashSet<String>();
-	GeneID geneID;
 	
 	public abstract void setGeneID(GeneID geneID, boolean blast);
 	
@@ -87,7 +87,7 @@ public abstract class GeneID2LsItem {
 
 /** 从txt文件中读取go信息，而不是从数据库中读取 */
 class GeneID2LsGo extends GeneID2LsItem {
-	private static final Logger logger = Logger.getLogger(GeneID2LsGo.class);
+	private static final Logger logger = LoggerFactory.getLogger(GeneID2LsGo.class);
 
 	GOtype goType;
 	/** key为小写基因名 */
@@ -112,7 +112,6 @@ class GeneID2LsGo extends GeneID2LsItem {
 	
 	@Override
 	public void setGeneID(GeneID geneID, boolean blast) {
-		this.geneID = geneID;
 		this.geneUniID = geneID.getGeneUniID();
 		List<AGene2Go> lsGo = new ArrayList<>();
 		if (mapGene2LsItem == null || mapGene2LsItem.isEmpty() || isCombine) {
@@ -177,7 +176,6 @@ class GeneID2LsGo extends GeneID2LsItem {
 
 class GeneID2LsPath extends GeneID2LsItem {
 	public void setGeneID(GeneID geneID, boolean blast) {
-		this.geneID = geneID;
 		this.geneUniID = geneID.getGeneUniID();
 		ArrayList<KGpathway> lsPath = geneID.getKegPath(blast);
 		for (KGpathway kGpathway : lsPath) {
@@ -188,7 +186,6 @@ class GeneID2LsPath extends GeneID2LsItem {
 
 class GeneID2LsCog extends GeneID2LsItem {
 	public void setGeneID(GeneID geneID, boolean blast) {
-		this.geneID = geneID;
 		this.geneUniID = geneID.getGeneUniID();
 	}
 	
@@ -205,7 +202,6 @@ class GeneID2LsCog extends GeneID2LsItem {
 	 */
 	public GeneID2LsCog convert2Abbr(COGanno coGanno) {
 		GeneID2LsCog geneID2LsCog = new GeneID2LsCog();
-		geneID2LsCog.geneID = geneID;
 		geneID2LsCog.geneUniID = geneUniID;
 		for (String cogId : getSetItemID()) {
 			String abbr = coGanno.queryCogInfoFromCogId(cogId).getCogAbbr();

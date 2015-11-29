@@ -20,6 +20,12 @@ public interface RepoBlastInfo extends PagingAndSortingRepository<BlastInfo, Str
 	@Query(value="{'queryTax' : ?0, 'subjectTax' : ?1}")
 	List<BlastInfo> findByQueryTaxAndSubTaxID(int queryTax, int subjectTax);
 	
+	@Query(value="{ 'queryTax' : ?0}")
+	List<BlastInfo> findByQueryTax(int queryTax);
+	
+	@Query(value="{ 'queryTax' : ?0}")
+	Page<BlastInfo> findByQueryTax( Pageable pageable, int queryTax);
+	
 	@Query(value="{'subjectTax' : ?0}")
 	List<BlastInfo> findBySubTaxID(int subjectTax);
 	

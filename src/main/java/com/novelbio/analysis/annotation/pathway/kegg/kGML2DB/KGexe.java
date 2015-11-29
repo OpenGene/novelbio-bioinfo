@@ -23,7 +23,7 @@ public class KGexe {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
-	public static void main(String[] args) throws InterruptedException, ExecutionException {
+	public static void main2(String[] args) throws InterruptedException, ExecutionException {
 		Options opts = new Options();
 		opts.addOption("keggabbr", true, "keggabbr");
 		CommandLine cliParser = null;
@@ -48,7 +48,7 @@ public class KGexe {
 		}
 	}
 	
-	public static void main2(String[] args) throws InterruptedException, ExecutionException {
+	public static void main(String[] args) throws InterruptedException, ExecutionException {
 //		List<String> lsGenID2 = new ArrayList<>();
 //		lsGenID2.add("XNR_0641");
 //		CtrlBlastPath ctrlPath = new CtrlBlastPath(false, 457425, 0, 1e-10);
@@ -70,7 +70,7 @@ public class KGexe {
 //			System.exit(1);
 //		}
 //		String keggAbbrStr = cliParser.getOptionValue("keggabbr");
-		String keggAbbrStr = "hsa,mmu";
+		String keggAbbrStr = "chx";
 		try {
 			for (String abbr : keggAbbrStr.split(",")) {
 				abbr = abbr.trim();

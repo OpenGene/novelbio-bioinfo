@@ -113,6 +113,10 @@ public class BlastFileInfo {
 
 	/** query物种的俗名 */
 	public String getQueryTaxName() {
+		TaxInfo taxInfo = ManageSpecies.getInstance().queryTaxInfo(queryTaxID);
+		if (taxInfo == null) {
+			return null;
+		}
 		return ManageSpecies.getInstance().queryTaxInfo(queryTaxID).getComName();
 	}
 

@@ -6,13 +6,13 @@ import htsjdk.samtools.SAMFileHeader.SortOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.mapping.MapIndexMaker.IndexTophat;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
@@ -20,13 +20,9 @@ import com.novelbio.analysis.seq.sam.SamToFastq;
 import com.novelbio.analysis.seq.sam.SamToFastq.EnumSamToFastqType;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
-import com.novelbio.base.curator.CuratorNBC;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.generalConf.PathDetailNBC;
 
 /**
  * 还没返回结果的bam文件 tophat的mapping * tophat -r 120 -a 10 -m 1 -i 20 -I 6000
@@ -99,11 +95,13 @@ public class MapTophat implements MapRNA {
 	/** 第二次mapping所使用的命令 */
 	List<String> 	lsCmdMapping2nd = new ArrayList<>();
 	
+	boolean isGtfFromDatabase = true;
+	
 	public MapTophat(GffChrAbs gffChrAbs) {
 		indexMaker = (IndexTophat)MapIndexMaker.createIndexMaker(SoftWare.tophat);
 		indexMaker.setBowtieVersion(SoftWare.bowtie2);	
 		if (gffChrAbs == null ||  gffChrAbs.getGffHashGene() == null) return;
-
+		
 		this.gtfFile = gffChrAbs.getGtfFile();
 		
 		int[] intronMinMax = getIntronMinMax(gffChrAbs.getGffHashGene(), this.intronLenMin, this.intronLenMax);
@@ -375,6 +373,7 @@ public class MapTophat implements MapRNA {
 	 */
 	public void setGtf_Gene2Iso(String gtfFile) {
 		this.gtfFile = gtfFile;
+		isGtfFromDatabase = false;
 	}
 
 	/**
@@ -414,7 +413,7 @@ public class MapTophat implements MapRNA {
 	 */
 	public void mapReads() {
 		indexMaker.setChrIndex(chrIndexFile);
-		indexMaker.setGtfFile(gtfFile);
+		indexMaker.setGtfFile(gtfFile, isGtfFromDatabase);
 		indexMaker.IndexMake();
 				
 		lsCmdMapping2nd.clear();

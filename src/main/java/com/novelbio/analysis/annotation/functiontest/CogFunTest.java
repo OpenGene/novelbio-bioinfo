@@ -116,6 +116,10 @@ public class CogFunTest extends FunctionTest {
 		return lsTestResult;
 	}
 	
+	protected GeneID2LsItem generateGeneID2LsItem() {
+		return new GeneID2LsCog();
+	}
+
 	protected ArrayListMultimap<String, GeneID> getGo2GeneUniID() {
 		ArrayListMultimap<String, GeneID> hashGo2LsGene = ArrayListMultimap.create();
 		ArrayList<StatisticTestGene2Item> lsStatisticTestGene2Items = getGene2ItemPvalue();

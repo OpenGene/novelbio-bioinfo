@@ -418,6 +418,7 @@ public class StringTie  implements IntCmdSoft {
 		List<String> lsCmdVersion = new ArrayList<>();
 		lsCmdVersion.add(ExePathStringTie + "stringtie");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
+		cmdOperate.setTerminateWriteTo(false);
 		cmdOperate.run();
 		List<String> lsInfo = cmdOperate.getLsErrOut();
 		String cufflinksVersion = "";
