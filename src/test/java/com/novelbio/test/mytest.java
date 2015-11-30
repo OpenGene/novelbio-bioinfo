@@ -1,8 +1,9 @@
 package com.novelbio.test;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,21 +14,19 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.mirna.MiRNACount;
-import com.novelbio.analysis.seq.sam.AlignSamReading;
-import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.base.SepSign;
+import com.novelbio.analysis.seq.mapping.MapIndexMaker;
+import com.novelbio.analysis.seq.mapping.MapIndexMaker.IndexMapSplice;
+import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.SpeciesFile;
+import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.generalConf.PathDetailNBC;
 
 
 public class mytest {
@@ -35,26 +34,76 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		FastQ fastQ = new FastQ("/media/nbfs/nbCloud/public/AllProject/project_54ffd6d0e4b0b3b73a8cd400/task_54ffe000e4b081224e6dbc54/QualityControl_result/Col_filtered_1.fq.gz");
-		FastQ fastQ2 = new FastQ("/media/nbfs/nbCloud/public/AllProject/project_54ffd6d0e4b0b3b73a8cd400/task_54ffe000e4b081224e6dbc54/QualityControl_result/Col_filtered_2.fq.gz");
+//		Species species = new Species();
+//		species = new Species();
+//		species.setTaxID(10090);
+//		species.setVersion("mm10_GRCm38");
+//		makeIndexTophat(species);
+//		
+//		species.setTaxID(9823);
+//		species.setVersion("Sscrofa10.2");
+//		makeIndexTophat(species);
+//		
+//		species.setTaxID(9606);
+//		species.setVersion("GRCh38");
+//		makeIndexTophat(species);
+//		
+//		species = new Species();
+//		species.setTaxID(9606);
+//		species.setVersion("hg19_GRCh37");
+//		makeIndexTophat(species);
+//		
+//		species = new Species();
+//		species.setTaxID(39947);
+//		species.setVersion("tigr7");
+//		makeIndexTophat(species);
+//		
+//		species = new Species();
+//		species.setTaxID(3702);
+//		species.setVersion("tair9");
+//		makeIndexTophat(species);
 
-		FastQ fastQWrite = new FastQ("/home/novelbio/git/NBCplatform/src/test/resources/test_file/fastq/PE/arabidopsis_rna_1.fq.gz", true);
-		FastQ fastQWrite2 = new FastQ("/home/novelbio/git/NBCplatform/src/test/resources/test_file/fastq/PE/arabidopsis_rna_2.fq.gz", true);
 		
-		int i = 0;
-		for (FastQRecord[] fqs : fastQ.readlinesPE(fastQ2)) {
-			if (i++ > 100000) {
-				break;
+//		Object obj = JSONObject.parse("unable to ping registry endpoint https://192.168.0.172:5001/v0/");
+//		System.out.println(obj.toString());
+//		while (true) {
+//			System.out.println(DateUtil.getDateDetail() + " sysout");
+//			System.err.println(DateUtil.getDateDetail() + " err");
+//			Thread.sleep(1000);
+//		}
+		GffHashGene gffHashGene = new GffHashGene("/home/novelbio/下载/Triticum_aestivum.IWGSC1.0_popseq.28.integration.v2.gtf");
+		
+		
+		ArrayList<GffDetailGene> lsGffDetailGene = gffHashGene.getGffDetailAll();
+		Map<String, Integer> mapGene2Len = new HashMap<>();
+		for (GffDetailGene gffDetailGene : lsGffDetailGene) {
+			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+				String geneName = gffGeneIsoInfo.getParentGeneName();
+				int isoLength = gffGeneIsoInfo.getLenExon(0);
+				//获得一个基因中最长转录本的名字
+				if (!mapGene2Len.containsKey(geneName) || mapGene2Len.get(geneName) < isoLength) {
+					mapGene2Len.put(geneName, isoLength);
+				}
 			}
-			fastQWrite.writeFastQRecord(fqs[0]);
-			fastQWrite2.writeFastQRecord(fqs[1]);
 		}
 		
-		fastQ.close();
-		fastQ2.close();
-		fastQWrite.close();
-		fastQWrite2.close();
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/下载/genename", true);
+		for (String geneName : mapGene2Len.keySet()) {
+			txtWrite.writefileln(geneName);
+		}
+		txtWrite.close();
 	}
+	
+	private static void makeIndexTophat(Species species) {
+		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		IndexMapSplice maker = (IndexMapSplice)MapIndexMaker.createIndexMaker(SoftWare.bwa_aln);
+		maker.setLock(false);
+		maker.setChrIndex(species.getIndexChr(SoftWare.bowtie));
+		maker.IndexMake();
+		gffChrAbs.close();
+		System.out.println("finish " + species.getCommonName());
+	}
+	
 	
 	private static void run(String group, String name) {
 		int i = 0;

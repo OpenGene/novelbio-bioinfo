@@ -52,8 +52,8 @@ public class TestMapDNA {
 		
 		CmdOperate.setTmpPath("/home/novelbio/tmp");
 		mapDNA = new MapBowtie2();
-		String leftFqName = parentPath + "fastq/PE/L_correct.1.fq";
-		String rightFqName = parentPath + "fastq/PE/R_correct.2.fq";
+		String leftFqName = parentPath + "fastq/PE/L_correct.1.fq.gz";
+		String rightFqName = parentPath + "fastq/PE/R_correct.2.fq.gz";
 		mapDNA.setChrIndex(referenceFile);
 		FastQ leftFq = new FastQ(leftFqName);
 		FastQ rightFq = new FastQ(rightFqName);
@@ -72,8 +72,8 @@ public class TestMapDNA {
 		copyFile();
 		
 		MapBwaAln mapDNA = new MapBwaAln();
-		String leftFqName = parentPath + "fastq/PE/L_correct.1.fq";
-		String rightFqName = parentPath + "fastq/PE/R_correct.2.fq";
+		String leftFqName = parentPath + "fastq/PE/L_correct.1.fq.gz";
+		String rightFqName = parentPath + "fastq/PE/R_correct.2.fq.gz";
 		mapDNA.setChrIndex(referenceFile);
 		FastQ leftFq = new FastQ(leftFqName);
 		FastQ rightFq = new FastQ(rightFqName);
@@ -93,8 +93,8 @@ public class TestMapDNA {
 		
 		CmdOperate.setTmpPath("/home/novelbio/tmp");
 		MapBwaMem mapDNA = new MapBwaMem();
-		String leftFqName = parentPath + "fastq/PE/L_correct.1.fq";
-		String rightFqName = parentPath + "fastq/PE/R_correct.2.fq";
+		String leftFqName = parentPath + "fastq/PE/L_correct.1.fq.gz";
+		String rightFqName = parentPath + "fastq/PE/R_correct.2.fq.gz";
 		mapDNA.setChrIndex(referenceFile);
 		FastQ leftFq = new FastQ(leftFqName);
 		FastQ rightFq = new FastQ(rightFqName);

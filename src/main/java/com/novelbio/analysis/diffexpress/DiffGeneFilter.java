@@ -225,7 +225,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	/** 获得筛选差异后的文件名 */
 	public static String getDifGeneFileName(String excelFileName, String excelPrefix) {
 		String fileName = FileOperate.getPathName(excelFileName) + excelPrefix;
-		return FileOperate.changeFileSuffix(fileName, "_diff", "xls");
+		return FileOperate.changeFileSuffix(fileName, ".diff", "xls");
 	}
 	
 	/**
