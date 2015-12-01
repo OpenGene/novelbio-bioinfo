@@ -606,7 +606,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
 	public void writeToFile(String resultExpPrefix, boolean isCountNCrna) {
 		String suffixRPKM = "All_RPKM", suffixUQRPKM = "All_UQ", 
-				suffixCounts = "All_Counts", tpm = "All_TPM", ncrna = "All_ncRNA_Statistics;";
+				suffixCounts = "All_Counts", tpm = "All_TPM", ncrna = "All_ncRNA_Statistics";
 		if (isCalculateFPKM()) {
 			suffixRPKM = "All_FPKM";
 			suffixUQRPKM = "All_UQ";
