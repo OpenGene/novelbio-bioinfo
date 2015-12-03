@@ -101,7 +101,8 @@ public class ESTScanCDSPredict implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);	
 		cmdOperate.setRedirectOutToTmp(true);
 		cmdOperate.addCmdParamOutput(getPepResultFile());	
-		cmdOperate.addCmdParamOutput(getCdsResultFile());
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.setStdOutPath(getCdsResultFile(), true, false);
 		cmdOperate.runWithExp("ESTScan error:");
 	}
 
