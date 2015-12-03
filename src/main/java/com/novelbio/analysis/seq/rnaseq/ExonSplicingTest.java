@@ -205,8 +205,15 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 */
 	public void addMapCondition2MapReads(String condition, String group, MapReadsAbs mapReads) {
 		SpliceType2Value spliceType2Value = getAndCreatSpliceType2Value(condition);
-		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
-			spliceType2Value.addExp(group, exonCluster.getParentGene(), spliceTypePredict, mapReads);
+		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {			
+			List<? extends Alignment> lsSiteInfoBG = spliceTypePredict.getBGSite();
+			List<Align> lsSiteInfo = spliceTypePredict.getDifSite();
+			
+			String refId = exonCluster.getRefID();
+			double[] BGinfo = mapReads.getRangeInfo(refId, lsSiteInfoBG);
+			double[] info = mapReads.getRangeInfo(refId, lsSiteInfo);
+
+			spliceType2Value.addExp(group, exonCluster.getParentGene(), spliceTypePredict, BGinfo, info);
 		}
 	}
 	
@@ -777,19 +784,12 @@ class SpliceType2Value {
 	
 	/** 添加表达 */
 	public void addExp(String group, GffDetailGene gffDetailGene, 
-			SpliceTypePredict spliceTypePredict, MapReadsAbs mapReads) {
-		List<? extends Alignment> lsSiteInfoBG = spliceTypePredict.getBGSite();
-		List<Align> lsSiteInfo = spliceTypePredict.getDifSite();
-		String refId = gffDetailGene.getRefID();
-		
-		double[] BGinfo = mapReads.getRangeInfo(refId, lsSiteInfoBG);
-		
+			SpliceTypePredict spliceTypePredict, double[] BGinfo, double[] info) {
 		ArrayListMultimap<String, Double> mapGroup2LsExp = mapSplicingType2_MapGroup2LsExpValue.get(spliceTypePredict.getType());
 		if (mapGroup2LsExp == null) {
 			mapGroup2LsExp = ArrayListMultimap.create();
 			mapSplicingType2_MapGroup2LsExpValue.put(spliceTypePredict.getType(), mapGroup2LsExp);
 		}
-		double[] info = mapReads.getRangeInfo(refId, lsSiteInfo);
 		if (info == null || BGinfo == null) {
 			mapGroup2LsExp.put(group, 0.0);
 			mapGroup2LsExp.put(group, 0.0);

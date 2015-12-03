@@ -30,9 +30,8 @@ public class MethylationQZL {
 	 * @param excelFile
 	 */
 	public static void getInfo(String excelFile, String OutfileName) {
-		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.openExcel(excelFile);
-		ArrayList<String[]> lsInfo = excelOperate.ReadLsExcel(1, 1, excelOperate.getRowCount(), excelOperate.getColCount());
+		ExcelOperate excelOperate = new ExcelOperate(excelFile);
+		ArrayList<String[]> lsInfo = excelOperate.readLsExcel();
 		ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
 		
 		

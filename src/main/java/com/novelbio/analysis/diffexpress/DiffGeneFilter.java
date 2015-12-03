@@ -11,6 +11,7 @@ import cern.colt.function.IntProcedure;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -44,9 +45,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	List<Double> lsPvalue = new ArrayList<Double>();
 	List<Double> lsLogFC = new ArrayList<Double>();
 	/** 具体的值，第一行是标题 */
-	List<List<String>> lslsInfo;
+	List<String[]> lslsInfo;
 	/** 差异基因的值 */
-	List<List<String>> lslsDifGene;
+	List<String[]> lslsDifGene;
 	
 	/** 画图的时候用pvalue还是fdr做阈值 */
 	TitleFormatNBC titlePvalueFDR = TitleFormatNBC.FDR;
@@ -64,14 +65,14 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	public DiffGeneFilter(String excelName, String excelPrefix) {
 		this.excelFileName = excelName;
 		this.excelPrefix = excelPrefix;
-		lslsInfo = ExcelTxtRead.readLsExcelTxtls(excelName, 0);
+		lslsInfo = ExcelTxtRead.readLsExcelTxt(excelName, 0);
 		QUANUM = lslsInfo.size()/10;
-		List<String> lsTitle = lslsInfo.get(0);
+		String[] lsTitle = lslsInfo.get(0);
 		fdrCol = findColNum(lsTitle, TitleFormatNBC.FDR.toString());
 		pvalueCol = findColNum(lsTitle, TitleFormatNBC.Pvalue.toString());
 		logfcCol = findColNum(lsTitle, TitleFormatNBC.Log2FC.toString());
 		
-		List<List<String>> lsInfoWithoutTitle = lslsInfo.subList(1, lslsInfo.size());
+		List<String[]> lsInfoWithoutTitle = lslsInfo.subList(1, lslsInfo.size());
 		lsFDR = readListListCol(lsInfoWithoutTitle, fdrCol, 0,1);
 		if (pvalueCol > 0) {
 			lsPvalue = readListListCol(lsInfoWithoutTitle, pvalueCol, 0, 1);
@@ -113,10 +114,10 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @param colName
 	 * @return 返回从0开始的计数
 	 */
-	private int findColNum(List<String> lsTitle, String colName) {
+	private int findColNum(String[] lsTitle, String colName) {
 		int colNum = -1;
-		for (int i = 0; i < lsTitle.size(); i++) {
-			if (lsTitle.get(i).equalsIgnoreCase(colName)) {
+		for (int i = 0; i < lsTitle.length; i++) {
+			if (lsTitle[i].equalsIgnoreCase(colName)) {
 				colNum = i;
 			}
 		}
@@ -131,13 +132,13 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @param naValue 如果是NA，那么用什么值来填充
 	 * @return
 	 */
-	public static List<Double> readListListCol(List<List<String>> lsls, int colNum, double inf, double naValue) {
+	public static List<Double> readListListCol(List<String[]> lsls, int colNum, double inf, double naValue) {
 		if (colNum < 0) {
 			return new ArrayList<Double>();
 		}
 		List<Double> lsCol = new ArrayList<Double>();
-		for (List<String> list : lsls) {
-			String str = list.get(colNum);
+		for (String[] list : lsls) {
+			String str = list[colNum];
 			double value;
 			//TODO 尚未考虑NA等情况
 			if (str.trim().toLowerCase().startsWith("inf")) {
@@ -163,13 +164,13 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * @param colNum 从0开始的计数
 	 * @return
 	 */
-	public static List<Double> readListListColOut_0(List<List<String>> lsls, int colNum) {
+	public static List<Double> readListListColOut_0(List<String[]> lsls, int colNum) {
 		if (colNum < 0) {
 			return new ArrayList<Double>();
 		}
 		List<Double> lsCol = new ArrayList<Double>();
-		for (List<String> list : lsls) {
-			String str = list.get(colNum);
+		for (String[] ss: lsls) {
+			String str = ss[colNum];
 			double value;
 			//TODO 尚未考虑NA等情况
 			try {
@@ -204,18 +205,16 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 */
 	public String writeDifGene() {
 		String outFile = getDifGeneFileName(excelFileName, excelPrefix);
-		List<List<String>> lsResult = getLsDifGene();
+		List<String[]> lsResult = getLsDifGene();
 		
 		FileOperate.DeleteFileFolder(outFile);
 		ExcelOperate excelOperate = new ExcelOperate(outFile);
-//		excelOperate.setNBCExcel(true);
-		excelOperate.WriteExcel(lsResult);
+		excelOperate.writeExcel(lsResult);
 		excelOperate.close();
 		
 		String txtFile = FileOperate.changeFileSuffix(outFile, "", "txt");
 		TxtReadandWrite txtOutFinal = new TxtReadandWrite(txtFile, true);
-		for (List<String> list : lsResult) {
-			String[] ss = list.toArray(new String[0]);
+		for (String[] ss : lsResult) {
 			txtOutFinal.writefileln(ss);
 		}
 		txtOutFinal.close();
@@ -232,12 +231,12 @@ import com.novelbio.generalConf.TitleFormatNBC;
 	 * 根据阈值，获得差异基因的表，可以直接写入excel中
 	 * 第一行是title
 	 */
-	public List<List<String>> getLsDifGene() {
+	public List<String[]> getLsDifGene() {
 		if (lslsDifGene != null && lslsDifGene.size() > 0) {
 			return lslsDifGene;
 		}
 		
-		lslsDifGene = new ArrayList<List<String>>();
+		lslsDifGene = new ArrayList<String[]>();
 		if (pvalueCol < 0 && titlePvalueFDR != TitleFormatNBC.FDR) {
 			titlePvalueFDR = TitleFormatNBC.FDR;
 		}
@@ -251,7 +250,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 			
 			if (pvalue <= pvalueFDRthreshold && (logfc >= upfc || logfc <= downfc)) {
 				//因为lslsInfo的第一行是title，所以要加上1行以保持一致
-				List<String> lsValue = new ArrayList<>(lslsInfo.get(i+1));
+				List<String> lsValue = ArrayOperate.converArray2List(lslsInfo.get(i+1));
 				if (logfc >= upfc) {
 					upDownNum[0]++;
 					lsValue.add(getLastCol()+1, "up");
@@ -259,25 +258,25 @@ import com.novelbio.generalConf.TitleFormatNBC;
 					upDownNum[1]++;
 					lsValue.add(getLastCol()+1, "down");
 				}
-				lslsDifGene.add(lsValue);
+				lslsDifGene.add(lsValue.toArray(new String[0]));
 			}
 		}
 		
 		//先按照fdr排序，一样的话按照pvalue排序，再一样按照foldchange排序
-		Collections.sort(lslsDifGene, new Comparator<List<String>>() {
-			public int compare(List<String> o1, List<String> o2) {
+		Collections.sort(lslsDifGene, new Comparator<String[]>() {
+			public int compare(String[] o1, String[] o2) {
 				Double pvalue1= 0.0, pvalue2 = 0.0, fdr1 = 0.0, fdr2 = 0.0, logfc1 = 0.0, logfc2 = 0.0;
 				if (pvalueCol >= 0) {
-					pvalue1 = Double.parseDouble(o1.get(pvalueCol));
-					pvalue2 = Double.parseDouble(o2.get(pvalueCol));
+					pvalue1 = Double.parseDouble(o1[pvalueCol]);
+					pvalue2 = Double.parseDouble(o2[pvalueCol]);
 				}
 				if (fdrCol >= 0) {
-					fdr1 = Double.parseDouble(o1.get(fdrCol));
-					fdr2 = Double.parseDouble(o2.get(fdrCol));
+					fdr1 = Double.parseDouble(o1[fdrCol]);
+					fdr2 = Double.parseDouble(o2[fdrCol]);
 				}
 				if (logfcCol >= 0) {
-					logfc1 = Double.parseDouble(o1.get(logfcCol));
-					logfc2 = Double.parseDouble(o2.get(logfcCol));
+					logfc1 = Double.parseDouble(o1[logfcCol]);
+					logfc2 = Double.parseDouble(o2[logfcCol]);
 				}
 				int result = fdr1.compareTo(fdr2);
 				if (result == 0) {
@@ -289,9 +288,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
 				return result;
 			}
 		});
-		List<String> lsTitle = new ArrayList<>(lslsInfo.get(0));
+		List<String> lsTitle = ArrayOperate.converArray2List(lslsInfo.get(0));
 		lsTitle.add(getLastCol()+1, TitleFormatNBC.Style.toString());
-		lslsDifGene.add(0, lsTitle);
+		lslsDifGene.add(0, lsTitle.toArray(new String[0]));
 		return lslsDifGene;
 	}
 	

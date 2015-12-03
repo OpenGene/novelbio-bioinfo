@@ -9,9 +9,8 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class ArrayTools {
 	public static void seperateFile(String filePath,String excelfileName,String outFileName) throws Exception {
-		ExcelOperate excelArray=new ExcelOperate();
-		excelArray.openExcel(filePath+"/"+excelfileName);
-		ArrayList<String[]> lsarrayInfo=excelArray.ReadLsExcel(1, 1, excelArray.getRowCount(), excelArray.getColCount());
+		ExcelOperate excelArray=new ExcelOperate(filePath+"/"+excelfileName);
+		ArrayList<String[]> lsarrayInfo=excelArray.readLsExcel();
 		
 		ArrayList<Integer> lsSepNum=new ArrayList<Integer>();
 		lsSepNum.add(0);

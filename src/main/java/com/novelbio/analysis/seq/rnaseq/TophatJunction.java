@@ -372,10 +372,25 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		try {
 			setItemDistance();
 			setOther();
-			getMapName2DetailNum();
-			getMapName2Detail();
+			fillMapName2DetailNum();
+			fillMapName2Detail();
 		} catch (Exception e) {
 			e.printStackTrace();
+		}
+	}
+	
+	
+	private void fillMapName2DetailNum() {
+		mapName2DetailNum = new LinkedHashMap<String, Integer>();
+		for ( ListBin<JunctionInfo>  listAbs : mapChrID2ListGff.values()) {
+			mapName2DetailNum.putAll(listAbs.getMapName2DetailAbsNum());
+		}
+	}
+	
+	private void fillMapName2Detail() {
+		mapName2DetailAbs = new LinkedHashMap<String, JunctionInfo>();
+		for (ListBin<JunctionInfo>  listAbs : mapChrID2ListGff.values()) {
+			mapName2DetailAbs.putAll(listAbs.getMapName2DetailAbs());
 		}
 	}
 	

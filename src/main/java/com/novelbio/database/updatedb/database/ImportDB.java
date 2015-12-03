@@ -64,9 +64,9 @@ public class ImportDB {
 	}
 	
 	public static void main(String[] args) {
-		ImportPerLine.addTaxId(9925);
+//		ImportPerLine.addTaxId(9925);
 		ImportPerLine.addTaxId(9940);
-		ImportPerLine.addTaxId(9606);
+//		ImportPerLine.addTaxId(9606);
 		
 		String downloadPath = "/media/winE/NBCplatform/database/20150928/";
 		String GOPath = downloadPath + "GO/";

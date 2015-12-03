@@ -125,8 +125,7 @@ public class Pair2Gff {
 	 */
 	public static void getMeDIP(String gffPair,String gffRMA532,String gffRMA635,int contProbNum, double ratio,String excelResultFile,String[] prix) throws Exception {
 		ArrayList<ArrayList<String[]>> lsPeak = getMeDIP(gffPair, gffRMA532, gffRMA635, contProbNum, ratio);
-		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.openExcel(excelResultFile);
+		ExcelOperate excelOperate = new ExcelOperate(excelResultFile);
 //		excelOperate.WriteExcel(prix[0], 1, 1, lsPeak.get(0), true);
 //		excelOperate.WriteExcel(prix[1], 1, 1, lsPeak.get(1), true);
 	}

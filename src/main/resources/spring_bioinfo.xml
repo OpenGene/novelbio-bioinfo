@@ -30,7 +30,7 @@
 		     max-wait-time="10000"
 		     auto-connect-retry="true"
 		     socket-keep-alive="true"
-		     socket-timeout="10000"
+		     socket-timeout="50000"
 		     slave-ok="true"
 		     write-number="1"
 		     write-timeout="0"

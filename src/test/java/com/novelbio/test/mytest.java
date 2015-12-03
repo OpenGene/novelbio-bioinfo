@@ -12,6 +12,8 @@ import java.util.Set;
 import org.apache.commons.math3.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
@@ -34,64 +36,20 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-//		Species species = new Species();
-//		species = new Species();
-//		species.setTaxID(10090);
-//		species.setVersion("mm10_GRCm38");
-//		makeIndexTophat(species);
-//		
-//		species.setTaxID(9823);
-//		species.setVersion("Sscrofa10.2");
-//		makeIndexTophat(species);
-//		
-//		species.setTaxID(9606);
-//		species.setVersion("GRCh38");
-//		makeIndexTophat(species);
-//		
-//		species = new Species();
-//		species.setTaxID(9606);
-//		species.setVersion("hg19_GRCh37");
-//		makeIndexTophat(species);
-//		
-//		species = new Species();
-//		species.setTaxID(39947);
-//		species.setVersion("tigr7");
-//		makeIndexTophat(species);
-//		
-//		species = new Species();
-//		species.setTaxID(3702);
-//		species.setVersion("tair9");
-//		makeIndexTophat(species);
-
-		
-//		Object obj = JSONObject.parse("unable to ping registry endpoint https://192.168.0.172:5001/v0/");
-//		System.out.println(obj.toString());
-//		while (true) {
-//			System.out.println(DateUtil.getDateDetail() + " sysout");
-//			System.err.println(DateUtil.getDateDetail() + " err");
-//			Thread.sleep(1000);
-//		}
-		GffHashGene gffHashGene = new GffHashGene("/home/novelbio/下载/Triticum_aestivum.IWGSC1.0_popseq.28.integration.v2.gtf");
-		
-		
-		ArrayList<GffDetailGene> lsGffDetailGene = gffHashGene.getGffDetailAll();
-		Map<String, Integer> mapGene2Len = new HashMap<>();
-		for (GffDetailGene gffDetailGene : lsGffDetailGene) {
-			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				String geneName = gffGeneIsoInfo.getParentGeneName();
-				int isoLength = gffGeneIsoInfo.getLenExon(0);
-				//获得一个基因中最长转录本的名字
-				if (!mapGene2Len.containsKey(geneName) || mapGene2Len.get(geneName) < isoLength) {
-					mapGene2Len.put(geneName, isoLength);
-				}
+		GffHashGene gffHashGene = new GffHashGene("/media/winE/test/yybug/Triticum_aestivum.IWGSC1.0_popseq.28.integration.v3.gtf");
+		System.out.println("fse");
+//		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/test/yybug/geneName.txt", true);
+		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
+			if (gffDetailGene.getNameSingle().equals("EPlTAEG00000000659")) {
+				System.out.println("stop");
 			}
+//			txtWrite.writefileln(gffDetailGene.getNameSingle());
 		}
 		
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/下载/genename", true);
-		for (String geneName : mapGene2Len.keySet()) {
-			txtWrite.writefileln(geneName);
-		}
-		txtWrite.close();
+		GffDetailGene gffDetailGene = gffHashGene.searchLOC("EPlTAEG00000000659");
+		System.out.println(gffDetailGene.getNameSingle());
+//		txtWrite.close();
+		
 	}
 	
 	private static void makeIndexTophat(Species species) {

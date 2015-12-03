@@ -34,9 +34,8 @@ public class getProbID {
 	 * @param resultExcel
 	 */
 	public static void getProbID(String excelFile, int rowNum,int colNum,String resultExcel) {
-		ExcelOperate excelMas = new ExcelOperate();
-		excelMas.openExcel(excelFile);
-		ArrayList<String[]> lsProbID = excelMas.ReadLsExcel(rowNum, colNum, excelMas.getRowCount(), colNum);
+		ExcelOperate excelMas = new ExcelOperate(excelFile);
+		ArrayList<String[]> lsProbID = excelMas.readLsExcel(rowNum, colNum, -1, colNum);
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		for (String[] strings : lsProbID) {
 			String[] ss = strings[0].split(";");
@@ -46,9 +45,8 @@ public class getProbID {
 				lsResult.add(tmpResult);
 			}
 		}
-		ExcelOperate excelResult = new ExcelOperate();
-		excelResult.openExcel(resultExcel);
-		excelResult.WriteExcel( 1, 1, lsResult);
+		ExcelOperate excelResult = new ExcelOperate(resultExcel);
+		excelResult.writeExcel( 1, 1, lsResult);
 		excelResult.close();
 	}
 }

@@ -28,9 +28,8 @@ public class Repeatdel {
 		for (int i = 0; i < colNum.length; i++) {
 			colNum[i] --;
 		}
-		ExcelOperate excelComb = new ExcelOperate();
-		excelComb.openExcel(filename);
-		ArrayList<String[]> lsExcel = excelComb.ReadLsExcel(1, 1, excelComb.getRowCount(), excelComb.getColCount());
+		ExcelOperate excelComb = new ExcelOperate(filename);
+		ArrayList<String[]> lsExcel = excelComb.readLsExcel(1, 1, -1, excelComb.getColCount());
 		
 		for (String[] strings : lsExcel) {	
 			if (hashGeneInfo.containsKey(strings[colAccID].trim()) ) {
@@ -55,9 +54,8 @@ public class Repeatdel {
 			}
 		}
 		
-		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.openExcel(outFile);
-		excelOperate.WriteExcel(1, 1, lsResult);
+		ExcelOperate excelOperate = new ExcelOperate(outFile);
+		excelOperate.writeExcel(1, 1, lsResult);
 		excelOperate.close();
 	}
 	

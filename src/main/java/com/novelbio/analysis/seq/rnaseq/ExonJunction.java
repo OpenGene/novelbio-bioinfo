@@ -42,8 +42,10 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamMapReads;
 import com.novelbio.base.SepSign;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
@@ -184,9 +186,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	TophatJunction tophatJunction = new TophatJunction();
 	LinkedHashSet<String> setCondition = new LinkedHashSet<String>();
 	
-	/** 如果有一系列需要比较的conditions，就写在这个里面 */
-	List<String[]> lsCondCompare;
-	
 	/** 本次比较的condition */
 	String condition1, condition2;
 	/** condition到排序的bam文件 */
@@ -231,6 +230,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	/** 小于6bp的alt5和alt3都可能是假的 */
 	int minDifLen = 6;
+	
+	Map<String, Long> mapChrId2Len;
 	
 	public ExonJunction() {
 //		List<Align> lsAligns = new ArrayList<>();
@@ -373,10 +374,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		this.condition2 = condition2;
 	}
 	
-	public void setCompareGroupsLs(List<String[]> lsConditions) {
-		this.lsCondCompare = lsConditions;
-	}
-	
 	public void addBamSorted(String condition, String sortedBamFile) {
 		setCondition.add(condition);
 		SamFile samFile = new SamFile(sortedBamFile); 
@@ -385,7 +382,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		mapCond2SamFile.put(condition, samFile);
 	}
 	
+	
 	public void running() {
+		runByChrome();
+	}
+	
+	private void runWithoutChrome() {
 		tophatJunction.setIntronMinLen(12);
 		if (!isCombine) {
 			for (String condition : mapCond2SamFile.keys()) {
@@ -448,36 +450,95 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		
 		loadExp();
 		setSplicingType();
-		if (lsCondCompare == null || lsCondCompare.size() == 0) {
-			lsCondCompare = new ArrayList<String[]>();
-			lsCondCompare.add(new String[]{condition1, condition2});
-		}
 		
 		if (runGetInfo != null) {
 			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
 			List<Double> lsRegion = new ArrayList<>();
 			lsRegion.add(2.0);
 			lsRegion.add(0.0);
-			lsRegion.add((double) (lsSplicingTests.size() * lsCondCompare.size()));
+			lsRegion.add((double) (lsSplicingTests.size()));
 			guiAnnoInfo.setLsNumInfo(lsRegion);
 			guiAnnoInfo.setInfo2("Doing Test");
 			runGetInfo.setRunningInfo(guiAnnoInfo);
 		}
 		
 		int[] num = new int[]{0};
-		for (String[] condCompare : lsCondCompare) {
-			setCompareGroups(condCompare[0], condCompare[1]);
-			lsResult = getTestResult_FromIso(num);
-			if (resultFile != null) {
-				String outFile = "";
-				if (FileOperate.isFileDirectory(resultFile)) {
-					outFile = resultFile + condition1 +"vs" + condition2 + ".txt";
-				} else {
-					outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, "txt");
-				}
-				writeToFile(outFile );
+		setCompareGroups(condition1, condition2);
+		lsResult = getTestResult_FromIso(num);
+		if (resultFile != null) {
+			String outFile = "";
+			if (FileOperate.isFileDirectory(resultFile)) {
+				outFile = resultFile + condition1 +"vs" + condition2 + ".txt";
+			} else {
+				outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, "txt");
 			}
+			writeToFile(outFile, lsResult);
 		}
+	}
+	
+	private void runByChrome() {
+		lsResult = new ArrayList<>();
+		Set<String> setChrId = mapCond2SamReader.values().iterator().next().getFirstSamFile().getMapChrID2Length().keySet();
+		for (String chrId : setChrId) {
+			runByChrome(chrId);
+		}
+		if (resultFile != null) {
+			String outFile = "";
+			if (FileOperate.isFileDirectory(resultFile)) {
+				outFile = resultFile + condition1 +"vs" + condition2 + ".txt";
+			} else {
+				outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, "txt");
+			}
+			writeToFile(outFile, lsResult);
+		}
+	}
+	
+	
+	private void runByChrome(String chrId) {
+		MapReads mapReads = null;		
+		if (isReconstructIso) {
+			int invNum = isReconstructRI? 3 : 15;
+			mapReads = getMapReads(mapCond2SamReader.values().iterator().next(), invNum);
+		}
+		
+		loadJunctionBam(mapReads, chrId);
+		tophatJunction.conclusion();
+		
+		logger.info("finish junction reads");
+
+		GenerateNewIso generateNewIso = null;
+		if (isReconstructIso) {
+			generateNewIso = new GenerateNewIso(tophatJunction, mapReads, strandSpecific, isReconstructRI);
+			generateNewIso.setMinIntronLen(intronMinLen);
+			generateNewIso.setGffHash(gffHashGene);
+			generateNewIso.setNewIsoReadsNum(newIsoReadsNum);
+		}
+		fillLsAll_Dif_Iso_Exon(generateNewIso, chrId);
+		if (isReconstructIso) {
+			generateNewIso.clear();
+			generateNewIso = null;
+			mapReads.clear();
+			mapReads = null;
+			System.gc();
+		}
+		
+		loadExp(chrId);
+		setSplicingType();
+		
+		if (runGetInfo != null) {
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			List<Double> lsRegion = new ArrayList<>();
+			lsRegion.add(2.0);
+			lsRegion.add(0.0);
+			lsRegion.add((double) (lsSplicingTests.size()));
+			guiAnnoInfo.setLsNumInfo(lsRegion);
+			guiAnnoInfo.setInfo2("Doing Test");
+			runGetInfo.setRunningInfo(guiAnnoInfo);
+		}
+		
+		int[] num = new int[]{0};
+		setCompareGroups(condition1, condition2);
+		lsResult = getTestResult_FromIso(num);
 	}
 	
 	/**
@@ -496,6 +557,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void loadJunctionBam(MapReads mapReads) {
+		loadJunctionBam(mapReads, null);
+	}
+	
+	private void loadJunctionBam(MapReads mapReads, String chrId) {
 		AlignSeqReading samFileReadingLast = null;
 		tophatJunction.setStrandSpecific(strandSpecific);
 
@@ -506,6 +571,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				runGetInfo.setRunningInfo(guiAnnoInfo);
 			}
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
+			mapChrId2Len = lsSamFileReadings.get(0).getFirstSamFile().getMapChrID2Length();
 			int i = 0;
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
 				
@@ -518,10 +584,17 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
 				}
 				
+				if (!StringOperate.isRealNull(chrId)) {
+					List<Alignment> lsAlignments = new ArrayList<>();
+					long chrLen = mapChrId2Len.get(chrId);
+					lsAlignments.add(new Align(chrId, 0, (int)chrLen));
+					samFileReading.setLsAlignments(lsAlignments);
+				}
+
 				samFileReading.setLsAlignments(lsReadReagion);
 				samFileReading.setRunGetInfo(runGetInfo);
 				SamFileStatistics samStatistics = new SamFileStatistics(condition);
-				samStatistics.setStandardData(samFileReading.getFirstSamFile().getMapChrID2Length());
+				samStatistics.setStandardData(mapChrId2Len);
 				samFileReading.addAlignmentRecorder(tophatJunction);
 				samFileReading.addAlignmentRecorder(samStatistics);
 				if (mapReads != null) {
@@ -542,13 +615,22 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		samFileReadingLast = null;
 	}
 	
-	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
 	private void fillLsAll_Dif_Iso_Exon(GenerateNewIso generateNewIso) {
+		fillLsAll_Dif_Iso_Exon(generateNewIso, null);
+	}
+	
+	
+	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
+	private void fillLsAll_Dif_Iso_Exon(GenerateNewIso generateNewIso, String chrId) {
 		List<GffDetailGene> lsGffDetailGenes = gffHashGene.getLsGffDetailGenes();
 		int i = 0;
 
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 //			logger.debug(gffDetailGene.getNameSingle());
+			
+			if (!StringOperate.isRealNull(chrId) && !gffDetailGene.getRefID().equalsIgnoreCase(chrId)) {
+				continue;
+			}
 			
 			gffDetailGene = GenerateNewIso.getGeneWithSameStrand(gffDetailGene);
 			//TODO 设置断点
@@ -627,6 +709,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void loadExp() {
+		loadExp(null);
+	}
+	
+	private void loadExp(String chrId) {
 		AlignSamReading samFileReadingLast = null;
 		for (String condition : mapCond2SamReader.keySet()) {
 			if (runGetInfo != null) {
@@ -644,6 +730,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
 				}
 				samFileReadingLast = samFileReading;
+				
+				if (!StringOperate.isRealNull(chrId)) {
+					List<Alignment> lsAlignments = new ArrayList<>();
+					long chrLen = mapChrId2Len.get(chrId);
+					lsAlignments.add(new Align(chrId, 0, (int)chrLen));
+					samFileReading.setLsAlignments(lsAlignments);
+				}
+				
 				samFileReading.setLsAlignments(lsReadReagion);
 				samFileReading.setRunGetInfo(runGetInfo);
 				add_RetainIntron_Into_SamReading(condition, i+"", samFileReading);
@@ -660,6 +754,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				addMapReadsInfo(condition, group, mapReadsAbs);
 			}
 		}
+		
+		System.gc();
 	}
 	
 	private void add_RetainIntron_Into_SamReading(String condition, String group,  AlignSamReading samFileReading) {
@@ -738,18 +834,28 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 	
+	private List<ExonSplicingTest> getTestResult_FromIso(int[] num) {
+		return getTestResult_FromIso(num, null);
+	}
+	
 	/** 获得检验完毕的test
 	 * @param num 已经跑掉几个测试了，这个仅仅用在gui上
 	 * @return
 	 */
-	private List<ExonSplicingTest> getTestResult_FromIso(int[] num) {
+	private List<ExonSplicingTest> getTestResult_FromIso(int[] num, String chrId) {
 		setConditionWhileConditionIsNull();
 
 		List<ExonSplicingTest> lsResult = new ArrayList<>();
 		
 		for (List<ExonClusterSite> lsIsoExonSplicingTests : lsSplicingTests) {
+			if (lsIsoExonSplicingTests.isEmpty()) continue;
+			
 			if (lsIsoExonSplicingTests.get(0).getCurrentExonCluster().getParentGene().getName().contains("AP003068.9")) {
 				logger.debug("");
+			}
+			
+			if (!StringOperate.isRealNull(chrId) && !lsIsoExonSplicingTests.get(0).getCurrentExonCluster().getRefID().equalsIgnoreCase(chrId)) {
+				continue;
 			}
 			
 			List<ExonSplicingTest> lsIsoExonSplicingResult = doTest(lsIsoExonSplicingTests);
@@ -1025,7 +1131,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 
 	
 	/** 写入文本 */
-	public void writeToFile(String fileName) {
+	public void writeToFile(String fileName, List<ExonSplicingTest> lsResult) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
 		
 		boolean isGetSeq = seqHash == null ? false : true;

@@ -54,9 +54,16 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
 		super.ReadGffarray(gfffilename);
 		
-		removeDuplicate();
 		return true;
 	}
+	
+	/**
+	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面，本方发为空，直接继承即可
+	 */
+	protected void setOther() {
+		removeDuplicate();
+	}
+	
 	/**
 	 * 只有当gff为new的GffHashGene，并且是addGffDetailGene的形式加入的基因
 	 * 才需要用这个来初始化
@@ -65,9 +72,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		sort();
 		setItemDistance();
 		setOther();
+		removeDuplicate();
 		getMapName2DetailNum();
 		getMapName2Detail();
-		removeDuplicate();
 	}
 	
 	private void removeDuplicate() {
@@ -149,6 +156,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		mapName2DetailAbs = new LinkedHashMap<String, GffDetailGene>();
 		for (GffDetailGene gffGene : getLsGffDetailGenes()) {
+			if (gffGene.getNameSingle().equals("EPlTAEG00000000659")) {
+				logger.debug("sfe");
+			}
 			for (String name : gffGene.getName()) {
 				if (!mapName2DetailAbs.containsKey(name.toLowerCase()) || 
 						mapName2DetailAbs.containsKey(name.toLowerCase()) && gffGene.getRefID().toLowerCase().startsWith("chr"))

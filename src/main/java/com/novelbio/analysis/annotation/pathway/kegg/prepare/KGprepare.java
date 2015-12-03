@@ -54,9 +54,8 @@ public class KGprepare {
 	 * @throws Exception
 	 */
 	public static String[] getAccID(int rowStartNum,int colNum,String accIDFile) throws Exception {
-		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.openExcel(accIDFile);
-		ArrayList<String[]> lsGeneID = excelOperate.ReadLsExcel(rowStartNum, colNum, excelOperate.getRowCount(), colNum);
+		ExcelOperate excelOperate = new ExcelOperate(accIDFile);
+		ArrayList<String[]> lsGeneID = excelOperate.readLsExcel(rowStartNum, colNum, -1, colNum);
 		String[] geneID2=new String[lsGeneID.size()];
 		for (int i = 0; i < lsGeneID.size(); i++) {
 			geneID2[i]=GeneID.removeDot(lsGeneID.get(i)[0]);

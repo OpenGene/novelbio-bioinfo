@@ -164,9 +164,8 @@ public class CompareListSimple {
 		ArrayList<String[]> ls1=null;ArrayList<String[]> ls2=null;
 		
 		try {
-			ExcelOperate excel = new ExcelOperate();
-			excel.openExcel(filePath+FileA);
-			ls1 = excel.ReadLsExcel(firstlinels1, 1, excel.getRowCount(), excel.getColCount(2));
+			ExcelOperate excel = new ExcelOperate(filePath+FileA);
+			ls1 = excel.readLsExcel(firstlinels1, 1, -1, excel.getColCount(2));
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -178,9 +177,8 @@ public class CompareListSimple {
 		}
 			
 		try {
-			ExcelOperate excel = new ExcelOperate();
-			excel.openExcel(filePath+FileB);
-			ls2 = excel.ReadLsExcel(firstlinels2, 1, excel.getRowCount(), excel.getColCount(2));
+			ExcelOperate excel = new ExcelOperate(filePath+FileB);
+			ls2 = excel.readLsExcel(firstlinels2, 1, -1, excel.getColCount(2));
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

@@ -42,12 +42,11 @@ public class DegreeAnnotation {
 	}
 
 	public void writeToFile(String outFile) {
-		ExcelOperate excelCoExp = new ExcelOperate();
-		excelCoExp.newExcelOpen(outFile);
+		ExcelOperate excelCoExp = new ExcelOperate(outFile);
 		String sheet1 = "GeneInteraction";
-		excelCoExp.WriteExcel(sheet1, 1, 1, getLsPairAnno());
+		excelCoExp.writeExcel(sheet1, 1, 1, getLsPairAnno());
 		String sheet2 = "Attribute";
-		excelCoExp.WriteExcel(sheet2, 1, 1, getLsDegree());
+		excelCoExp.writeExcel(sheet2, 1, 1, getLsDegree());
 		excelCoExp.close();
 	}
 	

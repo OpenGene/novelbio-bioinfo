@@ -38,9 +38,8 @@ public class MedianGet {
 		}
 		ArrayList<String[]> lsExcel = ExcelTxtRead.readLsExcelTxt(excelFile, 1);
 		ArrayList<String[]> lsResult = MathComput.getMedian(lsExcel, colAccID, lsCol);
-		ExcelOperate excelOperate = new ExcelOperate();
-		excelOperate.newExcelOpen(outFile);
-		excelOperate.WriteExcel(1, 1, lsResult);
+		ExcelOperate excelOperate = new ExcelOperate(outFile);
+		excelOperate.writeExcel(1, 1, lsResult);
 		excelOperate.close();
 	}
 
