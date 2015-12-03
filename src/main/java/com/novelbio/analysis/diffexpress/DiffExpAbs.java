@@ -184,7 +184,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	/** 将输入的名字修改为指定的输出名字 */
 	private String getAllDifFileName(String filename) {
-		return FileOperate.changeFileSuffix(filename, "_alldiff", "xls");
+		return FileOperate.changeFileSuffix(filename, ".alldiff", "xls");
 	}
 	
 	/**
