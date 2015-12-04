@@ -1,58 +1,37 @@
 package com.novelbio.database.domain.cosmic;
 
+import java.awt.print.Printable;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "cosCanGene")
+import com.novelbio.test.mytest;
+
+@Document(collection = "cosCompleteExport")
 public class CodingMuts implements Serializable {
-	private static final int taxID = 9606;
-	
 	
 	/** chromosome*/
-	private String chr;
-	
+	private String chr;	
 	/** the position of mutation*/
 	private long pos;
-	
 	/** COSMIC ID*/
+	@Id
 	private String cosmicId;
-	
 	private String ref;
 	private String alt;
 	private int geneId;
-	
+	/** the strand of gene location*/
+	private char strand;
 	/** CDS change*/
 	private String cdsChange;
-	
 	/** amino acid change*/
 	private String AAChange;
-	
-	/** HNBC ID*/
-	private String HNGCID;
-	
-	/** primary site in cosmic*/
-	private String priSiteCos;	
-	/** site subtype1*/
-	private String siteSubtype1;	
-	/** site subtype2*/
-	private String siteSubtype2;	
-	/** site subtype1*/
-	private String siteSubtype3;
-	
-	/** primary histology in cosmic*/
-	private String prihistCos;	
-	/** site subtype1*/
-	private String histSubtype1;	
-	/** site subtype2*/
-	private String histSubtype2;
-	/** site subtype1*/
-	private String histSubtype3;
-	
-	/** FATHMM prediction*/
-	private String FathmmPre;
-	/** FATHMM score*/
-	private float FathmmScore;
 	
 	public void setChr(String chr) {
 		this.chr = chr;
@@ -75,6 +54,12 @@ public class CodingMuts implements Serializable {
 	public void setRef(String ref) {
 		this.ref = ref;
 	}
+	public String getRef() {
+		return ref;
+	}
+	public void setAlt(String alt) {
+		this.alt = alt;
+	}
 	public String getAlt() {
 		return alt;
 	}
@@ -83,6 +68,12 @@ public class CodingMuts implements Serializable {
 	}
 	public int getGeneId() {
 		return geneId;
+	}
+	public void setStrand(char strand) {
+		this.strand = strand;
+	}
+	public char getStrand() {
+		return strand;
 	}
 	public void setCdsChange(String cdsChange) {
 		this.cdsChange = cdsChange;
@@ -96,88 +87,50 @@ public class CodingMuts implements Serializable {
 	public String getAAChange() {
 		return AAChange;
 	}
-	public void setHNGCID(String hNGCID) {
-		HNGCID = hNGCID;
-	}
-	public String getHNGCID() {
-		return HNGCID;
-	}
-	public void setPriSiteCos(String priSiteCos) {
-		this.priSiteCos = priSiteCos;
-	}
-	public String getPriSiteCos() {
-		return priSiteCos;
-	}
-	public void setSiteSubtype1(String siteSubtype1) {
-		this.siteSubtype1 = siteSubtype1;
-	}
-	public String getSiteSubtype1() {
-		return siteSubtype1;
-	}
-	public void setSiteSubtype2(String siteSubtype2) {
-		this.siteSubtype2 = siteSubtype2;
-	}
-	public String getSiteSubtype2() {
-		return siteSubtype2;
-	}
-	public void setSiteSubtype3(String siteSubtype3) {
-		this.siteSubtype3 = siteSubtype3;
-	}
-	public String getSiteSubtype3() {
-		return siteSubtype3;
-	}
-	public void setPrihistCos(String prihistCos) {
-		this.prihistCos = prihistCos;
-	}
-	public String getPrihistCos() {
-		return prihistCos;
-	}
-	public void setHistSubtype1(String histSubtype1) {
-		this.histSubtype1 = histSubtype1;
-	}
-	public String getHistSubtype1() {
-		return histSubtype1;
-	}
-	public void setHistSubtype2(String histSubtype2) {
-		this.histSubtype2 = histSubtype2;
-	}
-	public String getHistSubtype2() {
-		return histSubtype2;
-	}
-	public void setHistSubtype3(String histSubtype3) {
-		this.histSubtype3 = histSubtype3;
-	}
-	public String getHistSubtype3() {
-		return histSubtype3;
-	}
-	public void setFathmmPre(String fathmmPre) {
-		FathmmPre = fathmmPre;
-	}
-	public String getFathmmPre() {
-		return FathmmPre;
-	}
-	public void setFathmmScore(float fathmmScore) {
-		FathmmScore = fathmmScore;
-	}
-	public float getFathmmScore() {
-		return FathmmScore;
-	}
 	
 	public static CodingMuts getInstanceFromCodingMuts(String content) {
+		
+		CodingMuts codingMuts = new CodingMuts();
 		if (content.equals("")) {
 			return null;
 		}
-		String[] arrGeneLine = content.split("\t");	
+		String[] arrCodingMuts = content.split("\t");	
 		String geneName = "";
+		String geneID = "0";
 //		GeneID copedID = new GeneID(geneName, taxID, false);
-		CodingMuts codingMuts =new CodingMuts();
 //		String geneID = copedID.getGeneUniID();
 //		if (!geneID.matches("[0-9]+")) {
 //			return null;
 //		}
-//		codingMuts.setGeneId(Integer.parseInt(geneID));
-		
+		codingMuts.setGeneId(Integer.parseInt(geneID));
+		codingMuts.setChr(arrCodingMuts[0]);
+		codingMuts.setPos(Long.parseLong(arrCodingMuts[1]));
+		codingMuts.setCosmicId(arrCodingMuts[2]);
+		codingMuts.setRef(arrCodingMuts[3]);
+		codingMuts.setAlt(arrCodingMuts[4]);
+		HashMap<String, String> maInfor = codingMuts.getInfor(arrCodingMuts[7], ";");
+		codingMuts.setStrand(maInfor.get("STRAND").charAt(0));
+		codingMuts.setCdsChange(maInfor.get("CDS"));
+		codingMuts.setAAChange(maInfor.get("AA"));
 		return codingMuts;
+		
+	}
+	
+	public HashMap<String, String> getInfor(String content, String separator) {
+		HashMap<String, String> maInfor = new HashMap<>();
+		String[] arrValue;
+		if (content.length()>0) {
+			String[] arrInfor = content.split(separator);
+			for (int i = 0; i < arrInfor.length; i++) {
+				if ( arrInfor[i].contains("=")) {
+					arrValue = arrInfor[i].split("=");
+					maInfor.put(arrValue[0], arrValue[1]);
+				}
+			}
+			return maInfor;
+		} else {
+			return null;
+		}
 	}
 	
 	
