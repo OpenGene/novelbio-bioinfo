@@ -35,10 +35,6 @@ public abstract class AGene2Go {
 	private Set<String> setDB = new HashSet<String>();
 	
 	@Transient
-	ManageGo2Term manageGo2Term = ManageGo2Term.getInstance();
-	@Transient
-	ManageDBInfo manageDBInfo = ManageDBInfo.getInstance();
-	@Transient
 	Go2Term go2Term;
 	public abstract String getGeneUniId();
 	public abstract void setGeneUniID(String geneUniID);
@@ -61,7 +57,7 @@ public abstract class AGene2Go {
 	public Go2Term getGO2Term() {
 		if (go2Term == null) {
 			try {
-				go2Term = manageGo2Term.queryGo2Term(goID);
+				go2Term = ManageGo2Term.getInstance().queryGo2Term(goID);
 			} catch (Exception e) {
 				logger.error("find unknown GOID: " + goID);
 				return null;
@@ -84,7 +80,7 @@ public abstract class AGene2Go {
 		}
 		GoID = GoID.trim().toUpperCase();
 		try {
-			this.goID = manageGo2Term.queryGo2Term(GoID).getGoID();
+			this.goID = ManageGo2Term.getInstance().queryGo2Term(GoID).getGoID();
 		} catch (Exception e) {
 			this.goID = GoID;
 		}
@@ -150,14 +146,14 @@ public abstract class AGene2Go {
 		Set<DBInfo> setDbInfos = new HashSet<DBInfo>();
 		if (setDB != null) {
 			for (String dbInfoID : setDB) {
-				setDbInfos.add(manageDBInfo.findOne(dbInfoID));
+				setDbInfos.add(ManageDBInfo.getInstance().findOne(dbInfoID));
 			}
 		}
 		return setDbInfos;
 	}
 	
 	public void addDBName(String dbName) {
-		DBInfo dbInfo = manageDBInfo.findByDBname(dbName);
+		DBInfo dbInfo = ManageDBInfo.getInstance().findByDBname(dbName);
 		if (dbInfo != null) {
 			setDB.add(dbInfo.getDbInfoID());
 		}

@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.hg.doc.fa;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.FisherTest;
@@ -102,7 +103,14 @@ public abstract class FunctionTest implements Cloneable {
 	public int getTaxID() {
 		return taxID;
 	}
-
+	
+	public boolean isContainGeneName(String geneUniId) {
+		if (mapBGGeneID2Items != null && mapBGGeneID2Items.containsKey(geneUniId.toLowerCase())) {
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * 最好能第一时间设定
 	 * 读取genUniID item,item格式的表

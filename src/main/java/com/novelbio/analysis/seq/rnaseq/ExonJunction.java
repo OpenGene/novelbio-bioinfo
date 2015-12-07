@@ -226,7 +226,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 至少有15条reads支持的junction才会用于重建转录本 */
 	int newIsoReadsNum = 15;
 	
-	int intronMinLen = 25;
+	int intronMinLen = 12;
 	
 	/** 小于6bp的alt5和alt3都可能是假的 */
 	int minDifLen = 6;
@@ -352,7 +352,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * @param seqHash
 	 */
 	public void setSeqHash(SeqHash seqHash) {
-		this.seqHash = seqHash;
+//		this.seqHash = seqHash;
 	}
 	
 	protected ArrayList<Align> getLsDifIsoGene() {
@@ -384,11 +384,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	
 	public void running() {
-		runByChrome();
-	}
-	
-	private void runWithoutChrome() {
-		tophatJunction.setIntronMinLen(12);
+		tophatJunction.setIntronMinLen(intronMinLen);
 		if (!isCombine) {
 			for (String condition : mapCond2SamFile.keys()) {
 				if (mapCond2SamFile.get(condition).size() == 1) {
@@ -398,6 +394,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 		}
 
+		runByChrome();
+	}
+	
+	private void runWithoutChrome() {
 		MapReads mapReads = null;		
 		if (isReconstructIso) {
 			int invNum = isReconstructRI? 3 : 15;
@@ -462,9 +462,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			runGetInfo.setRunningInfo(guiAnnoInfo);
 		}
 		
-		int[] num = new int[]{0};
 		setCompareGroups(condition1, condition2);
-		lsResult = getTestResult_FromIso(num);
+		lsResult = getTestResult_FromIso();
+		ExonSplicingTest.sortAndFdr(lsResult, fdrCutoff);
+		
 		if (resultFile != null) {
 			String outFile = "";
 			if (FileOperate.isFileDirectory(resultFile)) {
@@ -480,8 +481,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		lsResult = new ArrayList<>();
 		Set<String> setChrId = mapCond2SamReader.values().iterator().next().getFirstSamFile().getMapChrID2Length().keySet();
 		for (String chrId : setChrId) {
-			runByChrome(chrId);
+			lsResult.addAll(runByChrome(chrId));
 		}
+		ExonSplicingTest.sortAndFdr(lsResult, fdrCutoff);
+		
 		if (resultFile != null) {
 			String outFile = "";
 			if (FileOperate.isFileDirectory(resultFile)) {
@@ -494,7 +497,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	
-	private void runByChrome(String chrId) {
+	private List<ExonSplicingTest> runByChrome(String chrId) {
 		MapReads mapReads = null;		
 		if (isReconstructIso) {
 			int invNum = isReconstructRI? 3 : 15;
@@ -536,9 +539,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			runGetInfo.setRunningInfo(guiAnnoInfo);
 		}
 		
-		int[] num = new int[]{0};
 		setCompareGroups(condition1, condition2);
-		lsResult = getTestResult_FromIso(num);
+		return getTestResult_FromIso(chrId);
 	}
 	
 	/**
@@ -740,7 +742,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				
 				samFileReading.setLsAlignments(lsReadReagion);
 				samFileReading.setRunGetInfo(runGetInfo);
-				add_RetainIntron_Into_SamReading(condition, i+"", samFileReading);
+				add_RetainIntron_Into_SamReading(chrId, condition, i+"", samFileReading);
 				MapReadsAbs mapReadsAbs = null;
 				if (isLessMemory) {
 					mapReadsAbs = getSamMapReads(samFileReading);
@@ -751,18 +753,21 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				samFileReading.setUniqueMapping(isUseUniqueMappedReads);
 				samFileReading.run();
 				samFileReading.clearRecorder();
-				addMapReadsInfo(condition, group, mapReadsAbs);
+				addMapReadsInfo(chrId, condition, group, mapReadsAbs);
 			}
 		}
 		
 		System.gc();
 	}
 	
-	private void add_RetainIntron_Into_SamReading(String condition, String group,  AlignSamReading samFileReading) {
+	private void add_RetainIntron_Into_SamReading(String chrId, String condition, String group,  AlignSamReading samFileReading) {
 		List<PredictRetainIntron> lsRetainIntrons = new ArrayList<>();
 		for (List<ExonClusterSite> lsExonSplicingTests : lsSplicingTests) {
 			for (ExonClusterSite exonClusterSite : lsExonSplicingTests) {
 				for (ExonSplicingTest exonSplicingTest : exonClusterSite.getLsExonSplicingTests()) {
+					if (!StringOperate.isRealNull(chrId) && !exonSplicingTest.getExonCluster().getRefID().equalsIgnoreCase(chrId)) {
+						continue;
+					}
 					lsRetainIntrons.addAll(exonSplicingTest.getLsRetainIntron());
 				}
 			}
@@ -796,14 +801,18 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		mapReads.setMapChrID2Len(((SamFile)samFileReading.getFirstSamFile()).getMapChrID2Length());
 		return mapReads;
 	}
-	
+
 	/** 将表达信息加入统计 */
-	private void addMapReadsInfo(String condition, String group, MapReadsAbs mapReads) {
+	private void addMapReadsInfo(String chrId, String condition, String group, MapReadsAbs mapReads) {
 		DateUtil dateTime = new DateUtil();
 		dateTime.setStartTime();
 		int num = 0;
 		for (List<ExonClusterSite> lsExonTest : lsSplicingTests) {
 			for (ExonClusterSite exonClusterSite : lsExonTest) {
+				if (!StringOperate.isRealNull(chrId) && !exonClusterSite.getCurrentExonCluster().getRefID().equalsIgnoreCase(chrId)) {
+					continue;
+				}
+				
 				if (exonClusterSite.getCurrentExonCluster().getParentGene().getName().contains(stopGeneName)) {
 					logger.debug("stop");
 				}
@@ -834,15 +843,15 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 	
-	private List<ExonSplicingTest> getTestResult_FromIso(int[] num) {
-		return getTestResult_FromIso(num, null);
+	private List<ExonSplicingTest> getTestResult_FromIso() {
+		return getTestResult_FromIso(null);
 	}
 	
 	/** 获得检验完毕的test
 	 * @param num 已经跑掉几个测试了，这个仅仅用在gui上
 	 * @return
 	 */
-	private List<ExonSplicingTest> getTestResult_FromIso(int[] num, String chrId) {
+	private List<ExonSplicingTest> getTestResult_FromIso(String chrId) {
 		setConditionWhileConditionIsNull();
 
 		List<ExonSplicingTest> lsResult = new ArrayList<>();
@@ -870,14 +879,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			} else {
 				lsResult.addAll(lsIsoExonSplicingResult);
 			}
-			num[0]++;
 			if (flagStop) {
 				break;
 			}
 			suspendCheck();
 			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
-			guiAnnoInfo.setNum(num[0]);
-			guiAnnoInfo.setDouble(num[0]);
+//			guiAnnoInfo.setNum(num[0]);
+//			guiAnnoInfo.setDouble(num[0]);
 			setRunInfo(guiAnnoInfo);
 		}
 		
@@ -906,8 +914,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
         }
 		
 		lsResult = new ArrayList<>(mapKey2SpliceTest.values());
-		
-		sortLsExonTest_Use_Pvalue(lsResult);
 		return lsResult;
 	}
 
@@ -1123,12 +1129,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private int middle(ExonSplicingTest exonSplicingTest) {
 		return (exonSplicingTest.getExonCluster().getStartAbs() + exonSplicingTest.getExonCluster().getEndAbs())/2;
 	}
-	
-	private void sortLsExonTest_Use_Pvalue(List<ExonSplicingTest> lsExonSplicingTest) {
-		ExonSplicingTest.sortAndFdr(lsExonSplicingTest, fdrCutoff);
-	}
-	
-
 	
 	/** 写入文本 */
 	public void writeToFile(String fileName, List<ExonSplicingTest> lsResult) {

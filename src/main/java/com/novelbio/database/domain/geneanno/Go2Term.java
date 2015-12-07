@@ -34,8 +34,8 @@ public class Go2Term implements Cloneable {
 	private String goID;
 	private String goTerm;
 	private String goType;
-	private Map<String, GORelation> mapParentGO2Relate = new HashMap<String, GORelation>();;
-	private Map<String, GORelation> mapChildGO2Relate = new HashMap<String, GORelation>();;
+	private Map<String, GORelation> mapParentGO2Relate = new HashMap<String, GORelation>();
+	private Map<String, GORelation> mapChildGO2Relate = new HashMap<String, GORelation>();
 	private String definition;
 
 	/**
