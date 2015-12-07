@@ -81,6 +81,7 @@ public class MAFRecord {
 	
 	Species species = new Species();
 	public static MAFRecord generateMafRecord(VariantContext variantContext, GffChrAbs gffChrAbs) {
+		
 		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, variantContext.getContig(), variantContext.getStart());
 		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
 		if (gffGeneIsoInfo == null) {
