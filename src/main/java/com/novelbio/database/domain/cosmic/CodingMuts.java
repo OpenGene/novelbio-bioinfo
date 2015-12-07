@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.test.mytest;
 
-@Document(collection = "cosCompleteExport")
+@Document(collection = "cosCodingMuts")
 public class CodingMuts implements Serializable {
 	
 	/** chromosome*/

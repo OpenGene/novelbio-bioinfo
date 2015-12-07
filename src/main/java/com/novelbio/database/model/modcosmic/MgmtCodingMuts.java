@@ -7,9 +7,9 @@ import com.novelbio.database.model.modcosmic.MgmtCancerGene.MgmtCancerGeneHolder
 import com.novelbio.database.mongorepo.cosmic.RepoCodingMuts;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
-public class MgmCodingMuts {
+public class MgmtCodingMuts {
 
-	private MgmCodingMuts() {}
+	private MgmtCodingMuts() {}
 	
 	RepoCodingMuts repoCodingMuts = (RepoCodingMuts)SpringFactoryBioinfo.getBean("repoCodingMuts");
 	public List<CodingMuts> findCodingMutsByGeneId(int geneId) {
@@ -21,19 +21,19 @@ public class MgmCodingMuts {
 	public void save(CodingMuts codingMuts) {
 		repoCodingMuts.save(codingMuts);
 	}
-	public CodingMuts findCancerGeneByGeneId(int cosmicId) {
+	public CodingMuts findCancerGeneByCosmicId(int cosmicId) {
 		return repoCodingMuts.findCodingMutsByCosmicId(cosmicId);
 	}
 
 	//懒汉模式的单例延迟
 	static class MgmtCodingMutsHolder {
-		static MgmCodingMuts mgmCodingMuts = new MgmCodingMuts();
+		static MgmtCodingMuts mgmtCodingMuts = new MgmtCodingMuts();
 	}
 	/** 
 	 * 获得
 	 * @return
 	 */
-	public static MgmCodingMuts getInstance() {
-		return MgmtCodingMutsHolder.mgmCodingMuts;
+	public static MgmtCodingMuts getInstance() {
+		return MgmtCodingMutsHolder.mgmtCodingMuts;
 	}
 }

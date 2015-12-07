@@ -25,10 +25,10 @@ public class CancerGene implements Serializable {
 	private String chrBand;
 	
 	/** Is somatic or not*/
-	private static boolean isSomatic = false;
+	private boolean isSomatic = false;
 	
 	/** Is germline or not*/
-	private  static boolean isGermline = false;
+	private  boolean isGermline = false;
 	
 	private List<String> lsTumTypeSom;
 	
@@ -90,13 +90,6 @@ public class CancerGene implements Serializable {
 	public String getCanSyndrome() {
 		return canSyndrome;
 	}
-	public void setSomatic(boolean isSomatic) {
-		this.isSomatic = isSomatic;
-	}
-	
-	public void setGermline(boolean isGermline) {
-		this.isGermline = isGermline;
-	}
 	public void setLsTissueType(List<String> lsTissueType) {
 		this.lsTissueType = lsTissueType;
 	}
@@ -150,14 +143,12 @@ public class CancerGene implements Serializable {
 		cosCancerGene.setChrBand(arrGeneLine[4]);
 		boolean isSom = false;
 		if (arrGeneLine[5].equals("yes")) {
-			isSom = true;
+			cosCancerGene.isSomatic = true;
 		}
-		cosCancerGene.setSomatic(isSom);
 		boolean isGerm = false;
 		if (arrGeneLine[6].equals("yes")) {
-			isGerm = true;
+			cosCancerGene.isGermline = true;
 		}
-		cosCancerGene.setGermline(isGerm);
 		List<String> listTumTypeSom = cosCancerGene.getListInfor(arrGeneLine[7], ",");
 		cosCancerGene.setLsTumTypeSom(listTumTypeSom);
 		List<String> listTumTypeGer = cosCancerGene.getListInfor(arrGeneLine[8], ",");
