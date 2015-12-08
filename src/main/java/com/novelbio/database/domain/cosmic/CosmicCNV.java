@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collection = "cosNonCodingVars")
-public class NonCodingVars implements Serializable {
+@Document(collection = "cosNCV")
+public class CosmicCNV implements Serializable {
 
 	/** sample name*/
 	private String sampleName;
@@ -121,41 +121,43 @@ public class NonCodingVars implements Serializable {
 	public long getPubmedPMID() {
 		return pubmedPMID;
 	}
-	public static NonCodingVars getInstanceFromNonCodingVars(String content) {
+	public static CosmicCNV getInstanceFromNonCodingVars(String content) {
 		
 		if (content.equals("")) {
 			return null;
 		}
 		String[] arrLineInfor = content.split("\t");	
-		NonCodingVars nonCodingVars = new NonCodingVars();
-		nonCodingVars.setSampleName(arrLineInfor[0]);
-		nonCodingVars.setSampleId(Integer.parseInt(arrLineInfor[1]));
-		nonCodingVars.setcOSMICId(arrLineInfor[2]);
-		nonCodingVars.setZygosity(arrLineInfor[3]);
-		nonCodingVars.setMutaSomSta(arrLineInfor[6]);
-		nonCodingVars.setWtSeq(arrLineInfor[7]);
-		nonCodingVars.setMutaSeq(arrLineInfor[8]);
-		nonCodingVars.setSnp(arrLineInfor[9].charAt(0));
-		nonCodingVars.setFathmmNonCodGroups(arrLineInfor[10]);
-		if (!(arrLineInfor[11].equals(null)||arrLineInfor[11].equals(""))) {
-			nonCodingVars.setFathmmNonCodScore(Float.parseFloat(arrLineInfor[11]));
+		CosmicCNV cosmicCNV = new CosmicCNV();
+		cosmicCNV.setSampleName(arrLineInfor[0]);
+		cosmicCNV.setSampleId(Integer.parseInt(arrLineInfor[1]));
+		cosmicCNV.setcOSMICId(arrLineInfor[2]);
+		cosmicCNV.setZygosity(arrLineInfor[3]);
+		cosmicCNV.setMutaSomSta(arrLineInfor[6]);
+		cosmicCNV.setWtSeq(arrLineInfor[7]);
+		cosmicCNV.setMutaSeq(arrLineInfor[8]);
+		if (arrLineInfor[9].length()>0) {
+			cosmicCNV.setSnp(arrLineInfor[9].charAt(0));
 		}
-		nonCodingVars.setFathmmCodGroups(arrLineInfor[12]);
-		if (!(arrLineInfor[13].equals(null)||arrLineInfor[13].equals(""))) {
-			nonCodingVars.setFathmmCodScore(Float.parseFloat(arrLineInfor[13]));
+		if (!(arrLineInfor[10].equals(null)||arrLineInfor[10].equals(""))) {
+			cosmicCNV.setFathmmNonCodScore(Float.parseFloat(arrLineInfor[10]));
 		}
+		cosmicCNV.setFathmmNonCodGroups(arrLineInfor[11]);
+		if (!(arrLineInfor[12].equals(null)||arrLineInfor[12].equals(""))) {
+			cosmicCNV.setFathmmCodScore(Float.parseFloat(arrLineInfor[12]));
+		}
+		cosmicCNV.setFathmmCodGroups(arrLineInfor[13]);
 		if (arrLineInfor[14].equals("y")) {
-			nonCodingVars.isGenomeSeq = true;
+			cosmicCNV.isGenomeSeq = true;
 		}
 		if (arrLineInfor[15].equals("y")) {
-			nonCodingVars.isExomeSeq = true;
+			cosmicCNV.isExomeSeq = true;
 		}
 		if (!(arrLineInfor[16].equals(null)||arrLineInfor[16].equals(""))) {
-			nonCodingVars.setStudyId(Integer.parseInt(arrLineInfor[16]));
+			cosmicCNV.setStudyId(Integer.parseInt(arrLineInfor[16]));
 		}
-		if (!(arrLineInfor[17].equals(null)||arrLineInfor[17].equals(""))) {
-			nonCodingVars.setPubmedPMID(Long.parseLong(arrLineInfor[17]));
+		if ((arrLineInfor.length>17) && (!(arrLineInfor[17].equals(null)||arrLineInfor[17].equals("")))) {
+			cosmicCNV.setPubmedPMID(Long.parseLong(arrLineInfor[17]));
 		}
-		return nonCodingVars;
+		return cosmicCNV;
 	}
 }
