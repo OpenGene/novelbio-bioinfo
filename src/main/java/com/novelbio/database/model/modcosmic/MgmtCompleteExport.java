@@ -2,10 +2,7 @@ package com.novelbio.database.model.modcosmic;
 
 import java.util.List;
 
-import com.novelbio.database.domain.cosmic.CodingMuts;
 import com.novelbio.database.domain.cosmic.CompleteExport;
-import com.novelbio.database.model.modcosmic.MgmtCodingMuts.MgmtCodingMutsHolder;
-import com.novelbio.database.mongorepo.cosmic.RepoCodingMuts;
 import com.novelbio.database.mongorepo.cosmic.RepoCompleteExport;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 

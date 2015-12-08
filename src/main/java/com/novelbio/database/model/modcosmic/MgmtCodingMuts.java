@@ -3,7 +3,6 @@ package com.novelbio.database.model.modcosmic;
 import java.util.List;
 
 import com.novelbio.database.domain.cosmic.CodingMuts;
-import com.novelbio.database.model.modcosmic.MgmtCancerGene.MgmtCancerGeneHolder;
 import com.novelbio.database.mongorepo.cosmic.RepoCodingMuts;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 

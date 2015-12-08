@@ -18,9 +18,9 @@ public class CosmicCNV implements Serializable {
 	/** mutation somatic status*/
 	private String mutaSomSta;
 	/** WT SEQ*/
-	private String wtSeq;
+//	private String wtSeq;
 	/** mutation SEQ*/
-	private String mutaSeq;
+//	private String mutaSeq;
 	/** SNP*/
 	private char snp;
 	/** FATHMM MKL NON CODING SCORE*/
@@ -67,18 +67,18 @@ public class CosmicCNV implements Serializable {
 	public String getMutaSomSta() {
 		return mutaSomSta;
 	}
-	public void setWtSeq(String wtSeq) {
-		this.wtSeq = wtSeq;
-	}
-	public String getWtSeq() {
-		return wtSeq;
-	}
-	public void setMutaSeq(String mutaSeq) {
-		this.mutaSeq = mutaSeq;
-	}
-	public String getMutaSeq() {
-		return mutaSeq;
-	}
+//	public void setWtSeq(String wtSeq) {
+//		this.wtSeq = wtSeq;
+//	}
+//	public String getWtSeq() {
+//		return wtSeq;
+//	}
+//	public void setMutaSeq(String mutaSeq) {
+//		this.mutaSeq = mutaSeq;
+//	}
+//	public String getMutaSeq() {
+//		return mutaSeq;
+//	}
 	public void setSnp(char snp) {
 		this.snp = snp;
 	}
@@ -121,7 +121,7 @@ public class CosmicCNV implements Serializable {
 	public long getPubmedPMID() {
 		return pubmedPMID;
 	}
-	public static CosmicCNV getInstanceFromNonCodingVars(String content) {
+	public static CosmicCNV getInstanceFromNCV(String content) {
 		
 		if (content.equals("")) {
 			return null;
@@ -133,8 +133,8 @@ public class CosmicCNV implements Serializable {
 		cosmicCNV.setcOSMICId(arrLineInfor[2]);
 		cosmicCNV.setZygosity(arrLineInfor[3]);
 		cosmicCNV.setMutaSomSta(arrLineInfor[6]);
-		cosmicCNV.setWtSeq(arrLineInfor[7]);
-		cosmicCNV.setMutaSeq(arrLineInfor[8]);
+//		cosmicCNV.setWtSeq(arrLineInfor[7]);
+//		cosmicCNV.setMutaSeq(arrLineInfor[8]);
 		if (arrLineInfor[9].length()>0) {
 			cosmicCNV.setSnp(arrLineInfor[9].charAt(0));
 		}
