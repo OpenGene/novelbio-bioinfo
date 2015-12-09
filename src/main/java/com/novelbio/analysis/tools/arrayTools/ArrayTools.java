@@ -21,6 +21,7 @@ public class ArrayTools {
 			}
 		}
 		lsSepNum.add(excelArray.getColCount());
+		excelArray.close();
 		//最后产生的文件名，为A1.txt等以此类似
 		ArrayList<String> lsName=new ArrayList<String>();
 		lsName.add("A");lsName.add("B");lsName.add("C");lsName.add("D");lsName.add("E");lsName.add("F");lsName.add("G");lsName.add("H");

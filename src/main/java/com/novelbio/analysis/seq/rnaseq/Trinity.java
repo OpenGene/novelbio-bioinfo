@@ -314,7 +314,7 @@ public class Trinity implements IntCmdSoft {
 		if (output == null) {
 			return null;
 		}
-		return new String[]{"--output", output};
+		return new String[]{"--output", getTmpOut()};
 	}
 	
 	/**
@@ -615,11 +615,14 @@ public class Trinity implements IntCmdSoft {
 			cmdOperate.addCmdParamInput(rightFq);
 		}
 		cmdOperate.setRedirectOutToTmp(true);
-		cmdOperate.addCmdParamOutput(output);
+		cmdOperate.addCmdParamOutput(getTmpOut());
 		cmdOperate.run();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("run trinity error:", cmdOperate);
 		}
+		String outFile = getResultPathRaw();
+		FileOperate.changeFileName(outFile, getResultPath());
+		
 	}
 	
 	private List<String> getLsCmd() {
@@ -664,12 +667,22 @@ public class Trinity implements IntCmdSoft {
 		lsCmd.add(param);
 	}
 	
+	public String getTmpOut() {
+		return output + "trinity";
+	}
+	
 	/** 返回拼接好的文件的路径 */
 	public String getResultPath() {
-		return output + ".Trinity.fasta";
+		return output + ".trinity.fasta";
 //		return FileOperate.addSep(output) + "trinity.fa";
 	}
 
+	/** 返回拼接好的文件的路径 */
+	private String getResultPathRaw() {
+		return getTmpOut() + ".Trinity.fasta";
+//		return FileOperate.addSep(output) + "trinity.fa";
+	}
+	
 	@Override
 	public List<String> getCmdExeStr() {
 		List<String> lsCmd = getLsCmd();

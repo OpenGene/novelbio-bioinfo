@@ -70,7 +70,7 @@ public class KGexe {
 //			System.exit(1);
 //		}
 //		String keggAbbrStr = cliParser.getOptionValue("keggabbr");
-		String keggAbbrStr = "oas";
+		String keggAbbrStr = "ser";
 		try {
 			for (String abbr : keggAbbrStr.split(",")) {
 				abbr = abbr.trim();

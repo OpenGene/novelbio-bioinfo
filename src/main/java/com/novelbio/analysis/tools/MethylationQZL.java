@@ -33,7 +33,7 @@ public class MethylationQZL {
 		ExcelOperate excelOperate = new ExcelOperate(excelFile);
 		ArrayList<String[]> lsInfo = excelOperate.readLsExcel();
 		ArrayList<String[]> lsTmpInfo = new ArrayList<String[]>();
-		
+		excelOperate.close();
 		
 		
 		String accID = "";

@@ -660,11 +660,16 @@ public static class IndexMapSplice extends MapIndexMaker {
 		String chrFileName = FileOperate.getParentPathNameWithSep(chrFile) + FileOperate.getFileNameSep(chrFile)[0];
 		return chrFileName;
 	}
-
+	
+	public String getVersionBowtie() {
+		return indexBowtie.getVersion();
+	}
+	
 	public String getMapVersion() {
 		String version = null;
 		List<String> lsCmdVersion = new ArrayList<>();
-		lsCmdVersion.add(exePath + "bowtie");
+		lsCmdVersion.add("python");
+		lsCmdVersion.add(exePath + "mapsplice.py");
 		lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.setTerminateWriteTo(false);
@@ -672,7 +677,7 @@ public static class IndexMapSplice extends MapIndexMaker {
 		cmdOperate.runWithExp("get bowtie version error:");
 		List<String> lsInfo = cmdOperate.getLsStdOut();
 		try {
-			version = lsInfo.get(0).toLowerCase().split("version")[1].trim();
+			version = lsInfo.get(0).toLowerCase().split("MapSplice")[1].trim();
 		} catch (Exception e) {
 			throw new ExceptionCmd("cannot get bowtie2 version:");
 		}

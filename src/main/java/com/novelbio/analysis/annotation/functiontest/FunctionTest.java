@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
-import com.hg.doc.fa;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.FisherTest;
@@ -596,33 +595,9 @@ public abstract class FunctionTest implements Cloneable {
 		
 		return functionTest;
 	}
-	
-	public BufferedImage getImagePvalue() {
-		List<StatisticTestResult> lsTestResults = getTestResult();
-		if (lsTestResults == null || lsTestResults.size() == 0) {
-			return null;
-		}
-		try {
-			BufferedImage bfImageLog2Pic = GoPathBarPlot.drawLog2PvaluePicture(lsTestResults, getTitle());
-			return bfImageLog2Pic;
-		} catch (Exception e) { e.printStackTrace(); 
-			logger.error("draw pvalue pic error " + getTitle(), e);
-			throw new ExceptionFunctionTest("draw pvalue pic error " + getTitle(), e);
-		}
-	}
-	
-	public BufferedImage getImageEnrichment() {
-		List<StatisticTestResult> lsTestResults = getTestResult();
-		if (lsTestResults == null || lsTestResults.size() == 0) {
-			return null;
-		}
-		try {
-			BufferedImage bfImageLog2Pic = GoPathBarPlot.drawEnrichmentPicture(lsTestResults, getTitle());
-			return bfImageLog2Pic;
-		} catch (Exception e) { 
-			logger.error("draw enrich pic error " + getTitle(), e);
-			throw new ExceptionFunctionTest("draw enrich pic error " + getTitle(), e);
-		}
+
+	public FunctionDrawResult getFunctionDrawResult() {
+		return new FunctionDrawResult(this);
 	}
 	
 	protected abstract String getTitle();
@@ -752,4 +727,44 @@ public abstract class FunctionTest implements Cloneable {
 		}
 		statisticsTest.setMaxSize(max);
 	}
+
+	public static class FunctionDrawResult {
+		private static final Logger logger = LoggerFactory.getLogger(FunctionDrawResult.class);
+		String title;
+		List<StatisticTestResult> lsResults;
+		
+		public FunctionDrawResult(FunctionTest functionTest) {
+			lsResults = functionTest.getTestResult();
+			title = functionTest.getTitle();
+		}
+		
+		public void setTitle(String title) {
+			this.title = title;
+		}
+		public void setLsResults(List<StatisticTestResult> lsResults) {
+			this.lsResults = lsResults;
+		}
+		
+		public BufferedImage getImagePvalue() {
+			try {
+				BufferedImage bfImageLog2Pic = GoPathBarPlot.drawLog2PvaluePicture(lsResults, title);
+				return bfImageLog2Pic;
+			} catch (Exception e) { e.printStackTrace(); 
+				logger.error("draw pvalue pic error " + title, e);
+				throw new ExceptionFunctionTest("draw pvalue pic error " + title, e);
+			}
+		}
+		
+		public BufferedImage getImageEnrichment() {
+			try {
+				BufferedImage bfImageLog2Pic = GoPathBarPlot.drawEnrichmentPicture(lsResults, title);
+				return bfImageLog2Pic;
+			} catch (Exception e) { 
+				logger.error("draw pvalue pic error " + title, e);
+				throw new ExceptionFunctionTest("draw pvalue pic error " + title, e);
+			}
+		}
+	}
+
 }
+

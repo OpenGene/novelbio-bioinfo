@@ -107,7 +107,7 @@ public class ElimGOFunTest extends NovelGOFunTest {
 					continue;
 				}
 				//同一个geneUniID对应的不同accID
-				List<GeneID> lscopedIDs = mapGeneUniID2LsGeneID.get(geneUniID);
+				List<GeneID> lscopedIDs = mapGeneUniID2LsGeneID.get(geneUniID.toLowerCase());
 				StatisticTestItem2Gene statisticTestItem2GeneElimGo = new StatisticTestItem2Gene();
 				statisticTestItem2GeneElimGo.setStatisticTestResult(statisticTestResult);
 				statisticTestItem2GeneElimGo.setLsGeneIDs(lscopedIDs);

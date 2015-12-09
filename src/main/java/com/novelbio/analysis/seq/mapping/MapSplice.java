@@ -307,33 +307,18 @@ public class MapSplice implements MapRNA {
 		return lsCmd;
 	}
 	
-	
-	
 	@Override
 	public SoftWare getSoftWare() {
 		return SoftWare.bowtie;
-	}
-	
-	public String getVersionMapSplice() {
-		List<String> lsCmdVersion = new ArrayList<>();
-		lsCmdVersion.add("python");
-		lsCmdVersion.add(exePath + "mapsplice.py");
-		lsCmdVersion.add("--version");
-		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
-		cmdOperate.setTerminateWriteTo(false);
-		cmdOperate.run();
-		List<String> lsInfo = cmdOperate.getLsErrOut();
-		String[] ss = lsInfo.get(0).trim().split(" ");
-		String version = ss[ss.length-1];
-		return version;
 	}
 	
 	@Override
 	public List<String> getCmdExeStr() {
 		prepareReads();
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add("MapSplice version: " + getVersionMapSplice());
-		lsCmd.add(getSoftWare().toString() + " version: " + indexMaker.getVersion());
+		
+		lsCmd.add("MapSplice version: " + indexMaker.getVersion());
+		lsCmd.add(getSoftWare().toString() + " version: " + indexMaker.getVersionBowtie());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {

@@ -166,6 +166,7 @@ public class CompareListSimple {
 		try {
 			ExcelOperate excel = new ExcelOperate(filePath+FileA);
 			ls1 = excel.readLsExcel(firstlinels1, 1, -1, excel.getColCount(2));
+			excel.close();
 		} catch (Exception e) {
 			// TODO: handle exception
 		}
@@ -179,6 +180,7 @@ public class CompareListSimple {
 		try {
 			ExcelOperate excel = new ExcelOperate(filePath+FileB);
 			ls2 = excel.readLsExcel(firstlinels2, 1, -1, excel.getColCount(2));
+			excel.close();
 		} catch (Exception e) {
 			// TODO: handle exception
 		}

@@ -30,7 +30,7 @@ public class Repeatdel {
 		}
 		ExcelOperate excelComb = new ExcelOperate(filename);
 		ArrayList<String[]> lsExcel = excelComb.readLsExcel(1, 1, -1, excelComb.getColCount());
-		
+		excelComb.close();
 		for (String[] strings : lsExcel) {	
 			if (hashGeneInfo.containsKey(strings[colAccID].trim()) ) {
 				ArrayList<String[]> lsInfo = hashGeneInfo.get(strings[colAccID].trim());
