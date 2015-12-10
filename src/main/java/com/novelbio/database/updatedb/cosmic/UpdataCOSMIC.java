@@ -24,10 +24,10 @@ public class UpdataCOSMIC {
 		UpdataCOSMIC updataCOSMIC = new UpdataCOSMIC();
 //		updataCOSMIC.creatCancerGene(cancerGenePath);
 //		updataCOSMIC.creatCodingMuts(codingMutsPath);
-//		updataCOSMIC.creatCompleteExport(completeExportPath);
+		updataCOSMIC.creatCompleteExport(completeExportPath);
 		
 //		updataCOSMIC.creatNCV(nCVPath);
-		updataCOSMIC.creatNonCodingVars(nonCodingVarsPath);
+//		updataCOSMIC.creatNonCodingVars(nonCodingVarsPath);
 		System.out.println("finished!");
 	}
 	
@@ -52,7 +52,6 @@ public class UpdataCOSMIC {
 					mgmtCodingMuts.save(codingMuts);
 				}
 			}
-	
 		}
 		txtCancerGene.close();
 	}
@@ -64,7 +63,6 @@ public class UpdataCOSMIC {
 				CompleteExport completeExport = CompleteExport.getInstanceFromCodingMuts(content);
 				if (!(completeExport == null)) {
 					mgmtCompleteExport.save(completeExport);
-					System.out.println(completeExport.getFathmmPre());
 				}
 			}
 		}
@@ -79,7 +77,6 @@ public class UpdataCOSMIC {
 				CosmicCNV cosmicCNV = CosmicCNV.getInstanceFromNCV(content);
 				if (!(cosmicCNV == null)) {
 					mgmtNCV.save(cosmicCNV);
-					System.out.println(cosmicCNV.getSampleName());
 				}
 			}
 		}
@@ -93,13 +90,9 @@ public class UpdataCOSMIC {
 				NonCodingVars nonCodingVars = NonCodingVars.getInstanceFromNonCodingVars(content);
 				if (!(nonCodingVars == null)) {
 					mgmtNonCodingVars.save(nonCodingVars);
-					System.out.println(nonCodingVars.getPos());
 				}
 			}
 		}
 		txtCompleteExport.close();
 	}
-	
-	
-	
 }

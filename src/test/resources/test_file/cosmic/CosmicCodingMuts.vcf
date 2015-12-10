@@ -1,0 +1,15 @@
+##fileformat=VCFv4.1
+##source=COSMICv74
+##reference=GRCh37
+##fileDate=20150908
+##comment="Missing nucleotide details indicate ambiguity during curation process"
+##comment="URL stub for COSM ID field (use numeric portion of ID)='http://grch37-cancer.sanger.ac.uk/cosmic/mutation/overview?id='"
+##comment="REF and ALT sequences are both forward strand
+##INFO=<ID=GENE,Number=1,Type=String,Description="Gene name">
+##INFO=<ID=STRAND,Number=1,Type=String,Description="Gene strand">
+##INFO=<ID=CDS,Number=1,Type=String,Description="CDS annotation">
+##INFO=<ID=AA,Number=1,Type=String,Description="Peptide annotation">
+##INFO=<ID=CNT,Number=1,Type=Integer,Description="How many samples have this mutation">
+##INFO=<ID=SNP,Number=0,Type=Flag,Description="classified as SNP">
+#CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+1	69224	COSM3677745	A	C	.	.	GENE=OR4F5;STRAND=+;GENE=OR4F5;STRAND=+;CDS=c.134A>C;AA=p.D45A;CNT=1

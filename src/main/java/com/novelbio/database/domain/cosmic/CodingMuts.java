@@ -1,21 +1,14 @@
 package com.novelbio.database.domain.cosmic;
 
-import java.awt.print.Printable;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
-
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
-import com.novelbio.test.mytest;
+import com.novelbio.database.model.modgeneid.GeneID;
 
 @Document(collection = "cosCodingMuts")
 public class CodingMuts implements Serializable {
-	
+	private static final int taxID = 9606;
 	/** chromosome*/
 	private String chr;	
 	/** the position of mutation*/
@@ -89,31 +82,27 @@ public class CodingMuts implements Serializable {
 	}
 	
 	public static CodingMuts getInstanceFromCodingMuts(String content) {
-		
 		CodingMuts codingMuts = new CodingMuts();
 		if (content.equals("")) {
 			return null;
 		}
 		String[] arrCodingMuts = content.split("\t");	
-		String geneName = "";
-		String geneID = "0";
-//		GeneID copedID = new GeneID(geneName, taxID, false);
-//		String geneID = copedID.getGeneUniID();
-//		if (!geneID.matches("[0-9]+")) {
-//			return null;
-//		}
-		codingMuts.setGeneId(Integer.parseInt(geneID));
 		codingMuts.setChr(arrCodingMuts[0]);
 		codingMuts.setPos(Long.parseLong(arrCodingMuts[1]));
 		codingMuts.setCosmicId(arrCodingMuts[2]);
 		codingMuts.setRef(arrCodingMuts[3]);
 		codingMuts.setAlt(arrCodingMuts[4]);
 		HashMap<String, String> maInfor = codingMuts.getInfor(arrCodingMuts[7], ";");
+		GeneID copedID = new GeneID(maInfor.get("GENE"), taxID, false);
+		String geneID = copedID.getGeneUniID();
+		if (!geneID.matches("[0-9]+")) {
+			return null;
+		}
+		codingMuts.setGeneId(Integer.parseInt(geneID));
 		codingMuts.setStrand(maInfor.get("STRAND").charAt(0));
 		codingMuts.setCdsChange(maInfor.get("CDS"));
 		codingMuts.setAAChange(maInfor.get("AA"));
 		return codingMuts;
-		
 	}
 	
 	public HashMap<String, String> getInfor(String content, String separator) {
@@ -132,7 +121,4 @@ public class CodingMuts implements Serializable {
 			return null;
 		}
 	}
-	
-	
-	
 }
