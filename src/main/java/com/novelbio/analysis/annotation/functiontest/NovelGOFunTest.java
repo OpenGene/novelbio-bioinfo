@@ -7,16 +7,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 public class NovelGOFunTest extends FunctionTest {
-	private static final Logger logger = Logger.getLogger(NovelGOFunTest.class); 
+	private static final Logger logger = LoggerFactory.getLogger(NovelGOFunTest.class); 
 	GOtype GoType = GOtype.BP;
 	ManageGo2Term servGo2Term = ManageGo2Term.getInstance();
 	
@@ -26,10 +29,6 @@ public class NovelGOFunTest extends FunctionTest {
 	 * 如果大于0，则做层级GO
 	 */
 	int GOlevel = -1;
-	
-	public void setGoType(GOtype goType) {
-		GoType = goType;
-	}
 	
 	/** 设定自己的GO注释文件
 	 * @param goAnnoFile GO注释文件，第一列为GeneName，第二列为GOIterm
@@ -59,6 +58,68 @@ public class NovelGOFunTest extends FunctionTest {
 		return geneID2LsItem;
 	}
 
+	/** 读取gene2Item的文件，用来增加注释
+	 * 第一列是geneName，第二列是goId */
+	public void readGene2ItemAnnoFile(String goAnnoFile) {
+		if (mapBGGeneID2Items == null) mapBGGeneID2Items = new HashMap<>();
+		
+		TxtReadandWrite txtRead = new TxtReadandWrite(goAnnoFile);
+		ArrayListMultimap<String, String> mapGeneName2LsGO = ArrayListMultimap.create();
+		int i = 0;
+		for (String content : txtRead.readlines()) {
+			i++;
+			
+			if (content.startsWith("#")) continue;
+			String[] ss = content.split("\t");
+			//判断第一行是否为标题
+			if (i == 1 && !ss[1].contains(":")) {
+				continue;
+			}
+			mapGeneName2LsGO.put(ss[0], ss[1]);
+		}
+		txtRead.close();
+		
+		int allBGgeneNum = mapGeneName2LsGO.keySet().size();
+		int m = 0;
+		for (String geneId : mapGeneName2LsGO.keySet()) {
+			List<String> lsItemId = mapGeneName2LsGO.get(geneId);
+			List<String> lsItemIdReal = new ArrayList<>();
+			for (String goId : lsItemId) {
+				Go2Term go2Term = servGo2Term.queryGo2Term(goId);
+				if (go2Term == null || go2Term.getGOtype() != GoType) {
+					continue;
+				}
+				lsItemIdReal.add(goId);
+			}
+			
+			if (lsItemIdReal.isEmpty()) continue;
+			
+			String geneUniId = geneId;
+			GeneID2LsItem geneID2LsItem = mapBGGeneID2Items.get(geneUniId.toLowerCase());
+			if (geneID2LsItem == null) {
+				GeneID geneID = new GeneID(geneId, taxID);
+				geneUniId = geneID.getGeneUniID();
+				geneID2LsItem = mapBGGeneID2Items.get(geneUniId.toLowerCase());
+			}
+	
+			
+			if (geneID2LsItem == null) {
+				geneID2LsItem = generateGeneID2LsItem();
+				geneID2LsItem.setGeneUniID(geneUniId);
+				mapBGGeneID2Items.put(geneUniId.toLowerCase(), geneID2LsItem);
+			}
+			for (String itemId : lsItemIdReal) {
+				geneID2LsItem.addItemID(itemId);
+			}
+			
+			if (m++%1000 == 0) {
+				logger.info("All Gene Num is {}, run {}", allBGgeneNum, m );
+			}
+		}
+		
+		BGnum = mapBGGeneID2Items.size();
+	}
+	
 	@Override
 	public void setDetailType(GOtype gotype) {
 		this.GoType = gotype;

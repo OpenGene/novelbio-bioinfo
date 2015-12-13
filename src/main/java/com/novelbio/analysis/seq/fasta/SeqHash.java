@@ -4,6 +4,7 @@ import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.SAMSequenceRecord;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -236,6 +237,15 @@ public class SeqHash implements SeqHashInt {
 			samSequenceDictionary.addSequence(samSequenceRecord);
 		}
 		return samSequenceDictionary;
+	}
+	
+	public static Map<String, Long> getMapChrId2Len(String seqFai) {
+		Map<String, Long> mapChrId2Len = new LinkedHashMap<>();
+		SAMSequenceDictionary samSequenceDictionary = getDictionary(seqFai, " ");
+		for (SAMSequenceRecord samSequenceRecord : samSequenceDictionary.getSequences()) {
+			mapChrId2Len.put(samSequenceRecord.getSequenceName(), (long)samSequenceRecord.getSequenceLength());
+		}
+		return mapChrId2Len;
 	}
 	
 	public static SAMSequenceDictionary getDictionary(String seqFai) {

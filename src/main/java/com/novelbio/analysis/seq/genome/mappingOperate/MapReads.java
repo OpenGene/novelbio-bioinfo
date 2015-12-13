@@ -17,6 +17,7 @@ import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.ExceptionSequenceFileNotSorted;
@@ -64,8 +65,10 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 
 	 /**每隔多少位计数，如果设定为1，则算法会变化，然后会很精确*/
 	 int invNum = 10;
+	 
 	 /** 因为想加入小数，但是double比较占内存，所以就将数据乘以fold，然后最后除掉它就好 */
-	 int fold = 100;
+	 public int fold = 100;
+	 
 	 /**添加samBam的文件用来获得信息
 	  * 注意在添加之前要先执行{@link #prepareAlignRecord(AlignRecord)}
 	  */
@@ -144,6 +147,9 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		return (double)chrMapReadsInfo.getReadsPipNum()/chrMapReadsInfo.chrLength;
 	}
 	
+	public ChrMapReadsInfo getChrMapReadsInfo(String chrId) {
+		return mapChrID2ReadsInfo.get(chrId.toLowerCase());
+	}
 	/**
 	 * 设定双端readsTag拼起来后长度的估算值，目前solexa双端送样长度大概是300bp，不用太精确
 	 * 默认300
@@ -574,6 +580,113 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		} catch (Exception e) { }
 		
 	}
+	
+	
+	
+	/**
+	 * 单条染色体信息
+	 * @author zong0jie
+	 */
+	public static class ChrMapReadsInfo {
+		String chrID;
+		int invNum = 10;
+		int type;
+		long chrLength;
+		
+		/** 直接从0开始记录，1代表第二个invNum,也和实际相同 */
+		int[] SumChrBpReads;
+		/** 本条染色体上的reads数量 */
+		double readsAllNum;
+		/** 本条染色体上的reads的堆叠数之和 */
+		double readsAllPipNum;
+		/** 用于校正数据 */
+		Equations FormulatToCorrectReads; 
+		
+		/**
+		 * @param chrID
+		 * @param mapReadsAbs
+		 */
+		public ChrMapReadsInfo(String chrID, MapReads mapReads) {
+			this.chrID = chrID;
+			this.chrLength = mapReads.getChrLen(chrID);
+			this.invNum = mapReads.invNum;
+			this.type = mapReads.summeryType;
+			this.FormulatToCorrectReads = mapReads.FormulatToCorrectReads;
+		}
+		
+		public String getChrID() {
+			return chrID;
+		}
+		public long getReadsChrNum() {
+			return (long)readsAllNum;
+		}
+		/** 设定总reads的数量 */
+		public void addReadsAllNum(double readsAllNum) {
+			this.readsAllNum = this.readsAllNum + readsAllNum;
+		}
+		public long getReadsPipNum() {
+			return (long) readsAllPipNum;
+		}
+		/**
+		 * 直接从0开始记录，1代表第二个invNum,也和实际相同
+		 * @return
+		 */
+		public int[] getSumChrBpReads() {
+			return SumChrBpReads;
+		}
+		
+		/**
+		 * 所谓结算就是说每隔invNum的bp就把这invNumbp内每个bp的Reads叠加数取平均或中位数，保存进chrBpReads中
+		 * 给定chrBpReads，将chrBpReads里面的值按照invNum区间放到SumChrBpReads里面
+		 * 因为是引用传递，里面修改了SumChrBpReads后，外面会变掉
+		 * @param chrBpReads 每个碱基的reads累计值
+		 * @param fold 增加倍数，因为是integer无法取小数，所以搞个fold，扩大1000倍表示小数点三位有效数字
+		 */
+		protected void sumChrBp(int[] chrBpReads, int fold) {
+			// //////////SumChrBpReads设定//////////////////////////////////
+			// 这个不是很精确，最后一位可能不准，但是实际应用中无所谓了,为方便，0位记录总长度。这样实际bp就是实际长度
+			int SumLength = chrBpReads.length / invNum + 1;// 保证不会溢出，这里是要让SumChrBpReads长一点
+			if (SumChrBpReads == null) {
+				SumChrBpReads = new int[SumLength];// 直接从0开始记录，1代表第二个invNum,也和实际相同
+			}
+			
+			if (invNum == 1) {
+				for (int i = 0; i < SumLength - 2; i++) {
+					SumChrBpReads[i] += chrBpReads[i+1];
+					readsAllPipNum = readsAllPipNum + (double)chrBpReads[i+1]/fold;
+				}
+				return;
+			 }
+			 for (int i = 0; i < SumLength - 2; i++) {
+				 int[] tmpSumReads = new int[invNum];//将总的chrBpReads里的每一段提取出来
+				 int sumStart = i*invNum + 1; int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
+				 for (int j = sumStart; j < sumStart + invNum; j++) {
+					 int thisNum = chrBpReads[j];
+					 tmpSumReads[k] = thisNum;
+					 readsAllPipNum = readsAllPipNum + (double)thisNum/fold;
+					 k++;
+				 }
+				 samplingSite(i, tmpSumReads);
+			 }
+		}
+		
+		private void samplingSite(int siteNum, int[] tmpSumReads) {
+			 if (type == MapReads.SUM_TYPE_MEDIAN) { //每隔一段区域取样，建议每隔10bp取样，取中位数
+				 SumChrBpReads[siteNum] += (int) MathComput.median(tmpSumReads);
+			 } else if (type == MapReads.SUM_TYPE_MEAN) { 
+				 SumChrBpReads[siteNum] += (int) MathComput.mean(tmpSumReads);
+			 } else if (type == MapReads.SUM_TYPE_SUM) {
+				SumChrBpReads[siteNum] += MathComput.sum(tmpSumReads);
+			}else {//默认取中位数 
+				 SumChrBpReads[siteNum] += (int) MathComput.median(tmpSumReads);
+			 }
+		}
+		
+		public void clear() {
+			FormulatToCorrectReads = null;
+			SumChrBpReads = null;
+		}
+	}
 }
 
 /**
@@ -763,107 +876,4 @@ class MapReadsAddAlignRecord {
 }
 
 
-/**
- * 单条染色体信息
- * @author zong0jie
- */
-class ChrMapReadsInfo {
-	String chrID;
-	int invNum = 10;
-	int type;
-	long chrLength;
-	
-	/** 直接从0开始记录，1代表第二个invNum,也和实际相同 */
-	int[] SumChrBpReads;
-	/** 本条染色体上的reads数量 */
-	double readsAllNum;
-	/** 本条染色体上的reads的堆叠数之和 */
-	double readsAllPipNum;
-	/** 用于校正数据 */
-	Equations FormulatToCorrectReads; 
-	
-	/**
-	 * @param chrID
-	 * @param mapReadsAbs
-	 */
-	public ChrMapReadsInfo(String chrID, MapReads mapReads) {
-		this.chrID = chrID;
-		this.chrLength = mapReads.getChrLen(chrID);
-		this.invNum = mapReads.invNum;
-		this.type = mapReads.summeryType;
-		this.FormulatToCorrectReads = mapReads.FormulatToCorrectReads;
-	}
-	
-	public String getChrID() {
-		return chrID;
-	}
-	public long getReadsChrNum() {
-		return (long)readsAllNum;
-	}
-	/** 设定总reads的数量 */
-	public void addReadsAllNum(double readsAllNum) {
-		this.readsAllNum = this.readsAllNum + readsAllNum;
-	}
-	public long getReadsPipNum() {
-		return (long) readsAllPipNum;
-	}
-	/**
-	 * 直接从0开始记录，1代表第二个invNum,也和实际相同
-	 * @return
-	 */
-	public int[] getSumChrBpReads() {
-		return SumChrBpReads;
-	}
-	
-	/**
-	 * 所谓结算就是说每隔invNum的bp就把这invNumbp内每个bp的Reads叠加数取平均或中位数，保存进chrBpReads中
-	 * 给定chrBpReads，将chrBpReads里面的值按照invNum区间放到SumChrBpReads里面
-	 * 因为是引用传递，里面修改了SumChrBpReads后，外面会变掉
-	 * @param chrBpReads 每个碱基的reads累计值
-	 * @param fold 增加倍数，因为是integer无法取小数，所以搞个fold，扩大1000倍表示小数点三位有效数字
-	 */
-	protected void sumChrBp(int[] chrBpReads, int fold) {
-		// //////////SumChrBpReads设定//////////////////////////////////
-		// 这个不是很精确，最后一位可能不准，但是实际应用中无所谓了,为方便，0位记录总长度。这样实际bp就是实际长度
-		int SumLength = chrBpReads.length / invNum + 1;// 保证不会溢出，这里是要让SumChrBpReads长一点
-		if (SumChrBpReads == null) {
-			SumChrBpReads = new int[SumLength];// 直接从0开始记录，1代表第二个invNum,也和实际相同
-		}
-		
-		if (invNum == 1) {
-			for (int i = 0; i < SumLength - 2; i++) {
-				SumChrBpReads[i] += chrBpReads[i+1];
-				readsAllPipNum = readsAllPipNum + (double)chrBpReads[i+1]/fold;
-			}
-			return;
-		 }
-		 for (int i = 0; i < SumLength - 2; i++) {
-			 int[] tmpSumReads = new int[invNum];//将总的chrBpReads里的每一段提取出来
-			 int sumStart = i*invNum + 1; int k=0;//k是里面tmpSumReads的下标，实际下标就行，不用-1
-			 for (int j = sumStart; j < sumStart + invNum; j++) {
-				 int thisNum = chrBpReads[j];
-				 tmpSumReads[k] = thisNum;
-				 readsAllPipNum = readsAllPipNum + (double)thisNum/fold;
-				 k++;
-			 }
-			 samplingSite(i, tmpSumReads);
-		 }
-	}
-	
-	private void samplingSite(int siteNum, int[] tmpSumReads) {
-		 if (type == MapReads.SUM_TYPE_MEDIAN) { //每隔一段区域取样，建议每隔10bp取样，取中位数
-			 SumChrBpReads[siteNum] += (int) MathComput.median(tmpSumReads);
-		 } else if (type == MapReads.SUM_TYPE_MEAN) { 
-			 SumChrBpReads[siteNum] += (int) MathComput.mean(tmpSumReads);
-		 } else if (type == MapReads.SUM_TYPE_SUM) {
-			SumChrBpReads[siteNum] += MathComput.sum(tmpSumReads);
-		}else {//默认取中位数 
-			 SumChrBpReads[siteNum] += (int) MathComput.median(tmpSumReads);
-		 }
-	}
-	
-	public void clear() {
-		FormulatToCorrectReads = null;
-		SumChrBpReads = null;
-	}
-}
+

@@ -108,7 +108,21 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 			addHistBin(binNext, binNext + "", maxSize);
 		}
 	}
-	
+	/**
+	 * 自动设置histlist的bin，从0开始，每隔interval设置一位，名字就起interval
+	 * @param histList
+	 * @param binNum bin的个数
+	 * @param interval 间隔
+	 */
+	public void setBinAndInterval(int binNum, int interval) {
+		clearElements();
+		setStartBin(interval, interval + "", 0, interval);
+		int binNext = interval*2;
+		for (int i = 1; i < binNum; i++) {
+			addHistBin(binNext, binNext + "", binNext);
+			binNext = binNext + interval;
+		}
+	}
 	/**
 	 * 设置起点
 	 * @param number 本bin所代表的数值，null就用终点和起点的平均值

@@ -185,12 +185,14 @@ public abstract class FunctionTest implements Cloneable {
 		
 		for (String geneId : mapGeneName2LsGO.keys()) {
 			List<String> lsItemId = mapGeneName2LsGO.get(geneId);
+			if (lsItemId.isEmpty()) continue;
 			GeneID geneID = new GeneID(geneId, taxID);
 			String geneUniId = geneID.getGeneUniID();
 			GeneID2LsItem geneID2LsItem = mapBGGeneID2Items.get(geneUniId.toLowerCase());
 
 			if (geneID2LsItem == null) {
 				geneID2LsItem = generateGeneID2LsItem();
+				geneID2LsItem.setGeneUniID(geneUniId);
 				mapBGGeneID2Items.put(geneUniId.toLowerCase(), geneID2LsItem);
 			}
 			for (String itemId : lsItemId) {
@@ -230,7 +232,7 @@ public abstract class FunctionTest implements Cloneable {
 				geneId.setBlastInfo(blastEvalue, lsBlastTaxId);
 			}
 			
-			if (num % 200 == 0) {
+			if (num % 1000 == 0) {
 				logger.info("总共{}个基因，已经找了{}个基因", numAll + "", num+ "" );
 			}
 			GeneID2LsItem geneID2LsItem = convert2Item(geneId);
