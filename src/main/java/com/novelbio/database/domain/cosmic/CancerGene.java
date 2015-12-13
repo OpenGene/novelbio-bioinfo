@@ -131,21 +131,18 @@ public class CancerGene implements Serializable {
 			return null;
 		}
 		String[] arrGeneLine = content.split("\t");	
-		String geneName = "";
-//		GeneID copedID = new GeneID(geneName, taxID, false);
+		GeneID copedID = new GeneID(arrGeneLine[0], taxID, false);
 		CancerGene cosCancerGene = new CancerGene();
-//		String geneID = copedID.getGeneUniID();
-//		if (!geneID.matches("[0-9]+")) {
-//			return null;
-//		}
-//		cosCancerGene.setGeneId(Integer.parseInt(geneID));
+		String geneID = copedID.getGeneUniID();
+		if (!geneID.matches("[0-9]+")) {
+			return null;
+		}
+		cosCancerGene.setGeneId(Integer.parseInt(geneID));
 		cosCancerGene.setGenomeLocation(arrGeneLine[3]);
 		cosCancerGene.setChrBand(arrGeneLine[4]);
-		boolean isSom = false;
 		if (arrGeneLine[5].equals("yes")) {
 			cosCancerGene.isSomatic = true;
 		}
-		boolean isGerm = false;
 		if (arrGeneLine[6].equals("yes")) {
 			cosCancerGene.isGermline = true;
 		}
@@ -176,6 +173,4 @@ public class CancerGene implements Serializable {
 			return null;
 		}
 	}
-	
-	
 }

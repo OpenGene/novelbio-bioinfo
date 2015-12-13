@@ -6,13 +6,11 @@ import com.novelbio.database.domain.cosmic.CodingMuts;
 import com.novelbio.database.domain.cosmic.CompleteExport;
 import com.novelbio.database.domain.cosmic.CosmicCNV;
 import com.novelbio.database.domain.cosmic.NonCodingVars;
-import com.novelbio.database.domain.omim.GeneMIM;
-import com.novelbio.database.model.modcosmic.MgmtCodingMuts;
-import com.novelbio.database.model.modcosmic.MgmtCancerGene;
-import com.novelbio.database.model.modcosmic.MgmtCompleteExport;
-import com.novelbio.database.model.modcosmic.MgmtNCV;
-import com.novelbio.database.model.modcosmic.MgmtNonCodingVars;
-import com.novelbio.database.model.modomim.MgmtGeneMIMInfo;
+import com.novelbio.database.service.servcosmic.MgmtCancerGene;
+import com.novelbio.database.service.servcosmic.MgmtCodingMuts;
+import com.novelbio.database.service.servcosmic.MgmtCompleteExport;
+import com.novelbio.database.service.servcosmic.MgmtNCV;
+import com.novelbio.database.service.servcosmic.MgmtNonCodingVars;
 
 public class UpdataCOSMIC {
 	static String cancerGenePath = "/home/novelbio/bianlianle/tmp/cancer_gene_census.csv.test2.txt";	
@@ -26,10 +24,10 @@ public class UpdataCOSMIC {
 		UpdataCOSMIC updataCOSMIC = new UpdataCOSMIC();
 //		updataCOSMIC.creatCancerGene(cancerGenePath);
 //		updataCOSMIC.creatCodingMuts(codingMutsPath);
-//		updataCOSMIC.creatCompleteExport(completeExportPath);
+		updataCOSMIC.creatCompleteExport(completeExportPath);
 		
 //		updataCOSMIC.creatNCV(nCVPath);
-		updataCOSMIC.creatNonCodingVars(nonCodingVarsPath);
+//		updataCOSMIC.creatNonCodingVars(nonCodingVarsPath);
 		System.out.println("finished!");
 	}
 	
@@ -54,7 +52,6 @@ public class UpdataCOSMIC {
 					mgmtCodingMuts.save(codingMuts);
 				}
 			}
-	
 		}
 		txtCancerGene.close();
 	}
@@ -66,7 +63,6 @@ public class UpdataCOSMIC {
 				CompleteExport completeExport = CompleteExport.getInstanceFromCodingMuts(content);
 				if (!(completeExport == null)) {
 					mgmtCompleteExport.save(completeExport);
-					System.out.println(completeExport.getFathmmPre());
 				}
 			}
 		}
@@ -81,7 +77,6 @@ public class UpdataCOSMIC {
 				CosmicCNV cosmicCNV = CosmicCNV.getInstanceFromNCV(content);
 				if (!(cosmicCNV == null)) {
 					mgmtNCV.save(cosmicCNV);
-					System.out.println(cosmicCNV.getSampleName());
 				}
 			}
 		}
@@ -95,13 +90,9 @@ public class UpdataCOSMIC {
 				NonCodingVars nonCodingVars = NonCodingVars.getInstanceFromNonCodingVars(content);
 				if (!(nonCodingVars == null)) {
 					mgmtNonCodingVars.save(nonCodingVars);
-					System.out.println(nonCodingVars.getPos());
 				}
 			}
 		}
 		txtCompleteExport.close();
 	}
-	
-	
-	
 }

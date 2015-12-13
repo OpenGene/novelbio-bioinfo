@@ -1,0 +1,2 @@
+#Gene Symbol	Name	Entrez GeneId	Genome Location	Chr Band	Somatic	Germline	Tumour Types(Somatic)	Tumour Types(Germline)	Cancer Syndrome	Tissue Type	Molecular Genetics	Mutation Types	Translocation Partner	Other Germline Mut	Other Syndrome	Synonyms
+ABI1	abl-interactor 1	10006	10:26748570-26860863	10p11.2	yes		AML			L	Dom	T	KMT2A			"ABI1	E3B1	ABI-1	SSH3BP1	10006"

@@ -1,8 +1,8 @@
 package com.novelbio.database.domain.cosmic;
 
 import java.io.Serializable;
-
 import org.springframework.data.mongodb.core.mapping.Document;
+import com.novelbio.database.model.modgeneid.GeneID;
 
 @Document(collection = "cosCompleteExport")
 public class CompleteExport implements Serializable {
@@ -12,9 +12,9 @@ public class CompleteExport implements Serializable {
 	/** accession Number*/
 	private String accessionNum;
 	/** gene CDS length*/
-	private String cDSLength;
+	private long cDSLength;
 	/** HGNC ID*/
-	private String hGNCId;
+	private int hGNCId;
 	/** Sample Name*/
 	private String sampleName;
 	/** Sample ID*/
@@ -41,14 +41,13 @@ public class CompleteExport implements Serializable {
 	private boolean isGenomeScreen = false;
 	/** mutation ID(COSMIC ID)*/
 	private String mutationID;
-	
 	/** mutation Description*/
 	private String mutationDes;
 	/** mutation zygosity*/
 	private String mutationZyg;
 	/** LOH*/
 	private String lOH;
-	/** LOH*/
+	/** is snp*/
 	private String snp;
 	/** FATHMM prediction*/
 	private String FathmmPre;
@@ -79,16 +78,16 @@ public class CompleteExport implements Serializable {
 	public String getAccessionNum() {
 		return accessionNum;
 	}
-	public void setcDSLength(String cDSLength) {
+	public void setcDSLength(long cDSLength) {
 		this.cDSLength = cDSLength;
 	}
-	public String getcDSLength() {
+	public long getcDSLength() {
 		return cDSLength;
 	}
-	public void sethGNCId(String hGNCId) {
+	public void sethGNCId(int hGNCId) {
 		this.hGNCId = hGNCId;
 	}
-	public String gethGNCId() {
+	public int gethGNCId() {
 		return hGNCId;
 	}
 	public void setSampleName(String sampleName) {
@@ -158,14 +157,6 @@ public class CompleteExport implements Serializable {
 	public String getHistSubtype3() {
 		return histSubtype3;
 	}
-//	public void setIsGenomeScreen(boolean isGenomeScreen) {
-//		this.isGenomeScreen = isGenomeScreen;
-//		
-//	}
-//	public boolean getIsGenomeScreen() {
-//		return isGenomeScreen;
-//		
-//	}
 	public void setMutationID(String mutationID) {
 		this.mutationID = mutationID;
 	}
@@ -249,22 +240,20 @@ public class CompleteExport implements Serializable {
 			return null;
 		}
 		String[] arrGeneLine = content.split("\t");	
-		String geneName = "";
-//		GeneID copedID = new GeneID(geneName, taxID, false);
+		GeneID copedID = new GeneID(arrGeneLine[0], taxID, false);
 		CompleteExport completeExport =new CompleteExport();
-//		String geneID = copedID.getGeneUniID();
-//		if (!geneID.matches("[0-9]+")) {
-//			return null;
-//		}
-//		completeExport.setGeneId(Integer.parseInt(geneID));
-		completeExport.setGeneId(0);
+		String geneID = copedID.getGeneUniID();
+		if (!geneID.matches("[0-9]+")) {
+			return null;
+		}
+		completeExport.setGeneId(Integer.parseInt(geneID));
 		completeExport.setAccessionNum(arrGeneLine[1]);
-		completeExport.setcDSLength(arrGeneLine[2]);
-		completeExport.sethGNCId(arrGeneLine[3]);
+		completeExport.setcDSLength(Long.parseLong(arrGeneLine[2]));
+		completeExport.sethGNCId(Integer.parseInt(arrGeneLine[3]));
 		completeExport.setSampleName(arrGeneLine[4]);
 		completeExport.setSampleID(Integer.parseInt(arrGeneLine[5]));
 		completeExport.setTumourID(Integer.parseInt(arrGeneLine[6]));
-		completeExport.setPrihistCos(arrGeneLine[7]);
+		completeExport.setPriSiteCos(arrGeneLine[7]);
 		completeExport.setSiteSubtype1(arrGeneLine[8]);
 		completeExport.setSiteSubtype2(arrGeneLine[9]);
 		completeExport.setSiteSubtype3(arrGeneLine[10]);
@@ -297,8 +286,5 @@ public class CompleteExport implements Serializable {
 			completeExport.setAge(Float.parseFloat(arrGeneLine[33]));
 		}
 		return completeExport;
-	}
-	
-	
-	
+	}	
 }

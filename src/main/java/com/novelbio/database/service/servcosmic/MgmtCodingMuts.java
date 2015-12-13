@@ -1,4 +1,4 @@
-package com.novelbio.database.model.modcosmic;
+package com.novelbio.database.service.servcosmic;
 
 import java.util.List;
 
