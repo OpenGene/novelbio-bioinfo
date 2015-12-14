@@ -95,6 +95,10 @@ public class SamToFastq implements AlignmentRecorder {
 	}
 	
 	public void initialFq() {
+		if (samToFastqType == EnumSamToFastqType.UnmappedReadsOneFile) {
+			isPairend = false;
+		}
+		
 		if (isGenerateTmpFile) {
 			fastQ1 = new FastQ(outFileNameTmp[0], true);
 			if (isPairend) {
@@ -127,15 +131,19 @@ public class SamToFastq implements AlignmentRecorder {
 		}
 		
 		if (samToFastqType == EnumSamToFastqType.UnmappedReads) {
-			if (samRecord.isMapped() && (isPairend && samRecord.isMateMapped())) {
+			if (samRecord.isMapped() && (!isPairend || isPairend && samRecord.isMateMapped())) {
 				return false;
 			}
 		} else if (samToFastqType == EnumSamToFastqType.UnmappedReadsBoth) {
 			if (samRecord.isMapped() || (isPairend && samRecord.isMateMapped())) {
 				return false;
 			}
-		} else if (samToFastqType == EnumSamToFastqType.MappedReads) {
-			if (!samRecord.isMapped() && (isPairend && !samRecord.isMateMapped())) {
+		} else if (samToFastqType == EnumSamToFastqType.UnmappedReadsOneFile) {
+			if (samRecord.isMapped()) {
+				return false;
+			}
+		}else if (samToFastqType == EnumSamToFastqType.MappedReads) {
+			if (!samRecord.isMapped() && (!isPairend || isPairend && !samRecord.isMateMapped())) {
 				return false;
 			}
 		} else if (samToFastqType == EnumSamToFastqType.MappedReadsPairend) {
@@ -288,6 +296,8 @@ public class SamToFastq implements AlignmentRecorder {
 		MappedReadsOnlyOne("_OnlyOneMapped"),
 		/** 双端测序只要有一个没比对上的 */
 		UnmappedReads("_UnMapped"),
+		/** 双端测序只要有一个没比对上的 */
+		UnmappedReadsOneFile("_UnMappedOneFile"),
 		/** 双端测序两端都没比对上的 */
 		UnmappedReadsBoth("_BothUnMapped");
 		
