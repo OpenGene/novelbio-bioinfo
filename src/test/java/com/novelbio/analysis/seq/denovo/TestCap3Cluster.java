@@ -7,8 +7,6 @@ import java.util.Set;
 import org.junit.Assert;
 import org.junit.Test;
 
-import picard.annotation.Gene;
-
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaReader;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

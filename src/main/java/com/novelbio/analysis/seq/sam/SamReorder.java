@@ -10,8 +10,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import picard.PicardException;
-
 import com.novelbio.base.fileOperate.FileOperate;
 
 /** 给定染色体顺序，将SamHeader的顺序调整为指定的顺序
@@ -92,7 +90,7 @@ public class SamReorder {
                     String msg = String.format("Discordant contig lengths: read %s LN=%d, ref %s LN=%d",
                             refRecordOld.getSequenceName(), refRecordOld.getSequenceLength(),
                             rerRecNew.getSequenceName(), rerRecNew.getSequenceLength());
-                    throw new PicardException(msg);
+                    throw new ExceptionSamError(msg);
                 }
                 logger.info(String.format("  Reordering read contig %s [index=%d] to => ref contig %s [index=%d]%n",
                                        refRecordOld.getSequenceName(), refRecordOld.getSequenceIndex(),
@@ -103,7 +101,7 @@ public class SamReorder {
 
         for ( SAMSequenceRecord readsRec : chrDictOld.getSequences() ) {
             if ( ! newOrder.containsKey(readsRec.getSequenceIndex()) ) {
-            	throw new PicardException("New reference sequence does not contain a matching contig for " + readsRec.getSequenceName());
+            	throw new ExceptionSamError("New reference sequence does not contain a matching contig for " + readsRec.getSequenceName());
             }
         }
 
@@ -179,7 +177,7 @@ public class SamReorder {
         else {
             final Integer n = newOrder.get(oldIndex);
 
-            if (n == null) throw new PicardException("BUG: no mapping found for read " + read.format());
+            if (n == null) throw new ExceptionSamError("BUG: no mapping found for read " + read.format());
             else return n;
         }
     }

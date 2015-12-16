@@ -5,8 +5,6 @@ import java.util.WeakHashMap;
 
 import org.apache.log4j.Logger;
 
-import picard.PicardException;
-
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -202,7 +200,7 @@ public class SamToFastq implements AlignmentRecorder {
     private void assertPairedMates(final SamRecord record1, final SamRecord record2) {
         if (! (record1.isFirstRead() && !record2.isFirstRead() ||
                record2.isFirstRead() && !record1.isFirstRead() ) ) {
-            throw new PicardException("Illegal mate state: " + record1.getName() + " " + record2.getName());
+            throw new ExceptionSamError("Illegal mate state: " + record1.getName() + " " + record2.getName());
         }
     }
     
