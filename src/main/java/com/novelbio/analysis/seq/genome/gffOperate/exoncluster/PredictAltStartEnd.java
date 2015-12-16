@@ -6,8 +6,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeMap;
 
-import org.hyperic.sigar.cmd.SysInfo;
-
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.mapping.Align;

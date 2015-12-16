@@ -1,17 +1,10 @@
 package com.novelbio.analysis.seq.reseq;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
-
-import edu.uci.ics.jung.graph.DirectedSparseGraph;
 
 public class SoapsnpInfo  implements Comparable<SoapsnpInfo>{
 

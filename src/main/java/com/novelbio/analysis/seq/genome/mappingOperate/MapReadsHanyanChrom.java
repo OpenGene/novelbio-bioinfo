@@ -3,8 +3,8 @@ package com.novelbio.analysis.seq.genome.mappingOperate;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 
 /**
  * 根据reads是否与基因的方向相一致而进行过滤工作，这个是专门针对韩燕的项目做的分析，

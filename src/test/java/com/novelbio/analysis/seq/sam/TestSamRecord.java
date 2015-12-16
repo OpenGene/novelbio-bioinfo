@@ -1,12 +1,8 @@
 package com.novelbio.analysis.seq.sam;
 
-import htsjdk.samtools.SAMRecord;
-
-import org.aspectj.weaver.tools.Trace;
+import junit.framework.TestCase;
 
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
-
-import junit.framework.TestCase;
 
 public class TestSamRecord extends TestCase {
 	public void testIsCis5to3ConsiderStrand() {

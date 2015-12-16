@@ -11,10 +11,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.freehep.graphicsio.swf.End;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.hg.doc.en;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;

@@ -10,9 +10,7 @@ import org.apache.log4j.Logger;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
-import com.jhlabs.image.MapColorsFilter;
 import com.novelbio.analysis.annotation.cog.EnumCogType;
-import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.fileOperate.FileOperate;
 

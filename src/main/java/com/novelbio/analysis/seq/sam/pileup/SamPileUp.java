@@ -1,6 +1,5 @@
 package com.novelbio.analysis.seq.sam.pileup;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -10,16 +9,11 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import org.aspectj.apache.bcel.generic.RET;
-
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamReader;
 import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.base.multithread.RunProcess;
 
 public class SamPileUp {
 	public static void main(String[] args) {
