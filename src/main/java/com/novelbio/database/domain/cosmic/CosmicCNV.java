@@ -2,6 +2,8 @@ package com.novelbio.database.domain.cosmic;
 
 import java.io.Serializable;
 
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "cosNCV")

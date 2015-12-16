@@ -1,5 +1,8 @@
 package com.novelbio.database.cosmic;
 
+import htsjdk.variant.variantcontext.VariantContext;
+import htsjdk.variant.vcf.VCFFileReader;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,14 +10,19 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.cosmic.CancerGene;
 import com.novelbio.database.domain.cosmic.CodingMuts;
 import com.novelbio.database.domain.cosmic.CompleteExport;
+import com.novelbio.database.domain.cosmic.CosmicAbb;
+import com.novelbio.database.domain.cosmic.CosmicCNV;
+import com.novelbio.database.domain.cosmic.NonCodingVars;
+import com.novelbio.database.service.servcosmic.MgmtNonCodingVars;
 
 public class TestCosmicData {
 	
 	public void testCreatCodingMuts() {
-		String codingMutsPath = "src/test/resources/test_file/cosmic/CosmicCodingMuts.vcf";
+		String codingMutsPath = "src/test/resources/test_file/cosmic/CosmicCodingMuts.1.vcf.gz";
 		TxtReadandWrite txtCancerGene = new TxtReadandWrite(codingMutsPath);
 		for (String content : txtCancerGene.readlines()) {
 			if (!content.startsWith("#")) {
@@ -50,7 +58,7 @@ public class TestCosmicData {
 		}
 		txtCancerGene.close();
 	}
-	@Test
+	
 	public void testCreatCompleteExport() {
 		String codingMutsPath = "src/test/resources/test_file/cosmic/CosmicCompleteExport.tsv";
 		TxtReadandWrite txtCancerGene = new TxtReadandWrite(codingMutsPath);
@@ -93,26 +101,54 @@ public class TestCosmicData {
 	}
 	
 	public void testCreatNCV() {
-		String codingMutsPath = "src/test/resources/test_file/cosmic/cancer_gene_census.csv.txt";
+		String codingMutsPath = "src/test/resources/test_file/cosmic/CosmicNCV.tsv";
 		TxtReadandWrite txtCancerGene = new TxtReadandWrite(codingMutsPath);
-		List<String> lsTumTypeSom = new ArrayList<>();
-		lsTumTypeSom.add("AML");
-		List<String> lsTissueType = new ArrayList<>();
-		lsTissueType.add("L");
 		for (String content : txtCancerGene.readlines()) {
 			if (!content.startsWith("#")) {
-				CancerGene cancerGene = CancerGene.getInstanceFromCancerGene(content);	
-				Assert.assertEquals(10006,cancerGene.getGeneId());  
-				Assert.assertEquals("10p11.2",cancerGene.getChrBand());
-				Assert.assertEquals("10:26748570-26860863",cancerGene.getGenomeLocation());
-				Assert.assertEquals(lsTumTypeSom,cancerGene.getLsTumTypeSom());
-				Assert.assertEquals(lsTissueType,cancerGene.getLsTissueType());
-				Assert.assertEquals("Dom",cancerGene.getMoleGenetics());
+				CosmicCNV cosmicCNV = CosmicCNV.getInstanceFromNCV(content);
+				Assert.assertEquals(1474918,cosmicCNV.getSampleId());  
+				Assert.assertEquals("COSN158202",cosmicCNV.getcOSMICId());
+				Assert.assertEquals("TCGA-25-1319-01",cosmicCNV.getSampleName());
+				Assert.assertEquals("Heterozygous",cosmicCNV.getZygosity());
+				Assert.assertEquals("Confirmed somatic variant",cosmicCNV.getMutaSomSta());
+				Assert.assertEquals("ADB",cosmicCNV.getFathmmNonCodGroups());
+				Assert.assertEquals("0.99726",cosmicCNV.getFathmmNonCodScore() + "");
+				Assert.assertEquals("AEFDBI",cosmicCNV.getFathmmCodGroups());
+				Assert.assertEquals("0.99857",cosmicCNV.getFathmmCodScore() + "");
+				Assert.assertEquals("n",cosmicCNV.getSnp() + "");
+				Assert.assertEquals(331,cosmicCNV.getStudyId());
+				Assert.assertEquals(21720365,cosmicCNV.getPubmedPMID());
 			}
 		}
 		txtCancerGene.close();
 	}
 	
-	
+	public void testCreatNonCodingVars() {
+		String nonCodingVarsPath = "src/test/resources/test_file/cosmic/CosmicNonCodingVariants.1.vcf.gz";
+		VCFFileReader vcfFileReader = new VCFFileReader(FileOperate.getFile(nonCodingVarsPath));
+		for (VariantContext variantContext : vcfFileReader) {
+			NonCodingVars nonCodingVars = NonCodingVars.getInstanceFromNonCodingVars(variantContext);
+			if (!(nonCodingVars == null)) {
+				Assert.assertEquals("1",nonCodingVars.getChr());  
+				Assert.assertEquals(10151,nonCodingVars.getPos());  
+				Assert.assertEquals("COSN14661299",nonCodingVars.getCosmicId()); 
+				Assert.assertEquals("T",nonCodingVars.getRef());  
+				Assert.assertEquals("A",nonCodingVars.getAlt());  
+			}
+		}
+	}	
+	@Test
+	public void testCreatCosmicAbb() {
+		String abbreviationFile = "src/test/resources/test_file/cosmic/Abbreviation.1.txt";
+		TxtReadandWrite txtCancerGene = new TxtReadandWrite(abbreviationFile);
+		for (String content : txtCancerGene.readlines()) {
+			if (!content.startsWith("#")) {
+				CosmicAbb cosmicAbb = CosmicAbb.getInstanceFromCosmicAbb(content);
+				Assert.assertEquals("A",cosmicAbb.getAbbreviation());  
+				Assert.assertEquals("amplification",cosmicAbb.getTerm());
+			}
+		}
+		txtCancerGene.close();
+	}
 	
 }

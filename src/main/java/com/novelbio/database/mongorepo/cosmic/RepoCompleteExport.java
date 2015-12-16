@@ -12,6 +12,7 @@ public interface RepoCompleteExport extends PagingAndSortingRepository<CompleteE
 	List<CompleteExport> findCompleteExportByGeneId(int geneId);
 	@Query(value="{ 'cosmicId' : ?0 }")
 	CompleteExport findCompleteExportByCosmicId(int cosmicId);
+	@Query(value="{ 'chr' : ?0, 'pos' : ?1, 'ref' : ?2, 'alt' : ?3 }")
+	CompleteExport findCompleteExportByPosAndVar(String chr, long pos,String ref, String alt);
 	List<CompleteExport> findAll();
-	
 }

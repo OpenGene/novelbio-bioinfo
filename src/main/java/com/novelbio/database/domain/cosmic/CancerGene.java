@@ -156,10 +156,18 @@ public class CancerGene implements Serializable {
 		cosCancerGene.setMoleGenetics(arrGeneLine[11]);
 		List<String> listMutationType = cosCancerGene.getListInfor(arrGeneLine[12], ",");
 		cosCancerGene.setLsMutaType(listMutationType);
-		cosCancerGene.setTransPartner(arrGeneLine[13]);
-		cosCancerGene.setOtherSyndrome(arrGeneLine[15]);
-		List<String> lsSynonyms = cosCancerGene.getListInfor(arrGeneLine[16], ",");
-		cosCancerGene.setLsSynonyms(lsSynonyms);		
+		if (arrGeneLine.length>13) {
+			cosCancerGene.setTransPartner(arrGeneLine[13]);
+			if (arrGeneLine.length>15) {
+				cosCancerGene.setOtherSyndrome(arrGeneLine[15]);
+			}
+			if (arrGeneLine.length>16) {
+				List<String> lsSynonyms = cosCancerGene.getListInfor(arrGeneLine[16], ",");
+				cosCancerGene.setLsSynonyms(lsSynonyms);		
+			}
+		}
+
+
 		return cosCancerGene;
 	}
 	

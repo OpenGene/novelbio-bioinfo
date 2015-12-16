@@ -11,5 +11,7 @@ public interface RepoNonCodingVars extends PagingAndSortingRepository<NonCodingV
 
 	@Query(value="{ 'cosmicId' : ?0 }")
 	NonCodingVars findNonCodingVarsByCosmicId(String cosmicId);
+	@Query(value="{ 'chr' : ?0, 'pos' : ?1, 'alt' : ?2 }")
+	List<NonCodingVars> findNonCodingVarsByPosAndVar(String chr, long pos, String alt);
 	List<NonCodingVars> findAll();
 }

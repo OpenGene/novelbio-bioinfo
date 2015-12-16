@@ -11,7 +11,9 @@ public class MgmtNonCodingVars {
 	public NonCodingVars findNonCodingVarsByCosmicId(String cosmicId) {
 		return repoNonCodingVars.findNonCodingVarsByCosmicId(cosmicId);
 	}
-	
+	public List<NonCodingVars> findNonCodingVarsByPosAndVar(String chr, long pos, String alt) {
+		return repoNonCodingVars.findNonCodingVarsByPosAndVar(chr, pos, alt);
+	}
 	public List<NonCodingVars> findAll() {
 		return repoNonCodingVars.findAll();
 	}

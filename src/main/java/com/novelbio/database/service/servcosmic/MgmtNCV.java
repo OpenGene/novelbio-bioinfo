@@ -13,14 +13,15 @@ public class MgmtNCV {
 	public CosmicCNV findNCVByCosmicId(String cosmicId) {
 		return repoNCV.findNCVByCosmicId(cosmicId);
 	}
-	
 	public List<CosmicCNV> findAll() {
 		return repoNCV.findAll();
 	}
 	public void save(CosmicCNV cosmicCNV) {
 		repoNCV.save(cosmicCNV);
 	}
-
+	public void save(List<CosmicCNV> lsCosmicCNV) {
+		repoNCV.save(lsCosmicCNV);
+	}
 	//懒汉模式的单例延迟
 	static class MgmtNCVHolder {
 		static MgmtNCV mgmtNCV = new MgmtNCV();

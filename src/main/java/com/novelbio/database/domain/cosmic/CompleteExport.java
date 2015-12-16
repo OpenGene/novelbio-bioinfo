@@ -249,7 +249,10 @@ public class CompleteExport implements Serializable {
 		completeExport.setGeneId(Integer.parseInt(geneID));
 		completeExport.setAccessionNum(arrGeneLine[1]);
 		completeExport.setcDSLength(Long.parseLong(arrGeneLine[2]));
-		completeExport.sethGNCId(Integer.parseInt(arrGeneLine[3]));
+		if(arrGeneLine[3].length()>0) {
+			completeExport.sethGNCId(Integer.parseInt(arrGeneLine[3]));
+		}
+		
 		completeExport.setSampleName(arrGeneLine[4]);
 		completeExport.setSampleID(Integer.parseInt(arrGeneLine[5]));
 		completeExport.setTumourID(Integer.parseInt(arrGeneLine[6]));

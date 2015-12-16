@@ -11,5 +11,6 @@ public interface RepoNCV extends PagingAndSortingRepository<CosmicCNV, String>{
 
 	@Query(value="{ 'cosmicId' : ?0 }")
 	CosmicCNV findNCVByCosmicId(String cosmicId);
+	
 	List<CosmicCNV> findAll();
 }
