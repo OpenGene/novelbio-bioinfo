@@ -6,11 +6,7 @@ import java.util.Map;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.mapreduce.GroupBy;
-import org.springframework.data.mongodb.core.mapreduce.GroupByResults;
 
-import com.hg.doc.gr;
 import com.novelbio.analysis.seq.fasta.ChrDensity;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
@@ -24,10 +20,9 @@ import com.novelbio.analysis.seq.mapping.MapIndexMaker.IndexMapSplice;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.service.SpringFactoryBioinfo;
 import com.novelbio.listOperate.HistBin;
 import com.novelbio.listOperate.HistList;
 
@@ -42,16 +37,18 @@ public class mytest {
 //			System.out.println(string);
 //		}
 		
+		GeneID geneID = new GeneID("tp53", 9606);
+		System.out.println(geneID.getDescription());
 		
 //		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/tsetserfs.txt", true);
 //		txtWrite.writefileln("fse");
 //		txtWrite.writefile("台湾铯夫人三");
 //		txtWrite.close();
 		
-		List<String> lsResult = TxtReadandWrite.readReverse("/media/winE/tsetserfs.txt", 1);
-		for (String string : lsResult) {
-			System.out.println(string);
-		}
+//		List<String> lsResult = TxtReadandWrite.readReverse("/media/winE/tsetserfs.txt", 1);
+//		for (String string : lsResult) {
+//			System.out.println(string);
+//		}
 	}
 	
 	private static void test() {

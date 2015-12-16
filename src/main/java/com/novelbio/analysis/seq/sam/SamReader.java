@@ -151,21 +151,11 @@ public class SamReader {
 		setSamHeader(inputStream);
 	}
 	
-	private void initialStream() throws IOException {
-		if (FileHadoop.isHdfs(fileName)) {
-			FileHadoop fileHadoop = new FileHadoop(fileName);
-			if (isIndexed) {
-				inputStream = new SeekableHDFSstream(fileHadoop);
-			} else {
-				inputStream = fileHadoop.getInputStream();
-			}
+	private void initialStream() throws IOException {		
+		if (isIndexed) {
+			inputStream = FileOperate.getInputStreamSeekable(fileName);
 		} else {
-			File file = new File(fileName);
-			if (isIndexed) {
-				inputStream = new SeekableFileStream(file);
-			} else {
-				inputStream = new FileInputStream(file);
-			}
+			inputStream = FileOperate.getInputStream(fileName);
 		}
 	}
 	
