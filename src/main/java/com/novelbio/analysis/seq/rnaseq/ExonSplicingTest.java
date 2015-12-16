@@ -493,13 +493,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsResult.add(pvalueCalculate.getStrInfo(true, false));
 		lsResult.add(pvalueCalculate.getStrInfo(true, true));
 		
-		lsResult.add(pvalueCalculate.getStrNormInfo(false));
-		lsResult.add(pvalueCalculate.getStrNormInfo(true));
-		lsResult.add(pvalueCalculate.getPvalueJun() + "");
-		lsResult.add(pvalueCalculate.getPvalueExp() + "");
-		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
-		
-		lsResult.add(pvalueCalculate.iSpliceTestExp.getSpliceIndex() + "");
+//		lsResult.add(pvalueCalculate.getStrNormInfo(false));
+//		lsResult.add(pvalueCalculate.getStrNormInfo(true));
+//		lsResult.add(pvalueCalculate.getPvalueJun() + "");
+//		lsResult.add(pvalueCalculate.getPvalueExp() + "");
+//		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
+//		
+//		lsResult.add(pvalueCalculate.iSpliceTestExp.getSpliceIndex() + "");
 	
 		lsResult.add(pvalueCalculate.getPvalueRootAvg() + "");
 		lsResult.add(fdr + "");
@@ -536,21 +536,15 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsTitle.add(condition1 + "Exp");
 		lsTitle.add(condition2 + "Exp");
 		
-		lsTitle.add("readsInfoDetailJun");
-		lsTitle.add("readsInfoDetailExp");
-		lsTitle.add("P-Value_Jun");
-		lsTitle.add("P-Value_Exp");
-		lsTitle.add("P-Value_Average");
+//		lsTitle.add("readsInfoDetailJun");
+//		lsTitle.add("readsInfoDetailExp");
+//		lsTitle.add("P-Value_Jun");
+//		lsTitle.add("P-Value_Exp");
+//		lsTitle.add("P-Value_Average");
 		
-		lsTitle.add("Splicing_Index");
+//		lsTitle.add("Splicing_Index");
 		
-//		lsTitle.add("LogFoldChange_Exp_Type1");
-//		lsTitle.add("LogFoldChange_Exp_Type2");
-//		
-//		lsTitle.add("LogFoldChange_Type1");
-//		lsTitle.add("LogFoldChange_Type2");
-		
-		lsTitle.add(TitleFormatNBC.Pvalue.toString());
+		lsTitle.add(TitleFormatNBC.Adjusted_PValue.toString());
 		lsTitle.add(TitleFormatNBC.FDR.toString());
 		lsTitle.add("SplicingType");
 //		lsTitle.add(TitleFormatNBC.Symbol.toString());

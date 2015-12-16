@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
@@ -253,31 +254,33 @@ public abstract class SpliceTypePredict {
 	}
 
 	public static enum SplicingAlternativeType {
-		cassette("cassette"), cassette_multi("cassette_multi"), alt5("A5SS"), alt3("A3SS"), altend("AltEnd"), altstart("AltStart"),
-		mutually_exclusive("MX"), retain_intron("IR"), unknown("Undefined"), sam_exon("same_exon"),
+		cassette("Cassette"), cassette_multi("Cassette_multi"), alt5("A5SS"), alt3("A3SS"), altend("AltEnd"), altstart("AltStart"),
+		mutually_exclusive("MXE"), retain_intron("IR"), 
+		
+		unknown("Undefined"), sam_exon("same_exon"),
 		startDif("StartDiff"), endDif("EndDif");
-		static HashMap<String, SplicingAlternativeType> mapName2Events = new LinkedHashMap<String, SplicingAlternativeType>();
+		static Set<SplicingAlternativeType> setSpliceExclude;
 		String info;
+		
 		SplicingAlternativeType(String name) {
 			this.info = name;
 		}
 		
-		public static HashMap<String, SplicingAlternativeType> getMapName2SplicingEvents() {
-			if (mapName2Events.size() == 0) {
-				mapName2Events.put("cassette", cassette);
-				mapName2Events.put("cassette_multi", cassette_multi);
-				mapName2Events.put("A5SS", alt5);
-				mapName2Events.put("A3SS", alt3);
-				mapName2Events.put("AltEnd", altend);
-				mapName2Events.put("AltStart", altstart);
-				mapName2Events.put("MX", mutually_exclusive);
-				mapName2Events.put("IR", retain_intron);
-				mapName2Events.put("Undefined", unknown);
-//				mapName2Events.put("sam_exon", sam_exon);
-//				mapName2Events.put("startDif", startDif);
-//				mapName2Events.put("endDif", endDif);
+		public static Set<SplicingAlternativeType> getSetExclude() {
+			if (setSpliceExclude != null) {
+				return setSpliceExclude;
 			}
-			return mapName2Events;
+			
+			setSpliceExclude = new HashSet<>();
+			setSpliceExclude.add(unknown);
+			setSpliceExclude.add(sam_exon);
+			setSpliceExclude.add(startDif);
+			setSpliceExclude.add(endDif);
+			return setSpliceExclude;
+		}
+		
+		public String toString() {
+			return info;
 		}
 	}
 	

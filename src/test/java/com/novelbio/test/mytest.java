@@ -1,34 +1,35 @@
 package com.novelbio.test;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
 import org.apache.log4j.Logger;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.mapreduce.GroupBy;
+import org.springframework.data.mongodb.core.mapreduce.GroupByResults;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.hg.doc.gr;
+import com.novelbio.analysis.seq.fasta.ChrDensity;
+import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.MapIndexMaker;
 import com.novelbio.analysis.seq.mapping.MapIndexMaker.IndexMapSplice;
-import com.novelbio.analysis.seq.rnaseq.RPKMcomput;
-import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.analysis.seq.sam.AlignSamReading;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.service.SpringFactoryBioinfo;
+import com.novelbio.listOperate.HistBin;
+import com.novelbio.listOperate.HistList;
 
 
 public class mytest {
@@ -36,20 +37,89 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		GffHashGene gffHashGene = new GffHashGene("/media/winE/test/yybug/Triticum_aestivum.IWGSC1.0_popseq.28.integration.v3.gtf");
-		System.out.println("fse");
-//		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/test/yybug/geneName.txt", true);
-		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
-			if (gffDetailGene.getNameSingle().equals("EPlTAEG00000000659")) {
-				System.out.println("stop");
-			}
-//			txtWrite.writefileln(gffDetailGene.getNameSingle());
-		}
+//		List<String> lsResult = TxtReadandWrite.readReverse("/hdfs:/nbCloud/public/software/WebApp/testReadEnd.txt", 4);
+//		for (String string : lsResult) {
+//			System.out.println(string);
+//		}
 		
-		GffDetailGene gffDetailGene = gffHashGene.searchLOC("EPlTAEG00000000659");
-		System.out.println(gffDetailGene.getNameSingle());
+		
+//		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/tsetserfs.txt", true);
+//		txtWrite.writefileln("fse");
+//		txtWrite.writefile("台湾铯夫人三");
 //		txtWrite.close();
 		
+		List<String> lsResult = TxtReadandWrite.readReverse("/media/winE/tsetserfs.txt", 1);
+		for (String string : lsResult) {
+			System.out.println(string);
+		}
+	}
+	
+	private static void test() {
+		Species species = new Species(39947);
+		species.setVersion("tigr7");
+		Map<String, Long> mapChr2Len = SeqHash.getMapChrId2Len(species.getChromSeq() + ".fai");
+		ChrDensity chrDensity = new ChrDensity(mapChr2Len, 1000000);
+		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winE/resources/fanwei/combine/JP69.bed");
+		for (String content : txtRead.readlines()) {
+			String[] ss = content.split("\t");
+			int start = Integer.parseInt(ss[1]);
+			int end = Integer.parseInt(ss[2]);
+			if (Math.abs(start - end) < 50) {
+				continue;
+			}
+			chrDensity.addSite(ss[0], Integer.parseInt(ss[1]));
+		}
+		
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/resources/fanwei/combine/JP69_count.txt", true);
+		for (HistList histList : chrDensity.getMapChr2His().values()) {
+			for (HistBin histBin : histList) {
+				txtWrite.writefileln(histList.getName() + "\t" + (int)histBin.getThisNumber() + "\t" + histBin.getCountNumber());
+			}
+		}
+		
+		txtRead.close();
+		txtWrite.close();
+	}
+	
+	private static void getCoveredRegion() {
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/resources/fanwei/combine/JP69.bed", true);
+		SamFile samFile = new SamFile("/media/winE/resources/fanwei/combine/JP69_sorted.bam");
+		MapReads mapReads = new MapReads();
+		int invNum = 2;
+		mapReads.setInvNum(invNum);
+		mapReads.prepareAlignRecord(samFile.readFirstLine());
+		mapReads.setMapChrID2Len(samFile.getMapChrID2Length());
+
+		AlignSamReading alignSamReading = new AlignSamReading(samFile);
+		alignSamReading.addAlignmentRecorder(mapReads);
+		alignSamReading.run();
+		
+		for (String chrId : mapReads.getChrIDLs()) {
+			ChrMapReadsInfo mapReadsInfo = mapReads.getChrMapReadsInfo(chrId);
+			
+			int num = 0;
+			int start = 0;
+			
+			int[] sumChrBps = mapReadsInfo.getSumChrBpReads();
+			for (int i = 0; i < sumChrBps.length; i++) {
+				int loc = i*invNum;
+				int pileUp = sumChrBps[i];
+				double pileUpD = (double)pileUp/mapReads.fold;
+				if (pileUpD > 10) {
+					if (num == 0) {
+						start = loc;
+					}
+					num++;
+				} else {
+					if (num*invNum > 70) {
+						txtWrite.writefileln(chrId + "\t" + start + "\t" + (start+ num*invNum));
+					}
+					num = 0;				
+				}
+			}
+		}
+
+		txtWrite.close();
 	}
 	
 	private static void makeIndexTophat(Species species) {

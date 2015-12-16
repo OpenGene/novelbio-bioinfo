@@ -352,7 +352,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * @param seqHash
 	 */
 	public void setSeqHash(SeqHash seqHash) {
-//		this.seqHash = seqHash;
+		this.seqHash = seqHash;
 	}
 	
 	protected ArrayList<Align> getLsDifIsoGene() {
@@ -376,12 +376,18 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	public void addBamSorted(String condition, String sortedBamFile) {
 		setCondition.add(condition);
-		SamFile samFile = new SamFile(sortedBamFile); 
+		SamFile samFile = new SamFile(sortedBamFile);
+		if (mapChrId2Len == null) {
+			mapChrId2Len = samFile.getMapChrID2Length();
+		}
 		AlignSamReading samFileReading = new AlignSamReading(samFile);
 		mapCond2SamReader.put(condition, samFileReading);
 		mapCond2SamFile.put(condition, samFile);
 	}
 	
+	public Map<String, Long> getMapChrId2Len() {
+		return mapChrId2Len;
+	}
 	
 	public void running() {
 		tophatJunction.setIntronMinLen(intronMinLen);
@@ -479,8 +485,22 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	private void runByChrome() {
 		lsResult = new ArrayList<>();
-		Set<String> setChrId = mapCond2SamReader.values().iterator().next().getFirstSamFile().getMapChrID2Length().keySet();
+		Set<String> setChrId = mapChrId2Len.keySet();
+		
+		int i = 0;
 		for (String chrId : setChrId) {
+			if (runGetInfo != null) {
+				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+				guiAnnoInfo.setInfo2(condition1 +"vs" + condition2 + " calculate chromesome: " + chrId);
+				List<Double> lsRegion = new ArrayList<>();
+				lsRegion.add((double) i);
+				lsRegion.add(0.0);
+				lsRegion.add(3.0);
+				guiAnnoInfo.setLsNumInfo(lsRegion);
+				runGetInfo.setRunningInfo(guiAnnoInfo);
+				i++;
+			}
+			
 			lsResult.addAll(runByChrome(chrId));
 		}
 		ExonSplicingTest.sortAndFdr(lsResult, fdrCutoff);
@@ -494,6 +514,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 			writeToFile(outFile, lsResult);
 		}
+		
+		
+		if (runGetInfo != null) {
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			guiAnnoInfo.setInfo2("Finish");
+			guiAnnoInfo.setInfo("");
+			runGetInfo.setRunningInfo(guiAnnoInfo);
+		}
 	}
 	
 	
@@ -503,8 +531,20 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			int invNum = isReconstructRI? 3 : 15;
 			mapReads = getMapReads(mapCond2SamReader.values().iterator().next(), invNum);
 		}
-		
+		if (runGetInfo != null) {
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			guiAnnoInfo.setInfo("Load Junction Info");
+			runGetInfo.setRunningInfo(guiAnnoInfo);
+		}
+
 		loadJunctionBam(mapReads, chrId);
+		
+		if (runGetInfo != null) {
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			guiAnnoInfo.setDouble(1.0);
+			runGetInfo.setRunningInfo(guiAnnoInfo);
+		}
+
 		tophatJunction.conclusion();
 		
 		logger.info("finish junction reads");
@@ -516,6 +556,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			generateNewIso.setGffHash(gffHashGene);
 			generateNewIso.setNewIsoReadsNum(newIsoReadsNum);
 		}
+		
+		if (runGetInfo != null) {
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			guiAnnoInfo.setInfo("Find Splice Site");
+			runGetInfo.setRunningInfo(guiAnnoInfo);
+		}
+		
 		fillLsAll_Dif_Iso_Exon(generateNewIso, chrId);
 		if (isReconstructIso) {
 			generateNewIso.clear();
@@ -525,22 +572,31 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			System.gc();
 		}
 		
-		loadExp(chrId);
-		setSplicingType();
-		
 		if (runGetInfo != null) {
 			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
-			List<Double> lsRegion = new ArrayList<>();
-			lsRegion.add(2.0);
-			lsRegion.add(0.0);
-			lsRegion.add((double) (lsSplicingTests.size()));
-			guiAnnoInfo.setLsNumInfo(lsRegion);
-			guiAnnoInfo.setInfo2("Doing Test");
+			guiAnnoInfo.setDouble(2.0);
+			runGetInfo.setRunningInfo(guiAnnoInfo);
+		}
+		if (runGetInfo != null) {
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			guiAnnoInfo.setInfo("Load Expression Info");
 			runGetInfo.setRunningInfo(guiAnnoInfo);
 		}
 		
+		loadExp(chrId);
+		setSplicingType();
+		
 		setCompareGroups(condition1, condition2);
-		return getTestResult_FromIso(chrId);
+		List<ExonSplicingTest> lsExonSplicingTests = getTestResult_FromIso(chrId);
+		
+		if (runGetInfo != null) {
+			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
+			guiAnnoInfo.setDouble(2.0);
+			guiAnnoInfo.setInfo2("");
+			runGetInfo.setRunningInfo(guiAnnoInfo);
+		}
+		
+		return lsExonSplicingTests;
 	}
 	
 	/**
@@ -567,13 +623,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		tophatJunction.setStrandSpecific(strandSpecific);
 
 		for (String condition : mapCond2SamReader.keySet()) {
-			if (runGetInfo != null) {
-				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
-				guiAnnoInfo.setInfo2("Reading Junction " + condition);
-				runGetInfo.setRunningInfo(guiAnnoInfo);
-			}
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
-			mapChrId2Len = lsSamFileReadings.get(0).getFirstSamFile().getMapChrID2Length();
 			int i = 0;
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
 				
@@ -594,7 +644,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 
 				samFileReading.setLsAlignments(lsReadReagion);
-				samFileReading.setRunGetInfo(runGetInfo);
 				SamFileStatistics samStatistics = new SamFileStatistics(condition);
 				samStatistics.setStandardData(mapChrId2Len);
 				samFileReading.addAlignmentRecorder(tophatJunction);
@@ -604,6 +653,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 				samFileReading.setUniqueMapping(isUseUniqueMappedReads);
 				samFileReading.run();
+				
 				Map<String, double[]> mapGroup2Num = mapCond_group2ReadsNum.get(condition);
 				if (mapGroup2Num == null) {
 					mapGroup2Num = new HashMap<>();
@@ -614,6 +664,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				samFileReadingLast = samFileReading;
 			}
 		}
+			
 		samFileReadingLast = null;
 	}
 	
@@ -625,7 +676,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
 	private void fillLsAll_Dif_Iso_Exon(GenerateNewIso generateNewIso, String chrId) {
 		List<GffDetailGene> lsGffDetailGenes = gffHashGene.getLsGffDetailGenes();
-		int i = 0;
 
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 //			logger.debug(gffDetailGene.getNameSingle());
@@ -652,15 +702,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				continue;
 			}
 			lsSplicingTests.add(lsExonSplicingTest);
-			if (i%500 == 0) {
-				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
-				guiAnnoInfo.setNum(i);
-				guiAnnoInfo.setDouble(i);
-				guiAnnoInfo.setInfo("Get " + i + " Junction Gene");
-				logger.info(i);
-				setRunInfo(guiAnnoInfo);
-			}
-			i++;
 		}
 		logger.debug("finish");
 	}
@@ -717,11 +758,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void loadExp(String chrId) {
 		AlignSamReading samFileReadingLast = null;
 		for (String condition : mapCond2SamReader.keySet()) {
-			if (runGetInfo != null) {
-				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
-				guiAnnoInfo.setInfo2("Reading Exp " + condition);
-				runGetInfo.setRunningInfo(guiAnnoInfo);
-			}
 			List<AlignSamReading> lsSamFileReadings = mapCond2SamReader.get(condition);
 			int i = 0;
 			for (AlignSamReading samFileReading : lsSamFileReadings) {
@@ -741,7 +777,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 				
 				samFileReading.setLsAlignments(lsReadReagion);
-				samFileReading.setRunGetInfo(runGetInfo);
 				add_RetainIntron_Into_SamReading(chrId, condition, i+"", samFileReading);
 				MapReadsAbs mapReadsAbs = null;
 				if (isLessMemory) {
@@ -798,7 +833,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		mapReads.setisUniqueMapping(true);
 		mapReads.prepareAlignRecord(samFileReading.getFirstSamFile().readFirstLine());
 		//TODO 可以考虑从gtf文件中获取基因组长度然后给MapReads使用
-		mapReads.setMapChrID2Len(((SamFile)samFileReading.getFirstSamFile()).getMapChrID2Length());
+		mapReads.setMapChrID2Len(mapChrId2Len);
 		return mapReads;
 	}
 
@@ -820,11 +855,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 			if (num % 100 == 0) {
 				logger.info("do " + num + " events");
-				if (runGetInfo != null) {
-					GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
-					guiAnnoInfo.setInfo("reading " + condition + " exp gene num" + num);
-					runGetInfo.setRunningInfo(guiAnnoInfo);
-				}
 			}
 			num ++;
 		}
@@ -883,10 +913,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				break;
 			}
 			suspendCheck();
-			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
-//			guiAnnoInfo.setNum(num[0]);
-//			guiAnnoInfo.setDouble(num[0]);
-			setRunInfo(guiAnnoInfo);
 		}
 		
 		//去除相同位点，仅选择pvalue小的那一个
@@ -1165,7 +1191,11 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 
 		Map<SplicingAlternativeType, int[]> mapSplicingType2Num = statisticsSplicingEvent();
 		TxtReadandWrite txtStatistics = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_statistics", "txt"), true);
+		
+		txtStatistics.writefileln("############################# CASH Report #############################");
+		txtStatistics.writefileln("======================================================================");
 		txtStatistics.writefileln("SplicingEvent\tSignificantNum\tAllNum");
+		txtStatistics.writefileln("======================================================================");
 		for (Entry<SplicingAlternativeType, int[]> exonSplicingInfo : mapSplicingType2Num.entrySet()) {
 			SplicingAlternativeType type = exonSplicingInfo.getKey();
 			if (!mapSplicingType2Num.containsKey(type)) {
@@ -1174,6 +1204,21 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			String tmpResult = exonSplicingInfo.getKey().toString() + "\t" + exonSplicingInfo.getValue()[0] + "\t" +  exonSplicingInfo.getValue()[1];
 			txtStatistics.writefileln(tmpResult);
 		}
+		txtStatistics.writefileln("======================================================================");
+		txtStatistics.writefileln("################# Report Legend ######################################");
+
+		txtStatistics.writefileln("SplicingEvent: Types of AS event");
+		txtStatistics.writefileln("\tSE: Skipped exon");
+		txtStatistics.writefileln("\tMXE: Mutually exclusive exon");
+		txtStatistics.writefileln("\tA5SS: Alternative 5' splice site");
+		txtStatistics.writefileln("\tA3SS: Alternative 3' splice site");
+		txtStatistics.writefileln("\tRI: Retained intron");
+		txtStatistics.writefileln("\tSE: Skipped exon");
+		txtStatistics.writefileln("SignificantNum:	number of significant AS events between samples according to FDR (false discovery rate) < " + pvalue);
+		txtStatistics.writefileln("AllNum:	total number of events detected between samples");
+		txtStatistics.writefileln("sample_Skip::Others:\tThe numbers in sample_Skip::Others indicate the number of exclusion reads and the number of inclusion reads for sample_1 or for sample_2");
+		txtStatistics.writefileln("sampleExp:\tThe numbers in sampleExp indicate the sequencing coverage of the splicing region relative to the whole gene for sample_1 or for sample_2");
+		txtStatistics.writefileln("######################################################################");
 		txtStatistics.close();
 	}
 		
@@ -1185,8 +1230,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 *  */
 	private Map<SplicingAlternativeType, int[]> statisticsSplicingEvent() {
 		Map<SplicingAlternativeType, int[]> mapSplicingType2Num = new LinkedHashMap<SplicingAlternativeType, int[]>();
-		for (SplicingAlternativeType exonSplicingType : SplicingAlternativeType.getMapName2SplicingEvents().values()) {
-			if (exonSplicingType == SplicingAlternativeType.unknown) {
+		for (SplicingAlternativeType exonSplicingType : SplicingAlternativeType.values()) {
+			if (SplicingAlternativeType.getSetExclude().contains(exonSplicingType)) {
 				continue;
 			}
 			mapSplicingType2Num.put(exonSplicingType, new int[2]);
@@ -1202,7 +1247,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //				mapSplicingType2Num.put(exonSplicingType, tmpInfo);
 			}
 			tmpInfo[1] ++;
-			if (exonSplicingTest.getAndCalculatePvalue() <= pvalue) {
+			if (exonSplicingTest.getfdr() <= pvalue) {
 				tmpInfo[0] ++;
 			}
 		}
