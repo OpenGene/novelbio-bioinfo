@@ -10,6 +10,7 @@ import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.samtools.seekablestream.SeekableFileStream;
 import htsjdk.samtools.seekablestream.SeekableHDFSstream;
 import htsjdk.samtools.seekablestream.SeekableStream;
+import htsjdk.samtools.seekablestream.SeekableStreamFactory;
 import htsjdk.samtools.util.RuntimeEOFException;
 
 import java.io.File;
@@ -138,13 +139,8 @@ public class SamReader {
 		if (fileName != null) initialStream();
 		
 		if (isIndexed) {
-			if (FileHadoop.isHdfs(fileIndex)) {
-				FileHadoop fileHadoopIndex = new FileHadoop(fileIndex);
-				SeekableHDFSstream seekableIndex = new SeekableHDFSstream(fileHadoopIndex);
-				samFileReader = new SAMFileReader((SeekableStream)inputStream, seekableIndex, false);
-			} else {
-				samFileReader = new SAMFileReader((SeekableStream)inputStream, new File(fileIndex), false);
-			}
+			SeekableStream seekableStream = SeekableStreamFactory.getInstance().getStreamFor(fileIndex);
+			samFileReader = new SAMFileReader((SeekableStream)inputStream, seekableStream, false);
 		} else {
 			samFileReader = new SAMFileReader(inputStream);
 		}
