@@ -302,6 +302,7 @@ public class SeqFastaHash extends SeqHashAbs {
 	public void writeToFile(String regx, String seqOut) {
 		PatternOperate patternOperate = new PatternOperate(regx, false);
 		ArrayList<SeqFasta> lsFasta = getSeqFastaAll();
+		String seqOutTmp = FileOperate.changeFileSuffix(seqOut, "_tmp", null);
 		TxtReadandWrite txtOut = new TxtReadandWrite(seqOut, true);
 		for (SeqFasta seqFasta : lsFasta) {
 			ArrayList<String> lsName = patternOperate.getPat(seqFasta.getSeqName());
@@ -310,6 +311,7 @@ public class SeqFastaHash extends SeqHashAbs {
 			}
 		}
 		txtOut.close();
+		FileOperate.moveFile(true, seqOutTmp, seqOut);
 	}
 	/**
 	 * 将<b>序列名</b>含有该正则表达式的序列写入文件<br>

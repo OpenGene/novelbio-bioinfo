@@ -106,7 +106,7 @@ public abstract class MapIndexMaker {
 				makeIndex();
 			}
 		} catch (Exception e) {
-			logger.error("index make error:" + chrFile);
+			logger.error("index make error:" + chrFile, e);
 			throw new RuntimeException("index make error:" + chrFile, e);
 		}
 	}

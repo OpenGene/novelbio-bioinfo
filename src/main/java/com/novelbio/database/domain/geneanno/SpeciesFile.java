@@ -27,6 +27,7 @@ import com.novelbio.analysis.seq.fasta.ChrSeqHash;
 import com.novelbio.analysis.seq.fasta.FastaDictMake;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
+import com.novelbio.analysis.seq.fasta.SeqFastaReader;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
@@ -1170,11 +1171,10 @@ public class SpeciesFile {
 		 * @param regx 物种的英文，人类就是Homo sapiens
 		 */
 		private void extractRfamTaxID(String rfamFile, String outRfam, int taxIDquery) {
-			TxtReadandWrite txtOut = new TxtReadandWrite(outRfam, true);
-			 SeqFastaHash seqFastaHash = new SeqFastaHash(rfamFile,null,false);
-			 seqFastaHash.setDNAseq(true);
-			 ArrayList<SeqFasta> lsSeqfasta = seqFastaHash.getSeqFastaAll();
-			 for (SeqFasta seqFasta : lsSeqfasta) {
+			String outRfamTmp = FileOperate.changeFileSuffix(outRfam, "_tmp", null);
+			TxtReadandWrite txtOut = new TxtReadandWrite(outRfamTmp, true);
+			SeqFastaReader seqFastaReader = new SeqFastaReader(rfamFile);
+			for (SeqFasta seqFasta : seqFastaReader.readlines()) {
 				 int taxID = 0;
 				 try {
 					 taxID = Integer.parseInt(seqFasta.getSeqName().trim().split(" +")[1].split(":")[0]);
@@ -1189,9 +1189,10 @@ public class SpeciesFile {
 					 seqFastaNew.setName(name);
 					 txtOut.writefileln(seqFastaNew.toStringNRfasta());
 				 }
-			 }
+			}
 			 txtOut.close();
-			 seqFastaHash.close();
+			 seqFastaReader.close();
+			 FileOperate.moveFile(true, outRfamTmp, outRfam);
 		}
 		
 		/**
@@ -1202,7 +1203,9 @@ public class SpeciesFile {
 		 */
 		private void extractRfam(String rfamFile, String outRfam) {
 			TxtReadandWrite txtRead = new TxtReadandWrite(rfamFile, false);
-			TxtReadandWrite txtWrite = new TxtReadandWrite(outRfam, true);
+			String outRfamTmp = FileOperate.changeFileSuffix(outRfam, "_tmp", null);
+			
+			TxtReadandWrite txtWrite = new TxtReadandWrite(outRfamTmp, true);
 
 			HashMap<String, Integer> map = new HashMap<String, Integer>();
 			for (String string : txtRead.readlines()) {
@@ -1227,6 +1230,8 @@ public class SpeciesFile {
 			}
 			txtRead.close();
 			txtWrite.close();
+			
+			FileOperate.moveFile(true, outRfamTmp, outRfam);
 		}
 		
 	}
