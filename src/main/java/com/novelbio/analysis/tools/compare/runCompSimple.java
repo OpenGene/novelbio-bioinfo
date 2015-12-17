@@ -1,10 +1,8 @@
 package com.novelbio.analysis.tools.compare;
 
-import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class runCompSimple {
@@ -40,7 +38,7 @@ public class runCompSimple {
 	 public static String getProjectPath() {
 		 java.net.URL url = runCompSimple.class.getProtectionDomain().getCodeSource().getLocation();
 		 String filePath = null;
-		 filePath = HttpFetch.decode(url.getPath());
+		 filePath = StringOperate.decode(url.getPath());
 		 if (filePath.endsWith(".jar"))
 		 filePath = filePath.substring(0, filePath.lastIndexOf("/") + 1);
 		 java.io.File file = new java.io.File(filePath);

@@ -12,7 +12,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
@@ -181,7 +181,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron")) {
 			  continue;
 		   }
-		   ss[8] = HttpFetch.decode(ss[8]);
+		   ss[8] = StringOperate.decode(ss[8]);
 		   
 //		   if (ss[2].equals("match") || ss[2].toLowerCase().equals("chromosome") || ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_") || ss[0].startsWith("NT_")) {
 //			   continue;

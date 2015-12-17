@@ -7,7 +7,7 @@ import java.util.regex.Pattern;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.geneanno.GeneInfo;
@@ -145,7 +145,7 @@ class RiceRapDBLocus extends ImportPerLine {
 		ArrayList<String[]> lsAccIDInfo2DB = new ArrayList<String[]>(); //保存全部的要导入数据库的信息,自动去重复
 		ArrayList<String> lsRefID = new ArrayList<String>(); //保存查找的信息，就是说譬如DBINFO_NIAS_FLCDNA等不用来查找
 		for (int i = 0; i < tmpID.length; i++) {
-			tmpID[i] = HttpFetch.decode(tmpID[i]);
+			tmpID[i] = StringOperate.decode(tmpID[i]);
 			if (tmpID[i].contains("ID=")){
 				String tmp = tmpID[i].split("=")[1];
 				String[] tmpAcc = tmp.split(",");
@@ -276,7 +276,7 @@ class RiceRapDBID extends ImportPerLine {
 		ArrayList<String[]> lsAccIDInfo2DB = new ArrayList<String[]>(); //保存全部的要导入数据库的信息,自动去重复
 		ArrayList<String> lsRefID = new ArrayList<String>(); //保存查找的信息，就是说譬如DBINFO_NIAS_FLCDNA等不用来查找
 		for (int i = 0; i < tmpID.length; i++) {
-			tmpID[i] = HttpFetch.decode(tmpID[i]);
+			tmpID[i] = StringOperate.decode(tmpID[i]);
 			if (tmpID[i].contains("ID=")){
 				String tmp = tmpID[i].split("=")[1];
 				String[] tmpAcc = tmp.split(",");
@@ -410,7 +410,7 @@ class RiceRapDBInfo extends ImportPerLine {
 
 		String tmpInfo = ss[8];
 		// 文件中含有%20C等符号，用url解码
-		tmpInfo = HttpFetch.decode(tmpInfo); 
+		tmpInfo = StringOperate.decode(tmpInfo); 
 		
 		String[] tmpID = tmpInfo.split(";");
 		// 装载accID与相应数据库的list
@@ -564,7 +564,7 @@ class RapDBGO extends ImportPerLine {
 		ArrayList<String> lsRefID = new ArrayList<String>();
 		//先搜NCBIID看有没有
 		for (int i = 0; i < tmpID.length; i++) {
-			tmpID[i] = HttpFetch.decode(tmpID[i]);
+			tmpID[i] = StringOperate.decode(tmpID[i]);
 			if (tmpID[i].contains("ID=")||tmpID[i].contains("Name=")||tmpID[i].contains("Alias=")||tmpID[i].contains("Gene_symbols=")||tmpID[i].contains("Locus_id=")) {
 				String tmp = tmpID[i].split("=")[1];
 				String tmpOsID= tmp.split(",")[0].trim();
@@ -651,7 +651,7 @@ class RiceTIGRInfo extends ImportPerLine {
 		String LOCID = ssLOC[2].split("=")[1];
 		String description;
 
-		description = HttpFetch.decode(ssLOC[1].split("=")[1]);
+		description = StringOperate.decode(ssLOC[1].split("=")[1]);
 		GeneInfo geneInfo = new GeneInfo();
 		geneInfo.setDBinfo(manageDBInfo.findByDBname(DBAccIDSource.TIGR_rice.toString()));
 		geneInfo.setSymb(LOCID); geneInfo.setDescrp(description);

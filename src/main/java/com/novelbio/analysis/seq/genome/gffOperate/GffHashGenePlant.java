@@ -4,7 +4,7 @@ import java.util.LinkedHashMap;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.model.modgeneid.GeneType;
@@ -87,7 +87,7 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 			   content = content.replace("exon", "CDS");
 		   }
 		   String[] ss = content.split("\t");//按照tab分开
-		   ss[8] = HttpFetch.decode(ss[8]);
+		   ss[8] = StringOperate.decode(ss[8]);
 		   chrIDtmp = ss[0];//小写的chrID
 		   String chrIDtmpLowCase = chrIDtmp.toLowerCase();
 		   //新的染色体

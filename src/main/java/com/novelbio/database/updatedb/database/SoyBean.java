@@ -1,8 +1,7 @@
 package com.novelbio.database.updatedb.database;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.wig.Contig;
-import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
@@ -160,7 +159,7 @@ class SoyGffdbxref extends ImportPerLine {
 		if (lineContent.startsWith("#")) {
 			return true;
 		}
-		lineContent = HttpFetch.decode(lineContent);
+		lineContent = StringOperate.decode(lineContent);
 		String[] ss = lineContent.split("\t");
 		if ( !ss[2].equals("transcript")) {
 			return true;
@@ -193,7 +192,7 @@ class SoyGffDescription extends ImportPerLine {
 	 */
 	@Override
 	boolean impPerLine(String lineContent) {
-		lineContent = HttpFetch.decode(lineContent);
+		lineContent = StringOperate.decode(lineContent);
 		String[] ss = lineContent.split("\t");
 		if (!ss[2].equals("gene") && !ss[2].equals("transcript")) {
 			return true;

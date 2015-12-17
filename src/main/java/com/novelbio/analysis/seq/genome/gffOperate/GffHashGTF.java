@@ -77,7 +77,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 			line++;
 			if (StringOperate.isRealNull(content) || content.charAt(0) == '#') continue;
 			String[] ss = content.split("\t");// 按照tab分开
-			ss[8] = HttpFetch.decode(ss[8]);
+			ss[8] = StringOperate.decode(ss[8]);
 			if (setContig.contains(ss[2].toLowerCase())) continue;
 			
 			int exonStart = Integer.parseInt(ss[3]), exonEnd = Integer.parseInt(ss[4]);

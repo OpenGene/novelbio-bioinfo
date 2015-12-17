@@ -12,6 +12,7 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.HttpFetch;
 
 public class PixivGetPageMidUrl {
@@ -115,7 +116,7 @@ public class PixivGetPageMidUrl {
 	/** 获得每个图片的url */
 	private String getPictureUrl(Node nodePicture) {
 		String urlAll = nodePicture.getFirstChild().getText();
-		 urlAll = HttpFetch.decode(urlAll).trim();
+		 urlAll = StringOperate.decode(urlAll).trim();
 		 urlAll = urlAll.split("href=")[1].replace("\"", "").trim();
 		 urlAll = urlAll.split(" ")[0];
 		 if (urlAll.startsWith("/")) {

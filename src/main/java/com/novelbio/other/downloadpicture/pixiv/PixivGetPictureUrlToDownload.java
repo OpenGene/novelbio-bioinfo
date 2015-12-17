@@ -1,9 +1,7 @@
 package com.novelbio.other.downloadpicture.pixiv;
 
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
-import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
 import org.htmlparser.Node;
@@ -17,6 +15,7 @@ import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 import org.htmlparser.util.SimpleNodeIterator;
 
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.other.downloadpicture.GetPictureUrl;
@@ -119,7 +118,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 				break;
 			}
 		}
-		return HttpFetch.decode(resultUrl);
+		return StringOperate.decode(resultUrl);
 	}
 	private String getPictureUrlBigAbs(String bigUrl) throws ParserException {
 		String resultUrl = "";
@@ -138,7 +137,7 @@ public class PixivGetPictureUrlToDownload extends GetPictureUrl {
 				resultUrl = string.split("src=")[1].replace("\"", "").trim();
 			}
 		}
-		resultUrl = HttpFetch.decode(resultUrl);
+		resultUrl = StringOperate.decode(resultUrl);
 		return resultUrl;
 	}
 	/** 获取连环画的url 
