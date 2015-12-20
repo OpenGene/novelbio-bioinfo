@@ -58,7 +58,7 @@ import com.novelbio.listOperate.ListAbs;
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static void main(String[] args) {
-		long timeEclipse1 = test2();
+		long timeEclipse1 = test();
 		System.out.println(timeEclipse1);
 	}
 	
@@ -91,7 +91,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static long test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
-//		lsAligns.add(new Align("11:65083629-65660215"));
+		lsAligns.add(new Align("1:45567281-45649767"));
 //		lsAligns.add(new Align("1:7205126-27246005"));
 //		lsAligns.add(new Align("11", 1, 250088574));
 
@@ -101,7 +101,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		Species species = new Species(9606);
 //		species.setVersion("hg19_GRCh37");
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(new GffHashGene("/media/winE/NBCsource/otherResource/www/GRCh38.v79/genes_modify.gtf"));
+		gffChrAbs.setGffHash(new GffHashGene("/home/novelbio/NBCresource/www/genes_modify.gtf"));
+		gffChrAbs.close();
 		ExonJunction exonJunction = new ExonJunction();
 //		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
@@ -109,12 +110,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.setNewIsoReadsNum(15);
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String parentPath = "/media/winE/NBCsource/otherResource/www/";
-		exonJunction.addBamSorted("KD", parentPath + "KD.accepted.sorted.bam");
-		exonJunction.addBamSorted("WT", parentPath + "WT.accepted.sorted.bam");
+		String parentPath = "/home/novelbio/NBCresource/www/";
+		exonJunction.addBamSorted("KD", parentPath + "KD.accepted.bam");
+		exonJunction.addBamSorted("WT", parentPath + "WT.accepted.bam");
 		exonJunction.setCompareGroups("KD", "WT");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
-		exonJunction.setResultFile(parentPath + "result_20151007-mse");
+		exonJunction.setResultFile(parentPath + "result_20151220-mse");
 
 		exonJunction.run();
 		exonJunction = null;
@@ -204,7 +205,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	SeqHash seqHash;
 	//TODO 默认设置为false
 	boolean isLessMemory = false;
-	boolean isReconstructIso = false;
+	boolean isReconstructIso = true;
 	boolean isReconstructRI = false;
 	/**
 	 * 读取区域，调试用。设定之后就只会读取这个区域的reads
@@ -485,7 +486,20 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	private void runByChrome() {
 		lsResult = new ArrayList<>();
-		Set<String> setChrId = mapChrId2Len.keySet();
+		Set<String> setChrIdRaw = mapChrId2Len.keySet();
+		Map<String, String> mapChrIdLowcase2Id = getMapChrIdLowcase2Id(setChrIdRaw);
+		Set<String> setChrId = new HashSet<>();
+		//仅读取lsReadReagion中的记录
+		if (lsReadReagion == null || lsReadReagion.isEmpty()) {
+			setChrId = setChrIdRaw;
+		} else {
+			for (Align align : lsReadReagion) {
+				String chrIdLowcase = align.getRefID().toLowerCase();
+				if (mapChrIdLowcase2Id.containsKey(chrIdLowcase)) {
+					setChrId.add(mapChrIdLowcase2Id.get(chrIdLowcase));
+				}
+			}
+		}
 		
 		int i = 0;
 		for (String chrId : setChrId) {
@@ -524,6 +538,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 	
+	private Map<String, String> getMapChrIdLowcase2Id(Set<String> setChrId) {
+		Map<String, String> mapChrIdLowcase2Id = new HashMap<>();
+		for (String chrId : setChrId) {
+			mapChrIdLowcase2Id.put(chrId.toLowerCase(), chrId);
+        }
+		return mapChrIdLowcase2Id;
+	}
 	
 	private List<ExonSplicingTest> runByChrome(String chrId) {
 		MapReads mapReads = null;		
@@ -536,7 +557,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			guiAnnoInfo.setInfo("Load Junction Info");
 			runGetInfo.setRunningInfo(guiAnnoInfo);
 		}
-
+		
 		loadJunctionBam(mapReads, chrId);
 		
 		if (runGetInfo != null) {
@@ -1208,12 +1229,16 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		txtStatistics.writefileln("################# Report Legend ######################################");
 
 		txtStatistics.writefileln("SplicingEvent: Types of AS event");
-		txtStatistics.writefileln("\tSE: Skipped exon");
+		txtStatistics.writefileln("\tCassette: cassette exon, i.e. SE, Skipped exon");
+		txtStatistics.writefileln("\tCassette_multi: mutiple adjacent Cassette exons");
 		txtStatistics.writefileln("\tMXE: Mutually exclusive exon");
 		txtStatistics.writefileln("\tA5SS: Alternative 5' splice site");
 		txtStatistics.writefileln("\tA3SS: Alternative 3' splice site");
-		txtStatistics.writefileln("\tRI: Retained intron");
-		txtStatistics.writefileln("\tSE: Skipped exon");
+		txtStatistics.writefileln("\tAltStart: Alternative start exon");
+		txtStatistics.writefileln("\tAltEnd: Alternative end exon");
+		txtStatistics.writefileln("\tMXE: Mutually exclusive exons");
+		txtStatistics.writefileln("\tIR: intron retention");
+		
 		txtStatistics.writefileln("SignificantNum:	number of significant AS events between samples according to FDR (false discovery rate) < " + pvalue);
 		txtStatistics.writefileln("AllNum:	total number of events detected between samples");
 		txtStatistics.writefileln("sample_Skip::Others:\tThe numbers in sample_Skip::Others indicate the number of exclusion reads and the number of inclusion reads for sample_1 or for sample_2");
