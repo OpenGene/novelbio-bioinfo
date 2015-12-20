@@ -7,13 +7,10 @@ import htsjdk.samtools.SAMFormatException;
 import htsjdk.samtools.SAMRecord;
 import htsjdk.samtools.SAMRecordIterator;
 import htsjdk.samtools.SAMSequenceRecord;
-import htsjdk.samtools.seekablestream.SeekableFileStream;
-import htsjdk.samtools.seekablestream.SeekableHDFSstream;
 import htsjdk.samtools.seekablestream.SeekableStream;
 import htsjdk.samtools.seekablestream.SeekableStreamFactory;
 import htsjdk.samtools.util.RuntimeEOFException;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -25,7 +22,6 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamReader {
@@ -149,7 +145,7 @@ public class SamReader {
 	
 	private void initialStream() throws IOException {		
 		if (isIndexed) {
-			inputStream = FileOperate.getInputStreamSeekable(fileName);
+			inputStream = SeekableStreamFactory.getInstance().getStreamFor(fileName);
 		} else {
 			inputStream = FileOperate.getInputStream(fileName);
 		}
