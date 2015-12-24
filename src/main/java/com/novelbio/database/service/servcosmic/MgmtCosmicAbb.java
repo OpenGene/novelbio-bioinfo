@@ -16,8 +16,8 @@ public class MgmtCosmicAbb {
 	public List<CosmicAbb> findAll() {
 		return repoCosmicAbb.findAll(); 
 	}
-	public void save(CosmicAbb cosmicAbb) {
-		repoCosmicAbb.save(cosmicAbb);
+	public void save(List<CosmicAbb> lsCosmicAbb) {
+		repoCosmicAbb.save(lsCosmicAbb);
 	}
 	
 	//懒汉模式的单例延迟

@@ -20,7 +20,9 @@ public class MgmtNonCodingVars {
 	public void save(NonCodingVars nonCodingVars) {
 		repoNonCodingVars.save(nonCodingVars);
 	}
-
+	public void save(List<NonCodingVars> lsnNonCodingVars) {
+		repoNonCodingVars.save(lsnNonCodingVars);
+	}
 	//懒汉模式的单例延迟
 	static class MgmtNonCodingVarsHolder {
 		static MgmtNonCodingVars mgmtNonCodingVars = new MgmtNonCodingVars();

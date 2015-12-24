@@ -13,7 +13,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 
 @Document(collection = "cosCodingMuts")
 @CompoundIndexes({
-    @CompoundIndex(unique = true, name = "chr_pos_alt", def = "{'chr': 1, 'pos': 1, 'alt': 1}"),
+    @CompoundIndex(unique = false, name = "chr_pos_alt", def = "{'chr': 1, 'pos': 1, 'alt': 1}"),
  })
 public class CodingMuts implements Serializable {
 	private static final int taxID = 9606;
