@@ -125,9 +125,10 @@ public class TestCosmicData {
 	
 	public void testCreatNonCodingVars() {
 		String nonCodingVarsPath = "src/test/resources/test_file/cosmic/CosmicNonCodingVariants.1.vcf.gz";
-		VCFFileReader vcfFileReader = new VCFFileReader(FileOperate.getFile(nonCodingVarsPath));
-		for (VariantContext variantContext : vcfFileReader) {
-			NonCodingVars nonCodingVars = NonCodingVars.getInstanceFromNonCodingVars(variantContext);
+		TxtReadandWrite txtCancerGene = new TxtReadandWrite(nonCodingVarsPath);
+//		VCFFileReader vcfFileReader = new VCFFileReader(FileOperate.getFile(nonCodingVarsPath));
+		for (String content : txtCancerGene.readlines()) {
+			NonCodingVars nonCodingVars = NonCodingVars.getInstanceFromNonCodingVars(content);
 			if (!(nonCodingVars == null)) {
 				Assert.assertEquals("1",nonCodingVars.getChr());  
 				Assert.assertEquals(10151,nonCodingVars.getPos());  
