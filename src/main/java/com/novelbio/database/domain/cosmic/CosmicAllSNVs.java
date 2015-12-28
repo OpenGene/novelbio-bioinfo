@@ -14,12 +14,12 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "cosmicAllSNVs")
-@CompoundIndexes({
-    @CompoundIndex(unique = false, name = "chr_pos_alt", def = "{'chr': 1, 'pos': 1, 'alt': 1}"),
- })
+//@CompoundIndexes({
+//    @CompoundIndex(unique = false, name = "chr_pos_alt", def = "{'chr': 1, 'pos': 1, 'alt': 1}"),
+// })
 public class CosmicAllSNVs {
 	/** chromosome*/
-	@Indexed
+//	@Indexed
 	private String chr;	
 	/** the position of mutation*/
 	private long pos;
