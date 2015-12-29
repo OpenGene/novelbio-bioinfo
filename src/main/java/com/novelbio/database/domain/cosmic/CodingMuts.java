@@ -12,13 +12,13 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 @Document(collection = "cosCodingMuts")
-@CompoundIndexes({
-    @CompoundIndex(unique = false, name = "chr_pos_alt", def = "{'chr': 1, 'pos': 1, 'alt': 1}"),
- })
+//@CompoundIndexes({
+//    @CompoundIndex(unique = false, name = "chr_pos_alt", def = "{'chr': 1, 'pos': 1, 'alt': 1}"),
+// })
 public class CodingMuts implements Serializable {
 	private static final int taxID = 9606;
 	/** chromosome*/
-	@Indexed
+//	@Indexed
 	private String chr;	
 	/** the position of mutation*/
 	private long pos;
