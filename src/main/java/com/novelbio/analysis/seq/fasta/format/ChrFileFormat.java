@@ -89,14 +89,14 @@ public class ChrFileFormat {
 	}
 	
 	public void rebuild() {
-		if (setChrIdInclude == null) setChrIdInclude = new HashSet<>();
+		if (setChrIdInclude == null || setChrIdInclude.isEmpty()) setChrIdInclude = new HashSet<>();
 		
 		if (StringOperate.isRealNull(outSeq)) {
 			outSeq = refseq;
 		}
-		ChrSeqHash chrSeqHash = new ChrSeqHash(refseq, "");
-		Map<String, Long> mapChrId2Len = chrSeqHash.getMapChrLength();
-		chrSeqHash.close();
+		
+		Map<String, Long> mapChrId2Len = SamIndexRefsequence.generateIndexAndGetMapChrId2Len(refseq);
+		
 		Set<String> setChrIdByLenAndGff = cutChrIdByLenAndGff(mapChrId2Len);
 		Set<String> setChrIdFinal = maxNum > 0 ? cutChrIdBySort(mapChrId2Len, setChrIdByLenAndGff) : setChrIdByLenAndGff;
 		

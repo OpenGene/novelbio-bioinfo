@@ -140,7 +140,7 @@ public class GffChrAbs implements Closeable {
 		if (FileOperate.isFileExist(gffFile)) {
 			gffHashGene = new GffHashGene(taxID, version, dbinfo, gffType, gffFile, taxID == 7227);
 		} else {
-			throw new ExceptionGFF(gffFile + " GffFile is not exist");
+			throw new ExceptionNbcGFF(gffFile + " GffFile is not exist");
 		}
 	}
 	
@@ -165,7 +165,7 @@ public class GffChrAbs implements Closeable {
 			return null;
 		}
 		String pathGFF = gffHashGene.getGffFilename();
-		String outGTF = FileOperate.changeFileSuffix(pathGFF, "", "gtf");
+		String outGTF = GffHashGene.convertNameToOtherFile(pathGFF, GffType.GTF);
 		if (!FileOperate.isFileExistAndBigThanSize(outGTF, 10)) {
 			writeToFile(outGTF, GffType.GTF);
 		}
@@ -177,7 +177,7 @@ public class GffChrAbs implements Closeable {
 			return null;
 		}
 		String pathGFF = gffHashGene.getGffFilename();
-		String outGTF = FileOperate.changeFileSuffix(pathGFF, "", "bed");
+		String outGTF = GffHashGene.convertNameToOtherFile(pathGFF, GffType.BED);
 		if (!FileOperate.isFileExistAndBigThanSize(outGTF, 10)) {
 			writeToFile(outGTF, GffType.BED);
 		}
@@ -194,32 +194,6 @@ public class GffChrAbs implements Closeable {
 			lsSeqName = seqHash.getLsSeqName();
 		}
 		gffHashGene.writeToFile(gffType, lsSeqName, outFile);
-	}
-		
-	/** 检查gtf文件的基因坐标是否都落在chrAll.fa的里面
-	 * 因为葡萄线粒体的gtf坐标落在了线粒体基因组的外面
-	 * 也就是说葡萄线粒体基因nad1 范围 25462--795041
-	 * 而线粒体的长度为：773279
-	 * 或者gtf文件含有染色体没有的序列
-	 */
-	public void checkGTF() {
-		if (seqHash == null || gffHashGene == null) {
-			return;
-		}
-		
-		Map<String, Long> mapChr2Len = seqHash.getMapChrLength();
-		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
-			Long chrLen = mapChr2Len.get(gffDetailGene.getRefID().toLowerCase());
-			if (chrLen == null) {
-//				throw new ExceptionGFF("chromosome file error: " + gffDetailGene.getRefID() + " chrFile doesn't contain this chrId");
-				continue;
-			}
-			if (gffDetailGene.getStartAbs() <= 0 || gffDetailGene.getEndAbs() > chrLen) {
-				throw new ExceptionGFF("gff or chromosome file error: " 
-						+ gffDetailGene.getRefID() + " " + gffDetailGene.getNameSingle() + " " + gffDetailGene.getStartAbs() + " " + gffDetailGene.getEndAbs() 
-						+ " out of chr Range: " + gffDetailGene.getRefID() + " " + chrLen);
-			}
-		}
 	}
 	
 	/**

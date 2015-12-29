@@ -54,7 +54,7 @@ public class SpeciesFileUpload {
 		this.taxId = taxId;
 	}
 	
-	public void upload() throws IOException, SpeciesUploadException {
+	public void upload() throws IOException, ExceptionNbcSpeciesUpload {
 		if (speciesFileType == EnumSpeciesFile.rrnaFile) {
 			uploadRrnaFile();
 		} else {
@@ -62,11 +62,11 @@ public class SpeciesFileUpload {
 		}
 	}
 	
-	private void uploadSpeciesFile() throws IOException, SpeciesUploadException {
+	private void uploadSpeciesFile() throws IOException, ExceptionNbcSpeciesUpload {
 		SpeciesFile speciesFile = SpeciesFile.findById(speciesFileId);
 		String savePath = speciesFileType.getSavePath(taxId, speciesFile);
 		if (StringOperate.isRealNull(savePath)) {
-			throw new SpeciesUploadException("保存路径错误，请检查");
+			throw new ExceptionNbcSpeciesUpload("保存路径错误，请检查");
 		}
 		
 		String newFileName = FileOperate.addSep(savePath) + fileName;
@@ -77,20 +77,25 @@ public class SpeciesFileUpload {
 			FileOperate.DeleteFileFolder(newFileTmp);
 			throw e;
 		}
-		speciesFile.deleteFile(speciesFileType, gffDB);
+		SpeciesFileDelete speciesFileDelete = new SpeciesFileDelete(speciesFile);
+		if (speciesFileType == EnumSpeciesFile.gffGeneFile) {
+			speciesFileDelete.deleteGffFile(gffDB);
+		} else {
+			speciesFileDelete.deleteFile(speciesFileType);
+		}
 		if (!FileOperate.moveFile(true, newFileTmp, newFileName)) {
-			throw new SpeciesUploadException("保存出错");
+			throw new ExceptionNbcSpeciesUpload("保存出错");
 		}
 		speciesFile.addPathInfo(speciesFileType, fileName, gffType, gffDB);
 		speciesFile.save();
 	}
 	
-	private void uploadRrnaFile() throws IOException, SpeciesUploadException {
+	private void uploadRrnaFile() throws IOException, ExceptionNbcSpeciesUpload {
 		SpeciesFile speciesFile = new SpeciesFile();
 		speciesFile.setTaxID(taxId);
 		String savePath = speciesFileType.getSavePath(taxId, speciesFile);
 		if (StringOperate.isRealNull(savePath)) {
-			throw new SpeciesUploadException("保存路径错误，请检查");
+			throw new ExceptionNbcSpeciesUpload("保存路径错误，请检查");
 		}
 		
 		String newFileName = FileOperate.addSep(savePath) + fileName;
@@ -102,7 +107,7 @@ public class SpeciesFileUpload {
 			throw e;
 		}
 		if (!FileOperate.moveFile(true, newFileTmp, newFileName)) {
-			throw new SpeciesUploadException("保存出错");
+			throw new ExceptionNbcSpeciesUpload("保存出错");
 		}
 		TaxInfo taxInfo = ManageSpecies.getInstance().queryTaxInfo(taxId);
 		String oldFile = ManageSpecies.getInstance().getRrnaFileWithPath(taxInfo);
@@ -111,8 +116,10 @@ public class SpeciesFileUpload {
 		ManageSpecies.getInstance().saveTaxInfo(taxInfo);
 	}
 	
-	public static class SpeciesUploadException extends Exception {
-		public SpeciesUploadException(String msg) {
+	public static class ExceptionNbcSpeciesUpload extends Exception {
+		private static final long serialVersionUID = -1647863177047730575L;
+
+		public ExceptionNbcSpeciesUpload(String msg) {
 			super(msg);
 		}
 	}

@@ -111,7 +111,7 @@ public class CPAT implements IntCmdSoft {
 	}
 	
 	private String getNcRNAFile(Species species, GffChrAbs gffChrAbs) {
-		String ncFile = species.getRefseqNCfileDB();
+		String ncFile = species.getRefseqNCfile();
 		if (FileOperate.isFileExistAndBigThanSize(ncFile, 0)) {
 			return ncFile;
 		}

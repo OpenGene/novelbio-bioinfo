@@ -408,14 +408,14 @@ class ModifyGenomeData {
 		String strVersion = strsVersion[0];
 		System.out.println("map:" + mapSpeciesName_chroms.size() + " " + strVersion + "_chroms");
 		if (!(mapSpeciesName_chroms.containsKey(strVersion + "_chroms"))) {
-			for (String string : species.getMapChromInfo().keySet()) {
-				if (string.equals("chry") || string.equals("chrx") || string.equals("chrm")) {
-					String string1 = string.substring(0, 3) + string.substring(3).toUpperCase();
+			for (String chrId : species.getMapChromInfo().keySet()) {
+				if (chrId.equalsIgnoreCase("chry") || chrId.equalsIgnoreCase("chrx") || chrId.equalsIgnoreCase("chrm")) {
+					String string1 = chrId.substring(0, 3) + chrId.substring(3).toUpperCase();
 					mapSpeciesName_chroms.put(strVersion + "_chroms", "'" + string1 + "'");
-					mapSpeciesName_chromLengths.put(strVersion +"_chrom_lengths", "'" + string1 + "':" + species.getMapChromInfo().get(string).toString());
+					mapSpeciesName_chromLengths.put(strVersion +"_chrom_lengths", "'" + string1 + "':" + species.getMapChromInfo().get(chrId).toString());
 				}
-				mapSpeciesName_chroms.put(strVersion + "_chroms", "'" + string + "'");
-				mapSpeciesName_chromLengths.put(strVersion +"_chrom_lengths", "'" + string + "':" + species.getMapChromInfo().get(string).toString());
+				mapSpeciesName_chroms.put(strVersion + "_chroms", "'" + chrId + "'");
+				mapSpeciesName_chromLengths.put(strVersion +"_chrom_lengths", "'" + chrId + "':" + species.getMapChromInfo().get(chrId).toString());
 				
 			}
 			mapSpecies_chroms.put("species_chroms","'" + strVersion + "':" + strVersion +"_chroms");

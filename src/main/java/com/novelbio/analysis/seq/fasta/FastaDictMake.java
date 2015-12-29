@@ -80,8 +80,6 @@ public class FastaDictMake {
 			return false;
 		}
 	}
-	
-	
 
     /**
      * Do the work after command line has been parsed.

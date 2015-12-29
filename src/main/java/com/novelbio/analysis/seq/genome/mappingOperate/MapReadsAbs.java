@@ -56,7 +56,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 public MapReadsAbs() {}
 
 	 public void setSpecies(Species species) {
-		 mapChrID2Len = species.getMapChromInfo();
+		 setMapChrID2Len(species.getMapChromInfo());
 	 }
 	 public void setisUniqueMapping(boolean booUniqueMapping) {
 		this.booUniqueMapping = booUniqueMapping;

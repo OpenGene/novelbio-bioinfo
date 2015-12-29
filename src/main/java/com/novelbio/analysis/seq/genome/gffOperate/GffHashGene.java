@@ -7,6 +7,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
+import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -21,17 +24,8 @@ import com.novelbio.database.service.servgff.ManageGffDetailGene;
  * @author zong0jie
  */
 public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
-	public static void main(String[] args) {
-		//TODO dbinfo 没有保存到数据库
-		GffHashGene gffHashGene = new GffHashGene(GffType.GTF, "/home/zong0jie/desktop/hg19-gencode.v16.gtf");
-		Map<String, Long> mapChrID2Len = gffHashGene.getChrID2LengthForRNAseq();
-		for (String chrID : mapChrID2Len.keySet()) {
-			System.out.println(chrID + "\t" + mapChrID2Len.get(chrID));
-		}
-		System.out.println(gffHashGene.searchISO("DEFB125").getStart());
-		System.out.println(gffHashGene.searchISO("ENST00000382410.2").getStart());
-		System.out.println(gffHashGene.searchISO("ENST00000382410").getStart());
-	}
+	public static final String GFFDBNAME = "novelbio";
+	
 	GffHashGeneAbs gffHashGene = null;
 	GffType gffType;
 	String gffFile;
@@ -319,17 +313,17 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	}
 
 	public void writeToGTF(String GTFfile) {
-		gffHashGene.writeToGTF(GTFfile, "novelbio");
+		gffHashGene.writeToGTF(GTFfile, GFFDBNAME);
 	}
 	@Override
 	public void writeToGTF(String GTFfile, String title) {
 		gffHashGene.writeToGTF(GTFfile, title);
 	}
 	public void writeToGTF(List<String> lsChrID, String GTFfile) {
-		gffHashGene.writeToGTF(lsChrID, GTFfile, "novelbio");
+		gffHashGene.writeToGTF(lsChrID, GTFfile, GFFDBNAME);
 	}
 	public void writeToFile(GffType gffType, List<String> lsChrID, String outFile) {
-		gffHashGene.writeToFile(gffType, lsChrID, outFile, "novelbio");
+		gffHashGene.writeToFile(gffType, lsChrID, outFile, GFFDBNAME);
 	}
 	@Override
 	public void writeToGTF(List<String> lsChrID, String GTFfile, String title) {
@@ -349,15 +343,9 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	}
 	
 	public void writeToBED(List<String> lsChrID, String GTFfile) {
-		gffHashGene.writeToBED(lsChrID, GTFfile, "novelbio");
+		gffHashGene.writeToBED(lsChrID, GTFfile, GFFDBNAME);
 	}
-	/**
-	 * 该方法待修正
-	 */
-	@Override
-	public void writeToGFFIsoMoreThanOne(String GTFfile, String title) {
-		gffHashGene.writeToGFFIsoMoreThanOne(GTFfile, title);
-	}
+
 	@Override
 	public void writeGene2Iso(String Gene2IsoFile) {
 		gffHashGene.writeGene2Iso(Gene2IsoFile);
@@ -520,5 +508,62 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		}
 		return false;
 	}
-
+	
+	public String convertToFile(GffType gfftype, List<String> lsChrId) {
+		String gffFile = getGffFilename();
+		String outFile = convertNameToOtherFile(gffFile, gfftype);
+		if (!StringOperate.isEqual(gffFile, outFile)) {
+			gffHashGene.writeToFile(gffType, lsChrId, outFile, GFFDBNAME);
+        }
+		return outFile;
+	}
+	
+	/** 仅修改名字 */
+	public static String convertNameToOtherFile(String gffFileName, GffType gffType) {
+		String suffix = null;
+		if (gffType == GffType.NCBI) {
+			suffix = "gff3";
+		} else if (gffType == GffType.GTF) {
+			suffix = "gtf";
+		} else if (gffType == GffType.BED) {
+			suffix = "bed";
+		} else {
+			throw new ExceptionNbcGFF("Not support this type " + gffType);
+		}
+		return FileOperate.changeFileSuffix(gffFileName, "", suffix);
+	}
+	
+	/** 仅修改名字 */
+	public static String convertToOtherFile(String gffFileName, GffType gffType) {
+		String resultFile = convertNameToOtherFile(gffFileName, gffType);
+		if (FileOperate.isFileExistAndBigThan0(resultFile)) return resultFile;
+		
+		GffHashGene gffHashGene = new GffHashGene(gffFileName);
+		gffHashGene.writeToFile(gffType, null, resultFile);
+		return resultFile;
+	}
+	
+	/** 检查gtf文件的基因坐标是否都落在chrAll.fa的里面
+	 * 因为葡萄线粒体的gtf坐标落在了线粒体基因组的外面
+	 * 也就是说葡萄线粒体基因nad1 范围 25462--795041
+	 * 而线粒体的长度为：773279
+	 * 或者gtf文件含有染色体没有的序列
+	 */
+	public static void checkFile(String gffFile, String chrFile) {
+		Map<String, Long> mapChrId2Len = SamIndexRefsequence.generateIndexAndGetMapChrId2Len(chrFile);
+		GffHashGene gffHashGene = new GffHashGene(gffFile);
+		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
+			Long chrLen = mapChrId2Len.get(gffDetailGene.getRefID().toLowerCase());
+			if (chrLen == null) {
+//				throw new ExceptionGFF("chromosome file error: " + gffDetailGene.getRefID() + " chrFile doesn't contain this chrId");
+				continue;
+			}
+			if (gffDetailGene.getStartAbs() <= 0 || gffDetailGene.getEndAbs() > chrLen) {
+				throw new ExceptionNbcGFF("gff or chromosome file error: " 
+						+ gffDetailGene.getRefID() + " " + gffDetailGene.getNameSingle() + " " + gffDetailGene.getStartAbs() + " " + gffDetailGene.getEndAbs() 
+						+ " out of chr Range: " + gffDetailGene.getRefID() + " " + chrLen);
+			}
+		}
+	
+	}
 }

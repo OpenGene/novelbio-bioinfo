@@ -11,7 +11,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.analysis.seq.genome.ExceptionGFF;
+import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -95,7 +95,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 			
 			String[] isoName2GeneName = getIsoName2GeneName(ss[8]);
 			if (isoName2GeneName == null) {
-				throw new ExceptionGFF("line " + line + " error, no isoName exist: " + content);
+				throw new ExceptionNbcGFF("line " + line + " error, no isoName exist: " + content);
 			}
 			String tmpTranscriptName = isoName2GeneName[0], tmpGeneName = isoName2GeneName[1];
 			

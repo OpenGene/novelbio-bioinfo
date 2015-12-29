@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.rnaseq;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -85,6 +86,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.run();
 		exonJunction = null;
+		gffChrAbs.close();
 		return dateUtil.getElapseTime();
 	}
 
@@ -233,13 +235,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	int minDifLen = 6;
 	
 	Map<String, Long> mapChrId2Len;
-	
+		
 	public ExonJunction() {
 //		List<Align> lsAligns = new ArrayList<>();
 //		lsAligns.add(new Align("chr1:145663570-145864207"));
 //		setLsReadRegion(lsAligns);
 	}
-
+	
 	/** 至少有多少条reads支持的junction才会用于重建转录本 */
 	public void setNewIsoReadsNum(int newIsoReadsNum) {
 		this.newIsoReadsNum = newIsoReadsNum;
@@ -1212,41 +1214,37 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 
 		Map<SplicingAlternativeType, int[]> mapSplicingType2Num = statisticsSplicingEvent();
 		TxtReadandWrite txtStatistics = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_statistics", "txt"), true);
-		
-		txtStatistics.writefileln("############################# CASH Report #############################");
-		txtStatistics.writefileln("======================================================================");
-		txtStatistics.writefileln("SplicingEvent\tSignificantNum\tAllNum");
-		txtStatistics.writefileln("======================================================================");
-		for (Entry<SplicingAlternativeType, int[]> exonSplicingInfo : mapSplicingType2Num.entrySet()) {
-			SplicingAlternativeType type = exonSplicingInfo.getKey();
-			if (!mapSplicingType2Num.containsKey(type)) {
-				continue;
+		for (String content : getStatisticTmplt()) {
+			if (content.contains("${statistics}")) {
+				for (Entry<SplicingAlternativeType, int[]> exonSplicingInfo : mapSplicingType2Num.entrySet()) {
+					SplicingAlternativeType type = exonSplicingInfo.getKey();
+					if (!mapSplicingType2Num.containsKey(type)) {
+						continue;
+					}
+					String tmpResult = exonSplicingInfo.getKey().toString() + "\t" + exonSplicingInfo.getValue()[0] + "\t" +  exonSplicingInfo.getValue()[1];
+					txtStatistics.writefileln(tmpResult);
+				}
+			} else {
+				txtStatistics.writefileln(content);
 			}
-			String tmpResult = exonSplicingInfo.getKey().toString() + "\t" + exonSplicingInfo.getValue()[0] + "\t" +  exonSplicingInfo.getValue()[1];
-			txtStatistics.writefileln(tmpResult);
 		}
-		txtStatistics.writefileln("======================================================================");
-		txtStatistics.writefileln("################# Report Legend ######################################");
-
-		txtStatistics.writefileln("SplicingEvent: Types of AS event");
-		txtStatistics.writefileln("\tCassette: cassette exon, i.e. SE, Skipped exon");
-		txtStatistics.writefileln("\tCassette_multi: mutiple adjacent Cassette exons");
-		txtStatistics.writefileln("\tMXE: Mutually exclusive exon");
-		txtStatistics.writefileln("\tA5SS: Alternative 5' splice site");
-		txtStatistics.writefileln("\tA3SS: Alternative 3' splice site");
-		txtStatistics.writefileln("\tAltStart: Alternative start exon");
-		txtStatistics.writefileln("\tAltEnd: Alternative end exon");
-		txtStatistics.writefileln("\tMXE: Mutually exclusive exons");
-		txtStatistics.writefileln("\tIR: intron retention");
-		
-		txtStatistics.writefileln("SignificantNum:	number of significant AS events between samples according to FDR (false discovery rate) < " + pvalue);
-		txtStatistics.writefileln("AllNum:	total number of events detected between samples");
-		txtStatistics.writefileln("sample_Skip::Others:\tThe numbers in sample_Skip::Others indicate the number of exclusion reads and the number of inclusion reads for sample_1 or for sample_2");
-		txtStatistics.writefileln("sampleExp:\tThe numbers in sampleExp indicate the sequencing coverage of the splicing region relative to the whole gene for sample_1 or for sample_2");
-		txtStatistics.writefileln("######################################################################");
 		txtStatistics.close();
 	}
-		
+	
+	private static List<String> getStatisticTmplt() {
+		InputStream in = ExonJunction.class.getClassLoader().getResourceAsStream("resources/altersplice/statisticTmplt");
+		if (in == null) {
+			in = ExonJunction.class.getClassLoader().getResourceAsStream("altersplice/statisticTmplt");
+        }
+		TxtReadandWrite txtRead = new TxtReadandWrite(in);
+		List<String> lsStatistics = new ArrayList<>();
+		for (String content : txtRead.readlines()) {
+			lsStatistics.add(content);
+        }
+		txtRead.close();
+		return lsStatistics;
+	}
+	
 	/** 统计可变剪接事件的map
 	 * key：可变剪接类型
 	 * value：int[2]

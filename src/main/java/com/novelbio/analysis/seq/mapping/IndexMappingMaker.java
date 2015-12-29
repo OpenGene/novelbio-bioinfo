@@ -1,6 +1,10 @@
 package com.novelbio.analysis.seq.mapping;
 
+import htsjdk.samtools.reference.FastaSequenceIndex;
+
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -10,11 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.fasta.ChrSeqHash;
+import com.novelbio.analysis.seq.fasta.SeqFastaReader;
 import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
-import com.novelbio.base.ExceptionParamError;
+import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
@@ -24,10 +29,45 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
 import com.novelbio.generalConf.PathDetailNBC;
 
-public abstract class MapIndexMaker {
-	private static final Logger logger = LoggerFactory.getLogger(MapIndexMaker.class);
+/**
+ * 如果添加新的index软件，需要在
+ * {@linkplain SpeciesIndexMappingMaker} 类中添加建索引的代码
+ * @author novelbio
+ *
+ */
+public abstract class IndexMappingMaker {
+	private static final Logger logger = LoggerFactory.getLogger(IndexMappingMaker.class);
+	
+	private static Map<SoftWare, Class<?>> mapSoft2Index = new HashMap<>();
+	private static Set<SoftWare> lsSoftDna = new LinkedHashSet<>();
+	private static Set<SoftWare> lsSoftRna = new LinkedHashSet<>();
+	
+	static {
+		Class<?>[] clazzs = IndexMappingMaker.class.getDeclaredClasses();
+		for (Class<?> class1 : clazzs) {
+			if (!IndexMappingMaker.class.isAssignableFrom(class1)) {
+	            	continue;
+            }
+			try {
+				IndexMappingMaker indexMaker = (IndexMappingMaker) class1.newInstance();
+				mapSoft2Index.put(indexMaker.getSoftWare(), class1);
+				if (indexMaker.getMappingType() == EnumMappingType.DNA) {
+					lsSoftDna.add(indexMaker.getSoftWare());
+				} else if (indexMaker.getMappingType() == EnumMappingType.RNA) {
+					lsSoftRna.add(indexMaker.getSoftWare());
+				}
+			} catch (InstantiationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+        }
+	}
 	
 	String exePath;
 	
@@ -41,11 +81,16 @@ public abstract class MapIndexMaker {
 	
 	boolean isLock = true;
 	
-	public MapIndexMaker(SoftWare softWare) {
+	public IndexMappingMaker(SoftWare softWare) {
 		SoftWareInfo softWareInfo = new SoftWareInfo(softWare);
 		this.exePath = softWareInfo.getExePathRun();
 		this.softWare = softWare;
 	}
+	public SoftWare getSoftWare() {
+	    return softWare;
+    }
+	
+	protected abstract EnumMappingType getMappingType();
 	
 	public String getExePath() {
 		return exePath;
@@ -157,7 +202,7 @@ public abstract class MapIndexMaker {
 		txtWriteFinishFlag.close();
 	}
 	
-	protected boolean isIndexFinished() {
+	public boolean isIndexFinished() {
 		return FileOperate.isFileExist(getIndexFinishedFlag());
 	}
 	
@@ -191,32 +236,52 @@ public abstract class MapIndexMaker {
 	public abstract String getMapVersion();
 	
 	//TODO 考虑修改成spring托管
-	public static MapIndexMaker createIndexMaker(SoftWare softWare) {
-		MapIndexMaker indexMaker = null;
-		if (softWare == SoftWare.bwa_aln || softWare == SoftWare.bwa_mem) {
-			indexMaker = new IndexBwa();
-		} else if (softWare == SoftWare.bowtie) {
-			indexMaker = new IndexBowtie();
-		} else if (softWare == SoftWare.bowtie2) {
-			indexMaker = new IndexBowtie2();
-		} else if (softWare == SoftWare.hisat2) {
-			indexMaker = new IndexHisat2();
-		} else if (softWare == SoftWare.mapsplice) {
-			indexMaker = new IndexMapSplice();
-		} else if (softWare == SoftWare.tophat) {
-			indexMaker = new IndexTophat();
-		} else {
-			throw new ExceptionParamError("cannot find index " + softWare);
+	public static IndexMappingMaker createIndexMaker(SoftWare softWare) {
+		if (softWare.toString().startsWith("bwa_")) {
+			softWare = SoftWare.bwa_mem;
+        }
+		if (!mapSoft2Index.containsKey(softWare)) {
+			throw new ExceptionNbcMappingSoftNotSupport("cannot find mapping software " + softWare);
+        }
+		try {
+	        return (IndexMappingMaker) mapSoft2Index.get(softWare).newInstance();
+		} catch (InstantiationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException("initial mapping index error " + softWare, e);
+		} catch (IllegalAccessException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			throw new RuntimeException("initial mapping index error " + softWare, e);
+
 		}
-		return indexMaker;
 	}
 	
+	public static class ExceptionNbcMappingSoftNotSupport extends RuntimeException {
+		private static final long serialVersionUID = 4141495075098892818L;
 
-public static class IndexBwa extends MapIndexMaker {
+		public ExceptionNbcMappingSoftNotSupport(String msg) {
+			super(msg);
+		}
+	}
+	
+	/** 返回全体可以建索引的软件 */
+	public static Set<SoftWare> getLsIndexDNA() {
+		return lsSoftDna;
+	}
+	
+	/** 返回全体可以建索引的软件 */
+	public static Set<SoftWare> getLsIndexRNA() {
+		return lsSoftRna;
+	}
+	
+public static class IndexBwa extends IndexMappingMaker {
 	public IndexBwa() {
 		super(SoftWare.bwa_mem);
 	}
-	
+	protected EnumMappingType getMappingType() {
+		return EnumMappingType.DNA;
+	}
 	@Override
 	protected List<String> getLsCmdIndex() {
 		List<String> lsCmd = new ArrayList<>();
@@ -265,11 +330,13 @@ public static class IndexBwa extends MapIndexMaker {
 	}
 }
 
-public static class IndexBowtie extends MapIndexMaker {
+public static class IndexBowtie extends IndexMappingMaker {
 	public IndexBowtie() {
 		super(SoftWare.bowtie);
 	}
-	
+	protected EnumMappingType getMappingType() {
+		return EnumMappingType.DNA;
+	}
 	@Override
 	protected List<String> getLsCmdIndex() {
 		List<String> lsCmd = new ArrayList<>();
@@ -311,11 +378,13 @@ public static class IndexBowtie extends MapIndexMaker {
 	
 }
 
-public static class IndexBowtie2 extends MapIndexMaker {
+public static class IndexBowtie2 extends IndexMappingMaker {
 	public IndexBowtie2() {
 		super(SoftWare.bowtie2);
 	}
-	
+	protected EnumMappingType getMappingType() {
+		return EnumMappingType.DNA;
+	}
 	@Override
 	public String getIndexName() {
 		return IndexBowtie.getChrNameWithoutSuffix(chrFile);
@@ -351,11 +420,11 @@ public static class IndexBowtie2 extends MapIndexMaker {
 	}
 }
 
-public static class IndexTophat extends MapIndexMaker {
-	private static final Logger logger = LoggerFactory.getLogger(MapIndexMaker.class);
+public static class IndexTophat extends IndexMappingMaker {
+	private static final Logger logger = LoggerFactory.getLogger(IndexMappingMaker.class);
 	
 	String exePathBowtie;
-	MapIndexMaker indexBowtie;
+	IndexMappingMaker indexBowtie;
 	String tophatVersion;
 	
 	String gtfFile;
@@ -367,13 +436,23 @@ public static class IndexTophat extends MapIndexMaker {
 		super(SoftWare.tophat);
 	}
 	
+	protected EnumMappingType getMappingType() {
+		return EnumMappingType.RNA;
+	}
+	public void setChrIndex(String chrFile) {
+		this.chrFile = chrFile;
+		if (indexBowtie != null) indexBowtie.setChrIndex(chrFile);
+	}
 	public void setBowtieVersion(SoftWare bowtieSoft) {
 		if (bowtieSoft != SoftWare.bowtie && bowtieSoft != SoftWare.bowtie2) {
-			throw new ExceptionParamError("can only set mapping software as bowtie or bowtie2, but is: " + bowtieSoft);
+			throw new ExceptionNbcParamError("can only set mapping software as bowtie or bowtie2, but is: " + bowtieSoft);
 		}
-		indexBowtie = MapIndexMaker.createIndexMaker(bowtieSoft);
+		indexBowtie = IndexMappingMaker.createIndexMaker(bowtieSoft);
+		
+		if (chrFile != null) indexBowtie.setChrIndex(chrFile);
 	}
 	
+	/** 把gtf文件拷贝到染色体文件下去，只有当gtf由数据库提供时才需要移动位置 */
 	public void setGtfFile(String gtfFile, boolean moveGtfToChr) {
 		this.gtfFile = gtfFile;
 		this.moveGtfToChr = moveGtfToChr;
@@ -428,6 +507,9 @@ public static class IndexTophat extends MapIndexMaker {
 	}
 
 	public void IndexMake() {
+		if (FileOperate.isFileExistAndBigThan0(gtfFile)) {
+			GffHashGene.checkFile(gtfFile, chrFile);
+        }
 		indexBowtie.setChrIndex(chrFile);
 		super.IndexMake();
 	}
@@ -436,6 +518,7 @@ public static class IndexTophat extends MapIndexMaker {
 		if (FileOperate.isFileExist(indexBowtie.getIndexFinishedFlag())) {
 			return;
 		}
+		indexBowtie.setLock(isLock);
 		indexBowtie.makeIndex();
 	}
 	
@@ -475,8 +558,13 @@ public static class IndexTophat extends MapIndexMaker {
 		return lsCmd;
 	}
 	
-	protected boolean isIndexFinished() {
-		return FileOperate.isFileExist(indexBowtie.getIndexFinishedFlag()) && FileOperate.isFileExist(getIndexFinishedFlagGtf());
+	public boolean isIndexFinished() {
+		boolean isBowtieFinish = FileOperate.isFileExist(indexBowtie.getIndexFinishedFlag());
+		String gtfFlag = getIndexFinishedFlagGtf();
+		if (gtfFlag == null) {
+			return isBowtieFinish;
+        }
+		return isBowtieFinish && FileOperate.isFileExist(gtfFlag);
 	}
 	
 	private String getIndexFinishedFlagGtf() {
@@ -531,13 +619,13 @@ public static class IndexTophat extends MapIndexMaker {
 	
 }
 
-public static class IndexMapSplice extends MapIndexMaker {
+public static class IndexMapSplice extends IndexMappingMaker {
 	/** mapsplice的后缀名，因为mapsplice要求文本中的序列不能太多，譬如小于4000条 */
 	private static final String mapSpliceSuffix = ".novelbio_mapSplice_suffix";
 	protected static int maxSeqNum = 4000;
 	private static int minLen = 1000;
 	
-	MapIndexMaker indexBowtie = MapIndexMaker.createIndexMaker(SoftWare.bowtie);
+	IndexMappingMaker indexBowtie;
 
 	Set<String> setChrInclude;
 	String chrRaw;
@@ -550,11 +638,18 @@ public static class IndexMapSplice extends MapIndexMaker {
 	public IndexMapSplice() {
 		super(SoftWare.mapsplice);
 	}
-	
+	protected EnumMappingType getMappingType() {
+		return EnumMappingType.RNA;
+	}
+	/** 给定gffHashGene，返回gffHashGene中包含有基因的chrId */
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		if (gffHashGene == null) return;
 		setChrInclude = gffHashGene.getMapChrID2LsGff().keySet();
 	}
+	/** 包含有基因的chrId，可以从gff文件中获取 */
+	public void setSetChrInclude(Set<String> setChrInclude) {
+	    this.setChrInclude = setChrInclude;
+    }
 
 	/**
 	 * 构建索引
@@ -563,10 +658,12 @@ public static class IndexMapSplice extends MapIndexMaker {
 	 * @return
 	 */
 	protected void makeIndex() {
+		indexBowtie = IndexMappingMaker.createIndexMaker(SoftWare.bowtie);
 		generateChrIndex();
 		generateChrSepFold();
 		indexBowtie.setChrIndex(chrFile);
 		if (!indexBowtie.isIndexFinished()) {
+			indexBowtie.setLock(isLock);
 			indexBowtie.IndexMake();
 		}
 		generateFinishFlag();
@@ -605,9 +702,7 @@ public static class IndexMapSplice extends MapIndexMaker {
 			chrFile = FileOperate.changeFileSuffix(chrRaw, mapSpliceSuffix, null);
 			modifyChrFile = true;
 			if (!FileOperate.isFileExistAndBigThanSize(chrFile, 0)) {
-				ChrSeqHash chrSeqHash = new ChrSeqHash(chrRaw, "");
-				Map<String, Long> mapChrID2ChrLen = chrSeqHash.getMapChrLength();
-				chrSeqHash.close();
+				Map<String, Long> mapChrID2ChrLen = SamIndexRefsequence.generateIndexAndGetMapChrId2Len(chrRaw);
 				if (mapChrID2ChrLen.size() <= maxSeqNum) {
 					chrFile = chrRaw;
 					modifyChrFile = false;
@@ -686,12 +781,14 @@ public static class IndexMapSplice extends MapIndexMaker {
 	
 }
 
-public static class IndexHisat2 extends MapIndexMaker {
+public static class IndexHisat2 extends IndexMappingMaker {
 	
 	public IndexHisat2() {
 		super(SoftWare.hisat2);
 	}
-	
+	protected EnumMappingType getMappingType() {
+		return EnumMappingType.RNA;
+	}
 	@Override
 	public String getIndexName() {
 		return IndexBowtie.getChrNameWithoutSuffix(chrFile);
@@ -726,4 +823,48 @@ public static class IndexHisat2 extends MapIndexMaker {
 	}
 
 }
+
+/** 不输入 chrFile，输入的是refseqAllIso文件 */
+public static class IndexRsem extends IndexMappingMaker {
+	String gene2IsoFile;
+	public IndexRsem() {
+		super(SoftWare.rsem);
+	}
+	protected EnumMappingType getMappingType() {
+		return EnumMappingType.RNA;
+	}
+	@Override
+	public String getIndexName() {
+		return FileOperate.changeFileSuffix(chrFile, "_rsemIndex", "");
+	}
+	
+	public void setGene2IsoFile(String gene2IsoFile) {
+		this.gene2IsoFile = gene2IsoFile;
+	}
+	
+	@Override
+	protected List<String> getLsCmdIndex() {
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(exePath +"rsem-prepare-reference");
+		lsCmd.add("--transcript-to-gene-map");
+		lsCmd.add(gene2IsoFile);
+		lsCmd.add(chrFile);
+		lsCmd.add(getIndexName());
+		return lsCmd;
+	}
+
+	@Override
+	public String getMapVersion() {
+		//TODO 暂时没有想办法获得RSEM的版本。如果真的要获得，可以去rsem的文件夹中找 WHAT_IS_NEW 文件，里面有rsem的版本信息
+		return "unknown";
+	}
+
+}
+
+
+//TODO 新的类必须写在 IndexMappingMaker 类的内部，这样才能被上面的反射获取到
+}
+
+enum EnumMappingType {
+	DNA, RNA
 }

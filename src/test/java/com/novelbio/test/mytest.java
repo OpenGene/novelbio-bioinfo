@@ -1,5 +1,7 @@
 package com.novelbio.test;
 
+import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,8 +17,9 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.mapping.MapIndexMaker;
-import com.novelbio.analysis.seq.mapping.MapIndexMaker.IndexMapSplice;
+import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
+import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
+import com.novelbio.analysis.seq.rnaseq.ExonJunction;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -32,23 +35,9 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-//		List<String> lsResult = TxtReadandWrite.readReverse("/hdfs:/nbCloud/public/software/WebApp/testReadEnd.txt", 4);
-//		for (String string : lsResult) {
-//			System.out.println(string);
-//		}
-		
 		GeneID geneID = new GeneID("tp53", 9606);
-		System.out.println(geneID.getDescription());
-		
-//		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/tsetserfs.txt", true);
-//		txtWrite.writefileln("fse");
-//		txtWrite.writefile("台湾铯夫人三");
-//		txtWrite.close();
-		
-//		List<String> lsResult = TxtReadandWrite.readReverse("/media/winE/tsetserfs.txt", 1);
-//		for (String string : lsResult) {
-//			System.out.println(string);
-//		}
+		System.out.println(geneID.getAccID());
+		   
 	}
 	
 	private static void test() {
@@ -121,7 +110,7 @@ public class mytest {
 	
 	private static void makeIndexTophat(Species species) {
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		IndexMapSplice maker = (IndexMapSplice)MapIndexMaker.createIndexMaker(SoftWare.bwa_aln);
+		IndexMapSplice maker = (IndexMapSplice)IndexMappingMaker.createIndexMaker(SoftWare.bwa_aln);
 		maker.setLock(false);
 		maker.setChrIndex(species.getIndexChr(SoftWare.bowtie));
 		maker.IndexMake();

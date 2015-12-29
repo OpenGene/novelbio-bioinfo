@@ -19,6 +19,7 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.geneanno.EnumSpeciesFile;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -80,6 +81,11 @@ public class Species implements Cloneable {
 		querySpecies(false);
 		setVersion(version);
 	}
+	
+	public TaxInfo getTaxInfo() {
+	    return taxInfo;
+    }
+	
 	public int getTaxID() {
 		return taxID;
 	}
@@ -221,7 +227,7 @@ public class Species implements Cloneable {
 	
 	/**
 	 * @return
-	 * key: chrID 小写
+	 * key: chrID 没有小写
 	 * value： length
 	 */
 	public Map<String, Long> getMapChromInfo() {
@@ -336,24 +342,14 @@ public class Species implements Cloneable {
 	}
 	/** 获得本物种指定version的miRNA前体序列，不存在则返回null */
 	public String getMiRNAhairpinFile() {
-		if (!ManageSpecies.getInstance().isHaveMiRNArecalculate(taxInfo)) return null;
-		
-		String[] path = taxInfo.fetchMiRNAseq();
-		if (path[0] == null) {
-			return null;
-		}
-		return path[1];
+		SpeciesMirnaFile speciesMirnaFile = new SpeciesMirnaFile(taxInfo);
+		return speciesMirnaFile.getMiRNAhairpinFile();
 	}
 	
 	/** 获得本物种指定version的miRNA序列，不存在则返回null */
 	public String getMiRNAmatureFile() {
-		if (!ManageSpecies.getInstance().isHaveMiRNArecalculate(taxInfo)) return null;
-		
-		String[] path = taxInfo.fetchMiRNAseq();
-		if (path[0] == null) {
-			return null;
-		}
-		return path[0];
+		SpeciesMirnaFile speciesMirnaFile = new SpeciesMirnaFile(taxInfo);
+		return speciesMirnaFile.getMiRNAmatureFile();
 	}
 	
 	/** 返回核糖体rna所在的路径 */
@@ -373,14 +369,7 @@ public class Species implements Cloneable {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRfamFile(spciesSpecific);
 	}
-	/** 获得本物中指定version的refseq的ncRNA序列，仅获得数据库记录的ncRNA */
-	public String getRefseqNCfileDB() {
-		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
-			return null;
-		}
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getRefseqNCfileDB();
-	}
+	
 	/** 获得本物中指定version的refseq的ncRNA序列 */
 	public String getRefseqNCfile() {
 		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
@@ -421,7 +410,8 @@ public class Species implements Cloneable {
 			return null;
 		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getIndexChromFaAndCp(softMapping);
+		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
+		return speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, softMapping);
 	}
 	/** 指定mapping的软件，获得该软件所对应的索引文件
 	 * 没有就新建一个，格式<br>
@@ -432,7 +422,9 @@ public class Species implements Cloneable {
 			return null;
 		}
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		return speciesFile.getIndexRefseqAndCp(softMapping, isAllIso);
+		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
+		EnumSpeciesFile enumSpeciesFile = isAllIso? EnumSpeciesFile.refseqAllIsoRNA : EnumSpeciesFile.refseqOneIsoRNA;
+		return speciesIndexMappingMake.getSequenceIndex(enumSpeciesFile, softMapping);
 	}
 	////////////////////////    升级   //////////////////////////////////////////////////////////////////////////////////////
 
@@ -712,6 +704,8 @@ public class Species implements Cloneable {
 	}
 	
 	public static class ExceptionSpeceis extends RuntimeException {
+		private static final long serialVersionUID = 7518490618149207888L;
+
 		public ExceptionSpeceis(String msg) {
 			super(msg);
 		}

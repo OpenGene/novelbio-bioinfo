@@ -40,8 +40,8 @@ public class GffSpeciesInfo {
 		long total = 0;
 		/** 第一列按照Chr1和Chr2，Chr3排序的表 */
 		for (String string : species.getMapChromInfo().keySet()) {
-			System.out.println(string);
-			System.out.println(species.getMapChromInfo().get(string));
+			logger.info(string);
+			logger.info(species.getMapChromInfo().get(string));
 			String[] chrAndLength = new String[2];
 			chrAndLength[0] = string;
 			chrAndLength[1] =Long.toString(species.getMapChromInfo().get(string)) ;

@@ -14,6 +14,8 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexRsem;
+import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -23,6 +25,7 @@ import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.model.species.SpeciesFileExtract;
 /**
  * 还没返回结果的bam文件<p>
  * 
@@ -33,14 +36,9 @@ import com.novelbio.database.model.species.Species;
 public class MapRsem implements MapRNA {
 	private static final Logger logger = LoggerFactory.getLogger(MapRsem.class);
 	
-	Species species;
-	GffChrSeq gffChrSeq = null;
-	GffChrAbs gffChrAbs = null;
 	/** 由GffFile自动生成 */
 	String gene2isoFile = "";
 	String refFile = "";
-	/** 自动生成 */
-	String rsemIndex = "";
 	
 	/** rsem的路径 */
 	String exePathRsem = "";
@@ -57,23 +55,18 @@ public class MapRsem implements MapRNA {
 	/** 输出文件夹以及前缀 */
 	String outPathPrefix = "";
 	
+	IndexRsem indexRsem = (IndexRsem) IndexMappingMaker.createIndexMaker(SoftWare.rsem);
+	
 	/** rsem 到 rpkm是增加了10^6 倍 */
 	int foldRsem2RPKM = 1000000;
 	
-	public MapRsem(GffChrAbs gffChrAbs) {
+	public MapRsem() {
 		SoftWareInfo softWareInfoRsem = new SoftWareInfo();
 		softWareInfoRsem.setName(SoftWare.rsem);
 		SoftWareInfo softWareInfoBowtie = new SoftWareInfo();
 		softWareInfoBowtie.setName(SoftWare.bowtie);
 		this.exePathRsem = softWareInfoRsem.getExePathRun();
 		this.exePathBowtie = softWareInfoBowtie.getExePathRun();
-		
-		if (gffChrAbs == null) {
-			return;
-		}
-		this.gffChrAbs = gffChrAbs;
-		gffChrSeq = new GffChrSeq(gffChrAbs);
-		this.species = gffChrAbs.getSpecies();
 	}
 	
 	/**
@@ -106,31 +99,10 @@ public class MapRsem implements MapRNA {
 		if (FileOperate.isFileExistAndBigThanSize(gene2isoFile, 0)) {
 			return;
 		}
-		if (gffChrAbs == null) {
-			return;
-		}
-		gene2isoFile = FileOperate.changeFileSuffix(refFile, "_gene2Iso", "txt");
-		TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2isoFile, true);
-		SeqFastaHash seqFastaHash = new SeqFastaHash(refFile, null, false);
-		//先找gff文件里面有没有对应的geneName，没有再找数据库，再没有就直接贴上基因名
-		for (String geneIDstr : seqFastaHash.getLsSeqName()) {
-			GffGeneIsoInfo gffGeneIsoInfo = gffChrAbs.getGffHashGene().searchISO(geneIDstr);
-			String symbol = null;
-			if (gffGeneIsoInfo != null) {
-				//TODO 可能会出错
-				symbol = gffGeneIsoInfo.getParentGeneName();
-			} else {
-				GeneID geneID = new GeneID(geneIDstr, species.getTaxID());
-				symbol = geneID.getSymbol();
-			}
-			if (symbol == null || symbol.equals("")) {
-				symbol = geneIDstr;
-			}
-			txtGene2Iso.writefileln(symbol + "\t" + geneIDstr);
-		}
-		seqFastaHash.close();
-		txtGene2Iso.close();
-		gffChrAbs.close();
+		gene2isoFile = SpeciesFileExtract.getRefrna_Gene2Iso(refFile);
+		if (!FileOperate.isFileExistAndBigThan0(gene2isoFile)) {
+			throw new ExceptionNbcParamError("no gene2iso file!");
+        }
 	}
 	private String[] getThreadNum() {
 		return new String[]{"-p", threadNum + ""};
@@ -157,29 +129,11 @@ public class MapRsem implements MapRNA {
 	 * 制作索引，输入是用bowtie1还是bowtie2做索引
 	 * @param bowtie2
 	 */
-	private void IndexMakeBowtie() {
+	private void IndexMakeRsem() {
 		createGene2IsoAndRefSeq();
-		rsemIndex = FileOperate.changeFileSuffix(refFile, "_rsemIndex", "");
-		if (FileOperate.isFileExist(rsemIndex + ".3.ebwt") == true)
-			return;
-		List<String> lsCmd = getLsCmdIndex();
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.addCmdParamInput(gene2isoFile, false);
-		cmdOperate.addCmdParamInput(refFile, false);
-		cmdOperate.addCmdParamOutput(rsemIndex, false);
-		cmdOperate.setRedirectInToTmp(true);
-		cmdOperate.setRedirectOutToTmp(true);
-		cmdOperate.run();
-	}
-	
-	private List<String> getLsCmdIndex() {
-		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(exePathRsem+"rsem-prepare-reference");
-		lsCmd.add("--transcript-to-gene-map");
-		lsCmd.add(gene2isoFile);
-		lsCmd.add(refFile);
-		lsCmd.add(rsemIndex);
-		return lsCmd;
+		indexRsem.setChrIndex(refFile);
+		indexRsem.setGene2IsoFile(gene2isoFile);
+		indexRsem.IndexMake();
 	}
 	
 	private String getOffset() {
@@ -210,7 +164,7 @@ public class MapRsem implements MapRNA {
 	 * @return
 	 */
 	public void mapReads() {
-		IndexMakeBowtie();
+		IndexMakeRsem();
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.run();
@@ -235,7 +189,7 @@ public class MapRsem implements MapRNA {
 			}
 			lsCmd.add(right);
 		}
-		lsCmd.add(rsemIndex);
+		lsCmd.add(indexRsem.getIndexName());
 		lsCmd.add(outPathPrefix);
 		return lsCmd;
 	}
@@ -297,5 +251,10 @@ public class MapRsem implements MapRNA {
 	public String getFinishName() {
 		return outPathPrefix + ".genes.results";
 	}
+
+	@Override
+    public IndexMappingMaker getIndexMappingMaker() {
+	    return indexRsem;
+    }
 	
 }

@@ -17,7 +17,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.mapping.MapIndexMaker.IndexHisat2;
+import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexHisat2;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
@@ -219,22 +219,12 @@ public class MapHisat implements MapRNA {
 	String spliceTxt;
 	String outputSam = "";
 	
-	IndexHisat2 indexHisat2 = (IndexHisat2)MapIndexMaker.createIndexMaker(SoftWare.hisat2);
+	IndexHisat2 indexHisat2 = (IndexHisat2)IndexMappingMaker.createIndexMaker(SoftWare.hisat2);
 	
-	public MapHisat(GffChrAbs gffChrAbs) {
+	public MapHisat() {
 		SoftWareInfo softMapSplice = new SoftWareInfo();
 		softMapSplice.setName(SoftWare.hisat2);
 		this.exePathHist = softMapSplice.getExePathRun();
-		
-		if (gffChrAbs == null || gffChrAbs.getGffHashGene() == null) return;
-		GffHashGene gffHashGene = gffChrAbs.getGffHashGene();
-		spliceTxt = PathDetail.getTmpPathRandom() + FileOperate.getFileName(gffHashGene.getGffFilename());
-		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
-		setSpliceTxt(gffHashGene, spliceTxt);
-		
-		int[] intronMinMax = MapTophat.getIntronMinMax(gffHashGene, intronLenMin, intronLenMax);
-		intronLenMin = intronMinMax[0];
-		intronLenMax = intronMinMax[1];
 	}
 	
 	@Override
@@ -416,10 +406,16 @@ public class MapHisat implements MapRNA {
 
 	@Override
 	public void setGtf_Gene2Iso(String gtfFile) {
+		if (!FileOperate.isFileExistAndBigThan0(gtfFile)) return;
+
 		GffHashGene gffHashGene = new GffHashGene(gtfFile);
-		spliceTxt = PathDetail.getTmpPathRandom() + FileOperate.getFileName(gtfFile);
+		spliceTxt = PathDetail.getTmpPathRandom() + FileOperate.getFileName(gffHashGene.getGffFilename());
 		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
 		setSpliceTxt(gffHashGene, spliceTxt);
+		
+		int[] intronMinMax = MapTophat.getIntronMinMax(gffHashGene, intronLenMin, intronLenMax);
+		intronLenMin = intronMinMax[0];
+		intronLenMax = intronMinMax[1];
 	}
 
 	@Override
@@ -488,6 +484,11 @@ public class MapHisat implements MapRNA {
 	public static void index(String chrFile) {
 		
 	}
+
+	@Override
+    public IndexMappingMaker getIndexMappingMaker() {
+	    return indexHisat2;
+    }
 }
 
 class MapHisatIndex {

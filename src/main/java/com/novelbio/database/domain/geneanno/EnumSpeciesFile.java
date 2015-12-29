@@ -1,6 +1,5 @@
 package com.novelbio.database.domain.geneanno;
 
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.PathDetailNBC;
@@ -43,18 +42,6 @@ public enum EnumSpeciesFile {
 		}
 	},
 	
-//	ChromSepPath("Chrom_Sep") {
-//		public String getSavePath(int taxId, SpeciesFile speciesFile) {
-//			validateSpeciesFile(taxId, speciesFile);
-//			
-//			String basePath = PathDetailNBC.getGenomePath();
-//			String pathToVersion = speciesFile.getPathToVersion();
-//			if(StringOperate.isRealNull(pathToVersion))
-//				return null;
-//			return basePath + folder + FileOperate.getSepPath() + pathToVersion;
-//		}
-//	},
-	
 	COG("COG") {
 		public String getSavePath(int taxId, SpeciesFile speciesFile) {
 			validateSpeciesFile(taxId, speciesFile);
@@ -75,6 +62,10 @@ public enum EnumSpeciesFile {
 		
 	EnumSpeciesFile(String folder) {
 		this.folder = folder;
+	}
+	/** 返回保存的文件夹名 */
+	public String getPathNode() {
+		return folder;
 	}
 	
 	/**
@@ -107,26 +98,43 @@ public enum EnumSpeciesFile {
 	
 	private static void validateSpeciesFile(int taxId, SpeciesFile speciesFile) {
 		if (speciesFile == null || speciesFile.getTaxID() == 0) {
-			throw new ExceptionNoSpeciesFile(taxId + "Have No SpeciesFile Exist");
+			throw new ExceptionNbcSpeciesFileNotExist(taxId + " Have No SpeciesFile Exist");
 		}
 	}
 	
-	public static class ExceptionNoSpeciesFile extends RuntimeException {
-		public ExceptionNoSpeciesFile() {
+	public static class ExceptionNbcSpeciesFileNotExist extends RuntimeException {
+		private static final long serialVersionUID = 1143601321062386081L;
+
+		public ExceptionNbcSpeciesFileNotExist() {
 			super();
 		}
 		
-		public ExceptionNoSpeciesFile(String msg) {
+		public ExceptionNbcSpeciesFileNotExist(String msg) {
 			super(msg);
 		}
 		
-		public ExceptionNoSpeciesFile(Throwable e) {
+		public ExceptionNbcSpeciesFileNotExist(Throwable e) {
 			super(e);
 		}
 		
-		public ExceptionNoSpeciesFile(String msg, Throwable e) {
+		public ExceptionNbcSpeciesFileNotExist(String msg, Throwable e) {
 			super(msg, e);
 		}
 	}
 	
+	/** 可以建索引的序列文件 */
+	public static enum EnumIndexSeq {
+		chromesome("Chr_Index"), refseqOneIso("Ref_OneIso_Index"), refseqAllIso("Ref_AllIso_Index");
+		
+		String indexPath;
+		
+		EnumIndexSeq(String indexPath) {
+			this.indexPath = indexPath;
+		}
+		
+		/** 返回本类型文件的所在文件夹，最后有"/" */
+		public String getIndexPath() {
+			return indexPath + FileOperate.getSepPath();
+		}
+	}
 }

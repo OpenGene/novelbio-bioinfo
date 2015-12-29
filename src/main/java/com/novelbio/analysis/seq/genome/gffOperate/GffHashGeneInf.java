@@ -90,15 +90,7 @@ public interface GffHashGeneInf  {
 	public List<GffDetailGene> getLsGffDetailGenes();
 	/** 染色体都小写 */
 	public  HashMap<String, ListGff> getMapChrID2LsGff();
-	/**
-	 * <b>该方法待修正</b>
-	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GFF格式
-	 * 也就是说，仅含有一个转录本的基因就不写入文本了
-	 * @param txtWrite
-	 * @param lsGffDetailGenes
-	 * @param title
-	 */
-	void writeToGFFIsoMoreThanOne(String GFFfile, String title);
+
 	/**
 	 * 主要用于Rsem，产生一个GeneID对应IsoID的表
 	 * @param Gene2IsoFile

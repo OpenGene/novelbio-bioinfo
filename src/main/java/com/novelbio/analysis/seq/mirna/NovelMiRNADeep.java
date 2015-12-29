@@ -14,7 +14,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.mapping.MapDNA;
 import com.novelbio.analysis.seq.mapping.MapDNAint;
-import com.novelbio.analysis.seq.mapping.MapIndexMaker;
+import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
@@ -37,7 +37,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	/** miRDeep2是调用bowtie实现的 */
 	static SoftWare softWareMap = SoftWare.bowtie;
 	
-	MapIndexMaker indexMaker;
+	IndexMappingMaker indexMaker;
 	int miRNAminLen = 18;
 	String mirDeepPath = "";
 	/** 输入的fasta格式，从bed文件转变而来，也可直接设定 */
@@ -65,7 +65,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	public NovelMiRNADeep() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.mirDeep);
 		mirDeepPath = softWareInfo.getExePathRun();
-		indexMaker = MapIndexMaker.createIndexMaker(softWareMap);
+		indexMaker = IndexMappingMaker.createIndexMaker(softWareMap);
 	}
 	
 	@Override

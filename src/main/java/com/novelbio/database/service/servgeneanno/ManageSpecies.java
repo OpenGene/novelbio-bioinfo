@@ -105,11 +105,11 @@ public class ManageSpecies implements IManageSpecies {
 			speciesFile.setGffRepeatFile(info[m]);
 			
 			m = hashName2ColNum.get("refseq_all_iso");
-			speciesFile.setRefseqFileAllIso(info[m]);
+			speciesFile.setRefSeqFileName(FileOperate.getFileName(info[m]), true, false);
 			
 			m = hashName2ColNum.get("refseq_one_iso");
-			speciesFile.setRefseqFileOneIso(info[m]);
-			
+			speciesFile.setRefSeqFileName(FileOperate.getFileName(info[m]), false, false);
+
 			m = hashName2ColNum.get("refseqncfile");
 			speciesFile.setRefseqNCfile(info[m]);
 			try {
@@ -277,11 +277,11 @@ public class ManageSpecies implements IManageSpecies {
 	}
 	
 	public boolean isHaveMiRNArecalculate(TaxInfo taxInfo) {
-		if (taxInfo.getIsHaveMiRNA() == null || !taxInfo.getIsHaveMiRNA()) {
+		if (taxInfo.isHaveMiRNA() == null || !taxInfo.isHaveMiRNA()) {
 			taxInfo.setIsHaveMiRNA(ListMiRNAdat.isContainMiRNA(taxInfo.getLatinName_2Word(), PathDetailNBC.getMiRNADat()));
 			saveTaxInfo(taxInfo);
 		}
-		return taxInfo.getIsHaveMiRNA() ;
+		return taxInfo.isHaveMiRNA() ;
 	}
 	
 	/** 获取核糖体rna所在的路径，绝对路径 */

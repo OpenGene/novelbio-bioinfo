@@ -95,7 +95,7 @@ public class AlignSamReading extends AlignSeqReading {
 				//TODO
 				for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
 					num++;
-					if (num % 100000 == 0) {
+					if (num % 2000000 == 0) {
 						logger.info("read reads num: " + num);
 					}
 					suspendCheck();
@@ -105,9 +105,7 @@ public class AlignSamReading extends AlignSeqReading {
 					addOneSeq(samRecord, alignSeq);
 				}
 			}
-		
 		}
-		System.out.println();
 	}
 	
 	/** 清空AlignmentRecorder和readByte和readLines，但不清除samFile */

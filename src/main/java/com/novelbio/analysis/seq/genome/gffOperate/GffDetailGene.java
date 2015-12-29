@@ -803,13 +803,18 @@ public class GffDetailGene extends ListDetailAbs {
 		return geneGTF;
 	}
 	
+	public List<String> toGFFformate(String title) {
+		return toGFFformate(null, title);
+	}
 	//TODO 待修正
 	/**
 	 * 返回gff格式的信息
 	 * @param title 公司名等信息
 	 * @return
 	 */
-	public List<String> toGFFformate(String title) {
+	public List<String> toGFFformate(String chrId, String title) {
+		if (chrId == null) chrId = getRefID();
+		
 		List<String> lsResult = new ArrayList<>();
 		if (title == null || title.trim().equals("")) {
 			title = TitleFormatNBC.CompanyNameAbbr.toString();
@@ -820,7 +825,7 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		
 		List<String> lsGene = new ArrayList<>();
-		lsGene.add(getRefID()); lsGene.add(title); lsGene.add("gene"); lsGene.add(getStartAbs() + ""); lsGene.add(getEndAbs() + "");
+		lsGene.add(chrId); lsGene.add(title); lsGene.add("gene"); lsGene.add(getStartAbs() + ""); lsGene.add(getEndAbs() + "");
 		lsGene.add(".");  lsGene.add(strand); lsGene.add("."); lsGene.add("ID=" + getNameSingle() + ";" + "Name=" + getNameSingle());
 		String geneGFF = ArrayOperate.cmbString(lsGene.toArray(new String[0]), "\t");
 		lsResult.add(geneGFF);
@@ -831,7 +836,7 @@ public class GffDetailGene extends ListDetailAbs {
 				strandmRNA = "-";
 			}
 			List<String> lsmRNA = new ArrayList<>();
-			lsmRNA.add(getRefID()); lsmRNA.add(title); lsmRNA.add(gffGeneIsoInfo.getGeneType().toString());
+			lsmRNA.add(chrId); lsmRNA.add(title); lsmRNA.add(gffGeneIsoInfo.getGeneType().toString());
 			lsmRNA.add(gffGeneIsoInfo.getStartAbs() + ""); lsmRNA.add(gffGeneIsoInfo.getEndAbs() + "");
 			lsmRNA.add("."); lsmRNA.add(strandmRNA);
 			lsmRNA.add("ID=" + gffGeneIsoInfo.getName() + ";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ gffGeneIsoInfo.getParentGeneName());

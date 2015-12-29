@@ -59,6 +59,8 @@ public interface MapRNA extends IntCmdSoft {
 	public void mapReads();
 	SoftWare getSoftWare();
 	
+	public IndexMappingMaker getIndexMappingMaker();
+	
 	/**
 	 * Tophat:<br>用gtf文件辅助mapping
 	 * 如果设定为null，则表示不使用gtf文件

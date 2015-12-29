@@ -179,7 +179,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	/** 设定待比对的序列 */
 	private void setConfigFile() {
 		miRNAmappingPipline.setMiRNApreSeq(species.getMiRNAhairpinFile());
-		miRNAmappingPipline.setNcRNAseq(species.getRefseqNCfileDB());
+		miRNAmappingPipline.setNcRNAseq(species.getRefseqNCfile());
 		miRNAmappingPipline.setRfamSeq(species.getRfamFile(rfamSpeciesSpecific));
 		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bwa_aln));//默认bwa做mapping
 	}
@@ -196,7 +196,7 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 		expRfamID.addLsTitle(RfamStatistic.getLsTitleRfamIDAnno());
 		expRfamClass.addLsGeneName(rfamStatistic.getLsRfamClass(lsRfamNameRaw));
 		
-		List<String> lsNCrnaName = SeqHash.getLsSeqName(species.getRefseqNCfileDB());
+		List<String> lsNCrnaName = SeqHash.getLsSeqName(species.getRefseqNCfile());
 		expNcRNA.addLsGeneName(lsNCrnaName);
 		expNcRNA.addAnnotationArray(readsOnNCrna.getLsMapGene2Anno(lsNCrnaName));
 		expNcRNA.addLsTitle(ReadsOnNCrna.getLsTitleAnno());

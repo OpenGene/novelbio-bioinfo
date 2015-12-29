@@ -15,6 +15,7 @@ import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
@@ -156,9 +157,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		mapName2DetailAbs = new LinkedHashMap<String, GffDetailGene>();
 		for (GffDetailGene gffGene : getLsGffDetailGenes()) {
-			if (gffGene.getNameSingle().equals("EPlTAEG00000000659")) {
-				logger.debug("sfe");
-			}
 			for (String name : gffGene.getName()) {
 				if (!mapName2DetailAbs.containsKey(name.toLowerCase()) || 
 						mapName2DetailAbs.containsKey(name.toLowerCase()) && gffGene.getRefID().toLowerCase().startsWith("chr"))
@@ -463,9 +461,10 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param GTFfile 输出文件名
 	 * @param title 给该GTF起个名字
 	 */
-	private void writeToFile(List<String> lsChrIDinput, GffType gffType, String Outfile,String title) {
+	private void writeToFile(List<String> lsChrIDinput, GffType gffType, String outFile,String title) {
 		TreeSet<String> treeSet =getSortedChrID(lsChrIDinput);
-		TxtReadandWrite txtGtf = new TxtReadandWrite(Outfile, true);
+		String outFileTmp = FileOperate.changeFileSuffix(outFile, "_tmp", null);
+		TxtReadandWrite txtGtf = new TxtReadandWrite(outFileTmp, true);
 
 		//基因名字去重复，因为一个基因只能有一个名字
 		//所以如果发现一样的基因名，就在其后面加上.1，.2等
@@ -502,12 +501,23 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 					outUnit = gffDetailGene.toGTFformate(chrID, title);
 				} else if (gffType == GffType.BED) {
 					outUnit = gffDetailGene.toBedFormate(chrID, title);
+				} else if (gffType == GffType.NCBI) {
+					List<String> lsTmp = gffDetailGene.toGFFformate(chrID, title);
+					StringBuilder stringBuilder = new StringBuilder();
+					for (String string : lsTmp) {
+						stringBuilder.append(string + TxtReadandWrite.ENTER_LINUX);
+                    }
+					outUnit = stringBuilder.toString();
+				} else {
+					txtGtf.close();
+					throw new ExceptionNbcGFF("Unsupport Gff type");
 				}
 			
 				txtGtf.writefileln(outUnit.trim());
 			}
 		}
 		txtGtf.close();
+		FileOperate.moveFile(true, outFileTmp, outFile);
 	}
 	/**
 	 * 返回排过序的chrID
@@ -546,74 +556,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		return geneIDinput;
 	}
-	/**
-	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
-	 * 也就是说，仅含有一个转录本的基因就不写入文本了
-	 * @param txtWrite
-	 * @param lsGffDetailGenes
-	 * @param title
-	 */
-	@Override
-	public void writeToGFFIsoMoreThanOne(String GFFfile, String title) {
-		TxtReadandWrite txtGtf = new TxtReadandWrite(GFFfile, true);
-		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(mapChrID2ListGff);
-		//把得到的ChrID排个序
-		TreeSet<String> treeSet = new TreeSet<String>();
-		for (String string : lsChrID) {
-			treeSet.add(string);
-		}
-		for (String string : treeSet) {
-			ListAbs<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
-			writeToGFFIsoMoreThanOne(txtGtf, lsGffDetailGenes, title);
-		}
-		txtGtf.close();
-	}
-	/**
-	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
-	 * 也就是说，仅含有一个转录本的基因就不写入文本了
-	 * @param txtWrite
-	 * @param lsGffDetailGenes
-	 * @param title
-	 */
-	public void writeToGFF3(String GFFfile, String title) {
-		TxtReadandWrite txtGtf = new TxtReadandWrite(GFFfile, true);
-		ArrayList<String> lsChrID = ArrayOperate.getArrayListKey(mapChrID2ListGff);
-		//把得到的ChrID排个序
-		TreeSet<String> treeSet = new TreeSet<String>();
-		for (String string : lsChrID) {
-			treeSet.add(string);
-		}
-		for (String string : treeSet) {
-			ListAbs<GffDetailGene> lsGffDetailGenes = mapChrID2ListGff.get(string);
-			for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-				gffDetailGene.removeDupliIso();
-				List<String> lsGene = gffDetailGene.toGFFformate(title);
-				for (String info : lsGene) {
-					txtGtf.writefileln(info);
-                }
-			}
-		}
-		txtGtf.close();
-	}
-	/**
-	 * 将一个染色体中的 含有不止一个转录本的 基因信息写入文本，按照GTF格式
-	 * 也就是说，仅含有一个转录本的基因就不写入文本了
-	 * @param txtWrite
-	 * @param lsGffDetailGenes
-	 * @param title
-	 */
-	private void writeToGFFIsoMoreThanOne(TxtReadandWrite txtWrite, ListAbs<GffDetailGene> lsGffDetailGenes, String title) {
-		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-			gffDetailGene.removeDupliIso();
-			if (gffDetailGene.getLsCodSplit().size() <= 1) {
-				continue;
-			}
-			List<String> lsGene = gffDetailGene.toGFFformate(title);
-			for (String info : lsGene) {
-				txtWrite.writefileln(info.trim());
-            }
-		}
-	}
+
 	@Override
 	public void writeGene2Iso(String Gene2IsoFile) {
 		TxtReadandWrite txtGtf = new TxtReadandWrite(Gene2IsoFile, true);

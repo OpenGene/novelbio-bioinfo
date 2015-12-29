@@ -6,7 +6,8 @@ import java.util.List;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.mapping.MapIndexMaker.IndexMapSplice;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -49,14 +50,11 @@ public class MapSplice implements MapRNA {
 	/** 第二次mapping所使用的命令 */
 	List<String> lsCmdMapping2nd = new ArrayList<>();
 	
-	public MapSplice(GffChrAbs gffChrAbs) {
+	public MapSplice() {
 		SoftWareInfo softMapSplice = new SoftWareInfo();
 		softMapSplice.setName(SoftWare.mapsplice);
 		this.exePath = softMapSplice.getExePathRun();
-		indexMaker = (IndexMapSplice)MapIndexMaker.createIndexMaker(SoftWare.mapsplice);
-		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-			indexMaker.setGffHashGene(gffChrAbs.getGffHashGene());
-		}
+		indexMaker = (IndexMapSplice)IndexMappingMaker.createIndexMaker(SoftWare.mapsplice);
 	}
 	
 	/**
@@ -135,8 +133,14 @@ public class MapSplice implements MapRNA {
 
 	@Override
 	public void mapReads() {
-		prepareReads();
+		if (FileOperate.isFileExistAndBigThan0(gtfFile)) {
+			GffHashGene gffHashGene = new GffHashGene(gtfFile);
+			indexMaker.setSetChrInclude(gffHashGene.getMapChrID2LsGff().keySet());
+		}
 		indexMaker.IndexMake();
+		
+		prepareReads();
+
 		lsCmdMapping2nd.clear();
 
 		String prefix = FileOperate.getFileName(outFile);
@@ -307,6 +311,10 @@ public class MapSplice implements MapRNA {
 		return lsCmd;
 	}
 	
+	@Override
+    public IndexMappingMaker getIndexMappingMaker() {
+	    return indexMaker;
+    }
 	@Override
 	public SoftWare getSoftWare() {
 		return SoftWare.bowtie;

@@ -6,13 +6,14 @@ import htsjdk.samtools.SAMFileHeader.SortOrder;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.mapping.MapIndexMaker.IndexTophat;
+import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexTophat;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
@@ -43,7 +44,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  * 
  */
 public class MapTophat implements MapRNA {
-	private static Logger logger = Logger.getLogger(MapTophat.class);
+	private static Logger logger = LoggerFactory.getLogger(MapTophat.class);
 	public static final String UnmapSuffix = "_tophat_unmapped.bam";//没有mapping的bam文件的前缀
 	/** mapping文件的后缀，包含 ".bam" 字符串 */
 	public static final String TophatSuffix = "_tophat_sorted.bam";
@@ -79,6 +80,9 @@ public class MapTophat implements MapRNA {
 	String outPathPrefix = "";
 	
 	String chrIndexFile;
+	
+	/** 只有基于数据库的才需要把gtf文件移动到chr文件边上 */
+	boolean isMoveGtfToChr = false;
 	/** bowtie就是用来做索引的 */
 	IndexTophat indexMaker;
 
@@ -94,20 +98,16 @@ public class MapTophat implements MapRNA {
 	
 	/** 第二次mapping所使用的命令 */
 	List<String> 	lsCmdMapping2nd = new ArrayList<>();
-	
-	boolean isGtfFromDatabase = true;
-	
-	public MapTophat(GffChrAbs gffChrAbs) {
-		indexMaker = (IndexTophat)MapIndexMaker.createIndexMaker(SoftWare.tophat);
+		
+	public MapTophat() {
+		indexMaker = (IndexTophat)IndexMappingMaker.createIndexMaker(SoftWare.tophat);
 		indexMaker.setBowtieVersion(SoftWare.bowtie2);	
-		if (gffChrAbs == null ||  gffChrAbs.getGffHashGene() == null) return;
-		
-		this.gtfFile = gffChrAbs.getGtfFile();
-		
-		int[] intronMinMax = getIntronMinMax(gffChrAbs.getGffHashGene(), this.intronLenMin, this.intronLenMax);
-		this.intronLenMin = intronMinMax[0];
-		this.intronLenMax = intronMinMax[1];
 	}
+	/** 如果有gtf文件，是否将gtf文件移动到chr文件同一文件夹下并建索引
+	 * 只有基于数据库的才需要把gtf文件移动到chr文件边上 */
+	public void setMoveGtfToChr(boolean isMoveGtfToChr) {
+	    this.isMoveGtfToChr = isMoveGtfToChr;
+    }
 	
 	public void setBowtieVersion(SoftWare bowtieVersion) {
 		indexMaker.setBowtieVersion(bowtieVersion);
@@ -373,9 +373,15 @@ public class MapTophat implements MapRNA {
 	 */
 	public void setGtf_Gene2Iso(String gtfFile) {
 		this.gtfFile = gtfFile;
-		isGtfFromDatabase = false;
+		if (!FileOperate.isFileExistAndBigThan0(gtfFile)) return;
+		
+		this.gtfFile = gtfFile;
+		GffHashGene gffHashGene = new GffHashGene(gtfFile);
+		int[] intronMinMax = getIntronMinMax(gffHashGene, this.intronLenMin, this.intronLenMax);
+		this.intronLenMin = intronMinMax[0];
+		this.intronLenMax = intronMinMax[1];
 	}
-
+	
 	/**
 	 * 先不设定，考虑集成--transcriptome-index那个选项
 	 * @return
@@ -413,7 +419,7 @@ public class MapTophat implements MapRNA {
 	 */
 	public void mapReads() {
 		indexMaker.setChrIndex(chrIndexFile);
-		indexMaker.setGtfFile(gtfFile, isGtfFromDatabase);
+		indexMaker.setGtfFile(gtfFile, isMoveGtfToChr);
 		indexMaker.IndexMake();
 				
 		lsCmdMapping2nd.clear();
@@ -605,7 +611,11 @@ public class MapTophat implements MapRNA {
 			return parentPath + prefix + TophatAllSuffix;
 		}
 	}
-
+	@Override
+	public IndexMappingMaker getIndexMappingMaker() {
+	    return indexMaker;
+    }
+	
 	protected static int[] getIntronMinMax(GffHashGene gffHashGene, int intronMinDefault, int intronMaxDefault) {
 		int[] result = new int[]{intronMinDefault, intronMaxDefault};
 		

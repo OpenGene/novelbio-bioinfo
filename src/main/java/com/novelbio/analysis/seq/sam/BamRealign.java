@@ -6,13 +6,13 @@ import java.util.List;
 import com.google.common.base.Preconditions;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.ExceptionNullParam;
-import com.novelbio.base.ExceptionParamError;
+import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.fileOperate.ExceptionFile;
-import com.novelbio.base.fileOperate.ExceptionFileInputNotExist;
+import com.novelbio.base.fileOperate.ExceptionNbcFile;
+import com.novelbio.base.fileOperate.ExceptionNbcFileInputNotExist;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -44,7 +44,7 @@ public class BamRealign implements IntCmdSoft {
 		this.ExePath = softWareInfo.getExePathRun();
 	}
 	public void setRefSequenceFile(String refSequencFile) {
-		ExceptionFileInputNotExist.validateFile(refSequencFile, "Realign cannot run without a refSequencFile");
+		ExceptionNbcFileInputNotExist.validateFile(refSequencFile, "Realign cannot run without a refSequencFile");
 		
 		this.refSequenceFile = refSequencFile;
 	}

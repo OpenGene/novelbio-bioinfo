@@ -105,10 +105,11 @@ public class ManageSpeciesTxt implements IManageSpecies {
 			if (m != null) speciesFile.setGffRepeatFile(info[m]);
 			
 			m = hashName2ColNum.get("refseq_all_iso");
-			if (m != null) speciesFile.setRefseqFileAllIso(info[m]);
+			if (m != null) speciesFile.setRefSeqFileName(FileOperate.getFileName(info[m]), true, false);
+
 			
 			m = hashName2ColNum.get("refseq_one_iso");
-			if (m != null) speciesFile.setRefseqFileOneIso(info[m]);
+			if (m != null) speciesFile.setRefSeqFileName(FileOperate.getFileName(info[m]), false, false);
 			
 			m = hashName2ColNum.get("refseqncfile");
 			if (m != null) speciesFile.setRefseqNCfile(info[m]);

@@ -143,7 +143,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 					break;
 				}
 				num++;
-				if (num % 100000 == 0) {
+				if (num % 2000000 == 0) {
 					logger.info("read reads num: " + num);
 				}
 				int seqLen = samRecord.getLength();
@@ -177,7 +177,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 			alignmentRecorder.addAlignRecord(samRecord);
 		}
 		readLines++;
-		if (readLines%50000 == 0) {
+		if (readLines%200000 == 0) {
 			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
 			guiAnnoInfo.setNum(readLines);
 			guiAnnoInfo.setDouble(readByte + alignSeqFile.getReadByte());

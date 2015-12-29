@@ -203,6 +203,7 @@ public class ChrSeqHash extends SeqHashAbs {
 		}
 	}
 	
+	//TODO 没写完
 	@Override
 	public Iterable<Character> readBase(String refID) {
 		final String myRefID = refID.toLowerCase();

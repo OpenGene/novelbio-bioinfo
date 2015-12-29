@@ -41,10 +41,10 @@ public abstract class MapDNA implements MapDNAint {
 
 	boolean writeToBam = true;
 	
-	MapIndexMaker indexMaker;
+	IndexMappingMaker indexMaker;
 	
 	public MapDNA(SoftWare softWare) {
-		indexMaker = MapIndexMaker.createIndexMaker(softWare);
+		indexMaker = IndexMappingMaker.createIndexMaker(softWare);
 	}
 	
 	/** 待比对的染色体 */

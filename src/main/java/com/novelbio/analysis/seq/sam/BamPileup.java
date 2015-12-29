@@ -8,7 +8,7 @@ import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.fileOperate.ExceptionFileInputNotExist;
+import com.novelbio.base.fileOperate.ExceptionNbcFileInputNotExist;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -46,7 +46,7 @@ public class BamPileup implements IntCmdSoft {
 		this.bamFile = bamFile;
 	}
 	public void setReferenceFile(String referenceFile) {
-		ExceptionFileInputNotExist.validateFile(referenceFile, "Pileup cannot run without a refSequencFile");
+		ExceptionNbcFileInputNotExist.validateFile(referenceFile, "Pileup cannot run without a refSequencFile");
 
 		this.referenceFile = referenceFile;
 	}
