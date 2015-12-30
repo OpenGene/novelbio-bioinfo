@@ -95,6 +95,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 			
 			String[] isoName2GeneName = getIsoName2GeneName(ss[8]);
 			if (isoName2GeneName == null) {
+				txtgff.close();
 				throw new ExceptionNbcGFF("line " + line + " error, no isoName exist: " + content);
 			}
 			String tmpTranscriptName = isoName2GeneName[0], tmpGeneName = isoName2GeneName[1];

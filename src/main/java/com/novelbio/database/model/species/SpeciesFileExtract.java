@@ -32,9 +32,16 @@ public class SpeciesFileExtract {
 	
 	SpeciesFile speciesFile;
 	
+	private String rfamSeqFile = PathDetailNBC.getRfamSeq();
+	
 	public SpeciesFileExtract(SpeciesFile speciesFile) {
 		this.speciesFile = speciesFile;
 	}
+	
+	/** 仅用于测试 */
+	protected void setRfamSeqFile(String rfamSeqFile) {
+	    this.rfamSeqFile = rfamSeqFile;
+    }
 	
 	/** step1, 给chrFile建索引 */
 	public void indexChrFile() {
@@ -55,6 +62,7 @@ public class SpeciesFileExtract {
 		}
 	}
 	
+	/** step4，给refseq添加索引 */
 	public void indexRefseqFile() {
 		indexRefseqFile(true);
 		indexRefseqFile(false);
@@ -111,6 +119,7 @@ public class SpeciesFileExtract {
 		}
 		String fileName = getRefSeqRegularName(speciesFile.getVersion(), isAllIso, isProtein);
 		String filePath = speciesFile.getRefFilePath(isAllIso, isProtein);
+		FileOperate.createFolders(filePath);
 		refseqFile = filePath + fileName;
 		try {
 			String chrFile = speciesFile.getChromSeqFile();
@@ -147,7 +156,7 @@ public class SpeciesFileExtract {
 	}
 	
 	/** 生成文件名，没有路径 */
-	private String getRefSeqRegularName(String version, boolean isAllIso, boolean isProtein) {
+	protected static String getRefSeqRegularName(String version, boolean isAllIso, boolean isProtein) {
 		String refseq;
 		if (!isProtein) {
 			refseq = isAllIso?  "rnaAllIso_" + version + ".fa" : "rnaOneIso_" + version + ".fa";
@@ -159,7 +168,7 @@ public class SpeciesFileExtract {
 	
 	private void generateGene2IsoForRefrna(GffHashGene gffHashGene, String refseqFile) {
 		String gene2isoFile = getRefrna_Gene2Iso(refseqFile);
-		TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2isoFile);
+		TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2isoFile, true);
 		SeqFastaReader seqFastaReader = new SeqFastaReader(refseqFile);
 		for (SeqFasta seqFasta : seqFastaReader.readlines()) {
 			String isoName = seqFasta.getSeqName();
@@ -183,24 +192,24 @@ public class SpeciesFileExtract {
 	}
 	
 	/** 提取rfam相关的序列，主要用于miRNA */
-	public void abstractRfamFile() {
-		abstractRfamFile(true);
-		abstractRfamFile(false);
+	public void extractRfamFile() {
+		extractRfamFile(true);
+		extractRfamFile(false);
 	}
 	
 	/** 提取rfam相关的序列，主要用于miRNA
 	 * @param speciesSpecific 是否按照物种特异性提取
 	 * @return
 	 */
-	private void abstractRfamFile(boolean speciesSpecific) {
+	private void extractRfamFile(boolean speciesSpecific) {
 		String rfamFile = speciesFile.getRfamFile(speciesSpecific);
 		if (!FileOperate.isFileExistAndBigThanSize(rfamFile,10)) {
 			FileOperate.createFolders(FileOperate.getParentPathNameWithSep(rfamFile));
 			ExtractSmallRNASeq extractSmallRNASeq = new ExtractSmallRNASeq();
 			if (speciesSpecific) {
-				extractSmallRNASeq.setRfamFile(PathDetailNBC.getRfamSeq(), speciesFile.getTaxID());
+				extractSmallRNASeq.setRfamFile(rfamSeqFile, speciesFile.getTaxID());
 			} else {
-				extractSmallRNASeq.setRfamFile(PathDetailNBC.getRfamSeq(), 0);
+				extractSmallRNASeq.setRfamFile(rfamSeqFile, 0);
 			}
 			extractSmallRNASeq.setOutRfamFile(rfamFile);
 			extractSmallRNASeq.getSeq();
@@ -244,7 +253,6 @@ public class SpeciesFileExtract {
 		String gene2isoFile = FileOperate.changeFileSuffix(refrna, "_gene2Iso", "txt");
 		return gene2isoFile;
 	}
-	
 	
 }
 

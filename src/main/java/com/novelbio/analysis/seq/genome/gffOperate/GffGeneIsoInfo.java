@@ -21,6 +21,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.listOperate.ListAbs;
@@ -1106,28 +1107,64 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	}
 
 	protected String getGTFformatExon(String chrID, String title, String strand) {
-		List<ExonInfo> ls;
 		if (chrID == null) chrID = getRefID();
-		StringBuilder geneExon = new StringBuilder();
-		String prefixInfo = chrID + "\t" + title + "\t";
-		String suffixInfo = "\t" + "." + "\t" + strand + "\t.\t" + "gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName()+"\"; " + TxtReadandWrite.ENTER_LINUX;
+
+		List<String> lsResult = new ArrayList<>();
+		
+		List<String> lsHead = new ArrayList<>();
+		lsHead.add(chrID); lsHead.add(title);
+		
+		List<String> lsSuffixInfo = new ArrayList<>();
+		lsSuffixInfo.add("."); lsSuffixInfo.add(strand); lsSuffixInfo.add(".");
+		lsSuffixInfo.add("gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName()+"\"; ");
+		
 		int[] atg = getATGLoc();
 		int[] uag = getUAGLoc();
 		boolean ismRNA = ismRNA();
 		for (ExonInfo exons : this) {
+			List<String> lsTmpResult = new ArrayList<>();
 			ExonInfo cds = getCds(exons);
 			if (ismRNA && atg != null && ATGsite >= exons.getStartAbs() && ATGsite <= exons.getEndAbs()) {
-				geneExon.append(prefixInfo).append(GffHashGTF.startCodeFlag).append("\t").append(atg[0]).append("\t").append(atg[1]).append(suffixInfo);
+				lsTmpResult.clear();
+				lsTmpResult.addAll(lsHead);
+				lsTmpResult.add(GffHashGTF.startCodeFlag);
+				lsTmpResult.add(atg[0] + ""); lsTmpResult.add(atg[1] + "");
+				lsTmpResult.addAll(lsSuffixInfo);
+				lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
 			}
-			geneExon.append(prefixInfo).append("exon\t").append(exons.getStartAbs()).append("\t").append(exons.getEndAbs()).append(suffixInfo);
+			lsTmpResult.clear();
+			lsTmpResult.addAll(lsHead);
+			lsTmpResult.add("exon");
+			lsTmpResult.add(exons.getStartAbs() + "");
+			lsTmpResult.add(exons.getEndAbs() + "");
+			lsTmpResult.addAll(lsSuffixInfo);
+			lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
+			
 			if (cds != null) {
-				geneExon.append(prefixInfo).append("CDS\t").append(cds.getStartAbs()).append("\t").append(cds.getEndAbs()).append(suffixInfo);
+				lsTmpResult.clear();
+				lsTmpResult.addAll(lsHead);
+				lsTmpResult.add("CDS");
+				lsTmpResult.add(cds.getStartAbs() + "");
+				lsTmpResult.add(cds.getEndAbs() + "");
+				lsTmpResult.addAll(lsSuffixInfo);
+				lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
 			}
 			if (ismRNA && uag != null && UAGsite >= exons.getStartAbs() && UAGsite <= exons.getEndAbs()) {
-				geneExon.append(prefixInfo).append(GffHashGTF.stopCodeFlag).append("\t").append(uag[0]).append("\t").append(uag[1]).append(suffixInfo);
+				lsTmpResult.clear();
+				lsTmpResult.addAll(lsHead);
+				lsTmpResult.add(GffHashGTF.stopCodeFlag);
+				lsTmpResult.add(uag[0] + "");
+				lsTmpResult.add(uag[1] + "");
+				lsTmpResult.addAll(lsSuffixInfo);
+				lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
 			}
 		}
-		return geneExon.toString();
+		
+		StringBuilder stringBuilder = new StringBuilder();
+		for (String content : lsResult) {
+	        stringBuilder.append(content + TxtReadandWrite.ENTER_LINUX);
+        }
+		return stringBuilder.toString();
 	}
 	
 	/** 根据输入的exon，判断是否存在cds，并返回<br>

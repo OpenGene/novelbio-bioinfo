@@ -4,12 +4,15 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.powermock.api.mockito.PowerMockito;
 
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.EnumSpeciesFile;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 
-public class TestSpeciesFileExtract {
+public class TestSpeciesFileFaidx {
 	SpeciesFile speciesFile = new SpeciesFile();
 	String chrFile;
 	String refseqAllIso;
@@ -37,6 +40,20 @@ public class TestSpeciesFileExtract {
 		speciesFile.setRefSeqFileName("refOneIso.fa", false, false);
 		speciesFile.setRefSeqFileName("proteinAllIso_GRCh38.fa", true, true);
 		speciesFile.setRefSeqFileName("proteinOneIso_GRCh38.fa", false, true);
+		
+		speciesFile = PowerMockito.spy(speciesFile);
+		try {
+			PowerMockito.doAnswer(new Answer<String>() {
+				@Override
+				public String answer(InvocationOnMock invocation) throws Throwable {
+					System.out.println("test");
+					return null;
+                }
+			}).when(speciesFile, "save");
+		} catch (Exception e) {
+			
+        }
+		
 	}
 	
 	@Test

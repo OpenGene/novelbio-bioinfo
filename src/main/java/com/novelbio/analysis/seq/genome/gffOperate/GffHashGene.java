@@ -513,7 +513,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		String gffFile = getGffFilename();
 		String outFile = convertNameToOtherFile(gffFile, gfftype);
 		if (!StringOperate.isEqual(gffFile, outFile)) {
-			gffHashGene.writeToFile(gffType, lsChrId, outFile, GFFDBNAME);
+			gffHashGene.writeToFile(gfftype, lsChrId, outFile, GFFDBNAME);
         }
 		return outFile;
 	}
@@ -530,7 +530,10 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		} else {
 			throw new ExceptionNbcGFF("Not support this type " + gffType);
 		}
-		return FileOperate.changeFileSuffix(gffFileName, "", suffix);
+		if (gffFileName.endsWith(".gz")) {
+			gffFileName = gffFileName.substring(0, gffFileName.length()-3);
+        }
+		return FileOperate.changeFileSuffix(gffFileName, "", "gff3|gtf|gff|bed", suffix);
 	}
 	
 	/** 仅修改名字 */

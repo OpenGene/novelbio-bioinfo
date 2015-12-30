@@ -59,9 +59,6 @@ public class TestMapRNA {
 		fq1 = "src/test/resources/test_file/fastq/PE/arabidopsis_rna_1.fq.gz";
 		fq2 = "src/test/resources/test_file/fastq/PE/arabidopsis_rna_2.fq.gz";
 		
-//		fq1 = "src/test/resources/test_file/fastq/PE/L_correct.1.fq.gz";
-//		fq2 = "src/test/resources/test_file/fastq/PE/R_correct.2.fq.gz";
-		
 		fq1 = getAbsolutePath(fq1);
 		fq2 = getAbsolutePath(fq2);
 		
@@ -89,47 +86,57 @@ public class TestMapRNA {
 	}
 	
 //	@Test
-//	public void testMapSplice() {
-//		copyFile();
-//		
-//		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.mapsplice, gffChrAbs);
-//		
-//		mapRNA.setRefIndex(referenceFile);
-//		mapRNA.setGtf_Gene2Iso(gtfFile);
-//		mapRNA.setLeftFq(lsLeftFq);
-//		mapRNA.setRightFq(lsRightFq);
-//		mapRNA.setThreadNum(8);
-//		mapRNA.setOutPathPrefix(outPath + "mapsplice");
-//		mapRNA.mapReads();
-//		lsLeftFq.clear();
-//		lsRightFq.clear();
-//		
-////		deleteFolder();
-//	}
+	public void testMapSplice() {
+		copyFile();
+
+		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.mapsplice);
+		mapRNA.getIndexMappingMaker().setLock(false);
+		mapRNA.setRefIndex(referenceFile);
+		mapRNA.setGtf_Gene2Iso(gtfFile);
+		mapRNA.setLeftFq(lsLeftFq);
+		mapRNA.setRightFq(lsRightFq);
+		mapRNA.setThreadNum(8);
+		mapRNA.setOutPathPrefix(outPath + "mapsplice");
+		
+		Assert.assertFalse(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
+
+		mapRNA.mapReads();
+		lsLeftFq.clear();
+		lsRightFq.clear();
+		Assert.assertTrue(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
+		deleteFolder();
+	}
 	
 	@Test
 	public void testTophat() {
 		copyFile();
 		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
 
-		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat, null);
+		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);
 		((MapTophat)mapRNA).setBowtieVersion(SoftWare.bowtie);
+
 		mapRNA.setRefIndex(referenceFile);
 		mapRNA.setGtf_Gene2Iso(gtfFile.replace(".gz", ""));
+		((MapTophat)mapRNA).setMoveGtfToChr(false);
+		
 		mapRNA.setOutPathPrefix(outPath + "tophat");
 		mapRNA.setLeftFq(lsLeftFq);
 		mapRNA.setRightFq(lsRightFq);
 		mapRNA.setThreadNum(3);
+		
+		Assert.assertFalse(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
+		mapRNA.getIndexMappingMaker().setLock(false);
 		mapRNA.mapReads();
 		
 		lsLeftFq.clear();
 		lsRightFq.clear();
 		
 		String gtfFileAssert = FileOperate.getPathName(referenceFile) + FileOperate.getFileName(gtfFile.replace(".gz", ""));
-		Assert.assertFalse(FileOperate.isFileExistAndBigThanSize(gtfFileAssert, 0));
-		
-//		deleteFolder();
-//		FileOperate.DeleteFileFolder(gtfFile.replace(".gz", ""));
+		Assert.assertFalse(FileOperate.isFileExistAndBigThan0(gtfFileAssert));
+		Assert.assertTrue(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
+
+		deleteFolder();
+		FileOperate.DeleteFileFolder(gtfFile.replace(".gz", ""));
 	}
 	
 	@Test
@@ -137,63 +144,77 @@ public class TestMapRNA {
 		copyFile();
 		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
 		
-		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat, gffChrAbs);
+		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);		
+		((MapTophat)mapRNA).setBowtieVersion(SoftWare.bowtie);
+		mapRNA.setGtf_Gene2Iso(gtfFile.replace(".gz", ""));
+		((MapTophat)mapRNA).setMoveGtfToChr(true);
+		
+		mapRNA.setRefIndex(referenceFile);
+		mapRNA.setOutPathPrefix(outPath + "tophat");
+		mapRNA.setLeftFq(lsLeftFq);
+		mapRNA.setRightFq(lsRightFq);
+		mapRNA.setThreadNum(3);
+		
+		mapRNA.getIndexMappingMaker().setLock(false);
+		mapRNA.mapReads();
+		
+		lsLeftFq.clear();
+		lsRightFq.clear();
+		
+		String gtfFileAssert = FileOperate.getPathName(referenceFile) + FileOperate.getFileName(gtfFile);
+		Assert.assertTrue(FileOperate.isFileExistAndBigThanSize(gtfFileAssert, 0));
+		Assert.assertTrue(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
+
+		deleteFolder();
+		FileOperate.DeleteFileFolder(gtfFile.replace(".gz", ""));
+	}
+	
+	@Test
+	public void testTophat_without_GTF() {
+		copyFile();
+		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
+		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);
 		((MapTophat)mapRNA).setBowtieVersion(SoftWare.bowtie);
 		mapRNA.setRefIndex(referenceFile);
 		mapRNA.setOutPathPrefix(outPath + "tophat");
 		mapRNA.setLeftFq(lsLeftFq);
 		mapRNA.setRightFq(lsRightFq);
 		mapRNA.setThreadNum(3);
-		mapRNA.mapReads();
 		
+		Assert.assertFalse(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
+		mapRNA.getIndexMappingMaker().setLock(false);
+		mapRNA.mapReads();
+		Assert.assertTrue(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
+
 		lsLeftFq.clear();
 		lsRightFq.clear();
-		
-		String gtfFileAssert = FileOperate.getPathName(referenceFile) + FileOperate.getFileName(gffChrAbs.getGtfFile());
-		Assert.assertTrue(FileOperate.isFileExistAndBigThanSize(gtfFileAssert, 0));
-		
-//		deleteFolder();
-//		FileOperate.DeleteFileFolder(gtfFile.replace(".gz", ""));
+		deleteFolder();
 	}
-//	
-//	@Test
-//	public void testTophat_without_GTF() {
-//		copyFile();
-//		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
-//
-//		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat, null);
-//		((MapTophat)mapRNA).setBowtieVersion(SoftWare.bowtie);
-//		mapRNA.setRefIndex(referenceFile);
-//		mapRNA.setOutPathPrefix(outPath + "tophat");
-//		mapRNA.setLeftFq(lsLeftFq);
-//		mapRNA.setRightFq(lsRightFq);
-//		mapRNA.setThreadNum(3);
-//		mapRNA.mapReads();
-//		
-//		lsLeftFq.clear();
-//		lsRightFq.clear();
-//		deleteFolder();
-//	}
-//	
-//	@Test
-//	public void testTophat2() {
-//		copyFile();
-//		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
-//
-//		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat, gffChrAbs);
-//	
-//		mapRNA.setRefIndex(referenceFile);
-//		mapRNA.setGtf_Gene2Iso(gtfFile);
-//		mapRNA.setOutPathPrefix(outPath + "tophat2");
-//		mapRNA.setLeftFq(lsLeftFq);
-//		mapRNA.setRightFq(lsRightFq);
-//		mapRNA.setThreadNum(3);
-//		mapRNA.mapReads();
-//		
-//		lsLeftFq.clear();
-//		lsRightFq.clear();
-//		deleteFolder();
-//	}
+	
+	@Test
+	public void testTophat2() {
+		copyFile();
+		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
+
+		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);
+
+		mapRNA.setRefIndex(referenceFile);
+		mapRNA.setGtf_Gene2Iso(gtfFile.replace(".gz", ""));
+		((MapTophat)mapRNA).setMoveGtfToChr(true);
+		mapRNA.setOutPathPrefix(outPath + "tophat2");
+		mapRNA.setLeftFq(lsLeftFq);
+		mapRNA.setRightFq(lsRightFq);
+		mapRNA.setThreadNum(3);
+		
+		Assert.assertFalse(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
+		mapRNA.getIndexMappingMaker().setLock(false);
+		mapRNA.mapReads();
+		Assert.assertTrue(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
+
+		lsLeftFq.clear();
+		lsRightFq.clear();
+		deleteFolder();
+	}
 	
 	
 }

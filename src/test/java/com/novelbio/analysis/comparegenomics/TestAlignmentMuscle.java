@@ -7,7 +7,6 @@ public class TestAlignmentMuscle {
 	@Test
 	public void testParam() {
 		String input1 = "/home/novelbio/test1";
-		String input2 = "/home/novelbio/test2";
 		String outPut = "/home/novelbio/test3.fa";
 		
 		AlignmentMuscle alignmentMuscle = new AlignmentMuscle();

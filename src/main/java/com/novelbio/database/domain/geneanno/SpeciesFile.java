@@ -203,13 +203,13 @@ public class SpeciesFile {
 	/** 
 	 * @param gffDB
 	 * @param gffType
-	 * @param gffFile 输入相对路径，不能包含文件名
+	 * @param gffFile 输入相对路径，仅包含文件名
 	 */
-	public void addGffDB2TypeFile(String gffDB, GffType gffType, String gffFile) {
+	public void addGffDB2TypeFile(String gffDB, GffType gffType, String gffFileName) {
 		if (StringOperate.isRealNull(gffDB)) {
 			throw new ExceptionNullParam("No Param gffDB");
 		}
-		mapDB2GffTypeAndFile.put(gffDB.toLowerCase(), new String[]{gffType.toString(), gffFile});
+		mapDB2GffTypeAndFile.put(gffDB.toLowerCase(), new String[]{gffType.toString(), gffFileName});
 		mapGffDBLowCase2DBNormal.put(gffDB.toLowerCase(), gffDB);
 	}
 	

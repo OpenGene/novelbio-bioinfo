@@ -838,7 +838,7 @@ public class GffDetailGene extends ListDetailAbs {
 			List<String> lsmRNA = new ArrayList<>();
 			lsmRNA.add(chrId); lsmRNA.add(title); lsmRNA.add(gffGeneIsoInfo.getGeneType().toString());
 			lsmRNA.add(gffGeneIsoInfo.getStartAbs() + ""); lsmRNA.add(gffGeneIsoInfo.getEndAbs() + "");
-			lsmRNA.add("."); lsmRNA.add(strandmRNA);
+			lsmRNA.add("."); lsmRNA.add(strandmRNA); lsmRNA.add(".");
 			lsmRNA.add("ID=" + gffGeneIsoInfo.getName() + ";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ gffGeneIsoInfo.getParentGeneName());
 			lsResult.add(ArrayOperate.cmbString(lsmRNA.toArray(new String[0]), "\t"));			
 			gffGeneIsoInfo.sort();
