@@ -2,6 +2,7 @@ package com.novelbio.database.domain.geneanno;
 
 import junit.framework.TestCase;
 
+import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
@@ -33,6 +34,13 @@ public class TestSpeciesFile extends TestCase {
 		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
 		String indexBwa = speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, SoftWare.bwa_aln);
 		assertEquals(SpeciesFile.pathParent + "index/bwa/9606/hg19_GRCh37/Chr_Index/chrAll.fa", indexBwa);
+		
+		String indexBowtie = speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, SoftWare.bowtie);
+		assertEquals(SpeciesFile.pathParent + "index/bowtie/9606/hg19_GRCh37/Chr_Index/chrAll.fa", indexBowtie);
+		
+		IndexMappingMaker indexBowtieMaker = IndexMappingMaker.createIndexMaker(SoftWare.bowtie);
+		indexBowtieMaker.setChrIndex(indexBowtie);
+		assertEquals(SpeciesFile.pathParent + "index/bowtie/9606/hg19_GRCh37/Chr_Index/chrAll", indexBowtieMaker.getIndexName());
 		
 		Species species = new Species();
 		species.getMapVersion2Species().put("hg19_GRCh37".toLowerCase(), speciesFile);

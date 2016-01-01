@@ -143,7 +143,7 @@ public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
 					break;
 				}
 				num++;
-				if (num % 2000000 == 0) {
+				if (num % 5000000 == 0) {
 					logger.info("read reads num: " + num);
 				}
 				int seqLen = samRecord.getLength();

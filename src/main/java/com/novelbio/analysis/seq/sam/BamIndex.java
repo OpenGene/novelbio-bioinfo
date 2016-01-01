@@ -97,9 +97,9 @@ public class BamIndex {
         int allRecordsNum = 0;
 
         for (SamRecord rec : reader.readLines()) {
-            if (allRecordsNum % 1000000 == 0) {
-            	logger.info(allRecordsNum + " reads processed ...");
-            }
+        	if (allRecordsNum % 5000000 == 0) {
+        		logger.info(allRecordsNum + " reads processed ...");
+        	}
 //            try {
 //            	
 //			} catch (Exception e) {

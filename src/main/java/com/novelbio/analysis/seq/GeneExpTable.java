@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
@@ -25,7 +26,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  */
 public class GeneExpTable {
-	private static final Logger logger = Logger.getLogger(GeneExpTable.class);
+	private static final Logger logger = LoggerFactory.getLogger(GeneExpTable.class);
 	
 	public enum EnumAddAnnoType {
 		/** 不添加anno，如果第一次anno已经都加好了就可以用这个 */
@@ -450,7 +451,7 @@ public class GeneExpTable {
 		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
 		if (mapCond2Exp == null) return null;
 		Double value = mapCond2Exp.get(condition);
-		logger.info(geneName + "\t"+ value);
+		logger.debug(geneName + "\t"+ value);
 		if (value == null) return 0.0;
 		
 		double uq = (mapCondition2UQ != null) ? mapCondition2UQ.get(condition) : 0;
@@ -753,7 +754,6 @@ public class GeneExpTable {
 			long numAddSub = numLess%mapGene2Anno.size();
 			for (Map<String, Double> mapCond2Exp : mapGene_2_Cond2Exp.values()) {
 				Double expValue = mapCond2Exp.get(condition);
-				long addNum = numAddAVG == 0 ? 1 : numAddAVG;
 				if (expValue < numAddAVG * 500) {
 					continue;
 				}

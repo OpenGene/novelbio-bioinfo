@@ -108,24 +108,4 @@ public class TestMapDNA {
 		deleteFolder();
 	}
 	
-//	@Test
-//	public void test() throws InterruptedException {
-//		List<String> lsCmd = new ArrayList<>();
-//		lsCmd.add("bwa");
-//		lsCmd.add("mem");
-//		lsCmd.add("-P");
-//		lsCmd.add("/media/nbfs/nbCloud/public/nbcplatform/genome/index/bwa/4577/zmb73_ensembl/Chr_Index/chrAll.fa");
-//		lsCmd.add("/media/nbfs/nbCloud/testJava/NBCplatform/testDNAmap/HumanDNA_2A_2_Small.fastq.gz");
-//		lsCmd.add("/media/nbfs/nbCloud/testJava/NBCplatform/testDNAmap/HumanDNA_2A_1_Small.fastq.gz");
-//		lsCmd.add(">");
-//		lsCmd.add("/home/novelbio/maize");
-//		
-//		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-//		Thread thread = new Thread(cmdOperate);
-//		thread.start();
-//		Thread.sleep(5000);
-//		cmdOperate.threadStop();
-//		thread.join();
-//	}
-	
 }

@@ -95,7 +95,7 @@ public class AlignSamReading extends AlignSeqReading {
 				//TODO
 				for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
 					num++;
-					if (num % 2000000 == 0) {
+					if (num % 5000000 == 0) {
 						logger.info("read reads num: " + num);
 					}
 					suspendCheck();

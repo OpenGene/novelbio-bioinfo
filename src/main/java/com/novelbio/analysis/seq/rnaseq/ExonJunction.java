@@ -13,7 +13,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.GuiAnnoInfo;
@@ -164,7 +165,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		return dateUtil.getElapseTime();
 	}
 	
-	private static Logger logger = Logger.getLogger(ExonJunction.class);
+	private static Logger logger = LoggerFactory.getLogger(ExonJunction.class);
 	private static String stopGeneName = "ENSG00000163531";
 		
 	GffHashGene gffHashGene = null;
@@ -691,21 +692,26 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		samFileReadingLast = null;
 	}
 	
+	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
 	private void fillLsAll_Dif_Iso_Exon(GenerateNewIso generateNewIso) {
 		fillLsAll_Dif_Iso_Exon(generateNewIso, null);
 	}
 	
-	
 	/** 从全基因组中获取差异的可变剪接事件，放入lsSplicingTest中 */
 	private void fillLsAll_Dif_Iso_Exon(GenerateNewIso generateNewIso, String chrId) {
 		List<GffDetailGene> lsGffDetailGenes = gffHashGene.getLsGffDetailGenes();
-
-		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-//			logger.debug(gffDetailGene.getNameSingle());
-			
+		if (StringOperate.isRealNull(chrId)) {
+			logger.info("start extract splice site");
+		} else {
+			logger.info("start extract splice site on {}", chrId);
+		}
+		int i = 0;
+		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {			
 			if (!StringOperate.isRealNull(chrId) && !gffDetailGene.getRefID().equalsIgnoreCase(chrId)) {
 				continue;
 			}
+			
+			if (i++ % 500 == 0) logger.info("finish {} splice site", i);
 			
 			gffDetailGene = GenerateNewIso.getGeneWithSameStrand(gffDetailGene);
 			//TODO 设置断点
@@ -713,7 +719,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				logger.debug("stop");
 			}
 
-			logger.info("reconstruct splicing event " + gffDetailGene.getNameSingle());
+			logger.debug("reconstruct splicing event " + gffDetailGene.getNameSingle());
 			reconstructIso(generateNewIso, gffDetailGene);
 			gffDetailGene.removeDupliIso();
 			
@@ -726,7 +732,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 			lsSplicingTests.add(lsExonSplicingTest);
 		}
-		logger.debug("finish");
 	}
 	
 	private void reconstructIso(GenerateNewIso generateNewIso, GffDetailGene gffDetailGene) {
@@ -876,7 +881,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 				exonClusterSite.addMapCondition2MapReads(condition, group, mapReads);
 			}
-			if (num % 100 == 0) {
+			if (num % 500 == 0) {
 				logger.info("do " + num + " events");
 			}
 			num ++;
@@ -884,13 +889,15 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private void setSplicingType() {
+		logger.info("start generate of splice info");
+		
 		for (List<ExonClusterSite> lstest : lsSplicingTests) {
 			for (ExonClusterSite clusterSite : lstest) {
 				if (clusterSite.getCurrentExonCluster().getParentGene().getName().contains(stopGeneName)) {
 					logger.debug("stop");
 				}
 				
-				logger.info("Set Splicing Type " + clusterSite.getCurrentExonCluster().getParentGene().getName());
+				logger.debug("Set Splicing Type " + clusterSite.getCurrentExonCluster().getParentGene().getName());
 				clusterSite.setSpliceType2Value();				
 			}
 		}
@@ -1093,7 +1100,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	/** 去除重复的multise */
-	private 	List<ExonSplicingTest> combineMultiSE(List<ExonSplicingTest> lsTestResult) {
+	private List<ExonSplicingTest> combineMultiSE(List<ExonSplicingTest> lsTestResult) {
 		if (lsTestResult.get(0).getExonCluster().getParentGene().getName().contains(stopGeneName)) {
 			logger.debug("");
 		}
