@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
+import com.novelbio.analysis.annotation.cog.EnumCogType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
@@ -20,6 +21,7 @@ import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageGo2Term;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public abstract class GeneID2LsItem {
 	private static final Logger logger = LoggerFactory.getLogger(GeneID2LsItem.class);
@@ -185,6 +187,7 @@ class GeneID2LsPath extends GeneID2LsItem {
 }
 
 class GeneID2LsCog extends GeneID2LsItem {
+	private static final Logger logger = LoggerFactory.getLogger(GeneID2LsCog.class);
 	public void setGeneID(GeneID geneID, boolean blast) {
 		this.geneUniID = geneID.getGeneUniID();
 	}
@@ -204,10 +207,16 @@ class GeneID2LsCog extends GeneID2LsItem {
 		GeneID2LsCog geneID2LsCog = new GeneID2LsCog();
 		geneID2LsCog.geneUniID = geneUniID;
 		for (String cogId : getSetItemID()) {
-			String abbr = coGanno.queryCogInfoFromCogId(cogId).getCogAbbr();
-			for (char charCog : abbr.toCharArray()) {
-				geneID2LsCog.addItemID(coGanno.getCogType().toString() + ":" + charCog);
+			try {
+				String abbr = coGanno.queryCogInfoFromCogId(cogId).getCogAbbr();
+				for (char charCog : abbr.toCharArray()) {
+					geneID2LsCog.addItemID(coGanno.getCogType().toString() + ":" + charCog);
+				}
+			} catch (Exception e) {
+				logger.error("error, cogId {}, geneUniID {}", cogId, geneUniID);
+				throw new ExceptionFunctionTest("error on cogId: " + cogId + ", geneUniID: " + geneUniID, e);
 			}
+	
 		}
 		return geneID2LsCog;
 	}

@@ -41,7 +41,6 @@ public abstract class FunctionTest implements Cloneable {
 	List<Integer> lsBlastTaxId = null;
 	double blastEvalue = 1e-10;
 	
-//	Set<GeneID> setGeneIDsBG = null;
 	/** genUniID item,item格式  */
 	List<GeneID2LsItem> lsTest = null;
 	/** genUniID item,item格式<br>
@@ -232,8 +231,8 @@ public abstract class FunctionTest implements Cloneable {
 				geneId.setBlastInfo(blastEvalue, lsBlastTaxId);
 			}
 			
-			if (num % 1000 == 0) {
-				logger.info("总共{}个基因，已经找了{}个基因", numAll + "", num+ "" );
+			if (num % 2000 == 0) {
+				logger.info("all gene number is {}, already find {}", numAll + "", num+ "" );
 			}
 			GeneID2LsItem geneID2LsItem = convert2Item(geneId);
 			if (geneID2LsItem == null) {
@@ -272,10 +271,10 @@ public abstract class FunctionTest implements Cloneable {
 		ArrayList<StatisticTestResult> lsTestResult = getTestResult();
 		ArrayList<StatisticTestItem2Gene> lStatisticTestItem2Gene = new ArrayList<StatisticTestItem2Gene>();
 		
-		ArrayListMultimap<String, GeneID> hashGo2LsGene = getGo2GeneUniID();
+		ArrayListMultimap<String, GeneID> mapGo2LsGene = getGo2GeneUniID();
 		
 		for (StatisticTestResult statisticTestResult : lsTestResult) {
-			List<GeneID> lsTmpGeneUniID = hashGo2LsGene.get(statisticTestResult.getItemID());
+			List<GeneID> lsTmpGeneUniID = mapGo2LsGene.get(statisticTestResult.getItemID());
 			ArrayList<GeneID> lsFinalGeneIDs = new ArrayList<GeneID>();
 			for (GeneID geneID : lsTmpGeneUniID) {
 				//同一个geneUniID对应的不同accID

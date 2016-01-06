@@ -130,7 +130,9 @@ public class COGanno {
 	public CogInfo queryCogInfoFromCogId(String cogId) {
 		return mapCogId2CogInfo.get(cogId.toLowerCase());
 	}
-	
+	public int getCogSize() {
+	    return mapCogId2CogInfo.size();
+    }
 	/**
 	 * string[2]:<br> 
 	 * 0 cog注释的常规，就是 [A] 是 RNA processing and modification这种<br>
@@ -194,7 +196,7 @@ public class COGanno {
 		blastNBC.setResultFile(blastFileTmp);
 		blastNBC.setBlastType(blastType);
 		double evlaue = 1e-5 > evalueCutoff ? 1e-5 : evalueCutoff; 
-		blastNBC.setEvalue(1e-5);
+		blastNBC.setEvalue(evlaue);
 		blastNBC.setCpuNum(threadNum);
 		blastNBC.setQueryFastaFile(seqFastaFile);
 		blastNBC.setSubjectSeq(cogModify);

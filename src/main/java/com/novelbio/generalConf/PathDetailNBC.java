@@ -45,7 +45,7 @@ public class PathDetailNBC {
 	}
 	/** 有最后的"/" */
 	public static String getGenomePath() {
-		String genomePath = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("GenomePath");
+		String genomePath = properties.getProperty("GenomePath");
 		if (!genomePath.startsWith("/") && !genomePath.startsWith("\\")) {
 			if (!FileOperate.isFileDirectory(genomePath)) {
 				genomePath = PathDetail.getProjectPathLinux() + genomePath;
@@ -57,7 +57,7 @@ public class PathDetailNBC {
 	
 	/** 内部自动加空格 */
 	public static String getSpeciesFile() {
-		String speciesFile = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("SpeciesFile");
+		String speciesFile = properties.getProperty("SpeciesFile");
 		if (!speciesFile.startsWith("/") && !speciesFile.startsWith("\\")) {
 			if (!FileOperate.isFileExistAndBigThanSize(speciesFile, 0)) {
 				speciesFile = PathDetail.getProjectPathLinux() + speciesFile;
@@ -67,21 +67,21 @@ public class PathDetailNBC {
 	}
 	
 	public static String getMiRNADat() {
-		return PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("miRNAdat");
+		return properties.getProperty("miRNAdat");
 	}
 	
 	/** NCBI的基因互作表 */
 	public static String getNCBIinteract() {
-		return PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("NCBIinteract");
+		return properties.getProperty("NCBIinteract");
 	}
 	
 	/** COGfasta文件的路径 */
 	public static String getCogFasta(EnumCogType cogType) {
 		String cogFile = null;
 		if (cogType == EnumCogType.COG) {
-			cogFile = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("COGfasta");
+			cogFile = properties.getProperty("COGfasta");
 		} else if (cogType == EnumCogType.KOG) {
-			cogFile = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("KOGfasta");
+			cogFile = properties.getProperty("KOGfasta");
 		}
 		return cogFile;
 	}
@@ -89,9 +89,9 @@ public class PathDetailNBC {
 	public static String getCogId2Anno(EnumCogType cogType) {
 		String cogFile = null;
 		if (cogType == EnumCogType.COG) {
-			cogFile = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("cogId2Anno");
+			cogFile = properties.getProperty("cogId2Anno");
 		} else if (cogType == EnumCogType.KOG) {
-			cogFile = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("kogId2Anno");
+			cogFile = properties.getProperty("kogId2Anno");
 		}
 		return cogFile;
 	}
@@ -99,9 +99,9 @@ public class PathDetailNBC {
 	public static String getCogPro2CogId(EnumCogType cogType) {
 		String cogFile = null;
 		if (cogType == EnumCogType.COG) {
-			cogFile = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("pro2cog");
+			cogFile = properties.getProperty("pro2cog");
 		} else if (cogType == EnumCogType.KOG) {
-			cogFile = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("pro2kog");
+			cogFile = properties.getProperty("pro2kog");
 		}
 		return cogFile;
 	}
@@ -109,9 +109,9 @@ public class PathDetailNBC {
 	public static String getCogAbbr2Fun(EnumCogType cogType) {
 		String cogFile = null;
 		if (cogType == EnumCogType.COG) {
-			cogFile = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("cogAbbr2Fun");
+			cogFile = properties.getProperty("cogAbbr2Fun");
 		} else if (cogType == EnumCogType.KOG) {
-			cogFile = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("kogAbbr2Fun");
+			cogFile = properties.getProperty("kogAbbr2Fun");
 		}
 		return cogFile;
 	}
@@ -121,7 +121,7 @@ public class PathDetailNBC {
 		if (!properties.contains("Software")) {
 			return null;
 		}
-		String software = PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("Software");
+		String software = properties.getProperty("Software");
 		if (!software.startsWith("/") && !software.startsWith("\\")) {
 			if (!FileOperate.isFileExistAndBigThanSize(software, 0)) {
 				software = PathDetail.getProjectPathLinux() + software;
@@ -135,7 +135,7 @@ public class PathDetailNBC {
 	 * 1	1	RF00001	5S_rRNA	5S ribosomal RNA	Griffiths-Jones SR, Mifsud W, Gardner PP	Szymanski et al, 5S ribosomal database, PMID:11752286	\N	16.00	22.36	\N	5S ribosomal RNA (5S rRNA) is a component of the large ribosomal subunit in both prokaryotes and eukaryotes. In eukaryotes, it is synthesised by RNA polymerase III (the other eukaryotic rRNAs are cleaved from a 45S precursor synthesised by RNA polymerase I).  In Xenopus oocytes, it has been shown that fingers 4-7 of the nine-zinc finger transcription factor TFIIIA can bind to the central region of 5S RNA. Thus, in addition to positively regulating 5S rRNA transcription, TFIIIA also stabilises 5S rRNA until it is required for transcription.  	\N	cmbuild  -F CM SEED	cmcalibrate --mpi -s 1 CM	cmsearch  -Z 169604 -E 1000  --toponly  CM SEQDB	712	116760	Gene;rRNA;	Published; PMID:11283358	366	91	4365	Eukaryota; Bacteria; Viruses; Archaea;	Eukaryota; Bacteria; Viruses; Archaea;	<<<..<...<....<....<....<...<.......................................<..<..............<...<.....<....<....<.............................<..<.........................<..<...<..<...<.<..........................................................................................>.>..........>...>....>....>..................>..>.................................>..>...>......>....>..................>....>....<.......<...<...............<<............<............<.<..................................<..<.......................................................................>..>....................>.>................>............>>..............>..>....>...........>....>....>....>...>...>..>.>>.	<<<..<...<....<....<....<...<.......................................<..<..............<...<.....<....<....<.............................<..<.........................<..<...<..<...<.<..........................................................................................>.>..........>...>....>....>..................>..>.................................>..>...>......>....>..................>....>....<.......<...<...............<<............<............<.<..................................<..<.......................................................................>..>....................>.>................>............>>..............>..>....>...........>....>....>....>...>...>..>.>>.	RBY--U---R----Y----R----R---Y------C---------A--------U-------A-----C--C-------------AS---C-----M----Y----K--------A---A------------H---R--Y-------R-----------C-----C--S---G--A---U-C---Y-C-R-U-C-H----------------------------------------------------------------------------G-A--W--C----U---C----S----G-M-------A--------G--Y---U--A-----A----G---------------C--R---K------G----S--UY--------------G----G----G-------C---S--------------WGRKUA--------GU------A-----C-U---U-------G-----G-----A-------U--G--G--G-W-GA---------------------------------------------------------------C--C---WCY--U----R------G-G----A-----------A----KW------CYW-------------G--G----U-----------G----Y----U----G---Y---A--V-SCW	\N
 	 *  */
 	public static String getRfamTab() {
-		return PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("rfamTab");
+		return properties.getProperty("rfamTab");
 	}
 	/** Rfam的序列文件<br>
 	 * >RF00001;5S_rRNA;DQ397844.1/16860-16979 414005:Cenarchaeum symbiosum B<br>
@@ -143,7 +143,7 @@ public class PathDetailNBC {
 	 * @return
 	 */
 	public static String getRfamSeq() {
-		return PathDetail.getHdpHdfsHeadSymbol() + properties.getProperty("rfamSeq");
+		return properties.getProperty("rfamSeq");
 	}
 	
 	public static Map<String, String> getMapReadsQuality() {

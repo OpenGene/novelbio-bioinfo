@@ -1014,7 +1014,7 @@ public class GeneIDabs implements GeneIDInt {
 	 */
 	protected static List<AgeneUniID> getNCBIUniTax(String accID, int taxID) {
 		ArrayList<AgeneUniID> lsResult = new ArrayList<AgeneUniID>();
-		if (accID == null || accID.equals("")) {
+		if (accID == null || accID.equals("") || taxID <= 0) {
 			return lsResult;
 		}
 

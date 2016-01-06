@@ -63,7 +63,7 @@ public class SpeciesFileDelete {
 	}
 	
 	private void deleteGff(String gffDb) {
-		if (StringOperate.isRealNull(gffDb)) {
+		if (StringOperate.isRealNull(gffDb) || !speciesFile.isHaveGffDB(gffDb)) {
 			return;
 		}
 		String gffFile = speciesFile.getGffFile(gffDb);

@@ -303,6 +303,11 @@ public class SpeciesFile {
 		return Collections.unmodifiableMap(mapDB2GffTypeAndFile);
 	}
 	
+	public boolean isHaveGffDB(String gffDB) {
+		if (mapGffDBLowCase2DBNormal == null) return false;
+		return mapGffDBLowCase2DBNormal.containsKey(gffDB.toLowerCase());
+	}
+	
 	/** 从map中删除某个gffDB，不保存数据库
 	 * @param gffDb 内部会转为小写
 	 */
