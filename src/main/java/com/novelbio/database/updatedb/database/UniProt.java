@@ -45,7 +45,7 @@ public class UniProt {
 		
 		Gene_associationgoa_uniprot impgene_associationgoa_uniprot = new Gene_associationgoa_uniprot();
 		if (FileOperate.isFileDirectory(gene_associationgoa_uniprotFile)) {
-			List<String> lsFiles = FileOperate.getFoldFileNameLs(gene_associationgoa_uniprotFile);
+			List<String> lsFiles = FileOperate.getLsFoldFileName(gene_associationgoa_uniprotFile);
 			for (String goaFile : lsFiles) {
 				if (!goaFile.contains("_association.goa_")) {
 					continue;

@@ -2,14 +2,13 @@ package com.novelbio.analysis.seq.reseq;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.LocInfo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -65,13 +64,14 @@ public class ModifySeq {
 		pathInfo = FileOperate.addSep(pathInfo);
 		
 		SeqFastaHash seqModifyFastaHash = new SeqFastaHash(modifySeqFile);//h(modifySeqFile);
-		ArrayList<String[]> lsFileName = FileOperate.getFoldFileName(pathInfo, "*", "info");
+		List<String> lsFileName = FileOperate.getLsFoldFileName(pathInfo, "*", "info");
 		//modify的lst_Info信息
 		ArrayList<ModifyInfo> lsModifyInfos = new ArrayList<ModifyInfo>();
-		for (String[] strings : lsFileName) {
+		for (String filename : lsFileName) {
 			LastzAlign lastzAlign = new LastzAlign();
-			String seq = seqModifyFastaHash.getSeqAll(strings[0].toLowerCase(), true);
-			String alignFile = pathInfo + strings[0]+".info";
+			String[] ss = FileOperate.getFileNameSep(filename);
+			String seq = seqModifyFastaHash.getSeqAll(ss[0].toLowerCase(), true);
+			String alignFile = pathInfo + ss[0]+".info";
 			lastzAlign.readInfo(alignFile, seqFasta.toString().length(), seq.length());
 			lsModifyInfos.add( lastzAlign.getModifyInfo(seq) );
 		}
@@ -103,6 +103,7 @@ public class ModifySeq {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		txtStatistic.close();
 	}
 	
 	

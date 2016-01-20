@@ -61,7 +61,10 @@ public class SamIndexRefsequence {
 		return faidx;
 	}
 	
-	/** 读取产生的fai文件，并返回chrId和Length的值 */
+	/** 读取产生的fai文件，并返回chrId和Length的值
+	 * @param indexFile
+	 * @return key都为小写
+	 */
 	public static Map<String, Long> getMapChrId2Len(String indexFile) {
 		Map<String, Long> mapChrId2Len = new HashMap<>();
 		PatternOperate patternOperate = null;
@@ -93,6 +96,10 @@ public class SamIndexRefsequence {
 		return seqFile + ".fai";
 	}
 	
+	/** 产生并读取fai文件，并返回chrId和Length的值
+	 * @param indexFile
+	 * @return key都为小写
+	 */
 	public static Map<String, Long> generateIndexAndGetMapChrId2Len(String seqFile) {
 		String indexFile = SamIndexRefsequence.getIndexFile(seqFile);
 		if (!FileOperate.isFileExistAndBigThan0(indexFile)) {

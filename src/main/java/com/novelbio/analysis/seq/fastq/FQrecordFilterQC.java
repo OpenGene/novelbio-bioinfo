@@ -47,7 +47,7 @@ public class FQrecordFilterQC extends FQrecordFilter {
 
 	@Override
 	public boolean isUsing() {
-		if (mapQuality2CutoffProportion == null || mapQuality2CutoffProportion.size() == 0) {
+		if (mapQuality2CutoffProportion == null || mapQuality2CutoffProportion.isEmpty()) {
 			return false;
 		}
 		return true;

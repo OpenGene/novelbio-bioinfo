@@ -14,7 +14,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.base.PageModel;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -70,11 +69,6 @@ public class BlastFileInfo {
 			blastType = BlastType.blastn;
 		}
 		this.impotDate = Long.parseLong(properties.getProperty("impotDate"));
-//		try {
-//		   chinese = new String(chinese.getBytes("ISO-8859-1"), "GBK"); // 处理中文乱码
-//	    } catch (UnsupportedEncodingException e) {
-//		   e.printStackTrace();
-//	    }
 	}
 	
 	public void setFileName(String fileName) {
@@ -167,12 +161,6 @@ public class BlastFileInfo {
 		return subjectTaxID;
 	}
 
-	// public String getUsrid() {
-	// return usrid;
-	// }
-	// public void setUsrid(String usrid) {
-	// this.usrid = usrid;
-	// }
 	public BlastType getBlastType() {
 		return blastType;
 	}
@@ -287,7 +275,7 @@ public class BlastFileInfo {
 	 * @throws IOException
 	 */
 	public static void importAllFromMeta(String blastPath) throws IOException {
-		List<String> lsMetaFiles = FileOperate.getFoldFileNameLs(blastPath, "*", "meta");
+		List<String> lsMetaFiles = FileOperate.getLsFoldFileName(blastPath, "*", "meta");
 		for (String metaFile : lsMetaFiles) {
 			readFromMetaFile(metaFile).save(false);
 		}

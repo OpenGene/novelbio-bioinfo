@@ -1,10 +1,5 @@
 package com.novelbio.test;
 
-import com.novelbio.base.PathDetail;
-import com.novelbio.base.fileOperate.HdfsInitial;
-import com.novelbio.base.fileOperate.HdfsInitial.HdfsBaseHolderHadoop2;
-import com.novelbio.base.fileOperate.HdfsInitial.IntHdfsBaseHolder;
-import org.apache.hadoop.conf.Configuration;
 //import com.hadoop.compression.lzo.LzopCodec;   
 /**  
  * 读写Lzo文件  

@@ -67,10 +67,9 @@ public class SpeciesFileDelete {
 			return;
 		}
 		String gffFile = speciesFile.getGffFile(gffDb);
-		if (FileOperate.DeleteFileFolder(gffFile)) {
-			speciesFile.removeGffDB(gffDb);
-			speciesFile.save();
-        }
+		FileOperate.DeleteFileFolder(gffFile);
+		speciesFile.removeGffDB(gffDb);
+		speciesFile.save();
 	}
 	
 	/**
@@ -129,7 +128,7 @@ public class SpeciesFileDelete {
 	private void deleteRef(String refFileName) {
 		String refPath = FileOperate.getParentPathNameWithSep(refFileName);
 		String refName = FileOperate.getFileNameSep(refFileName)[0];
-		List<String> lsRefInfo = FileOperate.getFoldFileNameLs(refPath, refName, "*");
+		List<String> lsRefInfo = FileOperate.getLsFoldFileName(refPath, refName, "*");
 		for (String refInfo : lsRefInfo) {
 			FileOperate.DeleteFileFolder(refInfo);
 		}

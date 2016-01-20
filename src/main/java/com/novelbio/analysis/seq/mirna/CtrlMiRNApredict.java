@@ -102,9 +102,7 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 			return;
 		}
 		String novelMiRNAPathDeep = outPath + "miRNApredictDeep/";
-		if (!FileOperate.createFolders(novelMiRNAPathDeep)) {
-			throw new RuntimeException("cannot create fold: " + novelMiRNAPathDeep);
-		}
+		FileOperate.createFolders(novelMiRNAPathDeep);
 		
 		novelMiRNADeep.setSeqInput(mapPrefix2SamFile.values());
 		novelMiRNADeep.setSpeciesChrIndex(species);

@@ -21,7 +21,7 @@ public class runCompSimple {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		}//这个不乱码;
-		List<String> lsFileName = FileOperate.getFoldFileNameLs(thisFilePath, "*", "xls|txt");
+		List<String> lsFileName = FileOperate.getLsFoldFileName(thisFilePath, "*", "xls|txt");
 		String FileA=lsFileName.get(0);
 		String FileB=lsFileName.get(1);
 		System.out.println(FileA);

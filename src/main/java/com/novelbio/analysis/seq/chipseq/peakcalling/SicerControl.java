@@ -174,9 +174,7 @@ public class SicerControl {
 		String indir = FileOperate.getParentPathNameWithSep(inputBed);
 		String bedfile = FileOperate.getFileName(inputBed);
 		if (!this.dir.equals(indir)) {
-			if (!FileOperate.copyFile(inputBed, this.dir + bedfile, true)) {
-				logger.error("");
-			}
+			FileOperate.copyFile(inputBed, this.dir + bedfile, true);
 			lsCopyFiles.add(this.dir + bedfile);
 		}
 	}

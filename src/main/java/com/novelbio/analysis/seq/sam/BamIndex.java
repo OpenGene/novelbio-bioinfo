@@ -4,6 +4,7 @@ import htsjdk.samtools.BAMIndexer;
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -89,7 +90,13 @@ public class BamIndex {
     
     private static void makeIndex(SamReader reader, String output) {
     	String outTmp = FileOperate.changeFileSuffix(output, "_tmp", null);
-    	OutputStream outStream = FileOperate.getOutputStream(outTmp, true);
+    	OutputStream outStream = null;
+    	try {
+    		outStream = FileOperate.getOutputStream(outTmp);
+
+    	} catch (Exception e) {
+    		throw new ExceptionSamError("cannot make index for " + outTmp);
+    	}
     	
     	SAMFileHeader samFileHeader = reader.getSamFileHead();
         BAMIndexer indexer = new BAMIndexer(outStream, samFileHeader);
@@ -110,6 +117,12 @@ public class BamIndex {
         }
 
         indexer.finish();
+        try {
+	        outStream.close();
+        } catch (IOException e) {
+	        // TODO Auto-generated catch block
+	        e.printStackTrace();
+        }
         FileOperate.moveFile(true, outTmp, output);
     }
 

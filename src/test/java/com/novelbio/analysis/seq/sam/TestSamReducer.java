@@ -82,20 +82,16 @@ public class TestSamReducer {
 //		FileOperate.DeleteFileFolder(outFile);
 	}
 	
-	/** 测试本类最重要的功能，reducer的功能 */
+	/** 测试本类最重要的功能，reducer的功能 
+	 * @throws IOException */
 //	@Test
-	public void testReducer() {
+	public void testReducer() throws IOException {
 		String outFile = "src/test/resources/test_file/sam/mr_result_os.bam";
 		String refSeq = "src/test/resources/test_file/reference/ara/chrAll.fa";
 		
 		final SamReducer samReducer = new SamReducer();
 		InputStream inputStream = null;
-		try {
-			inputStream = FileOperate.getInputStream("/home/novelbio/git/NBCplatform/src/test/resources/test_file/sam/mr_mapping.txt");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		inputStream = FileOperate.getInputStream("/home/novelbio/git/NBCplatform/src/test/resources/test_file/sam/mr_mapping.txt");
 		
 		samReducer.setOutFileName(outFile);
 		samReducer.readInStream(refSeq, inputStream);

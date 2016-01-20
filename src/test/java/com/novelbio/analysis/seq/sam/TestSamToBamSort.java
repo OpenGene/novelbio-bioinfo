@@ -12,7 +12,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class TestSamToBamSort extends TestCase {
 	
-	public void testAddMulti() {
+	public void testAddMulti() throws IOException {
 		String inFile = "src/test/resources/test_file/sam/test.sam";
 		String outFile = "/home/novelbio/git/NBCplatform/src/test/resources/test_file/sam/test_sort.bam";
 		
@@ -20,12 +20,8 @@ public class TestSamToBamSort extends TestCase {
 		SamToBam samToBamSort = new SamToBam();
 		samToBamSort.setIsPairend(true);
 		//TODO 写一个配置文件来保存测试文件的路径
-		try {
-			samToBamSort.setInStream(FileOperate.getInputStream(inFile));
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		samToBamSort.setInStream(FileOperate.getInputStream(inFile));
+
 		samToBamSort.readInputStream();
 
 		SamToBamOutFile samWriteSort = new SamToBamOutFile();

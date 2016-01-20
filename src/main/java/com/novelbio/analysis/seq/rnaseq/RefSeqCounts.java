@@ -39,7 +39,7 @@ public class RefSeqCounts implements AlignmentRecorder {
 		List<AlignmentRecorder> lsRecorders = new ArrayList<>();
 		lsRecorders.add(refSeqCounts);
 		
-		List<String> lsFileRaw = FileOperate.getFoldFileNameLs(parentPath, "*", "bam");
+		List<String> lsFileRaw = FileOperate.getLsFoldFileName(parentPath, "*", "bam");
 		List<String> lsFile = new ArrayList<String>();
 		for (String string : lsFileRaw) {
 			if (FileOperate.getFileName(string).contains("sort")) {

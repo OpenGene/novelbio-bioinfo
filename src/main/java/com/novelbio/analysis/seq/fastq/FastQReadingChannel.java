@@ -138,8 +138,10 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 			executorPool = null;
 			queueResult = null;
 		} catch (Exception e) {
-			e.printStackTrace();
 			closeThread();
+			executorPool.shutdown();
+			executorPool = null;
+			queueResult = null;
 			throw e;
 		}
 	}
@@ -249,7 +251,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	@Override
-	protected void running() {
+	public void running() {
 		runChannel();
 	}
 	

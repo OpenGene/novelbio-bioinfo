@@ -40,7 +40,7 @@ public class PixivGetPathExistPic {
 		if (!FileOperate.isFileDirectory(savePath)) {
 			return;
 		}
-		ArrayList<String> lsFileName = FileOperate.getFoldFileNameLs(savePath, "*", "*");
+		ArrayList<String> lsFileName = FileOperate.getLsFoldFileName(savePath, "*", "*");
 		for (String string : lsFileName) {
 			ArrayList<String> lsID = patternOperate.getPat(string);
 			setExistPictureID.add(getLongID(lsID));

@@ -132,14 +132,14 @@ public class CopyFile {
 				return;
 			}
 			FileOperate.createFolders(FileOperate.getPathName(fileNew));
-			boolean isSucess = FileOperate.copyFile(fileName, fileNew, true);
-			if (isSucess) {
+			try {
+				FileOperate.copyFile(fileName, fileNew, true);
 				txtWriteCopiedFile.writefileln(fileName);
 				txtWriteCopiedFile.flush();
-			} else {
+			} catch (Exception e) {
 				txtWriteCannotCopy.writefileln("cannot copy: " + fileName);
 				txtWriteCannotCopy.flush();
-			}
+            }
 		}
 	}
 	

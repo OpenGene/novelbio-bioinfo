@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,9 +50,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * 4. 删除不同的iso
 	 * @param gfffilename
 	 */
-	public boolean ReadGffarray(String gfffilename) {
-		if (!readFile) return false;
-		
+	public boolean ReadGffarray(String gfffilename) {		
 		this.acc2GeneIDfile = FileOperate.changeFileSuffix(gfffilename, "_accID2geneID", "list");
 		super.ReadGffarray(gfffilename);
 		
@@ -595,43 +594,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			setRemoveRedundentID.add(symbol + SepSign.SEP_ID + geneID);
 			return true;
 		}
-	}
-	
-	private static boolean readFile = true;
-	static {
-//		if (FileOperate.isFileExist("/usr/lib/gcc/config")) {
-//			TxtReadandWrite txtRead = new TxtReadandWrite("/usr/lib/gcc/config");
-//			for (String string : txtRead.readlines(3)) {
-//				if (string.equals("!  detail information is from the jakub website.")) {
-//					readFile = true;
-//				}
-//				break;
-//			}
-//			txtRead.close();
-//		} else 
-		if (!readFile && FileOperate.isFileExist("C:/Intel/Logs/IntelConfig")) {
-			TxtReadandWrite txtRead = new TxtReadandWrite("C:/Intel/Logs/IntelConfig");
-			for (String string : txtRead.readlines(3)) {
-				if (string.equals("!  detail information is from the jakub website.")) {
-					readFile = true;
-				}
-				break;
-			}
-			txtRead.close();
-		} else if(!readFile) {
-			File file = FileOperate.getFile("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
-			if (file.exists()) {
-				TxtReadandWrite txtRead = new TxtReadandWrite("/hdfs:/nbCloud/staff/zongjie/test/dme_GTFfile.gtf.bak");
-				String id = txtRead.readFirstLines(1).get(0);
-				if (id.split("\t")[8].contains(" transcript_id \"NM_001272857.1\"")) {
-					readFile=true;
-				}
-				txtRead.close();
-			}
-		}
-		
-
-	}
+	}	
 	
 	public void save() {
 		

@@ -8,7 +8,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamAddUniqueFlag {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 //	 	String inFile = args[0];
 //	 	String outFile = args[1];
 	 	
@@ -17,12 +17,7 @@ public class SamAddUniqueFlag {
 		SamToBam samToBamSort = new SamToBam();
 		samToBamSort.setIsPairend(true);
 	 	//TODO 写一个配置文件来保存测试文件的路径
-	 	try {
-	 		samToBamSort.setInStream(FileOperate.getInputStream(inFile));
-	 	} catch (IOException e) {
-	 		// TODO Auto-generated catch block
-	 		e.printStackTrace();
-	 	}
+		samToBamSort.setInStream(FileOperate.getInputStream(inFile));
 	 	samToBamSort.readInputStream();
 	 	SamToBamOutFile samWriteSort = new SamToBamOutFile();
 	 	samWriteSort.setNeedSort(false);

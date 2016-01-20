@@ -111,7 +111,7 @@ public class PixivOperate extends DownloadOperate{
 	private String getSavePath(String autherName, String autherID) {
 		//TODO　每次都要读取一遍文件夹，效率不高
 		String outPath = null;
-		List<String> lsFileExist = FileOperate.getFoldFileNameLs(savePath, "*", "*");
+		List<String> lsFileExist = FileOperate.getLsFoldFileName(savePath, "*", "*");
 		Map<String, String> mapID2Path = new HashMap<>();
 		for (String path : lsFileExist) {
 			String[] ss = path.split("_");

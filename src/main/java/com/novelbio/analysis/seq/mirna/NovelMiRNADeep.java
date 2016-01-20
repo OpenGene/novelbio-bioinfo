@@ -401,14 +401,14 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 		
 		//删除3天前做的项目，但是不删除本次做的东西，以防删错
-		List<String> lsOldPrepareTmp = FileOperate.getFoldFileNameLs("", "dir_prepare_signature", null);
+		List<String> lsOldPrepareTmp = FileOperate.getLsFoldFileName("", "dir_prepare_signature", null);
 		for (String string : lsOldPrepareTmp) {
 			long time = DateUtil.getNowTimeLong() - FileOperate.getTimeLastModify(string);
 			if (time > 86400000 * 3) {
 				FileOperate.DeleteFileFolder(string);
 			}
 		}
-		lsOldPrepareTmp = FileOperate.getFoldFileNameLs("mirdeep_runs", "run", null);
+		lsOldPrepareTmp = FileOperate.getLsFoldFileName("mirdeep_runs", "run", null);
 		for (String string : lsOldPrepareTmp) {
 			if (DateUtil.getNowTimeLong() - FileOperate.getTimeLastModify(string) > 86400000 * 3) {
 				FileOperate.DeleteFileFolder(string);

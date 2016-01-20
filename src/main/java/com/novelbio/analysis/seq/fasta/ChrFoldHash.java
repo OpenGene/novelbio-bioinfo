@@ -120,7 +120,7 @@ public class ChrFoldHash extends SeqHashAbs {
 		mapChrID2RandomFile = new HashMap<>();
 		
 		lsSeqName = new ArrayList<String>();
-		return FileOperate.getFoldFileNameLs(chrFile, regGetFile, "*");
+		return FileOperate.getLsFoldFileName(chrFile, regGetFile, "*");
 	}
 	/** 设定染色体长度 */
 	private void setChrLength() throws IOException {

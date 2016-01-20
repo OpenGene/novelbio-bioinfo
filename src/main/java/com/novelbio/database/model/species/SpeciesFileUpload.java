@@ -83,9 +83,7 @@ public class SpeciesFileUpload {
 		} else {
 			speciesFileDelete.deleteFile(speciesFileType);
 		}
-		if (!FileOperate.moveFile(true, newFileTmp, newFileName)) {
-			throw new ExceptionNbcSpeciesUpload("保存出错");
-		}
+		FileOperate.moveFile(true, newFileTmp, newFileName);
 		speciesFile.addPathInfo(speciesFileType, fileName, gffType, gffDB);
 		speciesFile.save();
 	}
@@ -106,9 +104,7 @@ public class SpeciesFileUpload {
 			FileOperate.DeleteFileFolder(newFileTmp);
 			throw e;
 		}
-		if (!FileOperate.moveFile(true, newFileTmp, newFileName)) {
-			throw new ExceptionNbcSpeciesUpload("保存出错");
-		}
+		FileOperate.moveFile(true, newFileTmp, newFileName);
 		TaxInfo taxInfo = ManageSpecies.getInstance().queryTaxInfo(taxId);
 		String oldFile = ManageSpecies.getInstance().getRrnaFileWithPath(taxInfo);
 		FileOperate.DeleteFileFolder(oldFile);

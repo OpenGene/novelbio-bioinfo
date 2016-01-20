@@ -36,10 +36,10 @@ public class GlyMaxIDNCBI {
 	 * @param gbsFilePath
 	 */
 	private void readNCBI(String gbsFilePath) {
-		ArrayList<String[]> lsFileName = FileOperate.getFoldFileName(gbsFilePath, "chr\\w+", "gbs");
-		for (String[] strings : lsFileName) {
+		ArrayList<String> lsFileName = FileOperate.getLsFoldFileName(gbsFilePath, "chr\\w+", "gbs");
+		for (String fileName : lsFileName) {
 			try {
-				readNCBItxt(gbsFilePath + "/" + strings[0] + "." + strings[1]);
+				readNCBItxt(fileName);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

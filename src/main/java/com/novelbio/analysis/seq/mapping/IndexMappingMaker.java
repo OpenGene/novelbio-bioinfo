@@ -173,7 +173,7 @@ public abstract class IndexMappingMaker {
 		cmdOperate.setRedirectInToTmp(true);
 		cmdOperate.setRedirectOutToTmp(true);
 		
-		if (FileOperate.isFileFoldExist(chrFile)) {
+		if (FileOperate.isFileFolderExist(chrFile)) {
 			String runInfoPath = FileOperate.getParentPathNameWithSep(chrFile);
 			FileOperate.createFolders(runInfoPath);
 			
@@ -733,7 +733,7 @@ public static class IndexMapSplice extends IndexMappingMaker {
 	}
 	/** 生成一个文件夹，其中每条染色体一个文件 */
 	private void generateChrSepFold() {
-		if (!FileOperate.isFileFoldExist(chrSepFold)) {
+		if (!FileOperate.isFileFolderExist(chrSepFold)) {
 			FileOperate.createFolders(chrSepFold);
 			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
 			ncbIchromFaChangeFormat.setChromFaPath(chrFile, "");

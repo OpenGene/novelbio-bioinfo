@@ -94,7 +94,7 @@ public class NCBIchromFaChangeFormat {
 		if (regx.equals("")) regx = "*";
 		
 		final PatternOperate patNum = new PatternOperate("\\d+", false);
-		ArrayList<String> lsFileName = FileOperate.getFoldFileNameLs(chrFile,regx, "*");
+		ArrayList<String> lsFileName = FileOperate.getLsFoldFileName(chrFile,regx, "*");
 		//按照序号进行排序
 		//这个是为了让GATK可以顺利运行
 		Collections.sort(lsFileName, new Comparator<String>() {

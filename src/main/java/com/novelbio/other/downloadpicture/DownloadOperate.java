@@ -93,7 +93,7 @@ public abstract class DownloadOperate {
 	public static void downloadFileAll(String path, boolean isPixiv) {
 		String fileAlreadyRun = getTxtAlreadyReadFile(path, isPixiv);
 		Set<String> setUrlRead = getUrlAlready(fileAlreadyRun);
-		List<String> lsFold = FileOperate.getFoldFileNameLs(path, null, null);
+		List<String> lsFold = FileOperate.getLsFoldFileName(path, null, null);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(fileAlreadyRun, true, true);
 		HttpFetch webFetch = HttpFetch.getInstance();
 		for (String foldName : lsFold) {

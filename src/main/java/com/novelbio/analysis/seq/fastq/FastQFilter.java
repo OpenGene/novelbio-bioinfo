@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.fastq;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,6 +35,7 @@ public class FastQFilter {
 	public void setQualityFilter(String QUALITY) {
 		if (QUALITY.toLowerCase().contains(FastQ.FASTQ_QUALITY_CHANGE_TO_BEST.toLowerCase())) {
 			fQrecordFilterModifyQuality.setModifyQuality(true);
+			mapFastQFilter = new HashMap<>();
 			return;
 		}
 		mapFastQFilter = FastQ.getMapQuality2Num(QUALITY);

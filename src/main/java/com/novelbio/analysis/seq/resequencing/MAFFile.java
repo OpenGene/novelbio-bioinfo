@@ -1,8 +1,12 @@
 package com.novelbio.analysis.seq.resequencing;
 
+import htsjdk.variant.variantcontext.VariantContext;
+import htsjdk.variant.vcf.VCFFileReader;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -10,9 +14,6 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.Species;
-
-import htsjdk.variant.variantcontext.VariantContext;
-import htsjdk.variant.vcf.VCFFileReader;
 
 public class MAFFile {
 
@@ -30,16 +31,13 @@ public class MAFFile {
 	public static void main(String[] args) {
 
 		final String vcfFilePath = "/home/novelbio/VCF";
-		ArrayList<String[]> lsFile = new ArrayList<>();
-		lsFile = FileOperate.getFoldFileName(vcfFilePath, "format", "vcf");
+		List<String> lsFile = FileOperate.getLsFoldFileName(vcfFilePath, "format", "vcf");
 		ExecutorService pool = Executors.newFixedThreadPool(5);
 		int fileno = 1;
-		for (String[] arrFile : lsFile) {
-			final String realFileName = arrFile[0];
+		for (final String filePath : lsFile) {
 			Runnable runnable = new Runnable() {
 				@Override
 				public void run() {
-					String filePath = vcfFilePath + "/" + realFileName + ".vcf";
 					String mafFilePath = null;
 					TxtReadandWrite txtWrite = null;
 					try {

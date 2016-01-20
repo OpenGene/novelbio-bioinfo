@@ -1,6 +1,7 @@
 package com.novelbio.analysis.annotation.pathway.kegg.kGML2DB;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -41,10 +42,10 @@ public class KGML2DB
 	 */
 	public static void readKGML(String filePath)
 	{
-		ArrayList<String[]> lsKGML=FileOperate.getFoldFileName(filePath, "*", "xml");
+		List<Path> lsKGML=FileOperate.getLsFoldPath(filePath, "*", "xml");
 		Serializer serializer = new Persister();
-		for (int i = 0; i < lsKGML.size(); i++) {
-			File source = new File(filePath+"/"+lsKGML.get(i)[0]+"."+lsKGML.get(i)[1]);
+		for (Path path : lsKGML) {
+			File source = new File(filePath+"/"+FileOperate.getFileName(path));
 			if (source.getName().equals("hsa05034.xml")) {
 				logger.info("stop");
 			}
@@ -56,7 +57,7 @@ public class KGML2DB
 				logger.error("文件出错："+source.getAbsolutePath());
 			}
 			kgml2DB(example);
-		}
+        }
 	}
 	
 	public static void kgml2DB(KGML kgml) 

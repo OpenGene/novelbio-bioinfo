@@ -10,8 +10,8 @@ import htsjdk.samtools.reference.ReferenceSequenceFile;
 import htsjdk.samtools.reference.ReferenceSequenceFileFactory;
 import htsjdk.samtools.util.StringUtil;
 
-import java.io.File;
 import java.math.BigInteger;
+import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -26,8 +26,8 @@ public class FastaDictMake {
 	String reference;
 	String outDict;
 	
-    public File REFERENCE;
-    public File OUTPUT;
+    public Path REFERENCE;
+    public Path OUTPUT;
     
 	private final MessageDigest md5;
 	
@@ -57,6 +57,18 @@ public class FastaDictMake {
 	            throw new ExceptionFastq("MD5 algorithm not found", e);
 	        }
 	}
+	
+	public FastaDictMake(String reference) {
+		this.reference = reference;
+		this.outDict = FileOperate.changeFileSuffix(reference, "", "dict");
+		
+		  try {
+	            md5 = MessageDigest.getInstance("MD5");
+	        } catch (NoSuchAlgorithmException e) {
+	            throw new ExceptionFastq("MD5 algorithm not found", e);
+	        }
+	}
+	
     /**
      * Do the work after command line has been parsed.
      * RuntimeException may be thrown by this method, and are reported appropriately.
@@ -71,8 +83,8 @@ public class FastaDictMake {
 			return true;
 		}
 		FileOperate.delFile(outDict);
-		REFERENCE = FileOperate.getFile(reference);
-		OUTPUT = FileOperate.getFile(outDict);
+		REFERENCE = FileOperate.getPath(reference);
+		OUTPUT = FileOperate.getPath(outDict);
 		try {
 			doWork();
 			return true;
@@ -88,16 +100,21 @@ public class FastaDictMake {
      * @return program exit status.
      */
     protected int doWork() {
-        if (OUTPUT.exists()) {
-            throw new ExceptionFastq(OUTPUT.getAbsolutePath() +
+        if (FileOperate.isFileExist(OUTPUT)) {
+            throw new ExceptionFastq(OUTPUT.toString() +
                     " already exists.  Delete this file and try again, or specify a different output file.");
         }
         final SAMSequenceDictionary sequences = makeSequenceDictionary(REFERENCE);
         final SAMFileHeader samHeader = new SAMFileHeader();
         samHeader.setSequenceDictionary(sequences);
-        final SAMFileWriter samWriter = new SAMFileWriterFactory().makeSAMWriter(samHeader, false, OUTPUT);
-        samWriter.close();
-        return 0;
+        try {
+            final SAMFileWriter samWriter = new SAMFileWriterFactory().makeSAMWriter(samHeader, false, FileOperate.getOutputStream(OUTPUT));
+            samWriter.close();
+            return 0;  
+        } catch (Exception e) {
+        	  return -1;
+        }
+
     }
 
 
@@ -106,7 +123,7 @@ public class FastaDictMake {
      * @param referenceFile fasta or fasta.gz
      * @return SAMSequenceRecords containing info from the fasta, plus from cmd-line arguments.
      */
-	SAMSequenceDictionary makeSequenceDictionary(final File referenceFile) {
+	SAMSequenceDictionary makeSequenceDictionary(final Path referenceFile) {
         final ReferenceSequenceFile refSeqFile =
                 ReferenceSequenceFileFactory.getReferenceSequenceFile(referenceFile, TRUNCATE_NAMES_AT_WHITESPACE);
         ReferenceSequence refSeq;
