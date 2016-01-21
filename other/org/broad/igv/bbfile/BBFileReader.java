@@ -26,13 +26,13 @@
 package org.broad.igv.bbfile;
 
 import htsjdk.samtools.seekablestream.SeekableFileStream;
-import htsjdk.samtools.seekablestream.SeekableHDFSstream;
 import htsjdk.samtools.seekablestream.SeekableStream;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
@@ -133,13 +133,12 @@ public class BBFileReader {
     /** 已经修正为可直接读取hdfs文件的形式 */
     public BBFileReader(String path) throws IOException {
     	File file = FileOperate.getFile(path);
-    	SeekableStream seekableStream = null;
-    	if (file instanceof FileHadoop) {
-    		seekableStream = new SeekableHDFSstream((FileHadoop) file);
-		} else {
-			seekableStream = new SeekableFileStream(file);
-		}
-    	read(path, seekableStream);
+    	try {
+    		SeekableFileStream seekableStream = new SeekableFileStream(file);
+        	read(path, seekableStream);
+        } catch (Exception e) {
+	        // TODO: handle exception
+        }
     }
     
     public BBFileReader(String path, SeekableStream stream) {
