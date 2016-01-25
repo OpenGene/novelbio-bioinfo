@@ -9,11 +9,11 @@ import java.util.Properties;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.analysis.annotation.blast.BlastType;
-import com.novelbio.base.PageModel;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -229,8 +229,8 @@ public class BlastFileInfo {
 		return repo().findBlastFileById(id);
 	}
 
-	public static Page<BlastFileInfo> findAll(PageModel pageModel) {
-		return repo().findAll(pageModel.bePageable());
+	public static Page<BlastFileInfo> findAll(Pageable pageable) {
+		return repo().findAll(pageable);
 	}
 
 	public static List<BlastFileInfo> findAll() {
