@@ -325,6 +325,9 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public void writeToFile(GffType gffType, List<String> lsChrID, String outFile) {
 		gffHashGene.writeToFile(gffType, lsChrID, outFile, GFFDBNAME);
 	}
+	public void writeToFile(GffType gffType, String outFile) {
+		gffHashGene.writeToFile(gffType, null, outFile, GFFDBNAME);
+	}
 	@Override
 	public void writeToGTF(List<String> lsChrID, String GTFfile, String title) {
 		gffHashGene.writeToGTF(lsChrID, GTFfile, title);
