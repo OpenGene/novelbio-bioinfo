@@ -625,8 +625,6 @@ public static class IndexMapSplice extends IndexMappingMaker {
 	protected static int maxSeqNum = 4000;
 	private static int minLen = 1000;
 	
-	IndexMappingMaker indexBowtie;
-
 	Set<String> setChrInclude;
 	String chrRaw;
 	String chrSepFold;
@@ -658,15 +656,9 @@ public static class IndexMapSplice extends IndexMappingMaker {
 	 * @return
 	 */
 	protected void makeIndex() {
-		indexBowtie = IndexMappingMaker.createIndexMaker(SoftWare.bowtie);
 		generateChrIndex();
 		generateChrSepFold();
-		indexBowtie.setChrIndex(chrFile);
-		if (!indexBowtie.isIndexFinished()) {
-			indexBowtie.setLock(isLock);
-			indexBowtie.IndexMake();
-		}
-		generateFinishFlag();
+		super.makeIndex();
 	}
 	
 	
@@ -686,8 +678,11 @@ public static class IndexMapSplice extends IndexMappingMaker {
 	
 	@Override
 	protected List<String> getLsCmdIndex() {
-		//TODO 用不到了，因为 makeIndex 已经被重写了
-		return null;
+		List<String> lsCmd = new ArrayList<>();
+		lsCmd.add(exePath + "src/MapSplice/bowtie-build");
+		lsCmd.add(chrFile);
+		lsCmd.add(IndexBowtie.getChrNameWithoutSuffix(chrFile));
+		return lsCmd;
 	}
 	
 	@Override
@@ -756,10 +751,6 @@ public static class IndexMapSplice extends IndexMappingMaker {
 		return chrFileName;
 	}
 	
-	public String getVersionBowtie() {
-		return indexBowtie.getVersion();
-	}
-	
 	public String getMapVersion() {
 		String version = null;
 		List<String> lsCmdVersion = new ArrayList<>();
@@ -769,12 +760,12 @@ public static class IndexMapSplice extends IndexMappingMaker {
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.setTerminateWriteTo(false);
 		cmdOperate.setGetLsStdOut();
-		cmdOperate.runWithExp("get bowtie version error:");
-		List<String> lsInfo = cmdOperate.getLsStdOut();
+		cmdOperate.run();
+		List<String> lsInfo = cmdOperate.getLsErrOut();
 		try {
-			version = lsInfo.get(0).toLowerCase().split("MapSplice")[1].trim();
+			version = lsInfo.get(0).split("MapSplice")[1].trim();
 		} catch (Exception e) {
-			throw new ExceptionCmd("cannot get bowtie2 version:");
+			throw new ExceptionCmd("cannot get mapsplice version" , e);
 		}
 		return version;
 	}

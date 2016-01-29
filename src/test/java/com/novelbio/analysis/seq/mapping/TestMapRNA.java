@@ -85,7 +85,7 @@ public class TestMapRNA {
 		FileOperate.DeleteFileFolder(outPath);
 	}
 	
-//	@Test
+	@Test
 	public void testMapSplice() {
 		copyFile();
 
@@ -107,7 +107,7 @@ public class TestMapRNA {
 		deleteFolder();
 	}
 	
-	@Test
+//	@Test
 	public void testTophat() {
 		copyFile();
 		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
@@ -139,7 +139,7 @@ public class TestMapRNA {
 		FileOperate.DeleteFileFolder(gtfFile.replace(".gz", ""));
 	}
 	
-	@Test
+//	@Test
 	public void testTophatWithGffChrAbs() {
 		copyFile();
 		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
@@ -169,7 +169,7 @@ public class TestMapRNA {
 		FileOperate.DeleteFileFolder(gtfFile.replace(".gz", ""));
 	}
 	
-	@Test
+//	@Test
 	public void testTophat_without_GTF() {
 		copyFile();
 		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
@@ -191,7 +191,7 @@ public class TestMapRNA {
 		deleteFolder();
 	}
 	
-	@Test
+//	@Test
 	public void testTophat2() {
 		copyFile();
 		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");

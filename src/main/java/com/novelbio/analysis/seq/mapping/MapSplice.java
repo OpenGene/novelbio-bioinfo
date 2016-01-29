@@ -302,7 +302,8 @@ public class MapSplice implements MapRNA {
 		ArrayOperate.addArrayToList(lsCmd, getSeedLen());
 		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
 		lsCmd.addAll(getIndelLen());
-		lsCmd.add("--non-canonical");
+		lsCmd.add("--non-canonical-double-anchor");
+		lsCmd.add("--non-canonical-single-anchor");
 		if (fusion) {
 			lsCmd.add("--fusion");
 		}
@@ -317,7 +318,7 @@ public class MapSplice implements MapRNA {
     }
 	@Override
 	public SoftWare getSoftWare() {
-		return SoftWare.bowtie;
+		return SoftWare.mapsplice;
 	}
 	
 	@Override
@@ -326,7 +327,6 @@ public class MapSplice implements MapRNA {
 		List<String> lsCmd = new ArrayList<>();
 		
 		lsCmd.add("MapSplice version: " + indexMaker.getVersion());
-		lsCmd.add(getSoftWare().toString() + " version: " + indexMaker.getVersionBowtie());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {
