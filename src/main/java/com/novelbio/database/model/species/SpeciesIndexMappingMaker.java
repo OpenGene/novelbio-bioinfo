@@ -114,7 +114,7 @@ public class SpeciesIndexMappingMaker {
         }
 	}
 	
-	private void makeIndexRef(SoftWare softWare, boolean isAllIso) {
+	public void makeIndexRef(SoftWare softWare, boolean isAllIso) {
 		String refAllIso = speciesFile.getRefSeqFile(isAllIso, false);
 		EnumSpeciesFile refFile = isAllIso? EnumSpeciesFile.refseqAllIsoRNA: EnumSpeciesFile.refseqOneIsoRNA;
 		String refAllIndex = getSequenceIndex(refFile, softWare);
@@ -144,7 +144,7 @@ public class SpeciesIndexMappingMaker {
 	}
 	
 	/** 对染色体文件建立索引 */
-	protected void makeIndexChr(SoftWare softWare) {
+	public void makeIndexChr(SoftWare softWare) {
 		String chrFile = speciesFile.getChromSeqFile();
 		String chrFileIndex = getSequenceIndex(EnumSpeciesFile.chromSeqFile, softWare);
 		

@@ -85,7 +85,7 @@ public class TestMapRNA {
 		FileOperate.DeleteFileFolder(outPath);
 	}
 	
-	@Test
+//	@Test
 	public void testMapSplice() {
 		copyFile();
 
@@ -213,8 +213,30 @@ public class TestMapRNA {
 
 		lsLeftFq.clear();
 		lsRightFq.clear();
-		deleteFolder();
+//		deleteFolder();
 	}
 	
+	@Test
+	public void testMapHisat() {
+		copyFile();
+		CmdOperate.setTmpPath("/home/novelbio/tmp/indexHisat2");
+
+		MapHisat mapRNA = (MapHisat)MapRNAfactory.generateMapRNA(SoftWare.hisat2);
+		mapRNA.setExePathHist("/home/novelbio/下载/hisat2-2.0.1-beta/");
+		mapRNA.setRefIndex(referenceFile);
+		mapRNA.setGtf_Gene2Iso(gtfFile.replace(".gz", ""));
+		mapRNA.setOutPathPrefix(outPath + SoftWare.hisat2);
+		mapRNA.setLeftFq(lsLeftFq);
+		mapRNA.setRightFq(lsRightFq);
+		mapRNA.setThreadNum(3);
+		
+		mapRNA.getIndexMappingMaker().setLock(false);
+		mapRNA.mapReads();
+		Assert.assertTrue(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
+		//TODO 看mapping率和uniquemapping率之类的对不对
+		lsLeftFq.clear();
+		lsRightFq.clear();
+		deleteFolder();
+	}
 	
 }

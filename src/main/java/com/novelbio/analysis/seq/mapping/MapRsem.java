@@ -9,22 +9,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.GeneExpTable;
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexRsem;
 import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
 import com.novelbio.database.model.species.SpeciesFileExtract;
 /**
  * 还没返回结果的bam文件<p>
@@ -67,6 +60,18 @@ public class MapRsem implements MapRNA {
 		softWareInfoBowtie.setName(SoftWare.bowtie);
 		this.exePathRsem = softWareInfoRsem.getExePathRun();
 		this.exePathBowtie = softWareInfoBowtie.getExePathRun();
+	}
+	
+	@Override
+	public void setIntronLenMin(int intronLenMin) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setIntronLenMax(int intronLenMax) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	/**

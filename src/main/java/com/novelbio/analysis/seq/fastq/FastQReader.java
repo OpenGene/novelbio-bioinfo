@@ -543,7 +543,7 @@ class FastQReader implements Closeable {
 			return offset;
 		}
 		logger.error(txtSeqFile.getFileName() + " has a problem, FastQ can not gess the fastQ format, set the format as FASTQ_ILLUMINA_OFFSET");
-		// 都没判断出来，猜测为illumina格式
+		// 都没判断出来，猜测为illumina新格式
 		return FASTQ_SANGER_OFFSET;
 	}
 	

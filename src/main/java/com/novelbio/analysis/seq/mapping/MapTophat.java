@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexTophat;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
@@ -93,9 +92,7 @@ public class MapTophat implements MapRNA {
 	boolean mapUnmapedReads = false;
 	/** 比对到的index */
 	String bwaIndex;
-	
-	HashMultimap<String, String> mapPrefix2Result = HashMultimap.create();
-	
+		
 	/** 第二次mapping所使用的命令 */
 	List<String> 	lsCmdMapping2nd = new ArrayList<>();
 		
@@ -220,6 +217,7 @@ public class MapTophat implements MapRNA {
 	 * @param fqFile
 	 */
 	public void setLeftFq(List<FastQ> lsLeftFastQs) {
+		this.lsLeftFq.clear();
 		if (lsLeftFastQs == null) return;
 		this.lsLeftFq = lsLeftFastQs;
 	}
@@ -228,8 +226,8 @@ public class MapTophat implements MapRNA {
 	 * @param fqFile
 	 */
 	public void setRightFq(List<FastQ> lsRightFastQs) {
+		this.lsRightFq.clear();
 		if (lsRightFastQs == null) return;
-		
 		this.lsRightFq = lsRightFastQs;
 	}
 	
@@ -627,14 +625,14 @@ public class MapTophat implements MapRNA {
 		if (lsIntronSortedS2M.size() < 50) {
 			return result;
 		}
-		int intronLenMin = lsIntronSortedS2M.get(50);
+//		int intronLenMin = lsIntronSortedS2M.get(50);
 		int intronLenMax = lsIntronSortedS2M.get(lsIntronSortedS2M.size() - 10);
-		if (intronLenMin < result[0]) {
-			result[0] = intronLenMin;
-		}
-		if (intronLenMin < 20) {
-			result[0] = 20;
-		}
+//		if (intronLenMin < result[0]) {
+//			result[0] = intronLenMin;
+//		}
+//		if (intronLenMin < 20) {
+//			result[0] = 20;
+//		}
 		if (intronLenMax*2 < result[1]) {
 			result[1] = intronLenMax*2;
 		}

@@ -2,8 +2,6 @@ package com.novelbio.database.service.servcosmic;
 
 import java.util.List;
 
-import org.apache.jasper.tagplugins.jstl.core.Remove;
-
 import com.novelbio.database.domain.cosmic.CompleteExport;
 import com.novelbio.database.mongorepo.cosmic.RepoCompleteExport;
 import com.novelbio.database.service.SpringFactoryBioinfo;

@@ -3,13 +3,10 @@ package com.novelbio.database.updatedb.omim;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.collections.map.HashedMap;
-
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.omim.GeneMIM;
 import com.novelbio.database.domain.omim.MIMInfo;
 import com.novelbio.database.domain.omim.MorbidMap;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modomim.MgmtGeneMIMInfo;
 import com.novelbio.database.model.modomim.MgmtMorbidMap;
 import com.novelbio.database.model.modomim.MgmtOMIMUnit;

@@ -355,4 +355,19 @@ public class FastQ {
 	public static Map<Integer, Double> getMapQuality2Num(String QUALITY) {
 		return PathDetailNBC.getMapQuality2Num(QUALITY);
 	}
+	
+	/** 给定一系列fastq文件，判定这些文件的readsquality是否一致并返回，如果不一致则抛出异常 */
+	public static int getFastqOffset(List<FastQ> lsFastq) {
+		if (lsFastq == null || lsFastq.isEmpty()) {
+			throw new ExceptionFastq("no fastq input file");
+		}
+		int offset = lsFastq.get(0).getOffset();
+		for (int i = 1; i < lsFastq.size(); i++) {
+			FastQ fastQ = lsFastq.get(i);
+			if (offset != fastQ.getOffset()) {
+				throw new ExceptionFastq("fastq quality is not consistent " + lsFastq.get(0).getReadFileName() + " is phred" + offset + " while " +  fastQ.getReadFileName() + " is phred" + offset);
+			}
+		}
+		return offset;
+	}
 }

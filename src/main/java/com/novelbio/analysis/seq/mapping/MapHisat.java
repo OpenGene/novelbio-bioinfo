@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.mapping;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -8,18 +9,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexHisat2;
-import com.novelbio.base.PathDetail;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamToBamSort;
 import com.novelbio.base.SepSign;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -166,14 +169,11 @@ Options (defaults in parentheses):
  */
 public class MapHisat implements MapRNA {
 	private static Logger logger = LoggerFactory.getLogger(MapHisat.class);
+	
 	/** mapping文件的后缀，包含 ".bam" 字符串 */
 	public static final String MapSpliceSuffix = "_hisat2.bam";
 	
-	public static final int InputFileFormat_FQ = 21;
-	public static final int InputFileFormat_Qseq = 22;
-	public static final int InputFileFormat_FA = 23;
-	public static final int InputFileFormat_OneSeqPLine = 24;
-	
+	private String exePathHist;
 	/** 
 	 * Presets:
 	 * For --end-to-end: <br>
@@ -182,42 +182,37 @@ public class MapHisat implements MapRNA {
 	 *  --sensitive            -D 15 -R 2 -N 0 -L 22 -i S,1,1.15 (default) <br>
 	 *  --very-sensitive       -D 20 -R 3 -N 0 -L 20 -i S,1,0.50 
 	 *  */
-	int sensitive = MapBowtie2.Sensitive_Sensitive;
-	
-	/** 输入文件格式，一共可以是四种 <br>
-	 * 1. FASTQ <br>
-	 * 2. Illumina's qseq 格式 <br>
-	 * 3. (multi-) FASTA .fa/.mfa <br>
-	 * 4. one-sequence-per-line  <br>
-	 *  */
-	int inputFileFormat = InputFileFormat_FQ;
+	private int sensitive = MapBowtie2.Sensitive_Sensitive;
 	
 	/** skip 输入文件的前几个 reads或者pairs */
-	int skipReads = 0;
-	/** trim <int> bases from 5'/left end of reads (0) */
-	int trim5 = 0;
-	/** trim <int> bases from 3'/right end of reads (0) */
-	int trim3 = 0;
+	private int skipReads = 0;
+	/** trim bases from 5'/left end of reads (0) */
+	private int trim5 = 0;
+	/** trim bases from 3'/right end of reads (0) */
+	private int trim3 = 0;
 	/** qualities 是否是 Phred+64 如果值为 false,则表示qualities是 Phred+33 */
-	boolean isPhred64 = false;
+	private int fastqOffset = 0;
 		
-	int intronLenMin = 50;
-	int intronLenMax = 500000;
+	private int intronLenMin = 20;
+	private int intronLenMax = 500000;
 	
 	/** 最多比对到几个位置，0的话mapquality就有意义，我们这里默认为3 */
-	int alignNum = 3;
+	private int alignNum = 3;
 	
-	String exePathHist;
+	private int threadNum = 8;
 	
-	int threadNum = 8;
+	private boolean downstreamTranscriptomeAssembly = true;
 	
-	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
+	private StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	
-	List<FastQ> lsLeftFq = new ArrayList<>();
-	List<FastQ> lsRightFq = new ArrayList<>();
+	private List<FastQ> lsLeftFq = new ArrayList<>();
+	private List<FastQ> lsRightFq = new ArrayList<>();
 	
-	String spliceTxt;
-	String outputSam = "";
+	private 	String spliceTxt;
+	/** 新的splice位点 */
+	private String novelSplice;
+	
+	private String outputSam = "";
 	
 	IndexHisat2 indexHisat2 = (IndexHisat2)IndexMappingMaker.createIndexMaker(SoftWare.hisat2);
 	
@@ -225,6 +220,90 @@ public class MapHisat implements MapRNA {
 		SoftWareInfo softMapSplice = new SoftWareInfo();
 		softMapSplice.setName(SoftWare.hisat2);
 		this.exePathHist = softMapSplice.getExePathRun();
+		indexHisat2.setExePath(exePathHist);
+	}
+	protected void setExePathHist(String exePathHist) {
+		this.exePathHist = exePathHist;
+		indexHisat2.setExePath(exePathHist);
+	}
+	/** trim bases from 5'/left end of reads (0) */
+	public void setTrim3(int trim3) {
+		this.trim3 = trim3;
+	}
+	/** trim bases from 5'/left end of reads (0) */
+	public void setTrim5(int trim5) {
+		this.trim5 = trim5;
+	}
+	public void setSkipReads(int skipReads) {
+		this.skipReads = skipReads;
+	}
+	
+	public void setIntronLenMin(int intronLenMin) {
+		this.intronLenMin = intronLenMin;
+	}
+	public void setIntronLenMax(int intronLenMax) {
+		this.intronLenMax = intronLenMax;
+	}
+	
+	public void setSpliceTxt(String spliceTxt) {
+		this.spliceTxt = spliceTxt;
+	}
+	/**
+	 * Report alignments tailored for transcript assemblers including StringTie. 
+	 * With this option, HISAT2 requires longer anchor lengths for de novo discovery
+	 * of splice sites. This leads to fewer alignments with short-anchors, which
+	 * helps transcript assemblers improve significantly in computationa and
+	 * memory usage.
+	 * @param downstreamTranscriptomeAssembly
+	 */
+	public void setDownstreamTranscriptomeAssembly(boolean downstreamTranscriptomeAssembly) {
+		this.downstreamTranscriptomeAssembly = downstreamTranscriptomeAssembly;
+	}
+	
+	@Override
+	public void setRefIndex(String chrFile) {
+		indexHisat2.setChrIndex(chrFile);
+	}
+	
+	/** 输出文件 */
+	@Override
+	public void setOutPathPrefix(String outPathPrefix) {
+		this.outputSam = FileOperate.changeFileSuffix(outPathPrefix, "", "bam");
+	}
+
+	@Override
+	public void setThreadNum(int threadNum) {
+		this.threadNum = threadNum;
+	}
+
+	@Override
+	public void setStrandSpecifictype(StrandSpecific strandSpecifictype) {
+		this.strandSpecifictype = strandSpecifictype;
+	}
+	
+	/** qualities 是否是 Phred+64 如果值为 false,则表示qualities是 Phred+33 */
+	public void setPhred64(boolean isPhred64) {
+		fastqOffset = isPhred64 ? FastQ.FASTQ_ILLUMINA_OFFSET : FastQ.FASTQ_SANGER_OFFSET;
+	}
+	
+	/** 默认sensitive */
+	public void setSensitiveLevel(int sensitive) {
+		this.sensitive = sensitive;
+	}
+	
+	/** 设定splicesite和min-intronLen，max-intronLen */
+	@Override
+	public void setGtf_Gene2Iso(String gtfFile) {
+		if (!FileOperate.isFileExistAndBigThan0(gtfFile)) return;
+
+		GffHashGene gffHashGene = new GffHashGene(gtfFile);
+		spliceTxt = FileOperate.getPathName(outputSam) + FileOperate.getFileName(gffHashGene.getGffFilename());
+		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
+		writeSpliceTxt(gffHashGene, spliceTxt);
+		
+//		int[] intronMinMax = MapTophat.getIntronMinMax(gffHashGene, intronLenMin, intronLenMax);
+//		intronLenMin = intronMinMax[0];
+//		intronLenMax = intronMinMax[1];
 	}
 	
 	@Override
@@ -234,7 +313,7 @@ public class MapHisat implements MapRNA {
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		return lsCmd;
 	}
-	
+
 	private List<String> getLsCmd() {
 		// linux命令如下
 		/**
@@ -251,43 +330,57 @@ public class MapHisat implements MapRNA {
 		 *  PS: <m1>, <m2>, <r> can be comint sensitive = Sensitive_Sensitive;ma-separated lists (no whitespace) and can be specified many times.  E.g. '-U file1.fq,file2.fq -U file3.fq'.
 		 */
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(exePathHist + "hisat2"); 
-		ArrayOperate.addArrayToList(lsCmd, getIndex());
-		ArrayOperate.addArrayToList(lsCmd, getInputFileFormat());
-		lsCmd.add(getPhred());
-		
-		ArrayOperate.addArrayToList(lsCmd, getStrandSpecifictype());
+		lsCmd.add(exePathHist + "hisat2");
+		lsCmd.add(getFastqOffset());
+		ArrayOperate.addArrayToList(lsCmd, getOutNovelSpliceParam());
+		ArrayOperate.addArrayToList(lsCmd, getTrim5());
+		ArrayOperate.addArrayToList(lsCmd, getTrim3());
+		ArrayOperate.addArrayToList(lsCmd, getSkipReads());
 		ArrayOperate.addArrayToList(lsCmd, getSensitive());
 		ArrayOperate.addArrayToList(lsCmd, getAlignNum());
-		ArrayOperate.addArrayToList(lsCmd, getOutSam());
+		ArrayOperate.addArrayToList(lsCmd, getDta());
+		
+		ArrayOperate.addArrayToList(lsCmd, getIntronlen());
+		ArrayOperate.addArrayToList(lsCmd, getThread());
+		
+		ArrayOperate.addArrayToList(lsCmd, getNovelSpliceSiteInput());
+		ArrayOperate.addArrayToList(lsCmd, getSpliceSiteInput());
+		
+		ArrayOperate.addArrayToList(lsCmd, getStrandSpecifictype());
+		ArrayOperate.addArrayToList(lsCmd, getIndex());
+		ArrayOperate.addArrayToList(lsCmd, getFqFiles());
 		return lsCmd;
 	}
+
+	private String getFastqOffset() {
+		if (fastqOffset == 0) {
+			ArrayList<FastQ> lsFastQs = new ArrayList<>();
+			lsFastQs.addAll(lsLeftFq);
+			lsFastQs.addAll(lsRightFq);
+			fastqOffset = FastQ.getFastqOffset(lsFastQs);
+		}
+		return fastqOffset == FastQ.FASTQ_ILLUMINA_OFFSET? "--phred64" : "--phred33";
+	}
 	
+	
+	private String[] getTrim5() {
+		return trim5 > 0? new String[]{"--trim5", trim5 + ""} : null;
+	}
+	private String[] getTrim3() {
+		return trim3 > 0? new String[]{"--trim3", trim5 + ""} : null;
+	}
+	
+	private String[] getSkipReads() {
+		return skipReads > 0? new String[]{"--skip", skipReads + ""} : null;
+	}
+
 	private String[] getIndex() {
 		return new String[]{"-x", indexHisat2.getIndexName()};
 	}
 	
-	private String[] getInputFileFormat() {
-		if (inputFileFormat == InputFileFormat_FQ) {
-			return new String[]{"-q"};
-		} else if (inputFileFormat == InputFileFormat_Qseq) {
-			return new String[]{"--qseq"};
-		} else if (inputFileFormat == InputFileFormat_FA) {
-			return new String[]{"-f"};
-		} else if (inputFileFormat == InputFileFormat_OneSeqPLine) {
-			return new String[]{"-r"};
-		}
-		return new String[]{""};
-	}
-	
-	private String getPhred() {
-		for (FastQ fastQ : lsLeftFq) {
-			if (fastQ.getOffset() == FastQ.FASTQ_ILLUMINA_OFFSET) {
-				return "--phred64";
-			}
-		}
-		return "--phred33";
-	}
+//	private String[] getInputFileFormat() {
+//		return new String[]{"-q"};
+//	}
 	
 	private String[] getSensitive() {
 		if(sensitive == MapBowtie2.Sensitive_Very_Fast) {
@@ -311,52 +404,56 @@ public class MapHisat implements MapRNA {
 		return new String[]{"-k", alignNum + ""};
 	}
 	
-	/** 是否可以用流输出呢 */
-	//TODO 是否可以用流输出呢
-	private String[] getOutSam() {
-		return new String[]{"-S",outputSam};
+	private String[] getDta() {
+		return downstreamTranscriptomeAssembly? new String[]{"--dta"} : new String[]{null};
+	}
+
+	private String[] getOutNovelSpliceParam() {
+		return new String[]{"--novel-splicesite-outfile", getNovelSpliceSiteFile()};
 	}
 	
-	@Override
-	public void setRefIndex(String chrFile) {
-		indexHisat2.setChrIndex(chrFile);
+	private String getNovelSpliceSiteFile() {
+		return FileOperate.changeFileSuffix(outputSam, ".novel.splicesite", "txt");
 	}
-
-	@Override
-	public void setOutPathPrefix(String outPathPrefix) {
-		this.outputSam = FileOperate.changeFileSuffix(outPathPrefix, "", "bam");
-	}
-
-	@Override
-	public void setIndelLen(int indelLen) { }
-
-	@Override
-	public void setThreadNum(int threadNum) {
-		this.threadNum = threadNum;
-	}
-
-	@Override
-	public void setStrandSpecifictype(StrandSpecific strandSpecifictype) {
-		this.strandSpecifictype = strandSpecifictype;
-	}
-
-	/**
-	 * 返回链的方向
-	 * @return
-	 */
+	
+	/** 返回链的方向 */
 	private String[] getStrandSpecifictype() {
-		if (lsRightFq == null || lsRightFq.isEmpty()) {
-			return null;
-		}
 		String[] cmd = null;
-		if (strandSpecifictype == StrandSpecific.NONE) {
-			
-		} else if (strandSpecifictype == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
-			cmd = new String[]{"--fr"};
+		if (strandSpecifictype == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND) {
+			cmd = isPairend()? new String[]{"--rna-strandness", "FR", "--fr"} : new String[]{"--rna-strandness", "F"};
 		} else if (strandSpecifictype == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
-			cmd = new String[]{"--rf"};
+			cmd = isPairend()? new String[]{"--rna-strandness", "RF", "--rf"} : new String[]{"--rna-strandness", "R"};
 		}
 		return cmd;
+	}
+	
+	private String[] getNovelSpliceSiteInput() {
+		return StringOperate.isRealNull(novelSplice)? null : new String[]{"--novel-splicesite-infile", novelSplice};
+	}
+	
+	private String[] getSpliceSiteInput() {
+		return StringOperate.isRealNull(spliceTxt)? null : new String[]{"--known-splicesite-infile", spliceTxt};
+	}
+	
+	private String[] getIntronlen() {
+		List<String> lsIntronLen = new ArrayList<>();
+		if (intronLenMin > 0) {
+			lsIntronLen.add("--min-intronlen");
+			lsIntronLen.add(intronLenMin + "");
+		}
+		if (intronLenMax > 0) {
+			lsIntronLen.add("--max-intronlen");
+			lsIntronLen.add(intronLenMax + "");
+		}
+		return lsIntronLen.toArray(new String[0]);
+	}
+	
+	private String[] getThread() {
+		return new String[]{"-p", threadNum + ""};
+	}
+	
+	private boolean isPairend() {
+		return !CollectionUtils.isEmpty(lsLeftFq) && !CollectionUtils.isEmpty(lsRightFq);
 	}
 	
 	@Override
@@ -365,20 +462,45 @@ public class MapHisat implements MapRNA {
 
 	@Override
 	public void setLeftFq(List<FastQ> lsLeftFq) {
+		this.lsLeftFq.clear();
 		if (lsLeftFq == null) return;
 		this.lsLeftFq = lsLeftFq;
 	}
 
 	@Override
 	public void setRightFq(List<FastQ> lsRightFq) {
+		this.lsRightFq.clear();
 		if (lsRightFq == null) return;
 		this.lsRightFq = lsRightFq;
 	}
-
-	@Override
-	public void setMismatch(int mismatch) {
+	
+	private String[] getFqFiles() {
+		List<String> lsResult = new ArrayList<>();
+		boolean isPairend = isPairend();
+		if (isPairend) {
+			lsResult.add("-1");
+		} else {
+			lsResult.add("-U");
+		}
+		StringBuilder firstBf = new StringBuilder(lsLeftFq.get(0).getReadFileName());
+		for (int i = 1; i < lsLeftFq.size(); i++) {
+			String fileName = lsLeftFq.get(i).getReadFileName();
+			firstBf.append(","); firstBf.append(fileName);
+		}
+		lsResult.add(firstBf.toString());
+		
+		if (isPairend()) {
+			lsResult.add("-2");
+			StringBuilder secondBf = new StringBuilder(lsRightFq.get(0).getReadFileName());
+			for (int i = 1; i < lsRightFq.size(); i++) {
+				String fileName = lsRightFq.get(i).getReadFileName();
+				secondBf.append(","); firstBf.append(fileName);
+			}
+			lsResult.add(secondBf.toString());
+		}
+		return lsResult.toArray(new String[0]);
 	}
-
+	
 	@Override
 	public void mapReads() {
 		indexHisat2.IndexMake();
@@ -391,13 +513,40 @@ public class MapHisat implements MapRNA {
 				) {
 			CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 			cmdOperate.setRedirectOutToTmp(true);
-			cmdOperate.addCmdParamOutput(outputSam);
-			cmdOperate.run();
+			cmdOperate.addCmdParamOutput(getNovelSpliceSiteFile());
+			cmdOperate.setGetCmdInStdStream(true);
+			cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outputSam, "_mappingStderrInfo", "txt"), false, true);
+			cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outputSam, "_runInfo", "txt"));
+			
+			Thread thread = new Thread(cmdOperate);
+			thread.start();
+			InputStream inputStream = cmdOperate.getStreamStd();
+			SamFile samFile = copeSamStream(false, inputStream);
+			
+			
+//			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
 				throw new ExceptionCmd("error running hisat:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 			}
+			
+			FileOperate.moveFile(true, samFile.getFileName(), outputSam);
 		}
 	}
+	
+	/**
+	 * @param isSetMulitFlag 是否需要设定非unique mapping的标签，目前 有bowtie2和bwa的 mem需要
+	 * @param inputStream 内部关闭流
+	 * @param isNeedSort 看是否需要排序
+	 * @return null表示运行失败，失败了也不删除文件
+	 */
+	protected SamFile copeSamStream(boolean isSetMulitFlag, InputStream inputStream) {
+		String fileNameTmp = FileOperate.changeFileSuffix(outputSam, "_tmp", null);
+		SamToBamSort samToBamSort = new SamToBamSort(fileNameTmp, inputStream, isPairend());
+		samToBamSort.setAddMultiHitFlag(true);
+		samToBamSort.convert();
+		return samToBamSort.getSamFileBam();
+	}
+	
 
 	@Override
 	public SoftWare getSoftWare() {
@@ -405,25 +554,11 @@ public class MapHisat implements MapRNA {
 	}
 
 	@Override
-	public void setGtf_Gene2Iso(String gtfFile) {
-		if (!FileOperate.isFileExistAndBigThan0(gtfFile)) return;
-
-		GffHashGene gffHashGene = new GffHashGene(gtfFile);
-		spliceTxt = PathDetail.getTmpPathRandom() + FileOperate.getFileName(gffHashGene.getGffFilename());
-		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
-		setSpliceTxt(gffHashGene, spliceTxt);
-		
-		int[] intronMinMax = MapTophat.getIntronMinMax(gffHashGene, intronLenMin, intronLenMax);
-		intronLenMin = intronMinMax[0];
-		intronLenMax = intronMinMax[1];
-	}
-
-	@Override
 	public String getFinishName() {
 		return outputSam;
 	}
 	
-	private static void setSpliceTxt(GffHashGene gffHashGene, String spliceTxt) {
+	private static void writeSpliceTxt(GffHashGene gffHashGene, String spliceTxt) {
 		Set<String> setLoc = new HashSet<>();
 		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
 			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
@@ -480,10 +615,6 @@ public class MapHisat implements MapRNA {
 	public static Map<String, Integer> getMapSensitive() {
 		return MapBowtie2.getMapSensitive();
 	}
-	
-	public static void index(String chrFile) {
-		
-	}
 
 	@Override
     public IndexMappingMaker getIndexMappingMaker() {
@@ -491,14 +622,3 @@ public class MapHisat implements MapRNA {
     }
 }
 
-class MapHisatIndex {
-	String chrFile;
-	
-	public void setChrFile(String chrFile) {
-		this.chrFile = chrFile;
-	}
-	
-	public void creatIndex() {
-		
-	}
-}

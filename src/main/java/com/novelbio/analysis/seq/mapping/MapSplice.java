@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.base.cmd.CmdOperate;
@@ -26,7 +25,6 @@ public class MapSplice implements MapRNA {
 	IndexMapSplice indexMaker;
 	
 	String outFile;
-	int indelLen = 6;
 	int threadNum = 10;
 	//输入的fastq
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
@@ -37,10 +35,12 @@ public class MapSplice implements MapRNA {
 	//转换的文件放在这个里面，最后要被删掉
 	List<String> lsTmp = new ArrayList<>();
 	boolean isPrepare = false;
-	int mismatch = 3;
 	boolean fusion = false;
 	String gtfFile;
 	int seedLen = 22;
+	
+	private int intronLenMin = 20;
+	private int intronLenMax = 500000;
 	
 	/** 将没有mapping上的reads用bowtie2比对到基因组上，仅用于proton数据 */
 	boolean mapUnmapedReads = false;
@@ -88,12 +88,6 @@ public class MapSplice implements MapRNA {
 		this.outFile = outPathPrefix;
 	}
 
-	/** indel长度默认为6 */
-	@Override
-	public void setIndelLen(int indelLen) {
-		this.indelLen = indelLen;
-	}
-
 	@Override
 	public void setThreadNum(int threadNum) {
 		this.threadNum = threadNum;
@@ -106,7 +100,14 @@ public class MapSplice implements MapRNA {
 	@Deprecated
 	public void setInsert(int insert) {
 	}
-
+	
+	public void setIntronLenMin(int intronLenMin) {
+		this.intronLenMin = intronLenMin;
+	}
+	public void setIntronLenMax(int intronLenMax) {
+		this.intronLenMax = intronLenMax;
+	}
+	
 	/**
 	 * 设置左端的序列，设置会把以前的清空
 	 * @param fqFile
@@ -124,11 +125,6 @@ public class MapSplice implements MapRNA {
 		if (lsRightFastQs == null) return;
 		this.lsRightFq = lsRightFastQs;
 		isPrepare = false;
-	}
-	
-	@Override
-	public void setMismatch(int mismatch) {
-		this.mismatch = mismatch;
 	}
 
 	@Override
@@ -265,6 +261,20 @@ public class MapSplice implements MapRNA {
 	private String[] getSeedLen() {
 		return new String[]{"-s", seedLen + ""};
 	}
+	
+	private String[] getIntronlen() {
+		List<String> lsIntronLen = new ArrayList<>();
+		if (intronLenMin > 0) {
+			lsIntronLen.add("--min-intron");
+			lsIntronLen.add(intronLenMin + "");
+		}
+		if (intronLenMax > 0) {
+			lsIntronLen.add("--max-intron");
+			lsIntronLen.add(intronLenMax + "");
+		}
+		return lsIntronLen.toArray(new String[0]);
+	}
+	
 	private List<String> getIndelLen() {
 		List<String> lsIndel = new ArrayList<>();
 		lsIndel.add("--ins");
@@ -300,6 +310,7 @@ public class MapSplice implements MapRNA {
 		ArrayOperate.addArrayToList(lsCmd, getIndex());
 		lsCmd.addAll(getFqFile());
 		ArrayOperate.addArrayToList(lsCmd, getSeedLen());
+		ArrayOperate.addArrayToList(lsCmd, getIntronlen());
 		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
 		lsCmd.addAll(getIndelLen());
 		lsCmd.add("--non-canonical-double-anchor");
@@ -341,7 +352,6 @@ public class MapSplice implements MapRNA {
 		indexMaker = null;
 		
 		outFile = null;
-		indelLen = 6;
 		threadNum = 10;
 		//输入的fastq
 		lsLeftFq = new ArrayList<FastQ>();
@@ -352,7 +362,6 @@ public class MapSplice implements MapRNA {
 		//转换的文件放在这个里面，最后要被删掉
 		lsTmp = new ArrayList<>();
 		isPrepare = false;
-		mismatch = 3;
 		fusion = false;
 		gtfFile = null;
 		seedLen = 22;

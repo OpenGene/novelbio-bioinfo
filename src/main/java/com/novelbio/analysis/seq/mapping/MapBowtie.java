@@ -37,7 +37,7 @@ public class MapBowtie extends MapDNA {
 	
 	int threadNum = 5;
 	
-	/** 一条reads最多比对到8个不同的位置上去 */
+	/** 一条reads最多比对到4个不同的位置上去 */
 	int maxMultipHit = 4;
 	
 	int sensitive = Sensitive_Sensitive;

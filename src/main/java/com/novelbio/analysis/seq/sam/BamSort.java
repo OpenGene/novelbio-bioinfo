@@ -1,10 +1,5 @@
 package com.novelbio.analysis.seq.sam;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.log4j.Logger;
-
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
 import htsjdk.samtools.SAMFileReader;
@@ -12,6 +7,11 @@ import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMFileWriterFactory;
 import htsjdk.samtools.SAMFileWriterImpl;
 import htsjdk.samtools.SAMSequenceDictionary;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
@@ -113,11 +113,15 @@ public class BamSort {
 			BamFilterUnique.setAttributeUnique(samFileHeader);
 		}
 
-		SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(samFileHeader, false, FileOperate.getFile(tmpFile));
-
+		SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(samFileHeader, false, FileOperate.getFile(tmpFile));				
+		
+		int i = 0;
 		for (SamRecord rec : samFile.readLines()) {
 			if (isFilterUnique && !rec.isUniqueMapping()) {
 				continue;
+			}
+			if (i++ % 10000000 == 0) {
+				logger.info("write " + i + " reads");
 			}
 			if (samSequenceDictionary != null) {
 				samReorder.copeReads(rec);

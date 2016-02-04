@@ -1,6 +1,5 @@
 package com.novelbio.database.updatedb.database;
 
-import org.apache.jasper.tagplugins.jstl.core.If;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;

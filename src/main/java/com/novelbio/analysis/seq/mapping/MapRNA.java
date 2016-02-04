@@ -14,8 +14,6 @@ public interface MapRNA extends IntCmdSoft {
 	public void setRefIndex(String chrFile);
 	
 	public void setOutPathPrefix(String outPathPrefix);
-	/** 设定indel */
-	public void setIndelLen(int indelLen);
 
 	/** 线程数量，默认4线程 */
 	public void setThreadNum(int threadNum);
@@ -49,11 +47,12 @@ public interface MapRNA extends IntCmdSoft {
 	 */
 	public void setInsert(int insert);
 	
+	/** 内含子长度 */
+	public void setIntronLenMin(int intronLenMin);
+	public void setIntronLenMax(int intronLenMax);
+	
 	public void setLeftFq(List<FastQ> lsLeftFq);
 	public void setRightFq(List<FastQ> lsRightFq);
-	
-	/** 错配，这个走默认比较好，默认为2 */
-	public void setMismatch(int mismatch);
 
 	/** 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf */
 	public void mapReads();

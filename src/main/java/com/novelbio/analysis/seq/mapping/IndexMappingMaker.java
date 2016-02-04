@@ -1,7 +1,5 @@
 package com.novelbio.analysis.seq.mapping;
 
-import htsjdk.samtools.reference.FastaSequenceIndex;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -13,8 +11,6 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.analysis.seq.fasta.ChrSeqHash;
-import com.novelbio.analysis.seq.fasta.SeqFastaReader;
 import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -86,6 +82,11 @@ public abstract class IndexMappingMaker {
 		this.exePath = softWareInfo.getExePathRun();
 		this.softWare = softWare;
 	}
+	
+	public void setExePath(String exePath) {
+		this.exePath = exePath;
+	}
+	
 	public SoftWare getSoftWare() {
 	    return softWare;
     }
