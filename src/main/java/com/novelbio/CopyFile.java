@@ -127,7 +127,7 @@ public class CopyFile {
 			if (time > 0 && FileOperate.getTimeLastModify(file) > time) {
 				return;
 			}
-			String fileNew = fileName.replace(FileHadoop.getHdfsSymbol(), "/media/nbfs");
+			String fileNew = FileHadoop.convertToLocalPath(fileName);
 			if (fileName.endsWith("Zone.Identifier")) {
 				return;
 			}
