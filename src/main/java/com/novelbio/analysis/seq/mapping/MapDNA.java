@@ -117,10 +117,10 @@ public abstract class MapDNA implements MapDNAint {
 		if (!writeToBam || samFile == null) {
 			return null;
 		}
-		String fileNameFinal = getOutNameCope();		
-		FileOperate.moveFile(true, samFile.getFileName(), fileNameFinal);
+//		String fileNameFinal = getOutNameCope();		
+//		FileOperate.moveFile(true, samFile.getFileName(), fileNameFinal);
 		logger.info("mapping 结束");
-		samFile = new SamFile(fileNameFinal);
+//		samFile = new SamFile(fileNameFinal);
 		return samFile;
 	}
 	
@@ -144,8 +144,8 @@ public abstract class MapDNA implements MapDNAint {
 	 */
 	protected SamFile copeSamStream(boolean isSetMulitFlag, InputStream inputStream, boolean isNeedSort) {
 		String fileNameFinal = getOutNameCope();
-		String fileNameTmp = FileOperate.changeFileSuffix(fileNameFinal, "_TmpMap", null);
-		SamToBamSort samToBamSort = new SamToBamSort(fileNameTmp, inputStream, isPairEnd());
+//		String fileNameTmp = FileOperate.changeFileSuffix(fileNameFinal, "_TmpMap", null);
+		SamToBamSort samToBamSort = new SamToBamSort(fileNameFinal, inputStream, isPairEnd());
 		samToBamSort.setWriteToBam(writeToBam);
 		samToBamSort.setNeedSort(isNeedSort);
 		samToBamSort.setAddMultiHitFlag(isSetMulitFlag);

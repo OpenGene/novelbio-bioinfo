@@ -523,13 +523,10 @@ public class MapHisat implements MapRNA {
 			InputStream inputStream = cmdOperate.getStreamStd();
 			SamFile samFile = copeSamStream(false, inputStream);
 			
-			
-//			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
 				throw new ExceptionCmd("error running hisat:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 			}
 			
-			FileOperate.moveFile(true, samFile.getFileName(), outputSam);
 		}
 	}
 	
@@ -540,8 +537,7 @@ public class MapHisat implements MapRNA {
 	 * @return null表示运行失败，失败了也不删除文件
 	 */
 	protected SamFile copeSamStream(boolean isSetMulitFlag, InputStream inputStream) {
-		String fileNameTmp = FileOperate.changeFileSuffix(outputSam, "_tmp", null);
-		SamToBamSort samToBamSort = new SamToBamSort(fileNameTmp, inputStream, isPairend());
+		SamToBamSort samToBamSort = new SamToBamSort(outputSam, inputStream, isPairend());
 		samToBamSort.setAddMultiHitFlag(true);
 		samToBamSort.convert();
 		return samToBamSort.getSamFileBam();
