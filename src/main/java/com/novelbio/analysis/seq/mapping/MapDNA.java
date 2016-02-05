@@ -46,7 +46,9 @@ public abstract class MapDNA implements MapDNAint {
 	public MapDNA(SoftWare softWare) {
 		indexMaker = IndexMappingMaker.createIndexMaker(softWare);
 	}
-	
+	public IndexMappingMaker getIndexMaker() {
+		return indexMaker;
+	}
 	/** 待比对的染色体 */
 	public void setChrIndex(String chrFile) {
 		indexMaker.setChrIndex(chrFile);

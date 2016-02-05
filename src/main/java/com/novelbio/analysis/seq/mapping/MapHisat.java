@@ -494,7 +494,7 @@ public class MapHisat implements MapRNA {
 			StringBuilder secondBf = new StringBuilder(lsRightFq.get(0).getReadFileName());
 			for (int i = 1; i < lsRightFq.size(); i++) {
 				String fileName = lsRightFq.get(i).getReadFileName();
-				secondBf.append(","); firstBf.append(fileName);
+				secondBf.append(","); secondBf.append(fileName);
 			}
 			lsResult.add(secondBf.toString());
 		}

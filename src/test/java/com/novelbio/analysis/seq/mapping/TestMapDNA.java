@@ -21,7 +21,7 @@ public class TestMapDNA {
 	String referenceFile =  referenceTmpPath + "ref2.fa";
 
 	String outPath = parentPath + "dnamapresult/";
-	MapDNAint mapDNA;
+	MapDNA mapDNA;
 	
 	@Before
 	public void before() {
@@ -52,6 +52,7 @@ public class TestMapDNA {
 		
 		CmdOperate.setTmpPath("/home/novelbio/tmp");
 		mapDNA = new MapBowtie2();
+		mapDNA.getIndexMaker().setLock(false);
 		String leftFqName = parentPath + "fastq/PE/L_correct.1.fq.gz";
 		String rightFqName = parentPath + "fastq/PE/R_correct.2.fq.gz";
 		mapDNA.setChrIndex(referenceFile);
@@ -80,6 +81,7 @@ public class TestMapDNA {
 		mapDNA.setFqFile(leftFq, rightFq);
 		mapDNA.setSortNeed(false);
 		mapDNA.setOutFileName(outPath + "bwaResult/resultBWA3");
+		mapDNA.getIndexMaker().setLock(false);
 		SamFile samFile = mapDNA.mapReads();
 		Assert.assertEquals(true, SamFile.isSamBamFile(samFile.getFileName()) == FormatSeq.BAM);
 		Assert.assertEquals(false, samFile.getHeader().getSortOrder() == SortOrder.coordinate);
@@ -101,6 +103,8 @@ public class TestMapDNA {
 		mapDNA.setFqFile(leftFq, rightFq);
 		mapDNA.setSortNeed(true);
 		mapDNA.setOutFileName(outPath + "/bwaResult/resultBWA5");
+		mapDNA.getIndexMaker().setLock(false);
+
 		SamFile samFile = mapDNA.mapReads();
 		Assert.assertEquals(true, SamFile.isSamBamFile(samFile.getFileName()) == FormatSeq.BAM);
 		Assert.assertEquals(true, samFile.getHeader().getSortOrder() == SortOrder.coordinate);
