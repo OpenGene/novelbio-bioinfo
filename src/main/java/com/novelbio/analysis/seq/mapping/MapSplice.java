@@ -80,7 +80,7 @@ public class MapSplice implements MapRNA {
 	}
 	
 	@Override
-	public void setGtf_Gene2Iso(String gtfFile) {
+	public void setGtfFiles(String gtfFile) {
 		this.gtfFile = gtfFile;
 	}
 	@Override

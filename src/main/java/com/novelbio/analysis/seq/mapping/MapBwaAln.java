@@ -373,15 +373,11 @@ public class MapBwaAln extends MapDNA {
 	private void bwaAln() {
 		List<String> lsCmdLeft = getLsCmdAln(true);
 		CmdOperate cmdOperate = new CmdOperate(lsCmdLeft);
-		cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_saiLeftStderrInfo", "txt"), false, true);
-		cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runSaiLeftInfo", "txt"));
 		cmdOperate.runWithExp("bwa aln error:");
 		
 		if (isPairEnd()) {
 			List<String> lsCmdRight = getLsCmdAln(false);
 			cmdOperate = new CmdOperate(lsCmdRight);
-			cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_saiRightStderrInfo", "txt"), false, true);
-			cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runSaiRightInfo", "txt"));
 			cmdOperate.runWithExp("bwa aln error:");
 		}
 	}
@@ -428,8 +424,6 @@ public class MapBwaAln extends MapDNA {
 		List<String> lsCmd = getLsCmdSam();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setGetCmdInStdStream(true);
-		cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_mappingStderrInfo", "txt"), false, true);
-		cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runMappingInfo", "txt"));
 		Thread thread = new Thread(cmdOperate);
 		thread.start();
 		InputStream inputStream = cmdOperate.getStreamStd();

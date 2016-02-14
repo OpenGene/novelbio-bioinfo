@@ -284,7 +284,7 @@ public class BlastNBC implements IntCmdSoft {
 		return null;
 	}
 	
-	private 	String[] getDB() {
+	private String[] getDB() {
 		return new String[]{ "-db", databaseSeq};
 	}
 	private String[] getQuery() {

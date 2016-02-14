@@ -293,7 +293,7 @@ public class MapHisat implements MapRNA {
 	
 	/** 设定splicesite和min-intronLen，max-intronLen */
 	@Override
-	public void setGtf_Gene2Iso(String gtfFile) {
+	public void setGtfFiles(String gtfFile) {
 		if (!FileOperate.isFileExistAndBigThan0(gtfFile)) return;
 
 		GffHashGene gffHashGene = new GffHashGene(gtfFile);
@@ -515,9 +515,7 @@ public class MapHisat implements MapRNA {
 			cmdOperate.setRedirectOutToTmp(true);
 			cmdOperate.addCmdParamOutput(getNovelSpliceSiteFile());
 			cmdOperate.setGetCmdInStdStream(true);
-			cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outputSam, "_mappingStderrInfo", "txt"), false, true);
-			cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outputSam, "_runInfo", "txt"));
-			
+		
 			Thread thread = new Thread(cmdOperate);
 			thread.start();
 			InputStream inputStream = cmdOperate.getStreamStd();

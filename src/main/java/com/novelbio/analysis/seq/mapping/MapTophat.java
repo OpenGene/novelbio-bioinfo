@@ -369,15 +369,15 @@ public class MapTophat implements MapRNA {
 	 * 如果设定为“”等不存在文件的，则使用GffChrAbs中的Gff文件
 	 * @param gtfFile
 	 */
-	public void setGtf_Gene2Iso(String gtfFile) {
+	public void setGtfFiles(String gtfFile) {
 		this.gtfFile = gtfFile;
 		if (!FileOperate.isFileExistAndBigThan0(gtfFile)) return;
 		
 		this.gtfFile = gtfFile;
 		GffHashGene gffHashGene = new GffHashGene(gtfFile);
-		int[] intronMinMax = getIntronMinMax(gffHashGene, this.intronLenMin, this.intronLenMax);
-		this.intronLenMin = intronMinMax[0];
-		this.intronLenMax = intronMinMax[1];
+//		int[] intronMinMax = getIntronMinMax(gffHashGene, this.intronLenMin, this.intronLenMax);
+//		this.intronLenMin = intronMinMax[0];
+//		this.intronLenMax = intronMinMax[1];
 	}
 	
 	/**

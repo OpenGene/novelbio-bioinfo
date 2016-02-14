@@ -177,11 +177,6 @@ public abstract class IndexMappingMaker {
 		if (FileOperate.isFileFolderExist(chrFile)) {
 			String runInfoPath = FileOperate.getParentPathNameWithSep(chrFile);
 			FileOperate.createFolders(runInfoPath);
-			
-			cmdOperate.setStdOutPath(runInfoPath + "IndexMake_Stdout.txt", false, true);
-			cmdOperate.setStdErrPath(runInfoPath + "IndexMake_Stderr.txt", false, true);
-
-			cmdOperate.setOutRunInfoFileName(runInfoPath + "IndexMaking.txt");
 		}
 		
 		for (String path : lsCmd) {
@@ -532,9 +527,6 @@ public static class IndexTophat extends IndexMappingMaker {
 		cmdOperate.setRedirectOutToTmp(true);
 		String runInfoPath = FileOperate.getParentPathNameWithSep(chrFile);
 		FileOperate.createFolders(runInfoPath);
-		cmdOperate.setStdOutPath(runInfoPath + "IndexGtfMake_Stdout.txt", false, true);
-		cmdOperate.setStdErrPath(runInfoPath + "IndexGtfMake_Stderr.txt", false, true);
-		cmdOperate.setOutRunInfoFileName(runInfoPath + "IndexGtfMaking.txt");
 		cmdOperate.addCmdParamOutput(getIndexGff());
 		cmdOperate.run();
 		if(!cmdOperate.isFinishedNormal()) {

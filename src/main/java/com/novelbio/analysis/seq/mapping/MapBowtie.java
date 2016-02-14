@@ -210,8 +210,6 @@ public class MapBowtie extends MapDNA {
 		List<String> lsCmd = getLsCmdMapping();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setGetCmdInStdStream(true);
-		cmdOperate.setStdErrPath(FileOperate.changeFileSuffix(outFileName, "_mappingStderrInfo", "txt"), false, true);
-		cmdOperate.setRunInfoFile(FileOperate.changeFileSuffix(outFileName, "_runInfo", "txt"));
 		cmdOperate.setRedirectInToTmp(true);
 		for (FastQ fqL : lsLeftFq) {
 			cmdOperate.addCmdParamInput(fqL.getReadFileName());

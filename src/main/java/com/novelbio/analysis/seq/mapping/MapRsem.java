@@ -241,7 +241,7 @@ public class MapRsem implements MapRNA {
 	 * 如果文件不存在，则从GffChrAbs中生成这个文件
 	 *  */
 	@Override
-	public void setGtf_Gene2Iso(String gtfFile) {
+	public void setGtfFiles(String gtfFile) {
 		this.gene2isoFile = gtfFile;
 	}
 	

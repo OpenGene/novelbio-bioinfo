@@ -73,7 +73,7 @@ public interface MapRNA extends IntCmdSoft {
 	 * 设定含有全体ref序列的文件夹
 	 * @param gtfFile
 	 */
-	public void setGtf_Gene2Iso(String gtfFile);
+	public void setGtfFiles(String gtfFile);
 	
 	/** 预测的结果文件的文件名 */
 	public String getFinishName();

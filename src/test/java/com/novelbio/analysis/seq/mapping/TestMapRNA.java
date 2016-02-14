@@ -92,7 +92,7 @@ public class TestMapRNA {
 		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.mapsplice);
 		mapRNA.getIndexMappingMaker().setLock(false);
 		mapRNA.setRefIndex(referenceFile);
-		mapRNA.setGtf_Gene2Iso(gtfFile);
+		mapRNA.setGtfFiles(gtfFile);
 		mapRNA.setLeftFq(lsLeftFq);
 		mapRNA.setRightFq(lsRightFq);
 		mapRNA.setThreadNum(8);
@@ -116,7 +116,7 @@ public class TestMapRNA {
 		((MapTophat)mapRNA).setBowtieVersion(SoftWare.bowtie);
 
 		mapRNA.setRefIndex(referenceFile);
-		mapRNA.setGtf_Gene2Iso(gtfFile.replace(".gz", ""));
+		mapRNA.setGtfFiles(gtfFile.replace(".gz", ""));
 		((MapTophat)mapRNA).setMoveGtfToChr(false);
 		
 		mapRNA.setOutPathPrefix(outPath + "tophat");
@@ -146,7 +146,7 @@ public class TestMapRNA {
 		
 		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);		
 		((MapTophat)mapRNA).setBowtieVersion(SoftWare.bowtie);
-		mapRNA.setGtf_Gene2Iso(gtfFile.replace(".gz", ""));
+		mapRNA.setGtfFiles(gtfFile.replace(".gz", ""));
 		((MapTophat)mapRNA).setMoveGtfToChr(true);
 		
 		mapRNA.setRefIndex(referenceFile);
@@ -199,7 +199,7 @@ public class TestMapRNA {
 		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);
 
 		mapRNA.setRefIndex(referenceFile);
-		mapRNA.setGtf_Gene2Iso(gtfFile.replace(".gz", ""));
+		mapRNA.setGtfFiles(gtfFile.replace(".gz", ""));
 		((MapTophat)mapRNA).setMoveGtfToChr(true);
 		mapRNA.setOutPathPrefix(outPath + "tophat2");
 		mapRNA.setLeftFq(lsLeftFq);
@@ -224,7 +224,7 @@ public class TestMapRNA {
 		MapHisat mapRNA = (MapHisat)MapRNAfactory.generateMapRNA(SoftWare.hisat2);
 		mapRNA.setExePathHist("/home/novelbio/下载/hisat2-2.0.1-beta/");
 		mapRNA.setRefIndex(referenceFile);
-		mapRNA.setGtf_Gene2Iso(gtfFile.replace(".gz", ""));
+		mapRNA.setGtfFiles(gtfFile.replace(".gz", ""));
 		mapRNA.setOutPathPrefix(outPath + SoftWare.hisat2);
 		mapRNA.setLeftFq(lsLeftFq);
 		mapRNA.setRightFq(lsRightFq);
