@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
@@ -137,13 +138,54 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	 * @param colEnd
 	 * @param outTxtFile
 	 */
-	public void annoFile(String txtFile, String outTxtFile) {
+	public void annoFileExcel(String txtFile, String outTxtFile) {
 		this.flagStop = false;
 		this.lsGeneInfo = ExcelTxtRead.readLsExcelTxt(txtFile, 1);
-		ArrayList<String[]> lsResult = getAnno();
-		TxtReadandWrite txtOut = new TxtReadandWrite(outTxtFile, true);
-		txtOut.ExcelWrite(lsResult);
+		
+		String outTmp = FileOperate.changeFileSuffix(outTxtFile, ".tmp", null);
+
+		TxtReadandWrite txtOut = new TxtReadandWrite(outTmp, true);
+
+		List<String[]> lsGeneInfoTmp = lsGeneInfo.subList(1, lsGeneInfo.size());
+		txtOut.writefileln(getTitleGeneInfoFilterAnno(lsGeneInfo.get(0)));		
+		for (String[] strings : lsGeneInfoTmp) {
+			ArrayList<String[]> lsTmpResult = getGeneInfoAnno(strings);
+			for (String[] strings2 : lsTmpResult) {
+				txtOut.writefileln(strings2);
+			}			
+			suspendCheck();
+		}
 		txtOut.close();
+		FileOperate.moveFile(true, outTmp, outTxtFile);
+		this.flagStop = true;
+	}
+	
+	/**
+	 * 给定list，返回注释好信息的list，包含title
+	 * @param lsInfo 第一行是标题行
+	 * @param colChrID 实际列
+	 * @param colStart 实际列
+	 * @param colEnd 实际列
+	 */
+	public void annoFileTxt(String txtFile, String outTxtFile) {
+		this.flagStop = false;
+		TxtReadandWrite txtRead = new TxtReadandWrite(txtFile);
+		String title = txtRead.readFirstLine();
+		
+		String outTmp = FileOperate.changeFileSuffix(outTxtFile, ".tmp", null);
+		
+		TxtReadandWrite txtOut = new TxtReadandWrite(outTmp, true);
+		txtOut.writefileln(getTitleGeneInfoFilterAnno(title.split("\t")));		
+		for (String content : txtRead.readlines(2)) {
+			ArrayList<String[]> lsTmpResult = getGeneInfoAnno(content.split("\t"));
+			for (String[] strings2 : lsTmpResult) {
+				txtOut.writefileln(strings2);
+			}			
+			suspendCheck();
+		}
+		txtRead.close();
+		txtOut.close();
+		FileOperate.moveFile(true, outTmp, outTxtFile);
 		this.flagStop = true;
 	}
 	
@@ -154,6 +196,8 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	public List<String[]> getLsResult() {
 		return lsResult;
 	}
+
+	
 	/**
 	 * 给定list，返回注释好信息的list，包含title
 	 * @param lsInfo 第一行是标题行
@@ -164,7 +208,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	public ArrayList<String[]> getAnno() {
 		List<String[]> lsGeneInfoTmp = lsGeneInfo.subList(1, lsGeneInfo.size());
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		lsResult.add(0,getTitleGeneInfoFilterAnno());
+		lsResult.add(0,getTitleGeneInfoFilterAnno(lsGeneInfo.get(0)));
 		
 		int count = 0;
 		for (String[] strings : lsGeneInfoTmp) {
@@ -184,7 +228,37 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		return lsResult;
 	}
 	
+	@Deprecated
+	public String[] getTitleGeneInfoFilterAnno() {
+		List<String> lsTitle = new ArrayList<>();
+		for (String string : lsGeneInfo.get(0)) {
+			lsTitle.add(string);
+		}
+		lsTitle.add("AccID");
+		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
+			lsTitle.add("Symbol");
+			lsTitle.add("Description");
+		}
 
+		lsTitle.add("Location");
+		return lsTitle.toArray(new String[0]);
+	}
+	
+	public static String[] getTitleGeneInfoFilterAnno(String[] title) {
+		List<String> lsTitle = new ArrayList<>();
+		for (String string : title) {
+			lsTitle.add(string);
+		}
+		lsTitle.add("AccID");
+		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
+			lsTitle.add("Symbol");
+			lsTitle.add("Description");
+		}
+
+		lsTitle.add("Location");
+		return lsTitle.toArray(new String[0]);
+	}
+	
 	/**
 	 * 给定一个基因定位文件的一行，返回注释信息
 	 * @param geneLocInfo
@@ -234,21 +308,7 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		}
 		return lsResult;
 	}
-	
-	public String[] getTitleGeneInfoFilterAnno() {
-		List<String> lsTitle = new ArrayList<>();
-		for (String string : lsGeneInfo.get(0)) {
-			lsTitle.add(string);
-		}
-		lsTitle.add("AccID");
-		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
-			lsTitle.add("Symbol");
-			lsTitle.add("Description");
-		}
 
-		lsTitle.add("Location");
-		return lsTitle.toArray(new String[0]);
-	}
 	/**
 	 * peak注释
 	 * @param chrID

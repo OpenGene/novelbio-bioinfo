@@ -7,14 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
 import com.novelbio.database.model.modgeneid.GeneID;
 
 public class ElimGOFunTest extends NovelGOFunTest {
-	private static final Logger logger = Logger.getLogger(ElimGOFunTest.class);
+	private static final Logger logger = LoggerFactory.getLogger(ElimGOFunTest.class);
 
 	/** 和strGeneID一样的东西 */
 	Set<String> setTestGeneUniID = null;
@@ -43,6 +44,11 @@ public class ElimGOFunTest extends NovelGOFunTest {
 		ArrayList<String[]> lsInfo = doTest();
 		for (String[] strings : lsInfo) {
 			StatisticTestResult statisticTestResult = new StatisticTestResult(strings[0]);
+			String itemTerm = getItemTerm(strings[0]);
+			if (itemTerm == null) {
+				logger.error("cannot find item {} in db", itemTerm);
+				continue;
+			}
 			statisticTestResult.setItemTerm(getItemTerm(strings[0]));
 			statisticTestResult.setDifGeneNum(Integer.parseInt(strings[2]),Integer.parseInt(strings[3]));
 			statisticTestResult.setGeneNum(Integer.parseInt(strings[4]),Integer.parseInt(strings[5]));

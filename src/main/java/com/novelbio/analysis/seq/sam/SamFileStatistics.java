@@ -88,6 +88,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 *   so the result "All Chr Reads Number" will not equal to "All Map Reads Number",
 		so we make a correction here.
 	 */
+	@Deprecated
 	boolean correctChrReadsNum = false;
 	
 //	Map<String, double[]> mapChrID2ReadsNum = new HashMap<>();
@@ -116,6 +117,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 *   so the result "All Chr Reads Number" will not equal to "All Map Reads Number",
 		so we make a correction here.
 	 */
+	@Deprecated
 	public void setCorrectChrReadsNum(boolean correctChrReadsNum) {
 		this.correctChrReadsNum = correctChrReadsNum;
 	}
@@ -205,7 +207,8 @@ public class SamFileStatistics implements AlignmentRecorder {
 	}
 
 	@Override
-	public void addAlignRecord(AlignRecord samRecord) {
+	public void addAlignRecord(AlignRecord alignRecord) {
+		SamRecord samRecord = (SamRecord)alignRecord;
 		if (!samRecord.isMapped()) {
 			allReadsNum ++;
 			double baseNum = samRecord.getLengthReal();
@@ -221,6 +224,10 @@ public class SamFileStatistics implements AlignmentRecorder {
 			logger.debug("reads mapped weight = 0: " + samRecord.toString());
 		}
 		
+		if (readsMappedWeight > 1 && samRecord.getMapIndexNum() != 1) {
+			return;
+		}
+		readsMappedWeight = 1;
 		double baseNum = samRecord.getLengthReal()/readsMappedWeight;
 		double readsNum = (double)1/readsMappedWeight;
 		allReadsBase += baseNum;

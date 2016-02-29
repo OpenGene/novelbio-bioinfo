@@ -150,7 +150,7 @@ public class SamMapReads extends MapReadsAbs {
 	
 	/** 将samRecord的信息添加至 result上 */
 	private void addReadsInfo(SamRecord samRecord, int[] startEnd, double[] result) {
-		if (booUniqueMapping && samRecord.getMappingNum() > 1) {
+		if (booUniqueMapping && samRecord.getMappedReadsWeight() > 1) {
 			return;
 		}
 		ArrayList<Align> lsAlign = samRecord.getAlignmentBlocks();
@@ -162,7 +162,7 @@ public class SamMapReads extends MapReadsAbs {
 			}
 			int[] startEndRegion = getStartEndLoc(startEnd, align);
 			for (int i = startEndRegion[0]; i <= startEndRegion[1]; i++) {
-				result[i] = result[i] + (double)1/samRecord.getMappingNum();
+				result[i] = result[i] + (double)1/samRecord.getMappedReadsWeight();
 			}
 		}
 	}

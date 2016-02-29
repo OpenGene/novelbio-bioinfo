@@ -1,7 +1,10 @@
 package com.novelbio.analysis.seq.mapping;
 
+import htsjdk.samtools.reference.FastaSequenceIndex;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +14,7 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -157,12 +161,7 @@ public abstract class IndexMappingMaker {
 		}
 	}
 	
-	/**
-	 * 构建索引
-	 * @parcam force 默认会检查是否已经构建了索引，是的话则返回。
-	 * 如果face为true，则强制构建索引
-	 * @return
-	 */
+	/**构建索引 */
 	protected void makeIndex() {
 		SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
 		samIndexRefsequence.setRefsequence(chrFile);
@@ -173,11 +172,6 @@ public abstract class IndexMappingMaker {
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setRedirectInToTmp(true);
 		cmdOperate.setRedirectOutToTmp(true);
-		
-		if (FileOperate.isFileFolderExist(chrFile)) {
-			String runInfoPath = FileOperate.getParentPathNameWithSep(chrFile);
-			FileOperate.createFolders(runInfoPath);
-		}
 		
 		for (String path : lsCmd) {
 			if (path.equals(chrFile)) {
@@ -717,16 +711,40 @@ public static class IndexMapSplice extends IndexMappingMaker {
 			chrFileFormat.rebuild();
 		} else {
 			FileOperate.copyFile(chrRaw, chrFile, true);
+			FileOperate.copyFile(SamIndexRefsequence.getIndexFile(chrRaw), SamIndexRefsequence.getIndexFile(chrFile), true);
 		}
+		SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
+		samIndexRefsequence.setRefsequence(chrFile);
+		samIndexRefsequence.indexSequence();
 	}
 	/** 生成一个文件夹，其中每条染色体一个文件 */
 	private void generateChrSepFold() {
-		if (!FileOperate.isFileFolderExist(chrSepFold)) {
-			FileOperate.createFolders(chrSepFold);
-			NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
-			ncbIchromFaChangeFormat.setChromFaPath(chrFile, "");
-			ncbIchromFaChangeFormat.writeToSepFile(chrSepFold);
+		boolean isNeedGenerate = true;
+		if (FileOperate.isFileFolderExist(chrSepFold)) {
+			List<String> lsFileName = FileOperate.getLsFoldFileName(chrSepFold);
+			Set<String> setChrId = new HashSet<>();
+			for (String chrName : lsFileName) {
+				String chrId = FileOperate.getFileNameSep(chrName)[0].split(" ")[0].toString().toLowerCase();
+				setChrId.add(chrId);
+			}
+			for (String chrIdInIndex : SamIndexRefsequence.getMapChrId2Len(SamIndexRefsequence.getIndexFile(chrFile)).keySet()) {
+				if (!setChrId.contains(chrIdInIndex.split(" ")[0])) {
+					isNeedGenerate = true;
+					break;
+				}
+			}
+			isNeedGenerate = false;
 		}
+		
+		if (!isNeedGenerate) {
+			return;
+		}
+		
+		FileOperate.DeleteFileFolder(chrSepFold);
+		FileOperate.createFolders(chrSepFold);
+		NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
+		ncbIchromFaChangeFormat.setChromFaPath(chrFile, "");
+		ncbIchromFaChangeFormat.writeToSepFile(chrSepFold);
 	}
 	
 	public String getChrSepFolder() {

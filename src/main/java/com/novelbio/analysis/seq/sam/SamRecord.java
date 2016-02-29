@@ -183,6 +183,7 @@ public class SamRecord implements AlignRecord {
 	 * 意思就是如果是非unique mapping，但是该Reads只出现一次，则返回1，譬如BWA<br>
 	 * 如果是Tophat，则会出现多次，则返回多次的信息
 	 */
+	@Deprecated
 	public Integer getMappingNum() {
 		if (numMappedReadsInFile > 0) {
 			return numMappedReadsInFile;

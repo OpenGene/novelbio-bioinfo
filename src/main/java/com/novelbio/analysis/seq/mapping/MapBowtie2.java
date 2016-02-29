@@ -39,7 +39,7 @@ public class MapBowtie2 extends MapDNA {
 	int threadNum = 5;
 	
 	/** 一条reads最多比对到8个不同的位置上去 */
-	int maxMultipHit = 4;
+	int maxMultipHit = 0;
 	
 	int sensitive = Sensitive_Sensitive;
 	boolean isLocal = true;
@@ -149,7 +149,7 @@ public class MapBowtie2 extends MapDNA {
 	}
 	
 	private String[] getMultiHit() {
-		return new String[]{"-k", maxMultipHit + ""};
+		return maxMultipHit > 0 ? new String[]{"-k", maxMultipHit + ""} : null;
 	}
 	
 	/**

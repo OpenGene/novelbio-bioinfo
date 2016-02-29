@@ -479,7 +479,11 @@ public abstract class FunctionTest implements Cloneable {
 		ArrayList<StatisticTestResult> lsTestResultTmp = getFisherResult(statisticsTest, lstest, lsbg, BGnum);
 		for (StatisticTestResult statisticTestResult : lsTestResultTmp) {
 			try {
-				statisticTestResult.setItemTerm(getItemTerm(statisticTestResult.getItemID()));
+				String ItemTerm = getItemTerm(statisticTestResult.getItemID());
+				if (ItemTerm == null) {
+					logger.error("cannot find item {} in db", statisticTestResult.getItemID());
+				}
+				statisticTestResult.setItemTerm(ItemTerm);
 				lsTestResult.add(statisticTestResult);
 			} catch (Exception e) {
 				logger.error("Iterm: " + statisticTestResult.getItemID() + " may have error", e);

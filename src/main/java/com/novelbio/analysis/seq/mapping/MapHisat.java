@@ -197,7 +197,7 @@ public class MapHisat implements MapRNA {
 	private int intronLenMax = 500000;
 	
 	/** 最多比对到几个位置，0的话mapquality就有意义，我们这里默认为3 */
-	private int alignNum = 3;
+	private int alignNum = 5;
 	
 	private int threadNum = 8;
 	
@@ -265,6 +265,14 @@ public class MapHisat implements MapRNA {
 		indexHisat2.setChrIndex(chrFile);
 	}
 	
+	/**
+	 * 比对到多个位置的数量，小于等于0表示不考虑该参数
+	 * 默认为5
+	 */
+	public void setAlignNum(int alignNum) {
+		this.alignNum = alignNum;
+	}
+	
 	/** 输出文件 */
 	@Override
 	public void setOutPathPrefix(String outPathPrefix) {
@@ -294,12 +302,13 @@ public class MapHisat implements MapRNA {
 	/** 设定splicesite和min-intronLen，max-intronLen */
 	@Override
 	public void setGtfFiles(String gtfFile) {
-		if (!FileOperate.isFileExistAndBigThan0(gtfFile)) return;
-
-		GffHashGene gffHashGene = new GffHashGene(gtfFile);
-		spliceTxt = FileOperate.getPathName(outputSam) + FileOperate.getFileName(gffHashGene.getGffFilename());
-		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
-		writeSpliceTxt(gffHashGene, spliceTxt);
+		spliceTxt = gtfFile;
+//		if (!FileOperate.isFileExistAndBigThan0(gtfFile)) return;
+//
+//		GffHashGene gffHashGene = new GffHashGene(gtfFile);
+//		spliceTxt = FileOperate.getPathName(outputSam) + FileOperate.getFileName(gffHashGene.getGffFilename());
+//		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
+//		writeSpliceTxt(gffHashGene, spliceTxt);
 		
 //		int[] intronMinMax = MapTophat.getIntronMinMax(gffHashGene, intronLenMin, intronLenMax);
 //		intronLenMin = intronMinMax[0];
@@ -367,7 +376,7 @@ public class MapHisat implements MapRNA {
 		return trim5 > 0? new String[]{"--trim5", trim5 + ""} : null;
 	}
 	private String[] getTrim3() {
-		return trim3 > 0? new String[]{"--trim3", trim5 + ""} : null;
+		return trim3 > 0? new String[]{"--trim3", trim3 + ""} : null;
 	}
 	
 	private String[] getSkipReads() {
@@ -550,6 +559,15 @@ public class MapHisat implements MapRNA {
 	@Override
 	public String getFinishName() {
 		return outputSam;
+	}
+	
+	/** 把gtfFile改称spliceTxt文件 */
+	public static String convert2SpliceTxt(String gtfFile, String outPath) {
+		GffHashGene gffHashGene = new GffHashGene(gtfFile);
+		String spliceTxt = FileOperate.addSep(outPath) + FileOperate.getFileName(gffHashGene.getGffFilename());
+		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
+		writeSpliceTxt(gffHashGene, spliceTxt);
+		return spliceTxt;
 	}
 	
 	private static void writeSpliceTxt(GffHashGene gffHashGene, String spliceTxt) {

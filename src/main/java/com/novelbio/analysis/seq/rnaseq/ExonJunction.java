@@ -459,7 +459,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 		
 		loadExp();
-		setSplicingType();
+		setSplicingType(null);
 		
 		if (runGetInfo != null) {
 			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
@@ -608,7 +608,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 		
 		loadExp(chrId);
-		setSplicingType();
+		setSplicingType(chrId);
 		
 		setCompareGroups(condition1, condition2);
 		List<ExonSplicingTest> lsExonSplicingTests = getTestResult_FromIso(chrId);
@@ -672,7 +672,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				samStatistics.setStandardData(mapChrId2Len);
 				samFileReading.addAlignmentRecorder(tophatJunction);
 				samFileReading.addAlignmentRecorder(samStatistics);
-				if (mapReads != null) {
+				if (mapReads != null && i <= 2) {
 					samFileReading.addAlignmentRecorder(mapReads);
 				}
 				samFileReading.setUniqueMapping(isUseUniqueMappedReads);
@@ -888,10 +888,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 	
-	private void setSplicingType() {
+	private void setSplicingType(String chrId) {
 		logger.info("start generate of splice info");
 		
 		for (List<ExonClusterSite> lstest : lsSplicingTests) {
+			if (!StringOperate.isRealNull(chrId) && !lstest.get(0).getCurrentExonCluster().getRefID().equalsIgnoreCase(chrId)) {
+				continue;
+			}
 			for (ExonClusterSite clusterSite : lstest) {
 				if (clusterSite.getCurrentExonCluster().getParentGene().getName().contains(stopGeneName)) {
 					logger.debug("stop");
