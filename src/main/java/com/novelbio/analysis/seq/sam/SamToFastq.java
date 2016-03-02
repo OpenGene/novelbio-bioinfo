@@ -1,5 +1,7 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -291,11 +293,13 @@ public class SamToFastq implements AlignmentRecorder {
 		/** 双端测序只提取两端都比对上的 */
 		MappedReadsPairend("_BothMapped"),
 		/** 双端测序一端比上另一端没比上 */
-		MappedReadsOnlyOne("_OnlyOneMapped"),
+		MappedReadsOnlyOne("_OneMapOneNot"),
+		/** 双端测序，把所有没比对上的reads输出到一个fq文件中，不区分是否双端。
+		 * 主要用于tophat的结果，因为tophat是排过序的bam文件，直接提取序列会很
+		 * 占内存 */
+		UnmappedReadsOneFile("_UnmappedOneFile"),
 		/** 双端测序只要有一个没比对上的 */
-		UnmappedReads("_UnMapped"),
-		/** 双端测序只要有一个没比对上的 */
-		UnmappedReadsOneFile("_UnMappedOneFile"),
+		UnmappedReads("_OneReadsIsNot"),
 		/** 双端测序两端都没比对上的 */
 		UnmappedReadsBoth("_BothUnMapped");
 		
@@ -308,6 +312,17 @@ public class SamToFastq implements AlignmentRecorder {
 			return suffix;
 		}
 		
+		public static Map<String, EnumSamToFastqType> getMapString2Value() {
+			Map<String, EnumSamToFastqType> mapStr2Value = new LinkedHashMap<>();
+			mapStr2Value.put("AllReads", AllReads);
+			mapStr2Value.put("MappedReads", MappedReads);
+			mapStr2Value.put("MappedReadsPairend", MappedReadsPairend);
+			mapStr2Value.put("OneMappedOneNot", MappedReadsOnlyOne);
+			mapStr2Value.put("UnmappedReadsToOneFile", UnmappedReadsOneFile);
+			mapStr2Value.put("UnmappedReads", UnmappedReads);
+			mapStr2Value.put("UnmappedBothReads", UnmappedReadsBoth);
+			return mapStr2Value;
+		}
 	}
 }
 

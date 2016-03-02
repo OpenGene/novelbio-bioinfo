@@ -3,7 +3,8 @@ package com.novelbio.analysis.seq.genome;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
@@ -12,6 +13,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.ExceptionNbcFile;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -25,7 +28,7 @@ import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
  *
  */
 public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
-	private static final Logger logger = Logger.getLogger(GffChrAnno.class);
+	private static final Logger logger = LoggerFactory.getLogger(GffChrAnno.class);
 	
 	GffChrAbs gffChrAbs;
 	/** true查找peak的最高点，也就是找单个点，
@@ -147,9 +150,11 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		TxtReadandWrite txtOut = new TxtReadandWrite(outTmp, true);
 
 		List<String[]> lsGeneInfoTmp = lsGeneInfo.subList(1, lsGeneInfo.size());
-		txtOut.writefileln(getTitleGeneInfoFilterAnno(lsGeneInfo.get(0)));		
+		txtOut.writefileln(getTitleGeneInfoFilterAnno(lsGeneInfo.get(0)));
+		int i = 1;
 		for (String[] strings : lsGeneInfoTmp) {
-			ArrayList<String[]> lsTmpResult = getGeneInfoAnno(strings);
+			i++;
+			ArrayList<String[]> lsTmpResult = getGeneInfoAnno(strings, i);
 			for (String[] strings2 : lsTmpResult) {
 				txtOut.writefileln(strings2);
 			}			
@@ -175,9 +180,11 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		String outTmp = FileOperate.changeFileSuffix(outTxtFile, ".tmp", null);
 		
 		TxtReadandWrite txtOut = new TxtReadandWrite(outTmp, true);
-		txtOut.writefileln(getTitleGeneInfoFilterAnno(title.split("\t")));		
+		txtOut.writefileln(getTitleGeneInfoFilterAnno(title.split("\t")));
+		int i = 1;
 		for (String content : txtRead.readlines(2)) {
-			ArrayList<String[]> lsTmpResult = getGeneInfoAnno(content.split("\t"));
+			i++;
+			ArrayList<String[]> lsTmpResult = getGeneInfoAnno(content.split("\t"), i);
 			for (String[] strings2 : lsTmpResult) {
 				txtOut.writefileln(strings2);
 			}			
@@ -210,12 +217,12 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
 		lsResult.add(0,getTitleGeneInfoFilterAnno(lsGeneInfo.get(0)));
 		
-		int count = 0;
+		int count = 1;
 		for (String[] strings : lsGeneInfoTmp) {
-			ArrayList<String[]> lsTmpResult = getGeneInfoAnno(strings);
+			count++;
+			ArrayList<String[]> lsTmpResult = getGeneInfoAnno(strings, count);
 			lsResult.addAll(lsTmpResult);
 			
-			count++;
 			suspendCheck();
 			if (flagStop) return lsResult;
 			for (String[] strings2 : lsTmpResult) {
@@ -264,9 +271,14 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 	 * @param geneLocInfo
 	 * @return
 	 */
-	private ArrayList<String[] > getGeneInfoAnno(String[] geneLocInfo) {
+	private ArrayList<String[] > getGeneInfoAnno(String[] geneLocInfo, int lineNum) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		String chrID = geneLocInfo[colChrID];
+		String chrID = null;
+		try {
+			chrID = geneLocInfo[colChrID];
+		} catch (Exception e) {
+			return lsResult;
+		}
 		int start = 0, end = 0, summit = 0;
 		if (! searchSummit) {
 			try {
@@ -281,9 +293,8 @@ public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
 			try {
 				summit = colSummit >= 0 ?  (int)Double.parseDouble(geneLocInfo[colSummit]) : ((start + end)/2);
 			} catch (Exception e) {
-				summit = (start + end)/2;
-				logger.warn("summit col contains wrong value, omit this line:" + geneLocInfo[colSummit]);
-				return lsResult;
+				logger.error("line {} has wrong summit value, omit this line:" + ArrayOperate.cmbString(geneLocInfo, "\t"), lineNum + "");
+				throw new ExceptionNbcFile("line " + lineNum + "has wrong summit value: " + ArrayOperate.cmbString(geneLocInfo, "\t"));
 			}
 		}
 	
