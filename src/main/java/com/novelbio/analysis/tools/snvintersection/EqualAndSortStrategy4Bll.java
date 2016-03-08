@@ -3,7 +3,8 @@ package com.novelbio.analysis.tools.snvintersection;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
+
 
 public class EqualAndSortStrategy4Bll implements SortStrategy, EqualStrategy {
 

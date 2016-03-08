@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -241,18 +242,24 @@ public class SeqHash implements SeqHashInt {
 	
 	public static Map<String, Long> getMapChrId2Len(String seqFai) {
 		Map<String, Long> mapChrId2Len = new LinkedHashMap<>();
-		SAMSequenceDictionary samSequenceDictionary = getDictionary(seqFai, " ");
+		SAMSequenceDictionary samSequenceDictionary = getDictionaryFromFai(seqFai, " ");
 		for (SAMSequenceRecord samSequenceRecord : samSequenceDictionary.getSequences()) {
 			mapChrId2Len.put(samSequenceRecord.getSequenceName(), (long)samSequenceRecord.getSequenceLength());
 		}
 		return mapChrId2Len;
 	}
 	
-	public static SAMSequenceDictionary getDictionary(String seqFai) {
-		return getDictionary(seqFai, " ");
+	public static SAMSequenceDictionary getDictionary(String fasta) {
+		return getDictionaryFromFai(SamIndexRefsequence.getIndexFile(fasta), " ");
 	}
 	
-	public static SAMSequenceDictionary getDictionary(String seqFai, String regx) {
+	public static SAMSequenceDictionary getDictionaryFromFai(String seqFai) {
+		return getDictionaryFromFai(seqFai, " ");
+	}
+	
+	public static SAMSequenceDictionary getDictionaryFromFai(String seqFai, String regx) {
+		FileOperate.validateFileExistAndBigThan0(seqFai);
+		
 		Map<String, Long> mapChrId2Len = new LinkedHashMap<>();
 		PatternOperate patternOperate = null;
 		if (regx != null && !regx.equals("") && !regx.equals(" ")) {

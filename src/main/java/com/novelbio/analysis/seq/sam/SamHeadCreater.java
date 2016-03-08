@@ -20,7 +20,7 @@ public class SamHeadCreater {
 		if (!refseq.endsWith(".fai")) {
 			refseq = refseq + ".fai";
 		}
-		SAMSequenceDictionary samSequenceDictionary = SeqHash.getDictionary(refseq);
+		SAMSequenceDictionary samSequenceDictionary = SeqHash.getDictionaryFromFai(refseq);
 		samFileHeader.setSequenceDictionary(samSequenceDictionary);
 	}
 	

@@ -108,10 +108,14 @@ public class SamReorder {
         return newOrder;
     }
     
-    /** 前面都设定好后，最后再用这个来转化sam文件 */
 	public SamFile reorderSam(SamFile samFile) {
 		String fileIn = samFile.getFileName();
 		String fileOut = FileOperate.changeFileSuffix(fileIn, "_reorder", null);
+		return reorderSam(samFile, fileOut);
+    }
+    
+    /** 前面都设定好后，最后再用这个来转化sam文件 */
+	public SamFile reorderSam(SamFile samFile, String fileOut) {
 		if (FileOperate.isFileExistAndBigThanSize(fileOut, 0)) {
 			return new SamFile(fileOut);
 		}
@@ -146,12 +150,12 @@ public class SamReorder {
     /** 通过这项处理后，samRecord写入结果文件才不会出错 */
     public void copeReads(SamRecord samRecord) {
         final SAMRecord read = samRecord.getSamRecord();
-        read.setHeader(samFileHeaderNew);
         
         int oldRefIndex = read.getReferenceIndex();
         int oldMateIndex = read.getMateReferenceIndex();
         int newRefIndex = newOrderIndex(read, oldRefIndex, mapNewOrder);
-
+        
+        read.setHeader(samFileHeaderNew);
         read.setReferenceIndex(newRefIndex);
 
         int newMateIndex = newOrderIndex(read, oldMateIndex, mapNewOrder);

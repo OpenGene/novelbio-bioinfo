@@ -33,8 +33,8 @@ public class TestSpeciesFileExtractSeq {
 		FileOperate.createFolders(FileOperate.getPathName(chrFile));
 		FileOperate.createFolders(FileOperate.getPathName(gffFile));
 
-		FileOperate.copyFile("src/test/resources/test_file/reference/ara/chrAll.fa", chrFile, true);
-		FileOperate.copyFile("src/test/resources/test_file/reference/ara/TAIR10_Gff3_simple.gff.gz", gffFile, true);
+		FileOperate.copyFile("src/test/resources/test_file/reference/arabidopsis_sub/chrAll.fa", chrFile, true);
+		FileOperate.copyFile("src/test/resources/test_file/reference/arabidopsis_sub/TAIR10_Gff3_simple.gff.gz", gffFile, true);
 
 		speciesFile.setChromSeq("aaa.fa");
 		speciesFile.addGffDB2TypeFile("test", GffType.NCBI, FileOperate.getFileName(gffFile));

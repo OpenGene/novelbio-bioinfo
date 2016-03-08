@@ -1,16 +1,12 @@
 package com.novelbio.analysis.seq.sam;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.hadoop.hdfs.server.namenode.status_jsp;
 import org.apache.log4j.Logger;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;

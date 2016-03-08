@@ -18,7 +18,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class TestMapRNA {
-	String parentPath = "src/test/resources/test_file/reference/ara/";
+	String parentPath = "src/test/resources/test_file/reference/arabidopsis_sub/";
 	String referenceFileRaw = parentPath + "chrAll.fa";
 	String referenceTmpPath = FileOperate.getParentPathNameWithSep(referenceFileRaw) + "tmpPath2/";
 	String gtfTmpPath = FileOperate.getParentPathNameWithSep(referenceFileRaw) + "tmpPathGtf/";

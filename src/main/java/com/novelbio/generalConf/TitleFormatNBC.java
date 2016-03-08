@@ -3,8 +3,6 @@ package com.novelbio.generalConf;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.sun.xml.internal.xsom.impl.Ref.Term;
-
 
 public enum TitleFormatNBC {
 	/** 公司名缩写 */

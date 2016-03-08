@@ -1,13 +1,23 @@
 package com.novelbio.test;
 
+import htsjdk.samtools.SAMSequenceDictionary;
+
+import java.io.File;
 import java.io.InputStream;
-import java.lang.reflect.Method;
+import java.net.URI;
+import java.nio.file.Files;
+import java.nio.file.OpenOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.fasta.ChrDensity;
 import com.novelbio.analysis.seq.fasta.SeqHash;
@@ -19,25 +29,59 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
-import com.novelbio.analysis.seq.rnaseq.ExonJunction;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.analysis.seq.sam.SamReorder;
+import com.novelbio.analysis.seq.sam.SamToBamSort;
+import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.listOperate.HistBin;
 import com.novelbio.listOperate.HistList;
 
 
 public class mytest {
-	private static final Logger logger = Logger.getLogger(mytest.class);
+	private static final Logger logger = LoggerFactory.getLogger(mytest.class);
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		GeneID geneID = new GeneID("tp53", 9606);
-		System.out.println(geneID.getAccID());
-		   
+//		String bamErp = "/home/novelbio/下载/BX-tgf_mapsplice_sorted.bam";
+//		String bamSamtools= "/home/novelbio/下载/BX-tgf_sort.bam";
+//		
+//		SamFile samErp = new SamFile(bamErp);
+//		SamFile samSamtools = new SamFile(bamSamtools);
+//		
+//		for (SamRecord samRecord : samErp.readLinesOverlap("chr2", 66491114, 66493163)) {
+//			System.out.println("erp " + samRecord.toString());
+//        }
+//		System.out.println();
+//		for (SamRecord samRecord : samSamtools.readLinesOverlap("chr12", 66491114, 66493163)) {
+//			System.out.println(samRecord.toString());
+//        }
+		
+//		SamFile samFileUnsort = new SamFile("/home/novelbio/下载/testsam/BX-tgf_mapsplice_sub.bam");
+//		SAMSequenceDictionary samSequenceDictionary = SeqHash.getDictionaryFromFai("/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/ChromFa/chrAll.fa.fai");
+//		
+//		SamToBamSort samToBamSort = new SamToBamSort("/home/novelbio/下载/testsam/BX-tgf_mapsplice_sub_sortMapsplice.bam", samFileUnsort, false);
+//		samToBamSort.setSamSequenceDictionary(samSequenceDictionary);
+//
+//		samToBamSort.setAddMultiHitFlag(false);
+//		samToBamSort.convert();
+		String parentPath = "/media/nbfs/nbCloud/public/AllProject/project_56a1d075da50acf943e4bd06/task_56a1df8bda50e86b4e27c9b0/QualityControl_result/";
+		FastQ fastQ = new FastQ(parentPath + "B_filtered_2.fq.gz");
+		FastQ fastQ2 = new FastQ(FileOperate.changeFileSuffix(fastQ.getReadFileName(), "_test", "fq.gz", null), true);
+		int i = 0;
+		for (FastQRecord fastQRecord : fastQ.readlines()) {
+			if (i++ > 1000000) {
+				break;
+			}
+			fastQ2.writeFastQRecord(fastQRecord);
+		}
+		fastQ.close();
+		fastQ2.close();
 	}
 	
 	private static void test() {

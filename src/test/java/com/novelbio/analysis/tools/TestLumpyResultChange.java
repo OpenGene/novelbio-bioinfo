@@ -1,9 +1,5 @@
 package com.novelbio.analysis.tools;
 
-import htsjdk.variant.variantcontext.VariantContext;
-
-import org.apache.hadoop.classification.InterfaceAudience.Public;
-
 import junit.framework.TestCase;
 
 public class TestLumpyResultChange extends TestCase{

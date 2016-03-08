@@ -14,7 +14,7 @@ import org.junit.Test;
 public class TestSamAddMultiFlag {
 	@Test
 	public void testMultiFlagPE() {
-		String refseq = "/home/novelbio/testJava/chrome/ara/chrAll.fa";
+		String refseq = "/home/novelbio/testJava/chrome/arabidopsis_sub/chrAll.fa";
 		SamAddMultiFlag samAddMultiFlag = new SamAddMultiFlag();
 		SAMFileHeader header = getHeader(refseq);
 		// 100---150  166---190   179--290
@@ -81,7 +81,7 @@ public class TestSamAddMultiFlag {
 	
 	@Test
 	public void testMultiFlagSE() {
-		String refseq = "/home/novelbio/testJava/chrome/ara/chrAll.fa";
+		String refseq = "/home/novelbio/testJava/chrome/arabidopsis_sub/chrAll.fa";
 		SamAddMultiFlag samAddMultiFlag = new SamAddMultiFlag();
 		SAMFileHeader header = getHeader(refseq);
 		// 100---150  166---190   179--290

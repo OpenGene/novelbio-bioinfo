@@ -801,6 +801,7 @@ public static class IndexHisat2 extends IndexMappingMaker {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "hisat2-build");
 		lsCmd.add(chrFile);
+		lsCmd.add("-p"); lsCmd.add("8");
 		lsCmd.add(IndexBowtie.getChrNameWithoutSuffix(chrFile));
 		return lsCmd;
 	}

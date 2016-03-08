@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -206,7 +208,7 @@ public class MAFFile {
 		lsMAFHead.add("all_domains_WU");
 		lsMAFHead.add("deletion_substructures_WU");
 		lsMAFHead.add("transcript_error");
-		return org.apache.commons.lang.StringUtils.join(lsMAFHead.toArray(),"\t");
+		return StringUtils.join(lsMAFHead.toArray(),"\t");
 	}
 
 }

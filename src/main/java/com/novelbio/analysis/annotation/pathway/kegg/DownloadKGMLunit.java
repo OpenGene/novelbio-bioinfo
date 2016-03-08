@@ -1,5 +1,6 @@
 package com.novelbio.analysis.annotation.pathway.kegg;
 
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
 import org.apache.log4j.Logger;
@@ -14,6 +15,7 @@ import org.htmlparser.filters.TagNameFilter;
 import org.htmlparser.util.NodeList;
 import org.htmlparser.util.ParserException;
 
+import com.novelbio.base.dataOperate.ExceptionNBCServerConnect;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -78,7 +80,7 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 		return this;
 	}
 	
-	public void runDownload() throws ParserException {
+	public void runDownload() throws ParserException, IOException {
 		retryNum++;
 		String saveName = savePath + speciesKeggId + mapId;
 		if (FileOperate.isFileExist(saveName + ".xml") && FileOperate.isFileExist(saveName + ".png")) {
@@ -92,7 +94,7 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 	}
 	
 	/** 返回本物中该pathway的uri，就是可以下载图片和kgml的那个页面，没有该pathway则返回null */
-	private String getPathUri() throws ParserException {
+	private String getPathUri() throws ParserException, IOException {
 		String keggOrgUri = DownloadKGMLunit.keggOrgUri.replace("KEGPATH", "map" + mapId);
 		keggFetch.setUri(keggOrgUri);
 		keggFetch.queryExp(3);
@@ -113,7 +115,7 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 	}
 	
 	/** 给定 可以下载图片和kgml的那个页面，下载kgml文件和相关图片 */
-	private void download(String speciesPathUri) throws ParserException {
+	private void download(String speciesPathUri) throws ParserException, IOException {
 		keggFetch.setUri(speciesPathUri);
 		keggFetch.queryExp(3);
 		String keggPage = keggFetch.getResponse();

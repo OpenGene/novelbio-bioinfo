@@ -68,8 +68,8 @@ public class DownloadSpeciesKGML {
 		FileOperate.createFolders(path);
 		downloadGeneID2KeggID(speciesKeggName, path);
 		httpFetch.setUri(keggPathwayUri);
-		httpFetch.queryExp(3);
 		try {
+			httpFetch.queryExp(3);
 			lsMapId = getLsPathMapIds(httpFetch.getResponse());
 		} catch (Exception e) {
 			throw new RuntimeException(e);

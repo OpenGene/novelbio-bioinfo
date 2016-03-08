@@ -1,6 +1,6 @@
 package com.novelbio.analysis.tools.snvintersection;
 
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 public interface EqualStrategy {
 	public boolean equals(String o1, String o2);

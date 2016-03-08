@@ -21,7 +21,7 @@ public class TestSamReducer {
 	public void testSamFile() {
 		String outFile = "src/test/resources/test_file/sam/mr_result_os.bam";
 		String samRecordTxt = "mchr1_@_10019193_@_HWI-D00175:261:C6L59ANXX:7:1101:10429:21613	HWI-D00175:261:C6L59ANXX:7:1101:10429:21613	133	chr1	10019193	0	*	=	10019193	0	CCGCGGCTCCGCCTCCCCAATCCGTCCCGTCTCCTCGCCTGCCGCTGGCATCCTGCTAGCAGAGGTGGCGCCAGCGTTCTCCTGCTCCCGCCGCATTCGCTCGCCGGTGAGCATCCTAATCCATC	CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGAGGGGGGEFEGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGAGGAEADGGGGGGGGGGG	NH:i:1	HI:i:1	AS:i:0	XS:i:0";
-		String refSeq = "src/test/resources/test_file/reference/ara/chrAll.fa";
+		String refSeq = "src/test/resources/test_file/reference/arabidopsis_sub/chrAll.fa";
 		SamHeadCreater samHeadCreater = new SamHeadCreater();
 		samHeadCreater.setRefSeq(refSeq);
 		samHeadCreater.setAttr("@HD\tVN:1.4\tSO:coordinate");
@@ -51,7 +51,7 @@ public class TestSamReducer {
 	public void testSamHeader() {
 		String outFile = "src/test/resources/test_file/sam/mr_result_os.bam";
 		String samRecordTxt = "mchr1_@_10019193_@_HWI-D00175:261:C6L59ANXX:7:1101:10429:21613	HWI-D00175:261:C6L59ANXX:7:1101:10429:21613	133	chr1	10019193	0	*	=	10019193	0	CCGCGGCTCCGCCTCCCCAATCCGTCCCGTCTCCTCGCCTGCCGCTGGCATCCTGCTAGCAGAGGTGGCGCCAGCGTTCTCCTGCTCCCGCCGCATTCGCTCGCCGGTGAGCATCCTAATCCATC	CCCCCGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGAGGGGGGEFEGGGFGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGGAGGAEADGGGGGGGGGGG	NH:i:1	HI:i:1	AS:i:0	XS:i:0";
-		String refSeq = "src/test/resources/test_file/reference/ara/chrAll.fa";
+		String refSeq = "src/test/resources/test_file/reference/arabidopsis_sub/chrAll.fa";
 		SamHeadCreater samHeadCreater = new SamHeadCreater();
 		samHeadCreater.setRefSeq(refSeq);
 		samHeadCreater.setAttr("@HD\tVN:1.4\tSO:coordinate");
@@ -87,7 +87,7 @@ public class TestSamReducer {
 //	@Test
 	public void testReducer() throws IOException {
 		String outFile = "src/test/resources/test_file/sam/mr_result_os.bam";
-		String refSeq = "src/test/resources/test_file/reference/ara/chrAll.fa";
+		String refSeq = "src/test/resources/test_file/reference/arabidopsis_sub/chrAll.fa";
 		
 		final SamReducer samReducer = new SamReducer();
 		InputStream inputStream = null;

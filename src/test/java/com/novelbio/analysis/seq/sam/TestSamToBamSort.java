@@ -42,12 +42,12 @@ public class TestSamToBamSort extends TestCase {
 			}
 		}
 		
-//		String indexFile = samFile.indexMake();
-//		for (SamRecord samRecord : samFile.readLinesOverlap("chrc", 2000, 140659)) {
-//			System.out.println(samRecord);
-//		}
+		String indexFile = samFile.indexMake();
+		for (SamRecord samRecord : samFile.readLinesOverlap("chrc", 2000, 140659)) {
+			System.out.println(samRecord);
+		}
 		FileOperate.DeleteFileFolder(outFile);
-//		FileOperate.DeleteFileFolder(indexFile);
+		FileOperate.DeleteFileFolder(indexFile);
 	}
 	
 	public void testNotAddMulti() {
@@ -77,8 +77,6 @@ public class TestSamToBamSort extends TestCase {
 	}
 	
 	private SAMSequenceDictionary getSeqDict() {
-		SeqHash seqHash = new SeqHash("/hdfs:/nbCloud/public/nbcplatform/genome/species/3702/tair10/ChromFa/chrAll.fa");
-		seqHash.close();
-		return seqHash.getDictionary();
+		return SeqHash.getDictionaryFromFai("src/test/resources/test_file/reference/arabidopsis/chrAll.fa.fai");
 	}
 }

@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.novelbio.analysis.seq.fasta.CodeInfo;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.EnumMrnaLocate;
@@ -246,7 +248,7 @@ public class MAFRecord {
 		lsMAF.add(NullString + "");
 		lsMAF.add(NullString + "");
 		lsMAF.add(transcriptError);
-		return org.apache.commons.lang.StringUtils.join(lsMAF.toArray(),"\t");
+		return StringUtils.join(lsMAF.toArray(),"\t");
 	}
 	
 	private String getTumSampleName() {

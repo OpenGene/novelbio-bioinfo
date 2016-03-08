@@ -32,7 +32,7 @@ public class TestSpeciesIndexMappingMaker {
 		FileOperate.createFolders(FileOperate.getPathName(refseqAllIso));
 		FileOperate.createFolders(FileOperate.getPathName(refseqOneIso));
 		
-		FileOperate.copyFile("src/test/resources/test_file/reference/ara/chrAll.fa", chrFile, true);
+		FileOperate.copyFile("src/test/resources/test_file/reference/arabidopsis_sub/chrAll.fa", chrFile, true);
 		FileOperate.copyFile("src/test/resources/test_file/reference/testTrinity.fa", refseqAllIso, true);
 		FileOperate.copyFile("src/test/resources/test_file/reference/testTrinitySub.fa", refseqOneIso, true);
 
