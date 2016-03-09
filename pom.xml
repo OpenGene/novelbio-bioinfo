@@ -57,7 +57,6 @@
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
-					<version>1.7.7</version>
 				</exclusion>
 			</exclusions>
 		</dependency>
@@ -78,7 +77,6 @@
 				<exclusion>
 					<groupId>org.slf4j</groupId>
 					<artifactId>slf4j-api</artifactId>
-					<version>1.7.7</version>
 				</exclusion>
 				<exclusion>
 					<artifactId>spring-context</artifactId>
