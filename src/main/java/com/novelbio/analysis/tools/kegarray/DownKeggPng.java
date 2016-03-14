@@ -68,6 +68,7 @@ public class DownKeggPng extends RunProcess<Integer> {
 			setRunInfo(downloadNum);
 			downloadNum++;
 		}
+		logger.info("总共需要下载"+lsPngWebUrl.size()+"个文件!");
 	}
 	/**
 	 * 根据给定网页，找到存放图片的网页的链接；
@@ -127,13 +128,20 @@ public class DownKeggPng extends RunProcess<Integer> {
 	 * @param outFile 输出图片的文件
 	 */
 	private void downPng(String pngHrefString) {
-		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUri(pngHrefString);
-		httpFetch.query();
-		String[] urlTmps =  pngHrefString.split("/");
-		int length = urlTmps.length;
-		String pngName = urlTmps[length-1];
-		httpFetch.download(outPath + pngName);
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				HttpFetch httpFetch = HttpFetch.getInstance();
+				httpFetch.setUri(pngHrefString);
+				httpFetch.query();
+				String[] urlTmps =  pngHrefString.split("/");
+				int length = urlTmps.length;
+				String pngName = urlTmps[length-1];
+				httpFetch.download(outPath + pngName);
+				logger.info("下载"+pngName);
+			}
+		}).start();
 	}
 
 }
