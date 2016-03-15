@@ -17,10 +17,10 @@ public class DownKeggPng extends RunProcess<Integer> {
 	private static Logger logger = Logger.getLogger(DownKeggPng.class);
 	public static void main(String[] args) {
 		DownKeggPng  downKeggPng = new DownKeggPng();
-		String URL = "http://www.genome.jp//kegg-bin/color_pathway_object?org_name=map&file=14118&reference=gray";
+		String URL = "http://www.genome.jp//kegg-bin/color_pathway_object?org_name=hsa&file=30600&reference=gray";
 //		downKeggPng.findWebHref(URL);
 //		downKeggPng.findPngHref(URL);
-		downKeggPng.setDownLoadPng(URL, "/home/ywd/PNG/");
+		downKeggPng.setDownLoadPng(URL, "/home/novelbio/PNG/");
 		Thread thread = new Thread(downKeggPng);
 		thread.start();
 //		downKeggPng.downPng("http://www.genome.jp/tmp//mark_pathway135339130411618/map01100_0.3511618.png", "/home/ywd/PNG/");
