@@ -1,7 +1,11 @@
 package com.novelbio.analysis.annotation.pathway.kegg;
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.log4j.Logger;
 import org.htmlparser.Node;
 import org.htmlparser.NodeFilter;
@@ -128,8 +132,10 @@ public class KgmlDownLoad {
 			 FileOperate.createFolders(outSpeciesPath);
 			 for (String kgmlUrl : lsKGMLurl) {
 				HttpFetch httpFetch = HttpFetch.getInstance();
-				httpFetch.setUri(kgmlUrl);
-				if (httpFetch.query(10)) {
+				httpFetch.setUriGet(kgmlUrl);
+				try {
+					httpFetch.queryExp();
+
 					for (String lines : httpFetch.readResponse()) {
 						if (lines.contains("<img src=\'/Fig/get_htext/whiteSP.png\'>") && lines.contains(keggName)) {
 							String speciseURL;
@@ -141,16 +147,23 @@ public class KgmlDownLoad {
 							speciseURL = keggHomeURL + speciseURL;
 							String KGMLdownLoad =  kgmlURL(speciseURL);
 							HttpFetch httpFetch2 = HttpFetch.getInstance();
-							httpFetch2.setUri(KGMLdownLoad);
-							if (httpFetch2.query(10)) {
-								String  fileName = speciseURL.split("\\?")[1] + ".xml";
-								httpFetch2.download(outSpeciesPath + fileName);
-							}
+							httpFetch2.setUriGet(KGMLdownLoad);
+							httpFetch2.queryExp();
+							String  fileName = speciseURL.split("\\?")[1] + ".xml";
+							httpFetch2.download(outSpeciesPath + fileName);
 						}
 					}
+								
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
+
 			 }
-			 downloadGeneID2KeggID(keggName, outSpeciesPath);
+			 try {
+				downloadGeneID2KeggID(keggName, outSpeciesPath);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
@@ -227,18 +240,23 @@ public class KgmlDownLoad {
 	/**根据KEGGPathway的首页获取url*/
 	private void fillLsKGMLurl() {
 		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUri(pathWayHome);
-		httpFetch.query();
-		for (String lines : httpFetch.readResponse()) {
-			if (lines.contains("href=\"/kegg-bin")) {
-				String url = lines.split("\">")[0].split("\"/")[1];
-				url = keggHomeURL + url;
-				List<String> lsOrganismURL = loadOrganism(url);
-				for (String string : lsOrganismURL) {
-					lsKGMLurl.add(string);
+		httpFetch.setUriGet(pathWayHome);
+		try {
+			httpFetch.queryExp();
+			for (String lines : httpFetch.readResponse()) {
+				if (lines.contains("href=\"/kegg-bin")) {
+					String url = lines.split("\">")[0].split("\"/")[1];
+					url = keggHomeURL + url;
+					List<String> lsOrganismURL = loadOrganism(url);
+					for (String string : lsOrganismURL) {
+						lsKGMLurl.add(string);
+					}
 				}
 			}
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		
 	}
 	
 	/** 根据首页点击进去的url，查找到KEGG Organisms的链接，也就是所有物种的链接，写入一个文件，避免以后继续下载的时候花费太长的时间
@@ -247,21 +265,28 @@ public class KgmlDownLoad {
 	private List<String> loadOrganism(String url) {
 		List<String> lsOrganismURL = new ArrayList<String>();
 		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUri(url);
-		httpFetch.query();
-		for (String lines : httpFetch.readResponse()) {
-			if (lines.contains("Organism menu")) {
-				String organismURL = null;
-				try {
-					organismURL = lines.split("\">")[0].split("\"/")[1];
-				} catch (Exception e) {
-					continue;
+		httpFetch.setUriGet(url);
+		try {
+			httpFetch.queryExp();
+			for (String lines : httpFetch.readResponse()) {
+				if (lines.contains("Organism menu")) {
+					String organismURL = null;
+					try {
+						organismURL = lines.split("\">")[0].split("\"/")[1];
+					} catch (Exception e) {
+						continue;
+					}
+					organismURL = keggHomeURL + organismURL;
+					System.out.println(organismURL);
+					lsOrganismURL.add(organismURL);
 				}
-				organismURL = keggHomeURL + organismURL;
-				System.out.println(organismURL);
-				lsOrganismURL.add(organismURL);
 			}
+		} catch (Exception e) {
+
+		} finally {
+			httpFetch.close();
 		}
+
 		return lsOrganismURL;
 	}
 
@@ -272,33 +297,41 @@ public class KgmlDownLoad {
 		String KGML_XMLPath = KGML_PATH + "KGML_XML";
 		FileOperate.createFolders(KGML_XMLPath);
 		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUri(speciseURL);
-		httpFetch.query();
-		for (String lines : httpFetch.readResponse()) {
-			if (lines.contains("<img src=\'/Fig/get_htext/whiteSP.png\'>")) {
-				String speciseF; 
-				if (lines.contains("</a>")) {
-					speciseF  = lines.split("<img src=\'/Fig/get_htext/whiteSP.png\'>")[1].split("</a>")[0].split("\">")[1];
-				}else {
-					speciseF = lines.split("<img src=\'/Fig/get_htext/whiteSP.png\'>")[1].split("  ")[0];
+		httpFetch.setUriGet(speciseURL);
+		try {
+			httpFetch.queryExp();
+			for (String lines : httpFetch.readResponse()) {
+				if (lines.contains("<img src=\'/Fig/get_htext/whiteSP.png\'>")) {
+					String speciseF; 
+					if (lines.contains("</a>")) {
+						speciseF  = lines.split("<img src=\'/Fig/get_htext/whiteSP.png\'>")[1].split("</a>")[0].split("\">")[1];
+					}else {
+						speciseF = lines.split("<img src=\'/Fig/get_htext/whiteSP.png\'>")[1].split("  ")[0];
+					}
+					FileOperate.createFolders(KGML_XMLPath + "/" + speciseF);
+					System.out.println(speciseF);
 				}
-				FileOperate.createFolders(KGML_XMLPath + "/" + speciseF);
-				System.out.println(speciseF);
 			}
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
+	
 	}
 	
-	/**获取最后下载链接*/
-	private String kgmlURL(String URL) {
+	/**获取最后下载链接
+	 * @throws IOException 
+	 * @throws UnknownHostException 
+	 * @throws ClientProtocolException 
+	 * @throws ConnectException */
+	private String kgmlURL(String URL) throws ConnectException, ClientProtocolException, UnknownHostException, IOException {
 		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUri(URL);
+		httpFetch.setUriGet(URL);
 		String KGMLdownLoad = null;
-		if (httpFetch.query(10)) {
-			for(String  lines : httpFetch.readResponse()){
-				if (lines.contains("Download KGML")) {
-					KGMLdownLoad = lines.split("<a href=\"")[1].split("\">")[0];
-					continue;
-				}
+		httpFetch.queryExp();
+		for(String  lines : httpFetch.readResponse()){
+			if (lines.contains("Download KGML")) {
+				KGMLdownLoad = lines.split("<a href=\"")[1].split("\">")[0];
+				continue;
 			}
 		}
 		return KGMLdownLoad;
@@ -307,20 +340,18 @@ public class KgmlDownLoad {
 	/**
 	 * 下载所有的有机体
 	 * @param savePath 保存的目录
+	 * @throws IOException 
+	 * @throws UnknownHostException 
+	 * @throws ClientProtocolException 
+	 * @throws ConnectException 
 	 */
-	private void downloadGeneID2KeggID(String keggName, String savePath) {
+	private void downloadGeneID2KeggID(String keggName, String savePath) throws ConnectException, ClientProtocolException, UnknownHostException, IOException {
 		List<String[]> lsParam = generateParam(keggName);
 		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUri(ncbiKeggIDurl);
-		httpFetch.setPostParam(lsParam);
+		httpFetch.setUriPost(ncbiKeggIDurl, lsParam);
 		String filePath = FileOperate.addSep(savePath) + keggName + "_ncbi-geneid.list";
-		if (httpFetch.query()) {
-			if(httpFetch.download(filePath)){
-				logger.info("下载" + filePath + "成功!");
-			}else {
-				logger.error("下载" + filePath + "失败!");
-			}
-		}
+		httpFetch.queryExp();
+		httpFetch.download(filePath);
 	}
 	
 	/** 用于post提交的信息 */

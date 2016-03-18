@@ -621,7 +621,7 @@ public class Trinity implements IntCmdSoft {
 			throw new ExceptionCmd("run trinity error:", cmdOperate);
 		}
 		String outFile = getResultPathRaw();
-		FileOperate.changeFileName(outFile, getResultPath());
+		FileOperate.moveFile(true, outFile, getResultPath());
 		
 	}
 	

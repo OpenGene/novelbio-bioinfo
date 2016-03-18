@@ -10,6 +10,7 @@ import com.novelbio.analysis.seq.genome.GffHashModifyNewGffORF;
 import com.novelbio.analysis.seq.genome.GffHashModifyOldGffUTR;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -195,7 +196,7 @@ public class CufflinksReconstruct implements IntCmdSoft {
 	}
 		
 	private void setGffHashRef() {
-		if (FileOperate.isFileExistAndBigThanSize(gtfRefFile, 10) && !gtfRefFile.equals(gffChrAbs.getGtfFile())) {
+		if (!StringOperate.isRealNull(gtfRefFile) && !gtfRefFile.equals(gffChrAbs.getGtfFile())) {
 			GffHashGene gffHashGene = new GffHashGene(GffType.GTF, gtfRefFile);
 			gffChrAbs.setGffHash(gffHashGene);
 		}
@@ -216,21 +217,6 @@ public class CufflinksReconstruct implements IntCmdSoft {
 		gffChrAbs.close();
 	}
 	
-//	/** 返回预测的文件名
-//	 * @param isFilter 是否过滤，如果不过滤就直接合并
-//	 * @return
-//	 */
-//	public static HashMultimap<String, String> getPredictMapPrefix2FilteredFQ(String outPrefix, boolean isReconstruct) {
-//		HashMultimap<String, String> mapPrefix2File = HashMultimap.create();
-//		if (!isReconstruct) return mapPrefix2File;
-//			
-//		String outFoldPrefix = FoldeCreate.getInFold(outPrefix, EnumReport.ReconstructTranscriptome.getResultFolder());
-//		String outGtf = outFoldPrefix + "novelTranscriptom.gtf";
-//		String outStatistics = outFoldPrefix + "novelTranscriptomStatistics.txt";
-//		mapPrefix2File.put("reconstruct_gtf", outGtf);
-//		mapPrefix2File.put("reconstruct_statistics", outStatistics);
-//		return mapPrefix2File;
-//	}
 	@Override
 	public List<String> getCmdExeStr() {
 		return lsCmd;

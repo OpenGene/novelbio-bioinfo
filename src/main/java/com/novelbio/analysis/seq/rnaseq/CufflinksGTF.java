@@ -1,90 +1,63 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.IntCmdSoft;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.sam.BamReadsInfo;
 import com.novelbio.analysis.seq.sam.ExceptionSamStrandErrorRuntime;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateUtil;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
-public class CufflinksGTF implements IntCmdSoft {
+public class CufflinksGTF implements IntCmdSoft, IntReconstructIsoUnit {
 	private static final Logger logger = Logger.getLogger(CufflinksGTF.class);
-	public static final String tmpFolder = "tmpCufflinks/";
+	private static final String tmpFolder = "tmp/";
 	
 	static int intronMin = 50;
 	static int intronMax = 500000;
 	/** 重新计算是否使用以前的结果 */
 	boolean isUseOldResult = true;
-	/** 遇到错误跳过的模式 */
-	boolean skipErrorMode = false;
 	
-	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
-	ArrayListMultimap<String, SamFile> mapPrefix2SamFiles = ArrayListMultimap.create();
-	Set<String> setPrefix= new LinkedHashSet<String>();
-	
-	/** 如果输入多个bam文件，则将他们合并为一个
-	 * 用来最后删除mergedbam文件用的
-	 *  */
-	List<String> lsMergeSamFile;
+	private StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	
 	/** cufflinks所在路径 */
-	String ExePathCufflinks = "";
+	private String exePath = "";
 	/** 用于校正的染色体 */
-	String chrFile;
+	private String chrFile;
 
 	/** 在junction 的一头上至少要搭到多少bp的碱基 */
-	Double smallAnchorFraction;
+	private Double smallAnchorFraction;
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
-	Integer intronLenMin;
+	private Integer intronLenMin;
 	/** 内含子最长多少，默认500000，需根据不同物种进行设置 */
-	Integer intronLenMax;
+	private Integer intronLenMax;
 	/** 线程数 */
-	int threadNum = 4;
-	/** 默认是solexa的最长插入 */
-	int maxInsert = 450;
+	private int threadNum = 4;
 	/** 给定GTF的文件 */
-	String gtfFile;
-	boolean isReconstruct = true;
-	/** 输出文件路径 */
-	String outPathPrefix = "";
-	/** 是否用上四分之一位点标准化 */
-	boolean isUpQuartileNormalized = false;
+	private String gtfFile;
+	private boolean isReconstruct = true;
 
-	boolean mergeBamFileByPrefix = false;
+	/** 是否用上四分之一位点标准化 */
+	private boolean isUpQuartileNormalized = false;
 	
-	/** fpkm小于该数值的新转录本就过滤掉 */
-	double fpkmFilter = 10;
-	/** 长度小于该长度的单exon转录本就过滤掉 */
-	int isoLenFilter = 200;
-	/** 最后获得的结果 */
-	List<String> lsCufflinksResult = new ArrayList<String>();
+	private List<String> lsCmd = new ArrayList<>();
 	
-	List<String> lsCmd = new ArrayList<>();
+	/** 输出文件路径，必须是文件夹 */
+	private String outPath = "";
 	
 	public CufflinksGTF() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.cufflinks);
-		ExePathCufflinks = softWareInfo.getExePathRun();
+		exePath = softWareInfo.getExePathRun();
 	}
 	
 	/** 是否使用以前跑出来的结果，默认为ture<br>
@@ -94,46 +67,14 @@ public class CufflinksGTF implements IntCmdSoft {
 	public void setIsUseOldResult(boolean isUseOldResult) {
 		this.isUseOldResult = isUseOldResult;
 	}
-	/** 遇到错误是否跳过，不跳过就抛出异常 */
-	public void setSkipErrorMode(boolean skipErrorMode) {
-		this.skipErrorMode = skipErrorMode;
-	}
-	/** fpkm小于该数值的新转录本就过滤掉 */
-	public void setFpkmFilter(double fpkmFilter) {
-		this.fpkmFilter = fpkmFilter;
-	}
-	/** 长度小于该长度的单exon转录本就过滤掉 */
-	public void setIsoLenFilter(int isoLenFilter) {
-		this.isoLenFilter = isoLenFilter;
-	}
-	/**
-	 * 是否根据prefix合并bam文件，然后再做cufflinks分析
-	 * 默认false
-	 */
-	public void setIsMergeBamByPrefix(boolean isMergeBamByPrefix) {
-		this.mergeBamFileByPrefix = isMergeBamByPrefix;
-	}
-	public boolean isMergeBamFileByPrefix() {
-		return mergeBamFileByPrefix;
-	}
-	/**
-	 * 设定tophat所在的文件夹以及待比对的路径
-	 * 
-	 * @param exePath
-	 *            如果在根目录下则设置为""或null
-	 * @param chrFile
-	 *            单条染色体
-	 */
+	
+	/** 用于校正的染色体 */
 	public void setChrFile(String chrFile) {
 		this.chrFile = chrFile;
 	}
-	
-	public void setOutPathPrefix(String outPathPrefix) {
-		this.outPathPrefix = outPathPrefix;
-	}
-	/** 设定输出文件夹，后面添上临时文件路径 */
-	public void setOutPathPrefixTmp(String outPathPrefix) {
-		this.outPathPrefix = FileOperate.addSep(outPathPrefix) + tmpFolder;
+	/** 输出文件路径，注意只能是文件夹 */
+	public void setOutPath(String outPath) {
+		this.outPath = outPath;
 	}
 	/** 是否用上四分之一位点标准化 */
 	public void setUpQuartileNormalized(boolean isUpQuartileNormalized) {
@@ -144,20 +85,7 @@ public class CufflinksGTF implements IntCmdSoft {
 	private String[] getOutPathPrefixCmd(String prefix) {
 		return new String[]{"-o", getOutPathPrefix(prefix)};
 	}
-	/** 输出文件名 */
-	private String getOutPathPrefix(String prefix) {
-		String outPath = "";
-		if (outPathPrefix.endsWith("/") || outPathPrefix.endsWith("\\")) {
-			outPath = outPathPrefix + prefix;
-		} else {
-			outPath = outPathPrefix + "_" + prefix;
-		}
-		if (mergeBamFileByPrefix) {
-			outPath += "_mergeByPrefix";
-		}
-		return outPath;
-	}
-	
+
 	/**
 	 * 在junction 的一头搭上exon的最短比例 0-1之间，默认0.09
 	 * */
@@ -179,11 +107,11 @@ public class CufflinksGTF implements IntCmdSoft {
 	/** 内含子最短多少，默认50，需根据不同物种进行设置 */
 	private List<String> getIntronLen() {
 		List<String> lsIntronLen = new ArrayList<>();
-		if (intronLenMin != null) {
+		if (intronLenMin != null && intronLenMin > 0) {
 			lsIntronLen.add("--min-intron-length");
 			lsIntronLen.add(intronLenMin + "");
 		}
-		if (intronLenMax != null) {
+		if (intronLenMax != null && intronLenMax > 0) {
 			lsIntronLen.add("--max-intron-length");
 			lsIntronLen.add(intronLenMax + "");
 		}
@@ -193,6 +121,12 @@ public class CufflinksGTF implements IntCmdSoft {
 	/** 内含子最短和最长，最短默认50，最长默认500000，需根据不同物种进行设置 */
 	public void setIntronLen(int intronLenMin, int intronLenMax) {
 		this.intronLenMin = intronLenMin;
+		this.intronLenMax = intronLenMax;
+	}
+	public void setIntronLenMin(Integer intronLenMin) {
+		this.intronLenMin = intronLenMin;
+	}
+	public void setIntronLenMax(Integer intronLenMax) {
 		this.intronLenMax = intronLenMax;
 	}
 	
@@ -222,48 +156,7 @@ public class CufflinksGTF implements IntCmdSoft {
 			return null;
 		}
 	}
-	
-	/**
-	 * 设置左端的序列，设置会把以前的清空
-	 * 输入的多个bam文件会merge成为一个然后做cufflinks的重建转录本
-	 * @param fqFile
-	 */
-	public void setLsBamFile2Prefix(ArrayList<String[]> lsSamfiles2Prefix) {
-		mapPrefix2SamFiles.clear();
-		for (String[] strings : lsSamfiles2Prefix) {
-			mapPrefix2SamFiles.put(strings[1].trim(), new SamFile(strings[0]));
-			setPrefix.add(strings[1].trim());
-		}
-	}
-	
-	private String getSamFileMerged(String prefix) {
-		List<SamFile> lsSamFiles = mapPrefix2SamFiles.get(prefix);
-		String samFile = "";
-		if (lsSamFiles.size() == 1) {
-			samFile = lsSamFiles.get(0).getFileName();
-		}
-		else {
-			samFile = outPathPrefix + "merge" + DateUtil.getDateAndRandom() + ".bam";
-			SamFile mergeFile = SamFile.mergeBamFile(samFile, lsSamFiles);
-			if (mergeFile != null) {
-				samFile = mergeFile.getFileName();
-				lsMergeSamFile.add(samFile);
-			} else {
-				throw new RuntimeException("cufflinks merge unsucess:" + prefix);
-			}
-		}
-		return samFile;
-	}
-	
-	private List<String> getSamFileSeperate(String prefix) {
-		List<SamFile> lsSamFiles = mapPrefix2SamFiles.get(prefix);
-		List<String> lsResult = new ArrayList<String>();
-		for (SamFile samFile : lsSamFiles) {
-			lsResult.add(samFile.getFileName());
-		}
-		return lsResult;
-	}
-	
+
 	/** 线程数量，默认4线程 */
 	public void setThreadNum(int threadNum) {
 		if (threadNum <= 0) {
@@ -283,6 +176,9 @@ public class CufflinksGTF implements IntCmdSoft {
 	 * false: 仅用输入的gff文件进行定量工作
 	 */
 	public void setGtfFile(String gtfFile, boolean isReconstruct) {
+		if (FileOperate.isFileExistAndBigThan0(gtfFile)) {
+			throw new ExceptionNbcParamError("gtffile " + gtfFile + " is not exist");
+		}
 		this.gtfFile = gtfFile;
 		this.isReconstruct = isReconstruct;
 	}
@@ -359,199 +255,34 @@ public class CufflinksGTF implements IntCmdSoft {
 		return null;
 	}
 
-	/**
-	 * 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf
-	 */
-	public void runCufflinks() {
-		lsMergeSamFile = new ArrayList<String>();
-		lsCufflinksResult.clear();
-		lsCmd.clear();
-		for (String prefix : setPrefix) {
-			if (mergeBamFileByPrefix) {
-				String cufResultTmp = runMergeBamGtf(prefix);
-				if (cufResultTmp != null) {
-					lsCufflinksResult.add(cufResultTmp);
-				}
-			} else {
-				lsCufflinksResult.addAll(runSepBamGtf(prefix));
-			}
-		}
-		
-		deleteMergeFile();
-	}
-	
-	/**
-	 * 返回合并好的bam文件
-	 * @param prefix
-	 * @return
-	 */
-	private String runMergeBamGtf(String prefix) {
-		String mergedBamFile = getSamFileMerged(prefix);
-		return getCufflinksResult(mergedBamFile, prefix);
-	}
-	/**
-	 * 返回合并好的bam文件
-	 * @param prefix
-	 * @return
-	 */
-	private List<String> runSepBamGtf(String prefix) {
-		List<String> lsGtf = new ArrayList<>();
-		List<String> lsSamfiles = getSamFileSeperate(prefix);
-		int i = 0;
-		for (String bamFile : lsSamfiles) {
-			i++;
-			String prefixThis = prefix + i;
-			String tmpGtf = getCufflinksResult(bamFile, prefixThis);
-			if (tmpGtf != null) {
-				lsGtf.add(tmpGtf);
-			}
-		}
-		return lsGtf;
-	}
-	
-	private String getCufflinksResult(String bamFile, String prefix) {
+	public void reconstruct(String bamFile) {
+		String prefix = FileOperate.getFileNameSep(bamFile)[0];
 		List<String> lsCmd = getLsCmd(bamFile, prefix);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		String outGTFPath = FileOperate.addSep(getOutPathPrefix(prefix));
-		String outGtf = "";
-		if (isUseOldResult
-				&& FileOperate.isFileExistAndBigThanSize(outGTFPath + "/genes.fpkm_tracking" , 0)
-				&& FileOperate.isFileExistAndBigThanSize(outGTFPath + "/isoforms.fpkm_tracking" , 0)
-				&& FileOperate.isFileExist(outGTFPath + "/skipped.gtf")
-				&& FileOperate.isFileExistAndBigThanSize(outGTFPath + "/transcripts.gtf" , 0)
-				) {
-			outGtf = outGTFPath + "transcripts.gtf";
-		} else {
-			cmdOperate.setRedirectInToTmp(true);
-			cmdOperate.addCmdParamInput(bamFile);
-			cmdOperate.setRedirectOutToTmp(true);
-			cmdOperate.addCmdParamOutput(getOutPathPrefix(prefix));
-			
-			cmdOperate.run();
-			if (cmdOperate.isFinishedNormal()) {
-				outGtf = outGTFPath + "transcripts.gtf";
-			} else {
-				if (skipErrorMode) {
-					outGtf = null;
-				} else {
-					String errInfo = cmdOperate.getErrOut();
-					throw new RuntimeException("cufflinks error:" + prefix + ":\n" + cmdOperate.getCmdExeStrReal() + "\n" + errInfo);
-				}
-			}
-		}
 		this.lsCmd.add(cmdOperate.getCmdExeStr());
-		
-		if (outGtf != null) {
-			String outGtfModify = FileOperate.changeFileSuffix(outGtf, "_filterWithFPKMlessThan" + fpkmFilter, null);
-			filterGtfFile(outGtf, outGtfModify, fpkmFilter, isoLenFilter);
-			outGtf = outGtfModify;
-		}
-		return outGtf;
+		cmdOperate.setRedirectInToTmp(true);
+		cmdOperate.addCmdParamInput(bamFile);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamOutput(getOutPathPrefix(prefix));
+		cmdOperate.runWithExp("cufflinks error on file " + FileOperate.getFileName(bamFile) );
+		FileOperate.moveFile(true, getOutPathResultRaw(prefix), getOutGtfName(bamFile));
 	}
 	
-	/** 设定好本类后，不进行计算，直接返回输出的结果文件名 */
-	public List<String> getLsGtfFileName() {
-		List<String> lsResult = new ArrayList<>();
-		for (String prefix : setPrefix) {
-			if (mergeBamFileByPrefix) {
-				String outGTFPath = getGtfFileFromPrefix(prefix);
-				lsResult.add(outGTFPath);
-			} else {
-				List<String> lsSamfiles = getSamFileSeperate(prefix);
-				int i = 0;
-				for (String bamFile : lsSamfiles) {
-					i++;
-					String prefixThis = prefix + i;
-					String subGtf = getGtfFileFromPrefix(prefixThis);
-					lsResult.add(subGtf);
-				}
-			}
-		}
-		return lsResult;
+	@Override
+	public String getOutGtfName(String bamFile) {
+		String prefix = FileOperate.getFileNameSep(bamFile)[0];
+		String outGTFPath = FileOperate.addSep(outPath) + prefix + ".cufflinks.transcripts.gtf";
+		return outGTFPath;
 	}
 	
-	private String getGtfFileFromPrefix(String prefix) {
-		String outGTFPath = FileOperate.addSep(getOutPathPrefix(prefix));
-		String outGtf = outGTFPath + "transcripts.gtf";
-		outGtf = FileOperate.changeFileSuffix(outGtf, "_filterWithFPKMlessThan" + fpkmFilter, null);
-		return outGtf;
+	/** 输出文件名 */
+	private String getOutPathPrefix(String prefix) {
+		return FileOperate.addSep(outPath) + tmpFolder + prefix;
 	}
-	
-	/** 获得结果 */
-	public List<String> getLsCufflinksResult() {
-		return lsCufflinksResult;
+	/** 输出临时文件夹 */
+	private String getOutPathResultRaw(String prefix) {
+		return FileOperate.addSep(getOutPathPrefix(prefix)) + "transcripts.gtf";
 	}
-	
-	public static void filterGtfFile(String outGtf, String outFinal, double fpkmFilter, int isoLenFilter) {
-		TxtReadandWrite txtRead = new TxtReadandWrite(outGtf);
-		
-		/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认  NCBI的ID  */
-		String transIdreg = "(?<=transcript_id \")[\\w\\-%\\:\\.]+";
-		String fpkmreg = "(?<=FPKM \")[\\d\\.]+";
-		String geneNamereg = "(?<=gene_id \")[\\w\\-%\\:\\.]+";
-		PatternOperate patTransId = new PatternOperate(transIdreg, false);
-		PatternOperate patFpkm = new PatternOperate(fpkmreg, false);
-		PatternOperate patGeneName = new PatternOperate(geneNamereg, false);
-		Map<String, Double> mapIso2Fpkm = new HashMap<String, Double>();
-		Map<String, String> mapIso2GeneName = new HashMap<String, String>();
-		
-		double fpkm = 0.0;
-		for (String content : txtRead.readlines()) {
-			if (content.startsWith("#")) {
-				continue;
-			}
-			String transId = patTransId.getPatFirst(content);
-			String TranFpkm = patFpkm.getPatFirst(content);
-			if ((TranFpkm != null)) {
-				fpkm = Double.parseDouble(TranFpkm);
-			}
-			String geneName = patGeneName.getPatFirst(content);
-			mapIso2Fpkm.put(transId, fpkm);
-			if (geneName != null) {
-				mapIso2GeneName.put(transId, geneName);
-			}
-		}
-		txtRead.close();
-		
-		GffHashGene gffHashGene = new GffHashGene(GffType.GTF, outGtf);
-		GffHashGene gffHashGeneNew = new GffHashGene();
-		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
-			GffDetailGene gffDetailGeneNew = gffDetailGene.clone();
-			gffDetailGeneNew.clearIso();
-			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
-				
-				if (mapIso2GeneName.containsKey(iso.getName())
-						||  iso.size() > 1 || (mapIso2Fpkm.containsKey(iso.getName()) && mapIso2Fpkm.get(iso.getName()) >= fpkmFilter && (iso.getLen() >= isoLenFilter))
-						) {
-					gffDetailGeneNew.addIsoSimple(iso);
-				}
-
-			}
-			if (gffDetailGeneNew.getLsCodSplit().size() > 0) {
-				gffHashGeneNew.addGffDetailGene(gffDetailGeneNew);
-			}
-		}
-		logger.info("before filter iso with only one exon have " + getIsoHaveOneExonNum(gffHashGene));
-		logger.info("after filter iso with only one exon have " + getIsoHaveOneExonNum(gffHashGeneNew));
-		logger.info("before filter geneNum " + gffHashGene.getGffDetailAll().size());
-		logger.info("after filter geneNum " + gffHashGeneNew.getGffDetailAll().size());
-		gffHashGeneNew.writeToGTF(outFinal);
-	}
-	
-	/** 仅含一个exon的iso的数量 */
-	private static int getIsoHaveOneExonNum(GffHashGene gffHashGene) {
-		int isoExon1NumNew = 0;
-		for (GffDetailGene gene : gffHashGene.getGffDetailAll()) {
-			for (GffGeneIsoInfo isoInfo : gene.getLsCodSplit()) {
-				if (isoInfo.size() == 1) {
-					isoExon1NumNew++;
-				}
-			}
-		}
-		return isoExon1NumNew;
-	}
-	
-	
 	/**
 	 * 合并前缀相同的bam文件，并返回待执行的lsCmd
 	 * @param prefix
@@ -559,7 +290,7 @@ public class CufflinksGTF implements IntCmdSoft {
 	 */
 	private List<String> getLsCmd(String bamFileName, String prefix) {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(ExePathCufflinks + "cufflinks");
+		lsCmd.add(exePath + "cufflinks");
 		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefixCmd(prefix));
 		ArrayOperate.addArrayToList(lsCmd, getAnchoProportion());
 		lsCmd.addAll(getIntronLen());
@@ -576,20 +307,6 @@ public class CufflinksGTF implements IntCmdSoft {
 		lsCmd.add(param);
 	}
 	
-	private void deleteMergeFile() {
-		if (!mergeBamFileByPrefix) return;
-		if (lsMergeSamFile.size() > 0) {
-			for (String mergedSamFile : lsMergeSamFile) {
-				FileOperate.delFile(mergedSamFile);
-			}
-		}
-	}
-	
-	public String getCufflinksGTFPath() {
-		return FileOperate.addSep(outPathPrefix) + "transcripts.gtf";
-	}
-	
-	/** 最后再获得 */
 	@Override
 	public List<String> getCmdExeStr() {
 		String version = getVersion();
@@ -599,9 +316,9 @@ public class CufflinksGTF implements IntCmdSoft {
 		return lsCmd;
 	}
 	
-	public String getVersion() {
+	private String getVersion() {
 		List<String> lsCmdVersion = new ArrayList<>();
-		lsCmdVersion.add(ExePathCufflinks + "cufflinks");
+		lsCmdVersion.add(exePath + "cufflinks");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.setTerminateWriteTo(false);
 		cmdOperate.run();
@@ -612,4 +329,5 @@ public class CufflinksGTF implements IntCmdSoft {
 		} catch (Exception e) {}
 		return cufflinksVersion;
 	}
+
 }

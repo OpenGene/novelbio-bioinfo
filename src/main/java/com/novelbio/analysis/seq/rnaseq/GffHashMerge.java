@@ -50,7 +50,6 @@ public class GffHashMerge {
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
 	}
 
-	GffHashGene gffHashGeneRef = new GffHashGene();
 	ArrayList<GffHashGene> lsGffHashGenes = new ArrayList<GffHashGene>();
 	/** key小写 */
 	HashMap<String, ArrayList<GffGeneCluster>> mapChrID2LsGffCluster = new HashMap<String, ArrayList<GffGeneCluster>>();
@@ -64,7 +63,6 @@ public class GffHashMerge {
 	boolean calculate = false;
 	
 	public void setGffHashGeneRef(GffHashGene gffHashGeneRef) {
-		this.gffHashGeneRef = gffHashGeneRef;
 		lsGffHashGenes.add(0, gffHashGeneRef);
 		calculate = false;
 	}

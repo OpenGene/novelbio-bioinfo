@@ -539,7 +539,6 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		return FileOperate.changeFileSuffix(gffFileName, "", "gff3|gtf|gff|bed", suffix);
 	}
 	
-	/** 仅修改名字 */
 	public static String convertToOtherFile(String gffFileName, GffType gffType) {
 		String resultFile = convertNameToOtherFile(gffFileName, gffType);
 		if (FileOperate.isFileExistAndBigThan0(resultFile)) return resultFile;

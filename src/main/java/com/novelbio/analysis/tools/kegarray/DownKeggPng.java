@@ -1,9 +1,13 @@
 package com.novelbio.analysis.tools.kegarray;
 
+import java.io.IOException;
+import java.net.ConnectException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.http.client.ClientProtocolException;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.HttpFetch;
@@ -51,12 +55,23 @@ public class DownKeggPng extends RunProcess<Integer> {
 	 * 访问kegarray的url，获得所有待下载的链接
 	 */
 	public void querKegArrayUrl() {
-		lsPngWebUrl = findWebHref(url);
+		try {
+			lsPngWebUrl = findWebHref(url);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	@Override
 	protected void running() {
-		ArrayList<String> lsPngWebUrl = findWebHref(url);
+		ArrayList<String> lsPngWebUrl = new ArrayList<>();
+		try {
+			lsPngWebUrl = findWebHref(url);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		int downloadNum = 0;
 		for (String pngWebUrl : lsPngWebUrl) {
 			suspendCheck();
@@ -74,23 +89,24 @@ public class DownKeggPng extends RunProcess<Integer> {
 	 * 根据给定网页，找到存放图片的网页的链接；
 	 * @param URL 给定网页的链接
 	 * @return 存放PNG网页的链接的list
+	 * @throws IOException 
+	 * @throws UnknownHostException 
+	 * @throws ClientProtocolException 
+	 * @throws ConnectException 
 	 */
-	private ArrayList<String> findWebHref(String URL) {
+	private ArrayList<String> findWebHref(String URL) throws ConnectException, ClientProtocolException, UnknownHostException, IOException {
 		ArrayList<String> lsUrl = new ArrayList<String>();
 		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUri(URL);
-		if (httpFetch.query(10)) {
-			for (String	oneLines : httpFetch.readResponse()) {
-				if (oneLines.contains("target=\"_map\"")) {
-					String strUrl = oneLines.split("href=\"")[1].split("\" target=\"_map\">")[0];
-					strUrl = "http://www.genome.jp" +strUrl;
-					lsUrl.add(strUrl);
-					System.out.println(strUrl);
-				}
-				
-			} 
-		}else {
-			logger.error("Web NOT Find");
+		httpFetch.setUriGet(URL);
+		httpFetch.queryExp();
+		for (String	oneLines : httpFetch.readResponse()) {
+			if (oneLines.contains("target=\"_map\"")) {
+				String strUrl = oneLines.split("href=\"")[1].split("\" target=\"_map\">")[0];
+				strUrl = "http://www.genome.jp" +strUrl;
+				lsUrl.add(strUrl);
+				System.out.println(strUrl);
+			}
+			
 		}
 		return lsUrl;
 	}
@@ -102,7 +118,7 @@ public class DownKeggPng extends RunProcess<Integer> {
 	private String findPngHref(String pngURL) {
 		HttpFetch httpFetch = HttpFetch.getInstance();
 		String pngHref = null;
-			httpFetch.setUri(pngURL);
+			httpFetch.setUriGet(pngURL);
 			if (httpFetch.query(10)) {
 				for (String onePngLines : httpFetch.readResponse()) {
 					if (onePngLines.contains("usemap=\"#mapdata\"")) {
@@ -133,12 +149,31 @@ public class DownKeggPng extends RunProcess<Integer> {
 			@Override
 			public void run() {
 				HttpFetch httpFetch = HttpFetch.getInstance();
-				httpFetch.setUri(pngHrefString);
-				httpFetch.query();
+				httpFetch.setUriGet(pngHrefString);
+				try {
+					httpFetch.queryExp();
+				} catch (ConnectException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClientProtocolException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				String[] urlTmps =  pngHrefString.split("/");
 				int length = urlTmps.length;
 				String pngName = urlTmps[length-1];
-				httpFetch.download(outPath + pngName);
+				try {
+					httpFetch.download(outPath + pngName);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				logger.info("下载"+pngName);
 			}
 		}).start();

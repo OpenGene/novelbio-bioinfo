@@ -13,7 +13,6 @@ import com.novelbio.base.dataOperate.HttpFetch;
  */
 public class FastQrecordCopeUnit implements Callable<FastQrecordCopeUnit> {
 	public static void main(String[] args) {
-		HttpFetch.getInstance();
 		System.out.println("aaa");
 	}
 	

@@ -67,9 +67,9 @@ public class DownloadSpeciesKGML {
 		String path = savePath + speciesKeggName + FileOperate.getSepPath();
 		FileOperate.createFolders(path);
 		downloadGeneID2KeggID(speciesKeggName, path);
-		httpFetch.setUri(keggPathwayUri);
+		httpFetch.setUriGet(keggPathwayUri);
 		try {
-			httpFetch.queryExp(3);
+			httpFetch.queryExp();
 			lsMapId = getLsPathMapIds(httpFetch.getResponse());
 		} catch (Exception e) {
 			throw new RuntimeException(e);
@@ -83,15 +83,13 @@ public class DownloadSpeciesKGML {
 	private void downloadGeneID2KeggID(String keggName, String savePath) {
 		List<String[]> lsParam = generateParam(keggName);
 		HttpFetch httpFetch = HttpFetch.getInstance();
-		httpFetch.setUri(ncbiKeggIDurl);
-		httpFetch.setPostParam(lsParam);
+		httpFetch.setUriPost(ncbiKeggIDurl, lsParam);
 		String filePath = FileOperate.addSep(savePath) + keggName + "_ncbi-geneid.list";
-		if (httpFetch.query()) {
-			if(httpFetch.download(filePath)){
-				logger.info("下载" + filePath + "成功!");
-			}else {
-				logger.error("下载" + filePath + "失败!");
-			}
+		try {
+			httpFetch.queryExp();
+			httpFetch.download(filePath);
+		} catch (Exception e) {
+			// TODO: handle exception
 		}
 	}
 

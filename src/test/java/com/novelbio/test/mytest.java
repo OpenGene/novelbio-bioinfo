@@ -1,24 +1,23 @@
 package com.novelbio.test;
 
-import htsjdk.samtools.SAMSequenceDictionary;
-
-import java.io.File;
-import java.io.InputStream;
-import java.net.URI;
-import java.nio.file.Files;
-import java.nio.file.OpenOption;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.net.URL;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.gargoylesoftware.htmlunit.HttpMethod;
+import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.TextPage;
+import com.gargoylesoftware.htmlunit.WebClient;
+import com.gargoylesoftware.htmlunit.WebRequest;
+import com.gargoylesoftware.htmlunit.html.HtmlPage;
+import com.gargoylesoftware.htmlunit.util.NameValuePair;
 import com.novelbio.analysis.seq.fasta.ChrDensity;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
@@ -31,12 +30,11 @@ import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.analysis.seq.sam.SamReorder;
-import com.novelbio.analysis.seq.sam.SamToBamSort;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataOperate.HttpFetch;
+import com.novelbio.base.dataOperate.HttpFetchMultiThread;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.listOperate.HistBin;
@@ -48,40 +46,10 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-//		String bamErp = "/home/novelbio/下载/BX-tgf_mapsplice_sorted.bam";
-//		String bamSamtools= "/home/novelbio/下载/BX-tgf_sort.bam";
-//		
-//		SamFile samErp = new SamFile(bamErp);
-//		SamFile samSamtools = new SamFile(bamSamtools);
-//		
-//		for (SamRecord samRecord : samErp.readLinesOverlap("chr2", 66491114, 66493163)) {
-//			System.out.println("erp " + samRecord.toString());
-//        }
-//		System.out.println();
-//		for (SamRecord samRecord : samSamtools.readLinesOverlap("chr12", 66491114, 66493163)) {
-//			System.out.println(samRecord.toString());
-//        }
-		
-//		SamFile samFileUnsort = new SamFile("/home/novelbio/下载/testsam/BX-tgf_mapsplice_sub.bam");
-//		SAMSequenceDictionary samSequenceDictionary = SeqHash.getDictionaryFromFai("/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/ChromFa/chrAll.fa.fai");
-//		
-//		SamToBamSort samToBamSort = new SamToBamSort("/home/novelbio/下载/testsam/BX-tgf_mapsplice_sub_sortMapsplice.bam", samFileUnsort, false);
-//		samToBamSort.setSamSequenceDictionary(samSequenceDictionary);
-//
-//		samToBamSort.setAddMultiHitFlag(false);
-//		samToBamSort.convert();
-		String parentPath = "/media/nbfs/nbCloud/public/AllProject/project_56a1d075da50acf943e4bd06/task_56a1df8bda50e86b4e27c9b0/QualityControl_result/";
-		FastQ fastQ = new FastQ(parentPath + "B_filtered_2.fq.gz");
-		FastQ fastQ2 = new FastQ(FileOperate.changeFileSuffix(fastQ.getReadFileName(), "_test", "fq.gz", null), true);
-		int i = 0;
-		for (FastQRecord fastQRecord : fastQ.readlines()) {
-			if (i++ > 1000000) {
-				break;
-			}
-			fastQ2.writeFastQRecord(fastQRecord);
-		}
-		fastQ.close();
-		fastQ2.close();
+		HttpFetchMultiThread httpFetch = HttpFetchMultiThread.getInstance();
+		httpFetch.queryGetUriStr("yarn-master1:4243/containers/aaaa/top?ps_args=aux");
+//		 GET 192.168.0.170:4243/containers/aaaa/top?ps_args=aux
+
 	}
 	
 	private static void test() {

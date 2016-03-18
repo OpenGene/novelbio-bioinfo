@@ -561,12 +561,26 @@ public class MapHisat implements MapRNA {
 		return outputSam;
 	}
 	
-	/** 把gtfFile改称spliceTxt文件 */
-	public static String convert2SpliceTxt(String gtfFile, String outPath) {
-		GffHashGene gffHashGene = new GffHashGene(gtfFile);
-		String spliceTxt = FileOperate.addSep(outPath) + FileOperate.getFileName(gffHashGene.getGffFilename());
+	/** 把gtfFile改称spliceTxt文件，如果文件已经存在则直接返回 */
+	public static String convert2SpliceTxt(String gtfFile) {
+		String spliceTxt = FileOperate.getParentPathNameWithSep(gtfFile) + FileOperate.getFileName(gtfFile);
 		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
-		writeSpliceTxt(gffHashGene, spliceTxt);
+		if (!FileOperate.isFileExistAndBigThan0(spliceTxt)) {
+			GffHashGene gffHashGene = new GffHashGene(gtfFile);
+			writeSpliceTxt(gffHashGene, spliceTxt);
+		}
+		return spliceTxt;
+	}
+	
+	/** 把gtfFile改称spliceTxt文件，如果文件已经存在则直接返回 */
+	public static String convert2SpliceTxt(String gtfFile, String outPath) {
+		FileOperate.createFolders(outPath);
+		String spliceTxt = FileOperate.addSep(outPath) + FileOperate.getFileName(gtfFile);
+		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
+		if (!FileOperate.isFileExistAndBigThan0(spliceTxt)) {
+			GffHashGene gffHashGene = new GffHashGene(gtfFile);
+			writeSpliceTxt(gffHashGene, spliceTxt);
+		}
 		return spliceTxt;
 	}
 	
@@ -616,12 +630,14 @@ public class MapHisat implements MapRNA {
 			}
 		});
 		
-		TxtReadandWrite txtWrite = new TxtReadandWrite(spliceTxt, true);
+		String tmp = spliceTxt + ".tmp";
+		TxtReadandWrite txtWrite = new TxtReadandWrite(tmp, true);
 		for (String string : lsResult) {
 			String[] ss = string.split(SepSign.SEP_ID);
 			txtWrite.writefileln(ss);
 		}
 		txtWrite.close();
+		FileOperate.moveFile(true, tmp, spliceTxt);
 	}
 	
 	public static Map<String, Integer> getMapSensitive() {

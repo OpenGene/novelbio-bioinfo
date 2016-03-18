@@ -3,9 +3,14 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import junit.framework.TestCase;
 
-public class TestStringTie extends TestCase {
+public class TestStringTie {
+	
+	@Test
 	public void testCmdExeStr() {
 	List<String> lsCmd = new ArrayList<>();
 	
@@ -34,7 +39,6 @@ public class TestStringTie extends TestCase {
 	StringTie stringTie = new StringTie();
 	
 	stringTie.setGtfFile(gtfFile);
-	stringTie.setOutPathPrefix(outputDir);
 //	stringTie.setIsJustNovTran(IsJustNovTran);
 	stringTie.setMinIsoLen(minIsoLen);
 	stringTie.setGapToNewIso(gapToNewIso);
@@ -45,7 +49,7 @@ public class TestStringTie extends TestCase {
 
 	String cmd = stringTie.getLsCmd(inputbam,prefix).toString();   
 //	System.out.println("cmd is " + cmd);
-	assertEquals(softwarePath + "stringtie  -G " + gtfFile +" -j 2 -m 200 -p 1 -g 50 -a 10 -o " + output + " " + workPath + "sample1.bam", cmd);
+	Assert.assertEquals(softwarePath + "stringtie  -G " + gtfFile +" -j 2 -m 200 -p 1 -g 50 -a 10 -o " + output + " " + workPath + "sample1.bam", cmd);
 }
 	
 	

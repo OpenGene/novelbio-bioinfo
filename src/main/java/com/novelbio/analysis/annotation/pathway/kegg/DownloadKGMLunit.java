@@ -59,7 +59,7 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 	}
 	/** 新建一个与输入httpFetch使用同一个httpClient的httpFetch */
 	public void setHttpFetch(HttpFetch httpFetch) {
-		this.keggFetch = HttpFetch.getInstance( httpFetch);
+		this.keggFetch = httpFetch;
 	}
 	/** 重试次数，意思在线程池中失败后的重试次数 */
 	public int getRetryNum() {
@@ -96,8 +96,8 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 	/** 返回本物中该pathway的uri，就是可以下载图片和kgml的那个页面，没有该pathway则返回null */
 	private String getPathUri() throws ParserException, IOException {
 		String keggOrgUri = DownloadKGMLunit.keggOrgUri.replace("KEGPATH", "map" + mapId);
-		keggFetch.setUri(keggOrgUri);
-		keggFetch.queryExp(3);
+		keggFetch.setUriGet(keggOrgUri);
+		keggFetch.queryExp();
 		String response = keggFetch.getResponse();
 //		System.out.println(response);
 //		if (mapId.equals("01230")) {
@@ -116,8 +116,8 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 	
 	/** 给定 可以下载图片和kgml的那个页面，下载kgml文件和相关图片 */
 	private void download(String speciesPathUri) throws ParserException, IOException {
-		keggFetch.setUri(speciesPathUri);
-		keggFetch.queryExp(3);
+		keggFetch.setUriGet(speciesPathUri);
+		keggFetch.queryExp();
 		String keggPage = keggFetch.getResponse();
 		String kgmlUri = getKGMLuri(keggPage);
 		if (kgmlUri == null) {
@@ -126,8 +126,8 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 		String saveName = kgmlUri.split("entry=")[1].split("&")[0];
 		String saveToXml = savePath + saveName + ".xml";
 		if (!FileOperate.isFileExist(saveToXml)) {//存在文件则不下载
-			keggFetch.setUri(kgmlUri);
-			if (keggFetch.query(3)) {
+			keggFetch.setUriGet(kgmlUri);
+			if (keggFetch.query()) {
 				keggFetch.download(saveToXml);
 			}
 		}
@@ -139,8 +139,8 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 		
 		String saveToPic = savePath + saveName + ".png";
 		if (!FileOperate.isFileExist(saveToPic)) { 
-			keggFetch.setUri(picUri);
-			if (keggFetch.query(3)) {
+			keggFetch.setUriGet(picUri);
+			if (keggFetch.query()) {
 				keggFetch.download(saveToPic);
 			}
 		}
