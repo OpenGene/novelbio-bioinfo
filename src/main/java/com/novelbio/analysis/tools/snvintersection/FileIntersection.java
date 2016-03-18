@@ -9,7 +9,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
 
-
 /**
  * 有序文件交集类
  * 
@@ -19,14 +18,15 @@ import org.apache.commons.lang3.Validate;
 public class FileIntersection {
 	private File[] fileArray;
 	private File outputFile;
-	
+
 	private EqualStrategy equalStrategy;
 	private SortStrategy sortStrategy;
 
 	public static File intersection(File[] fileArray) {
 		try {
 			FileIntersection fileIntersection = new FileIntersection(fileArray,
-					new EqualStrategy.DefaultEqualStrategy(), new SortStrategy.DefaultSortStrategy());
+					new EqualStrategy.DefaultEqualStrategy(),
+					new SortStrategy.DefaultSortStrategy());
 			fileIntersection.intersectionFiles();
 			return fileIntersection.getOutputFile();
 		} catch (Exception e) {
@@ -35,9 +35,11 @@ public class FileIntersection {
 		return null;
 	}
 
-	public static File intersection(File[] fileArray, EqualStrategy equalStrategy, SortStrategy sortStrategy) {
+	public static File intersection(File[] fileArray, EqualStrategy equalStrategy,
+			SortStrategy sortStrategy) {
 		try {
-			FileIntersection fileIntersection = new FileIntersection(fileArray, equalStrategy, sortStrategy);
+			FileIntersection fileIntersection = new FileIntersection(fileArray, equalStrategy,
+					sortStrategy);
 			fileIntersection.intersectionFiles();
 			return fileIntersection.getOutputFile();
 		} catch (Exception e) {
@@ -46,7 +48,8 @@ public class FileIntersection {
 		return null;
 	}
 
-	private FileIntersection(File[] fileArray, EqualStrategy equalStrategy, SortStrategy sortStrategy) {
+	private FileIntersection(File[] fileArray, EqualStrategy equalStrategy,
+			SortStrategy sortStrategy) {
 		Validate.notNull(fileArray, "FileArray can not be null");
 		Validate.notNull(fileArray, "EqualStrategy can not be null");
 		Validate.notNull(fileArray, "SortStrategy can not be null");
@@ -177,7 +180,8 @@ class IntersectionLine extends FileLineReader implements Comparable<Intersection
 	private SortStrategy sortStrategy = null;
 	private EqualStrategy equalStrategy = null;
 
-	public IntersectionLine(File file, EqualStrategy equalStrategy, SortStrategy sortStrategy) throws IOException {
+	public IntersectionLine(File file, EqualStrategy equalStrategy, SortStrategy sortStrategy)
+			throws IOException {
 		super(file);
 		Validate.notNull(file, "file can not be null");
 		Validate.notNull(equalStrategy, "equalStrategy can not be null");
@@ -188,6 +192,9 @@ class IntersectionLine extends FileLineReader implements Comparable<Intersection
 
 	@Override
 	public boolean equals(Object obj) {
+		if (obj == null) {
+			return false;
+		}
 		IntersectionLine other = (IntersectionLine) obj;
 		if (this == other) {
 			return true;
