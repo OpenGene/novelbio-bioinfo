@@ -11,8 +11,10 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.cmd.CmdOperate;
@@ -59,7 +61,7 @@ public class CombineTab {
 		//comb.deleteAllTempFile();
 	}
 	
-	private static final Logger logger = Logger.getLogger(CombineTab.class);
+	private static final Logger logger = LoggerFactory.getLogger(CombineTab.class);
 	public static String tempFolder = PathDetail.getRworkspaceTmp();
 	private List<String> tempFiles = new ArrayList<String>();
 	
@@ -202,7 +204,12 @@ public class CombineTab {
 				subTitle.add(lsInfoCodAllCols.get(0)[i + colCompareOverlapID.length] + "_" + conditionAbbr);
 			}
 			lsTitle.addAll(subTitle);
-			set_MapCompareComb_And_MapFileNamel(filename, lsInfoCodAllCols.subList(1, lsInfoCodAllCols.size()));
+			List<String[]> lsInfo = lsInfoCodAllCols.subList(1, lsInfoCodAllCols.size());
+			if (lsInfo.isEmpty()) {
+				throw new ExceptionNbcParamError(filename + " is empty, please check!");
+			}
+			
+			set_MapCompareComb_And_MapFileNamel(filename, lsInfo);
 		}
 		combInfo();
 		lsResultIntersection.add(0, lsTitle.toArray(new String[0]));

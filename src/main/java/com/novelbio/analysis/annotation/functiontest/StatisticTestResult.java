@@ -114,6 +114,20 @@ public class StatisticTestResult {
 	
 	protected void calculatePvalue() {
 		if (statisticsPvalueType == StatisticsPvalueType.TwoTail) {
+			pvalue = statisticsTest.getTwoTailedP(difGeneInItemNum, allDifGeneNum-difGeneInItemNum,
+					GeneInItemIDNum-difGeneInItemNum, AllGeneNum-allDifGeneNum - GeneInItemIDNum + difGeneInItemNum);
+		} else if (statisticsPvalueType == StatisticsPvalueType.RightTail) {
+			pvalue = statisticsTest.getRightTailedP(difGeneInItemNum, allDifGeneNum-difGeneInItemNum,
+					GeneInItemIDNum-difGeneInItemNum, AllGeneNum-allDifGeneNum - GeneInItemIDNum + difGeneInItemNum);
+		} else if (statisticsPvalueType == StatisticsPvalueType.LeftTail) {
+			pvalue = statisticsTest.getLeftTailedP(difGeneInItemNum, allDifGeneNum-difGeneInItemNum,
+					GeneInItemIDNum-difGeneInItemNum, AllGeneNum-allDifGeneNum - GeneInItemIDNum + difGeneInItemNum);
+		}
+	}
+	
+	
+	protected void calculatePvalueOld() {
+		if (statisticsPvalueType == StatisticsPvalueType.TwoTail) {
 			pvalue = statisticsTest.getTwoTailedP(difGeneInItemNum, allDifGeneNum, GeneInItemIDNum, AllGeneNum);
 		} else if (statisticsPvalueType == StatisticsPvalueType.RightTail) {
 			pvalue = statisticsTest.getRightTailedP(difGeneInItemNum, allDifGeneNum, GeneInItemIDNum, AllGeneNum);
@@ -121,7 +135,6 @@ public class StatisticTestResult {
 			pvalue = statisticsTest.getLeftTailedP(difGeneInItemNum, allDifGeneNum, GeneInItemIDNum, AllGeneNum);
 		}
 	}
-	
 	public String[] toStringArray() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(itemID);

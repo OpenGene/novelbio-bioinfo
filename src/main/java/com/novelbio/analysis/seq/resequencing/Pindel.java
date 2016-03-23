@@ -85,7 +85,7 @@ public class Pindel implements IntCmdSoft {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setRedirectOutToTmp(true);
-		cmdOperate.addCmdParamOutput(output, false);
+		cmdOperate.addCmdParamOutput(output);
 		cmdOperate.run();
 	}
 	

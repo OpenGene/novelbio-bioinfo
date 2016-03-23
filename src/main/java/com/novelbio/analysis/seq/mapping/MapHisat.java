@@ -526,6 +526,7 @@ public class MapHisat implements MapRNA {
 			cmdOperate.setGetCmdInStdStream(true);
 		
 			Thread thread = new Thread(cmdOperate);
+			thread.setDaemon(true);
 			thread.start();
 			InputStream inputStream = cmdOperate.getStreamStd();
 			SamFile samFile = copeSamStream(false, inputStream);

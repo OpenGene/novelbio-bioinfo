@@ -74,6 +74,7 @@ public class MapBwaMemMR{
 		cmdOperate.setGetCmdInStdStream(true);
 		cmdOperate.setInputStream(bamStreamIn);
 		Thread thread = new Thread(cmdOperate);
+		thread.setDaemon(true);
 		thread.start();
 		InputStream inputStream = cmdOperate.getStreamStd();
 		

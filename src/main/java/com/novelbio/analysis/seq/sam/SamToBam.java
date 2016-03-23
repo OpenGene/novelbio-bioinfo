@@ -108,6 +108,7 @@ public class SamToBam {
 				}
 			}
 		});
+		thread.setDaemon(true);
 		thread.start();
 	}
 	
@@ -128,8 +129,14 @@ public class SamToBam {
 	}
 	
 	public void writeToOs() {
-		setSamHeader();
-		setLsRecorders();
+		try {
+			setSamHeader();
+			setLsRecorders();
+		} catch (Exception e) {
+			isError = true;
+			throw e;
+		}
+
 		Iterable<SamRecord> itSamRecord = isAddMultiFlag? samAddMultiFlag.readlines() : samFileIn.readLines();
 
 		try {

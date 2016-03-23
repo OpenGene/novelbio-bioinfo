@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -157,11 +158,14 @@ public class StringTie  implements IntCmdSoft, IntReconstructIsoUnit {
 		String prefix = FileOperate.getFileNameSep(bamFile)[0];
 		List<String> lsCmd = getLsCmd(bamFile, prefix);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		this.lsCmd.add(cmdOperate.getCmdExeStr());
 		cmdOperate.setRedirectInToTmp(true);
 		cmdOperate.addCmdParamInput(bamFile);
+		if (!StringOperate.isRealNull(gtfFile)) {
+			cmdOperate.addCmdParamInput(gtfFile);
+		}
 		cmdOperate.setRedirectOutToTmp(true);
 		cmdOperate.addCmdParamOutput(getOutGtfName(prefix));
+		this.lsCmd.add(cmdOperate.getCmdExeStr());
 		cmdOperate.runWithExp("StringTie error on file " + FileOperate.getFileName(bamFile));
 	}
 	

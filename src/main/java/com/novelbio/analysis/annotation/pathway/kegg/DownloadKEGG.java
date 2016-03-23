@@ -46,6 +46,7 @@ public class DownloadKEGG {
 					try { downloadSpeciesKGML.download(); } catch (InterruptedException e) { }
 				}
 			});
+			thread.setDaemon(true);
 			thread.start();
 			downloadSpeciesKGML.executDownLoad();
 			try {

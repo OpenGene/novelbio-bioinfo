@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
-import com.novelbio.analysis.annotation.cog.EnumCogType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
@@ -21,7 +20,6 @@ import com.novelbio.database.domain.geneanno.Go2Term;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageGo2Term;
-import com.novelbio.generalConf.PathDetailNBC;
 
 public abstract class GeneID2LsItem {
 	private static final Logger logger = LoggerFactory.getLogger(GeneID2LsItem.class);
