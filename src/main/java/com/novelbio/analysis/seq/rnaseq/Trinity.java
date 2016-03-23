@@ -673,13 +673,13 @@ public class Trinity implements IntCmdSoft {
 	
 	/** 返回拼接好的文件的路径 */
 	public String getResultPath() {
-		return output + ".trinity.fasta";
+		return getTmpOut() + ".Trinity.fasta";
 //		return FileOperate.addSep(output) + "trinity.fa";
 	}
 
 	/** 返回拼接好的文件的路径 */
 	private String getResultPathRaw() {
-		return getTmpOut() + ".Trinity.fasta";
+		return getTmpOut()  + ".Trinity.fasta";
 //		return FileOperate.addSep(output) + "trinity.fa";
 	}
 	
