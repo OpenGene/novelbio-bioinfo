@@ -100,7 +100,7 @@ public class FastaDictMake {
      * @return program exit status.
      */
     protected int doWork() {
-        if (FileOperate.isFileExist(OUTPUT)) {
+        if (FileOperate.isFileExistAndNotDir(OUTPUT)) {
             throw new ExceptionFastq(OUTPUT.toString() +
                     " already exists.  Delete this file and try again, or specify a different output file.");
         }

@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
+import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
 import org.apache.commons.math3.distribution.ChiSquaredDistribution;
+import org.apache.commons.math3.distribution.FDistribution;
 import org.apache.commons.math3.stat.inference.TestUtils;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -74,6 +76,7 @@ public interface ISpliceTestModule {
 			}
 			return iSpliceTestModule;
 		}
+	
 	}
 }
 
@@ -646,20 +649,25 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 		return result;
 	}
 	
-	//在这里是新的算法
+	/** 在这里是新的算法
 	
-//	|--------- Ctrl1 <---- chiCvT1 ----> Treat1 ---------|
-//	|	     chiC12                              chiT12             |
-//    |           Ctrl2 <---- chiCvT2 ----> Treat2             |
-// chiC14   chiC23                               chrT23       chiT14
-//	|	      Ctrl3 <---- chiCvT3 ----> Treat3             |
-//	|	     chiC34	                             chrT34           |
-//	|--------- Ctrl4 <---- chiCvT4 ----> Treat4 ---------|
+//	  |--------- Ctrl1 <---- chiCvT1 ----> Treat1 ------------|
+//	  |	        chiC12                          chiT12            |
+//    |          Ctrl2 <---- chiCvT2 ----> Treat2             |
+//chiC14    chiC23                          chrT23      chiT14
+//    |          Ctrl3 <---- chiCvT3 ----> Treat3             |
+//	  |	        chiC34	                         chrT34           |
+//	  |--------- Ctrl4 <---- chiCvT4 ----> Treat4 ------------|
 //		
 //		组间卡方 chiCvT = chiCvT1 + chiCvT2 + chiCvT3 + chiCvT4    自由度为4
 //		组内卡放 chiIn = chiC12 + chiC23 + chiC34 + chiC14 + chiT12 + chiT23 + chiT34 + chiT14 自由度为8
-//		总卡方值为 F = (chiCvT/4) / (chriIn/8)
-	public double calculatePvalue(List<int[]> lsTreat, List<int[]> lsCtrl) {
+//		总F值为 F = (chiCvT/(4*3)) / (chriIn/(8*3))
+* 乘以3是因为 chi 自己还有自由度，是3
+* @param lsTreat
+* @param lsCtrl
+* @return
+*/
+	private double calculatePvalue(List<int[]> lsTreat, List<int[]> lsCtrl) {
 		double chiCvT = 0, chiIn = 0;
 		int[] ctrlFirst = null, treatFirst = null;
 		int[] ctrlLast = null, treatLast = null;
@@ -679,25 +687,28 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 				chiIn += chiSquareDataSetsComparison(ctrlLast, ctrlOne);
 				chiIn += chiSquareDataSetsComparison(treatLast, treatOne);
 			}
-			if (i == lsTreat2LsValue.size() - 1) {
+			if (i == lsTreat.size() - 1) {
 				dfIn += 2;
 				chiIn += chiSquareDataSetsComparison(ctrlFirst, ctrlOne);
 				chiIn += chiSquareDataSetsComparison(treatFirst, treatOne);
 			}
 			
 			chiCvT += chiSquareDataSetsComparison(treatOne, ctrlOne);
-
-			lsTreatValue.add(treatOne);
-			lsCtrlValue.add(ctrlOne);
+			ctrlLast = ctrlOne;
+			treatLast = treatOne;
 		}
-		
-		double df = (lsTreat2LsValue.size()) * (lsTreat2LsValue.get(0).size() ) - 1;
-		ChiSquaredDistribution chiSquaredDistribution = new ChiSquaredDistribution(df);
-		return 1 - chiSquaredDistribution.cumulativeProbability(chiCvT);
+		double f = 0;
+		int dN = 0, dD = 0;
+		dN = dfCvT;
+		dD = dfIn;
+		FDistribution fDistribution = new FDistribution(dN*3, dD*3);
+		f = (chiCvT/dfCvT*3) / (chiIn/dfIn*3);
+		double pvalue = 1-fDistribution.cumulativeProbability(f);
+		return pvalue;
 	}
 	
 	
-	public double calculatePvalue2() {
+	public double calculatePvalue() {
 		int[] cond1 = combReadsNumInt(mapTreat2LsValue);
 		int[] cond2 = combReadsNumInt(mapCtrl2LsValue);
 		if (!filter(cond1, cond2, juncAllReadsNum, juncSampleReadsNum)) {
@@ -705,27 +716,8 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 			lsCtrlValue.add(cond2);
 			return 1.0;
 		}
-		
-		//在这里是新的算法
-		
-//	|--------- Ctrl1 <---- chiCvT1 ----> Treat1 ---------|
-//	|	     chiC12                              chiT12             |
-//    |           Ctrl2 <---- chiCvT2 ----> Treat2             |
-// chiC14   chiC23                               chrT23       chiT14
-//	|	      Ctrl3 <---- chiCvT3 ----> Treat3             |
-//	|	     chiC34	                             chrT34           |
-//	|--------- Ctrl4 <---- chiCvT4 ----> Treat4 ---------|
-//		
-//		组间卡方 chiCvT = chiCvT1 + chiCvT2 + chiCvT3 + chiCvT4    自由度为4
-//		组内卡放 chiIn = chiC12 + chiC23 + chiC34 + chiC14 + chiT12 + chiT23 + chiT34 + chiT14 自由度为8
-//		总卡方值为 F = (chiCvT/4) / (chriIn/8)
-		
-		double chiCvT = 0, chiIn = 0;
-		int[] ctrlFirst = null, treatFirst = null;
-		int[] ctrlLast = null, treatLast = null;
-		
-		int dfCvT= lsTreat2LsValue.size();
-		int dfIn = 0;
+		List<int[]> lsTreat = new ArrayList<>();
+		List<int[]> lsCtrl = new ArrayList<>();
 		for (int i = 0; i < lsTreat2LsValue.size(); i++) {
 			List<Double> lsTreat_OneRepeat = lsTreat2LsValue.get(i);
 			List<Double> lsCtrl_OneRepeat = lsCtrl2LsValue.get(i);
@@ -734,32 +726,13 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 	
 			normalizeToLowValue(treatOne, normalizedNum);
 			normalizeToLowValue(ctrlOne, normalizedNum);
+			lsTreat.add(treatOne);
+			lsCtrl.add(ctrlOne);
 			
-			
-			if (i == 0) {
-				ctrlFirst = ctrlOne;
-				treatFirst = treatOne;
-			}
-			if (ctrlLast != null) {
-				dfIn += 2;
-				chiIn += chiSquareDataSetsComparison(ctrlLast, ctrlOne);
-				chiIn += chiSquareDataSetsComparison(treatLast, treatOne);
-			}
-			if (i == lsTreat2LsValue.size() - 1) {
-				dfIn += 2;
-				chiIn += chiSquareDataSetsComparison(ctrlFirst, ctrlOne);
-				chiIn += chiSquareDataSetsComparison(treatFirst, treatOne);
-			}
-			
-			chiCvT += chiSquareDataSetsComparison(treatOne, ctrlOne);
-
 			lsTreatValue.add(treatOne);
 			lsCtrlValue.add(ctrlOne);
 		}
-		
-		double df = (lsTreat2LsValue.size()) * (lsTreat2LsValue.get(0).size() ) - 1;
-		ChiSquaredDistribution chiSquaredDistribution = new ChiSquaredDistribution(df);
-		return 1 - chiSquaredDistribution.cumulativeProbability(chiCvT);
+		return calculatePvalue(lsTreat, lsCtrl);
 	}
 	
 	
@@ -836,21 +809,6 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 		}
 	}
 	
-	protected static double chiSquareTestDataSetsComparison(int[] cond1, int[] cond2) {
-		long[] cond1Long = new long[cond1.length];
-		long[] cond2Long = new long[cond2.length];
-		for (int i = 0; i < cond1.length; i++) {
-			cond1Long[i] = cond1[i] + 1;
-		}
-		for (int i = 0; i < cond2.length; i++) {
-			cond2Long[i] = cond2[i] + 1;
-		}
-		try {
-			return TestUtils.chiSquareTestDataSetsComparison(cond1Long, cond2Long);
-		} catch (Exception e) {
-			return 1.0;
-		}
-	}
 	protected static double chiSquareDataSetsComparison(int[] cond1, int[] cond2) {
 		long[] cond1Long = new long[cond1.length];
 		long[] cond2Long = new long[cond2.length];
@@ -860,11 +818,17 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 		for (int i = 0; i < cond2.length; i++) {
 			cond2Long[i] = cond2[i] + 1;
 		}
+		
+		long[][] cond = new long[2][];
+		cond[0] = cond1Long;
+		cond[1] = cond2Long;
 		try {
-			return TestUtils.chiSquareDataSetsComparison(cond1Long, cond2Long);
+			ChiSquareTestImpl chiSquareTestImpl = new ChiSquareTestImpl();
+			return chiSquareTestImpl.chiSquare(cond);
 		} catch (Exception e) {
 			return 1.0;
-		}
+		}		
+		
 	}
 	
 	/** 返回整理好的比较结果展示 */
@@ -1006,13 +970,6 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 		}
 		return stringBuilder.toString();
 	}
-
-	@Override
-	public double calculatePvalue() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }
 
 class SpliceTestCombine implements ISpliceTestModule {
