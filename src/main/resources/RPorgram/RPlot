@@ -1,0 +1,148 @@
+
+#***********************绘制火山图***********************
+library(ggplot2)
+data =read.table("D:\\BvsA.alldiff.xls",header=T,row.names=1)
+result=ggplot(data,aes(Log2FC,-1*log10(FDR))) + geom_point(aes(color=abs(Log2FC)))+ xlim(-4,4) + ylim(0,1) + labs(title="Volcanoplot",x=expression(Log[2](FC)),y=expression(-log[10](RDR)))
+ggsave(result,file="D:\\Volcanoplot2.png")
+
+程序说明：
+#读取数据
+data =read.table("D:\\BvsA.alldiff.xls",header=T,row.names=1)
+#使用geom_point绘制点图
+geom_point(aes(color=abs(Log2FC)))
+#限定x轴显示范围
+xlim(-4,4)
+#限定y轴显示范围
+ylim(0,1)
+# 添加x轴、y轴、以及图片的title
+labs(title="Volcanoplot",x=expression(Log[2](FC)),y=expression(-log[10](RDR)))
+#保存图片
+ggsave(result,file="D:\\Volcanoplot2.png")
+ 
+#***********************绘制柱状图***********************
+ 
+ library(ggplot2)
+data =read.table("D:\\R_plot\\Barplot\\S1_GeneStructure.txt",header=T)
+colours=c("#6093CA","#93CEB8","#EE6181","#F2CE84","#82D3F0","#C8ABEB","#FDA679","#AD8B66","#F4E787","#F8A7A3")
+result=ggplot(data,aes(x=Item,y=Number/10000))+geom_bar(aes(fill=Item),width=0.7,stat="identity",position=position_dodge())+theme_bw()+labs(x="",y="reads Number(/10000)",title="Reads distribution")
+result2=result+theme(axis.text.x=element_text(angle=60,hjust=1))+scale_fill_manual(values=colours)
+ggsave(result2,file="D:\\R_plot\\Barplot\\Barplot4.png")
+
+程序说明：
+#读取数据
+data =read.table("D:\\R_plot\\Barplot\\S1_GeneStructure.txt",header=T)
+#设置柱状图颜色
+colours=c("#6093CA","#93CEB8","#EE6181","#F2CE84","#82D3F0","#C8ABEB","#FDA679","#AD8B66","#F4E787","#F8A7A3")
+#使用geom_bar函数绘制柱状图，width调整柱状图宽度，stat数据变换使用，position overlapping 点位置调整
+geom_bar(aes(fill=Item),width=0.7,stat="identity",position=position_dodge())
+# 调整x轴坐标文字的倾斜度
+theme(axis.text.x=element_text(angle=60,hjust=1))
+# 为柱状图添加上预设的颜色
+scale_fill_manual(values=colours)
+#保存图片
+ggsave(result2,file="D:\\R_plot\\Barplot\\Barplot4.png")
+ 
+#***********************绘制reads在染色体上的密度分布图***********************
+
+library(ggplot2)
+library(reshape2) 
+inputdata =read.table("D:\\R_plot\\ReadsDensity\\reads_density5.txt",header=T)
+graphic1 =ggplot(data=inputdata, aes(ceiling(start/100)))+theme_bw()+geom_line(data=inputdata,aes(y=log2(counts2+1)),color="#00AEAE")+theme(panel.grid.major=element_blank(),panel.grid.minor=element_blank())+geom_line(data=inputdata,aes(y=-log2(anti_counts)),color="#FF8000")
+graphic2=graphic1+scale_y_continuous(breaks=seq(-6,6,6))+facet_grid(ChrID ~ ., scales ="free_y")
+graphic3 =graphic2+theme(strip.background=element_blank(),strip.text.y=element_text(size=8,angle=-90,face="bold"),panel.border=element_blank(),axis.line=element_line(colour="black",size=2,lineend="square"))
+graphic4 =graphic3+labs(x="chromosome position(Mb)",y="Median of read density(log2)",title="Reads Density in Chromosomes")
+graphic5 =graphic4+theme(axis.line.x = element_line(size=0.5, colour = "black"),axis.line.y =element_line(size=0.5, colour = "black"))
+ggsave(graphic5,file="D:\\R_plot\\ReadsDensity\\reads_density.png")
+ 
+
+ 
+#***********************绘制heatmap图***********************
+install.packages(pheatmap)
+library(pheatmap)
+data =read.table("D:\\R_plot\\Corrplot\\ild-2mmVS9522-2mm_Dif_Gene_2FC_FDR0.05_All_Inf_test.xls.txt",header=T)
+data <- data [,3: ncol(data)]
+data2=log10(data+1)
+pheatmap(data2,color=colorRampPalette(c("green","black","red"))(20) ,show_rownames = FALSE,fontsize=9,filename ="D:\\R_plot\\Corrplot\\heatmap.png")
+
+
+#***********************绘制Tss曲线图***********************
+library(ggplot2)
+require(reshape2)
+inputdata = read.table("D:\\R_plot\\Curve\\line_input2.txt",header=T,sep="\t")
+meltdata <-melt(inputdata,id=c("TI"))
+result=ggplot(meltdata ,aes(x=TI,y=value,colour=variable,group=variable))+ theme_bw()+stat_smooth(se=FALSE)+theme(legend.title=element_blank())+labs(x="Distance from TSS(bp)",y="Normalized Reads")
+ggsave(result,file="D:\\R_plot\\Curve\\Tss_curve.png")
+
+程序说明：
+#修改数据格式
+melt(inputdata,id=c("TI"))
+#去掉图片默认的灰色背景
+theme_bw()
+#绘制平滑曲线
+stat_smooth(se=FALSE)
+#去掉图例title
+theme(legend.title=element_blank())
+#添加x，y轴title
+labs(x="Distance from TSS(bp)",y="Normalized Reads")
+#保存图片
+ggsave(result,file="D:\\R_plot\\Curve\\Tss_curve.png")
+
+#***********************绘制KEGG 富集散点图***********************
+
+library(ggplot2)
+pathway = read.table("D:\\R_plot\\KEGG\\kegg.txt",header=T,sep="\t")
+pp = ggplot(pathway,aes(DifGene/GeneInPathwayID,PathwayTerm))+ theme_bw()
+pbubble = pp + geom_point(aes(size=DifGene,color=-1*log10(P.Value)))
+pr=pbubble + scale_colour_gradient(low="green",high="red") + labs(color=expression(-log[10](P-Value)),size="Gene number",x="Rich factor",y="Pathway Term",title="Top20 of pathway enrichment")
+ggsave(pr,file="D:\\R_plot\\KEGG\\KEGG_scatter.png")
+
+
+程序说明：
+#去掉图片默认的灰色背景
+theme_bw()
+#绘制点
+geom_point(aes(size=DifGene,color=-1*log10(P.Value)))
+# 自定义渐变颜色
+scale_colour_gradient(low="green",high="red")
+#添加x，y轴title，以及整个图片的title
+ labs(color=expression(-log[10](P-Value)),size="Gene number",x="Rich factor",y="Pathway Term",title="Top20 of pathway enrichment")
+#保存图片
+ggsave(pr,file="D:\\R_plot\\KEGG\\KEGG_scatter.png")
+
+
+
+#***********************绘制样品相关性图***********************
+library(ggplot2)
+library(plyr) 
+library(reshape2) 
+library (scales) 
+library(RColorBrewer)
+data =read.table("D:\\R_plot\\Corrplot\\All_FPKM.txt",header=T)
+dataR=cor(data[3:ncol(data)])
+dataR = dataR^2
+data=as.data.frame(dataR)
+data=data.frame(row=rownames(data),data)
+rownames(data) <- NULL
+data=melt(data)
+ggplot(data,aes(row,variable))+geom_tile(aes(fill=value),colour="black")+theme(axis.text.x=element_text(angle=60,hjust=1))
+p1=ggplot(data,aes(row,variable))+xlab("")+geom_tile(aes(fill=value),colour="transparent")+theme(axis.text.x=element_text(angle=60,hjust=1),axis.title.y=element_blank())+scale_fill_gradient(trans="log",low="#A3D1D1",high="#336666")
+p2=p1+scale_fill_gradient(name=expression(R^2),low="white",high="#003E3E")+theme(panel.background = element_rect(fill='white', colour='white'))
+p3=p2+scale_y_discrete(limits=levels(data$row)) + labs(title="Pearson correlation between samples")+geom_text(aes(label=round(value,3)))
+ggsave(p3,file="D:\\R_plot\\Corrplot\\Corrplot_RPKM2.png")
+
+#***********************绘制基因表达量盒形图***********************
+library(reshape2)
+library(ggplot2)
+colours=c("#6093CA","#93CEB8","#F2CE84","#EE6181","#82D3F0","#C8ABEB","#FDA679","#AD8B66")
+data =read.table("D:\\R_plot\\Boxplot\\All_RPKM.Test5_2.txt",header=T)
+dm=melt(data)   #需要先对data进行格式转化
+result=ggplot(dm,aes(x=variable,y=log10(value+1),fill=variable))+geom_boxplot()+labs(x="",y=expression(log[10](RPKM+1)),title="RPKM distribution",fill="Group")+theme(axis.text.x=element_text(angle=60,hjust=1))+scale_fill_manual(values=colours)
+ggsave(result,file="D:\\R_plot\\Boxplot\\RPKM_Boxplot4.png")
+
+#***********************绘制测序饱和度曲线图***********************
+library(ggplot2)
+inputdata =read.table("D:\\R_plot\\Saturation\\saturation_inputdata.txt",header=T,sep="\t")
+p=ggplot(data=inputdata,aes(x=reads.number,y=gene.number))+theme_bw()+geom_line(size=1,color="#009393")+geom_point(color="#009393")+labs(x="Reads number(x10000)",y="Detected gene number")
+ggsave(p,file="D:\\R_plot\\Saturation\\Saturation.png")
+
+
