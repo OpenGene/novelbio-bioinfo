@@ -9,6 +9,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -16,8 +17,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.Validate;
+import org.apache.commons.lang3.time.DateFormatUtils;
 import org.apache.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,7 +35,7 @@ import org.jsoup.select.Elements;
  */
 class DownKeggPngUnit {
 	private static Logger logger = Logger.getLogger(DownKeggPngUnit.class);
-	private int maxTime = 5;
+	private int maxTime = 10;
 	String searchingUrl;
 	String downloadPath;
 	Set<String> setImagePage = Collections.synchronizedSet(new HashSet<>());
@@ -42,6 +46,7 @@ class DownKeggPngUnit {
 	ExecutorService downloadExecutor = Executors.newFixedThreadPool(10);
 	CountDownLatch resolveImagePageLatch = null;
 	CountDownLatch downloadLatch = null;
+	File metaFile = null;
 
 	/**
 	 * 测试方法
@@ -49,10 +54,33 @@ class DownKeggPngUnit {
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		String URL = "http://www.genome.jp//kegg-bin/color_pathway_object?org_name=osa&file=40741&reference=gray";
-		String downloadPath = "/home/novelbio/yy-test/";
-		DownKeggPngUnit instance = new DownKeggPngUnit(URL, downloadPath);
-		instance.startDownload();
+		// String URL =
+		// "http://www.genome.jp//kegg-bin/color_pathway_object?org_name=osa&file=40741&reference=gray";
+		// String downloadPath = "/home/novelbio/yy-test/";
+		// DownKeggPngUnit instance = new DownKeggPngUnit(URL, downloadPath);
+		// instance.startDownload();
+		String[][] arrUrl = {
+				{
+						"http://www.genome.jp//kegg-bin/color_pathway_object?org_name=mmu&file=17028&reference=gray",
+						"/home/novelbio/yy/GvsD" },
+				{
+						"http://www.genome.jp//kegg-bin/color_pathway_object?org_name=mmu&file=51801&reference=gray",
+						"/home/novelbio/yy/CvsB" },
+				{
+						"http://www.genome.jp//kegg-bin/color_pathway_object?org_name=mmu&file=100449&reference=gray",
+						"/home/novelbio/yy/DvsB" },
+				{
+						"http://www.genome.jp//kegg-bin/color_pathway_object?org_name=mmu&file=122172&reference=gray",
+						"/home/novelbio/yy/GvsC" } };
+		ExecutorService runner = Executors.newFixedThreadPool(4);
+		for (int i = 0; i < arrUrl.length; i++) {
+			int index = i;
+			runner.execute(() -> {
+				DownKeggPngUnit instance = new DownKeggPngUnit(arrUrl[index][0], arrUrl[index][1]);
+				instance.startDownload();
+			});
+		}
+		runner.shutdown();
 	}
 
 	public DownKeggPngUnit(String url, String downloadPath) {
@@ -64,6 +92,7 @@ class DownKeggPngUnit {
 	 * 单独使用时候的下载方法
 	 */
 	public void startDownload() {
+
 		prepare();
 		resolvePage();
 		resolveImagePage();
@@ -80,32 +109,21 @@ class DownKeggPngUnit {
 		File file = new File(downloadPath);
 		if (file.exists()) {
 			if (!file.isDirectory()) {
-				throw new RuntimeException(downloadPath + " is not directory!");
+				throw new RuntimeException("不是文件夹: " + downloadPath);
 			}
 		} else {
 			file.mkdirs();
 		}
+		Path metaPath = Paths.get(downloadPath, "meta.txt");
+		metaFile = metaPath.toFile();
+
 	}
 
 	/**
 	 * 解析页面，获取显示图片的页面地址
 	 */
 	void resolvePage() {
-		try {
-			Document doc = Jsoup.connect(searchingUrl).timeout(10000).get();
-			Elements lsA = doc.select("a");
-			lsA.forEach((element) -> {
-				String href = element.absUrl("href");
-				if (href.endsWith(".args")) {
-					setImagePage.add(href);
-				}
-			});
-			if (setImagePage.size() == 0) {
-				throw new RuntimeException("没有找到可以下载的图片地址，请检查页面是否失效");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		fnResolvePage(searchingUrl);
 	}
 
 	/**
@@ -114,11 +132,11 @@ class DownKeggPngUnit {
 	void resolveImagePage() {
 		resolveImagePageLatch = new CountDownLatch(setImagePage.size());
 		setImagePage.forEach((imagePage) -> {
-			fnResolveImagePage(imagePage, 0, (imagePageTemp) -> {
+			fnResolveImagePage(imagePage, (imagePageTemp) -> {
 				resolveImagePageLatch.countDown();
 			}, (imagePageTemp) -> {
-				resolveImagePageLatch.countDown();
 				setFailedImagePage.add(imagePage);
+				resolveImagePageLatch.countDown();
 			});
 		});
 		try {
@@ -135,11 +153,12 @@ class DownKeggPngUnit {
 	void downloadImage() {
 		downloadLatch = new CountDownLatch(setImage.size());
 		setImage.forEach((imageUrl) -> {
-			fnDownloadImage(imageUrl, 0, (imageUrlTemp) -> {
+			fnDownloadImage(imageUrl, (imageUrlTemp) -> {
 				downloadLatch.countDown();
 			}, (imageUrlTemp) -> {
-				downloadLatch.countDown();
+				logger.info("下载失败:" + imageUrlTemp);
 				setFailedImage.add(imageUrl);
+				downloadLatch.countDown();
 			});
 		});
 		try {
@@ -154,71 +173,120 @@ class DownKeggPngUnit {
 	 * 验证下载任务是否成功
 	 */
 	void checkFinish() {
-		logger.info("主页图片数量：" + setImagePage.size());
-		logger.info("主页图片获取失败数量：" + setFailedImagePage.size());
-		logger.info("解析成功图片数量：" + setImage.size());
-		logger.info("下载失败的图片数量：" + setFailedImage.size());
+
+		String info = "\n＝＝＝＝＝＝下载结束＝＝＝＝＝＝＝\n";
+		info += searchingUrl + "\n";
+		info += DateFormatUtils.format(new Date(), "yyyy-MM-dd hh:mm:ss") + "\n";
+		info += "主页图片数量：" + setImagePage.size() + "\n";
+		info += "主页图片获取失败数量：" + setFailedImagePage.size() + "\n";
+		info += "解析成功图片数量：" + setImage.size() + "\n";
+		info += "下载失败的图片数量：" + setFailedImage.size() + "\n";
+		info += StringUtils.join(setFailedImage.stream().map((value) -> {
+			return value + "\n";
+		}).iterator(), "");
+		info += "＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝＝\n";
+		logger.info(info);
+		try {
+			FileUtils.write(metaFile, info, true);
+		} catch (IOException e) {
+			logger.error("写入meta信息失败：", e);
+		}
 		if (setFailedImagePage.size() != 0) {
-			throw new RuntimeException("图片页面和图片数量不匹配，请重新下载!");
+			logger.error("图片页面和图片数量不匹配，请重新下载!");
 		}
 		if (setFailedImage.size() != 0) {
-			throw new RuntimeException("存在下载失败的图片，请重新下载!");
+			logger.error("存在下载失败的图片，请重新下载!");
 		}
 	}
 
-	private void fnResolveImagePage(String imagePageUrl, int time,
-			Consumer<String> successCallback, Consumer<String> errorCallback) {
-		if (time > this.maxTime) {
-			errorCallback.accept(imagePageUrl);
-			return;
-		}
-		resolveImageExecutor.execute(() -> {
+	private void fnResolvePage(String searchUrl) {
+		int time = 0;
+		boolean isFinish = false;
+		while (!isFinish && time++ < this.maxTime) {
 			try {
-				Document doc = Jsoup.connect(imagePageUrl).timeout(10000).get();
-				Elements lsImageElement = doc.select("img");
-				if (lsImageElement.size() == 0) {
-					throw new RuntimeException("无法获取图片，请检查是否链接失效");
-				}
-				lsImageElement.forEach((element) -> {
-					String absUrl = element.absUrl("src");
-					boolean isPng = absUrl.endsWith(".png");
-					boolean hasModule = element.hasClass("module");
-					if (!hasModule && isPng) {
-						setImage.add(absUrl);
+				logger.info("解析主页中:" + searchingUrl + " " + time);
+				Document doc = Jsoup.connect(searchingUrl).timeout(1000 * 60 * 5).get();
+				Elements lsA = doc.select("a");
+				lsA.forEach((element) -> {
+					String href = element.absUrl("href");
+					if (href.endsWith(".args")) {
+						setImagePage.add(href);
 					}
 				});
-				successCallback.accept(imagePageUrl);
+				if (setImagePage.size() == 0) {
+					logger.error("没有找到可以下载的图片地址，请检查页面是否失效");
+				}
+				isFinish = true;
 			} catch (IOException e) {
-				fnResolveImagePage(imagePageUrl, time + 1, successCallback, errorCallback);
+			}
+		}
+		if (!isFinish) {
+			logger.error("请求页面失效:" + searchingUrl);
+		}
+
+	}
+
+	private void fnResolveImagePage(String imagePageUrl, Consumer<String> successCallback,
+			Consumer<String> errorCallback) {
+
+		resolveImageExecutor.execute(() -> {
+			int time = 0;
+			boolean isFinish = false;
+			while (!isFinish && time++ < this.maxTime) {
+				logger.info("解析图片页面中:" + imagePageUrl + " " + time);
+				try {
+					Document doc = Jsoup.connect(imagePageUrl).timeout(1000 * 60 * 5).get();
+					Elements lsImageElement = doc.select("img");
+					lsImageElement.forEach((element) -> {
+						String absUrl = element.absUrl("src");
+						boolean isPng = absUrl.endsWith(".png");
+						boolean hasModule = element.hasClass("module");
+						if (!hasModule && isPng) {
+							setImage.add(absUrl);
+						}
+					});
+					isFinish = true;
+				} catch (IOException e) {
+				}
+			}
+			if (isFinish) {
+				successCallback.accept(imagePageUrl);
+			} else {
+				errorCallback.accept(imagePageUrl);
 			}
 		});
 	}
 
-	private void fnDownloadImage(String imageUrl, int time, Consumer<String> successCallback,
+	private void fnDownloadImage(String imageUrl, Consumer<String> successCallback,
 			Consumer<String> errorCallback) {
-		if (time > this.maxTime) {
-			errorCallback.accept(imageUrl);
-			return;
-		}
+		String filename = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+		Path path = Paths.get(downloadPath, filename);
 		downloadExecutor.execute(() -> {
-			String filename = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
-			Path path = Paths.get(downloadPath, filename);
-			File output = path.toFile();
-			BufferedInputStream in = null;
-			BufferedOutputStream os = null;
-			try {
-				in = new BufferedInputStream(new URL(imageUrl).openStream());
-				os = new BufferedOutputStream(new FileOutputStream(output));
-				byte data[] = new byte[5000];
-				while (in.read(data) > -1) {
-					os.write(data);
+			int time = 0;
+			boolean isFinish = false;
+			while (!isFinish && time++ < this.maxTime) {
+				logger.info("下载中:" + imageUrl + " " + time);
+				File output = path.toFile();
+				BufferedInputStream in = null;
+				BufferedOutputStream os = null;
+				try {
+					in = new BufferedInputStream(new URL(imageUrl).openStream());
+					os = new BufferedOutputStream(new FileOutputStream(output));
+					int data = -1;
+					while ((data = in.read()) > -1) {
+						os.write(data);
+					}
+					isFinish = true;
+				} catch (Exception e) {
+				} finally {
+					IOUtils.closeQuietly(in);
+					IOUtils.closeQuietly(os);
 				}
+			}
+			if (isFinish) {
 				successCallback.accept(imageUrl);
-			} catch (IOException e) {
-				fnDownloadImage(imageUrl, time + 1, successCallback, errorCallback);
-			} finally {
-				IOUtils.closeQuietly(in);
-				IOUtils.closeQuietly(os);
+			} else {
+				errorCallback.accept(imageUrl);
 			}
 		});
 	}
