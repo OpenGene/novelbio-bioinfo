@@ -493,8 +493,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsResult.add(pvalueCalculate.getStrInfo(true, false));
 		lsResult.add(pvalueCalculate.getStrInfo(true, true));
 		
-//		lsResult.add(pvalueCalculate.getStrNormInfo(false));
-//		lsResult.add(pvalueCalculate.getStrNormInfo(true));
+		lsResult.add(pvalueCalculate.getStrNormInfo(false));
+		lsResult.add(pvalueCalculate.getStrNormInfo(true));
 //		lsResult.add(pvalueCalculate.getPvalueJun() + "");
 //		lsResult.add(pvalueCalculate.getPvalueExp() + "");
 //		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
@@ -536,8 +536,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsTitle.add(condition1 + "Exp");
 		lsTitle.add(condition2 + "Exp");
 		
-//		lsTitle.add("readsInfoDetailJun");
-//		lsTitle.add("readsInfoDetailExp");
+		lsTitle.add("readsInfoDetailJun");
+		lsTitle.add("readsInfoDetailExp");
 //		lsTitle.add("P-Value_Jun");
 //		lsTitle.add("P-Value_Exp");
 //		lsTitle.add("P-Value_Average");

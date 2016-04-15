@@ -60,6 +60,10 @@ public abstract class AgeneUniID {
 	/** 小写的 */
 	public abstract String getGenUniID();
 	public abstract void setGenUniID(String genUniID);
+	
+	public void setAccIdRaw(String accIdRaw) {
+		this.accIDraw = accIdRaw;
+	}
 	/**
 	 * 如果是“”，则返回null
 	 * @return

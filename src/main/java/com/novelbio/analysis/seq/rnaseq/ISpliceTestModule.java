@@ -660,6 +660,8 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 //	  |--------- Ctrl4 <---- chiCvT4 ----> Treat4 ------------|
 //		
 //		组间卡方 chiCvT = chiCvT1 + chiCvT2 + chiCvT3 + chiCvT4    自由度为4
+//		如果组间卡方不差异，则不计算组内卡方，直接返回组间卡方所对应的pvalue
+//
 //		组内卡放 chiIn = chiC12 + chiC23 + chiC34 + chiC14 + chiT12 + chiT23 + chiT34 + chiT14 自由度为8
 //		总F值为 F = (chiCvT/(4*3)) / (chriIn/(8*3))
 * 乘以3是因为 chi 自己还有自由度，是3
@@ -701,9 +703,17 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 		int dN = 0, dD = 0;
 		dN = dfCvT;
 		dD = dfIn;
+		
+		ChiSquaredDistribution chiSquaredDistribution = new ChiSquaredDistribution(dfCvT*3);
+		double pvalueCvT = 1 - chiSquaredDistribution.cumulativeProbability(chiCvT);
+		
+		if (pvalueCvT > 0.6) {
+			return pvalueCvT;
+		}
+		
 		FDistribution fDistribution = new FDistribution(dN*3, dD*3);
 		f = (chiCvT/dfCvT*3) / (chiIn/dfIn*3);
-		double pvalue = 1-fDistribution.cumulativeProbability(f);
+		double pvalue = 1 - fDistribution.cumulativeProbability(f);
 		return pvalue;
 	}
 	

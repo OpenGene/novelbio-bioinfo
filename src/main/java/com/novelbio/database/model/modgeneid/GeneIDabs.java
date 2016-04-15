@@ -107,6 +107,7 @@ public class GeneIDabs implements GeneIDInt {
 		List<AgeneUniID> lsAgeneUniID = getNCBIUniTax(accID, taxID);
 		if (!lsAgeneUniID.isEmpty()) {			
 			ageneUniID = lsAgeneUniID.get(0);
+			ageneUniID.setAccIdRaw(accID);
 			isAccID = false;
 			if (lsAgeneUniID.size() > 1) {
 				removeDot = false;

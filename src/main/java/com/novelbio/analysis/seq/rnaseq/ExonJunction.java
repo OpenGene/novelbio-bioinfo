@@ -94,7 +94,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public static long test() {
 		//TODO
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("1:45567281-45649767"));
+		lsAligns.add(new Align("chr1:28517082-28547087"));
 //		lsAligns.add(new Align("1:7205126-27246005"));
 //		lsAligns.add(new Align("11", 1, 250088574));
 
@@ -166,7 +166,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = LoggerFactory.getLogger(ExonJunction.class);
-	private static String stopGeneName = "ENSG00000163531";
+	private static String stopGeneName = "DNAJC8";
 		
 	GffHashGene gffHashGene = null;
 	/** 没有重建转录本的老iso的名字，用于后面计算可变剪接所在exon number的 */
@@ -239,7 +239,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		
 	public ExonJunction() {
 //		List<Align> lsAligns = new ArrayList<>();
-//		lsAligns.add(new Align("chr1:145663570-145864207"));
+//		lsAligns.add(new Align("chr1:28517082-28547087"));
 //		setLsReadRegion(lsAligns);
 	}
 	

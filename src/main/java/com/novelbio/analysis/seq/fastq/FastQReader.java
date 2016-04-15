@@ -5,6 +5,7 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
@@ -199,7 +200,7 @@ class FastQReader implements Closeable {
 								String lineTmp = bufread.readLine();
 								if (lineTmp == null) {
 									if (i != 0 && isCheckFormat) {
-										throw new ExceptionFastq(txtSeqFile.getFileName() + " check fqformat and fastq file error on line: " + lineNum[0]/4 + getPercentageInfoString());
+										throw new ExceptionFastq(txtSeqFile.getFileName() + " check fqformat and fastq file error on line: " + lineNum[0] + getPercentageInfoString());
 									} else {
 										return null;
 									}
@@ -208,14 +209,14 @@ class FastQReader implements Closeable {
 							}
 							fastQRecord = new FastQRecord(lsStr, offset);
 						} catch (IOException ioEx) {
-							throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4 + " caused by io exception" + getPercentageInfoString(), ioEx);
+							throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0] + " caused by io exception" + getPercentageInfoString(), ioEx);
 						} catch (ExceptionFastq efastq) {
 							if (isCheckFormat) {
-								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0]/4 + getPercentageInfoString(), efastq);
+								throw new ExceptionFastq(txtSeqFile.getFileName() + " fastq file error on line: " + lineNum[0] + getPercentageInfoString(), efastq);
 							} else {
 								readNextNum = 0;
 
-								String errMsg = "fastq file error on line: " + lineNum[0]/4;
+								String errMsg = "fastq file error on line: " + lineNum[0];
 								if (txtSeqFile.getFileName() != null) {
 									errMsg += " fileName: " + txtSeqFile.getFileName(); 
 								}
@@ -227,7 +228,7 @@ class FastQReader implements Closeable {
 										next = bufread.readLine();
 										lineNum[0]++;
 									} catch (Exception e) {
-										throw new ExceptionFastq(txtSeqFile.getFileName() + "fastq file error on line: " + lineNum[0]/4 + getPercentageInfoString(), e);
+										throw new ExceptionFastq(txtSeqFile.getFileName() + "fastq file error on line: " + lineNum[0] + getPercentageInfoString(), e);
 									}
 									if (next == null) {
 										return null;
@@ -242,13 +243,13 @@ class FastQReader implements Closeable {
 									} catch (Exception e) {}
 									if (errorNum[0] > 10000) {
 										throw new ExceptionFastq(txtSeqFile.getFileName() + "fastq file may error, error on line: " 
-												+ lineNum[0]/4 + " many lines were error" + getPercentageInfoString());
+												+ lineNum[0] + " many lines were error" + getPercentageInfoString());
 									}
 								}
 							}
 						} catch (OutOfMemoryError e) {
 								throw new ExceptionFastq(txtSeqFile.getFileName() + "fastq file error on line: " 
-										+ lineNum[0]/4 + " due to OutOfMemoryError" + getPercentageInfoString(), e);
+										+ lineNum[0] + " due to OutOfMemoryError" + getPercentageInfoString(), e);
 						 }
 						return fastQRecord;
 					}
@@ -333,7 +334,7 @@ class FastQReader implements Closeable {
 						if (fastQRecord[0] == null && fastQRecord[1] == null) {
 							return null;
 						} else if (!(fastQRecord[0] != null && fastQRecord[1] != null)) {
-							throw new ExceptionFastq("input file is not pairend at num " +  lineNum[0] + getPercentageInfoString()
+							throw new ExceptionFastq(txtSeqFile.getFileName() + " is not pairend at num " +  lineNum[0] + getPercentageInfoString()
 									+ FileOperate.getFileName(getFileName()) + " " + FileOperate.getFileName(fastQReadMate.getFileName()));
 						}
 						
@@ -341,7 +342,7 @@ class FastQReader implements Closeable {
 						if (!FastQRecord.isPairedByName(fastQRecord[0], fastQRecord[1])) {
 							errorNum[0]++;
 							if (errorNum[0] > 10) {
-								throw new ExceptionFastq("input pairend file have lots of reads that does't paired pleas check " +  lineNum[0] + getPercentageInfoString()
+								throw new ExceptionFastq(txtSeqFile.getFileName() + " pairend file have lots of reads that does't paired, please check.\n error lines: " +  lineNum[0] + getPercentageInfoString()
 										+ FileOperate.getFileName(getFileName()) + " " + FileOperate.getFileName(fastQReadMate.getFileName()));
 							}
 							int readErrNumL = getReadNextNum();
@@ -439,7 +440,7 @@ class FastQReader implements Closeable {
 								errorNum[0]++;
 							}
 							if (i > 1000 || errorNum[0] > 100) {
-								throw new ExceptionFastq(FastQReader.class.toString() + " input file is not pairend" + getPercentageInfoString());
+								throw new ExceptionFastq(txtSeqFile.getFileName() + " is not pairend" + getPercentageInfoString());
 							}
 						}
 
@@ -447,7 +448,7 @@ class FastQReader implements Closeable {
 							if (!itFqPE.hasNext()) {
 								return null;
 							} else {
-								throw new ExceptionFastq(FastQReader.class.toString() + " input file is not pairend" + getPercentageInfoString());
+								throw new ExceptionFastq(txtSeqFile.getFileName() + " is not pairend" + getPercentageInfoString());
 							}
 						}
 						return new FastQRecord[] { fqLeft, fqRight };
@@ -459,8 +460,10 @@ class FastQReader implements Closeable {
 	
 	/** 获得读取到文件的百分比，前后自带空格 */
 	private String getPercentageInfoString() {
-		double readPercentage = txtSeqFile.getReadPercentage();
-		String percentageInfo = readPercentage >= 0? " "+readPercentage + "% of the file, if you think it almost finish, just use the tmp.fq.gz file. " : "";
+		double readPercentage = txtSeqFile.getReadPercentage()*100;
+		DecimalFormat df = new DecimalFormat("#0.0#");
+
+		String percentageInfo = readPercentage >= 0? "\nAlready read "+ df.format(readPercentage) + "% of the file, if you think it almost finish, just use the tmp.fq.gz file. " : "";
 		return percentageInfo;
 	}
 	

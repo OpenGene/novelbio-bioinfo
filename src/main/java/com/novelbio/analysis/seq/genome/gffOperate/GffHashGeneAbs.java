@@ -420,13 +420,13 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	}
 	
 	@Override
-	public void writeToBED(String GTFfile) {
-		writeToBED(null, GTFfile, "novelbio");
+	public void writeToBED(String bedFile) {
+		writeToBED(null,bedFile, "novelbio");
 	}
 	
 	@Override
-	public void writeToBED(String GTFfile, String title) {
-		writeToBED(null, GTFfile, title);
+	public void writeToBED(String bedFile, String title) {
+		writeToBED(null, bedFile, title);
 	}
 	
 	/**
@@ -437,8 +437,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param title 给该GTF起个名字
 	 */
 	@Override
-	public void writeToBED(List<String> lsChrIDinput, String GTFfile,String title) {
-		writeToFile(lsChrIDinput, GffType.BED, GTFfile, title);
+	public void writeToBED(List<String> lsChrIDinput, String bedFile,String title) {
+		writeToFile(lsChrIDinput, GffType.BED, bedFile, title);
 	}
 
 	/**
