@@ -105,7 +105,7 @@ public class BamPileup implements IntCmdSoft {
 	}
 	
 	private String[] getParam() {
-		return new String[]{"-E", "-C50", "-A"};
+		return new String[]{"-E", "-C0", "-A"};
 	}
 	
 	private String[] getReferenceFile() {

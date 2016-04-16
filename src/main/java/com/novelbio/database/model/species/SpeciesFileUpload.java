@@ -70,7 +70,7 @@ public class SpeciesFileUpload {
 		}
 		
 		String newFileName = FileOperate.addSep(savePath) + fileName;
-		String newFileTmp = FileOperate.changeFileSuffix(newFileName, DateUtil.getDateAndRandom(), null);
+		String newFileTmp = FileOperate.changeFileSuffix(newFileName, DateUtil.getDateAndRandom(), null) + ".tmp.upload";
 		try {
 			FileOperate.uploadFile(inputStream, newFileTmp, false, fileSize);
 		} catch (IOException e) {
