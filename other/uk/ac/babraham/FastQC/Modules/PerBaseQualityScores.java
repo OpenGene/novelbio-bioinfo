@@ -181,7 +181,7 @@ public class PerBaseQualityScores extends FastQCmodules implements QCModule {
 		
 		BufferedImage b = new BufferedImage(Math.max(width, means.length*15),heigth,BufferedImage.TYPE_INT_RGB);
 		Graphics g = b.getGraphics();
-		QualityBoxPlot bp = new QualityBoxPlot(means,medians,lowest,highest,lowerQuartile,upperQuartile, 0, high, 2d, xLabels, "Quality scores across all bases ("+encodingScheme+" encoding)");
+		QualityBoxPlot bp = new QualityBoxPlot(means,medians,lowest,highest,lowerQuartile,upperQuartile, 0, high, 2d, xLabels, "Quality scores across all bases");// ("+encodingScheme+" encoding)");
 		bp.paint(g,b.getWidth(),b.getHeight());
 
 		return b;
