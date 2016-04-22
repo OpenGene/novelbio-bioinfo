@@ -179,7 +179,9 @@ public class SpeciesIndexMappingMaker {
 		FileOperate.createFolders(parentPath);
 		String seqFileFai = SamIndexRefsequence.getIndexFile(seqFile);
 		String seqFileIndexFai = SamIndexRefsequence.getIndexFile(seqFileIndex);
+		logger.info("copyfile from {} to {}", seqFile, seqFileIndex);
 		FileOperate.copyFile(seqFile, seqFileIndex, false);
+		logger.info("copyfile from {} to {}", seqFileFai, seqFileIndexFai);
 		FileOperate.copyFile(seqFileFai, seqFileIndexFai, false);
 	}
 	

@@ -1,6 +1,7 @@
 package com.novelbio.generalConf;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,27 +22,23 @@ public class PathDetailNBC {
 		initial();
 	}
 	private static void initial() {
-		ClassPathResource resource = new ClassPathResource("path.properties", PathDetailNBC.class);
+		String configPath = "Genome.Info";
+		InputStream in = PathDetailNBC.class.getClassLoader().getResourceAsStream(configPath);
+		properties = new Properties();
 		try {
-			properties = PropertiesLoaderUtils.loadProperties(resource);
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+			properties.load(in);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			throw new RuntimeException(e1);
+		} finally{
+			try {
+				if(in != null){
+					in.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
-
-//		InputStream in = PathDetailNBC.class.getClassLoader().getResourceAsStream("path.properties");
-//		properties = new Properties();
-//		try {
-//			properties.load(in);
-//		} catch (IOException e1) {
-//			e1.printStackTrace();
-//		} finally{
-//			try {
-//				in.close();
-//			} catch (IOException e) {
-//				e.printStackTrace();
-//			}
-//		}
 	}
 	/** 有最后的"/" */
 	public static String getGenomePath() {

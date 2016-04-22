@@ -1,18 +1,18 @@
 ###############################################################################
 
-# ¶ÁÈ¡java CompareList²úÉúµÄÎÄ±¾pvalueCal£¬·µ»Øpvalue
+# è¯»å–java CompareListäº§ç”Ÿçš„æ–‡æœ¬pvalueCalï¼Œè¿”å›pvalue
 # 
 # Author: zong0jie
 ###############################################################################
-# ¸ø¶¨ls1ºÍls2µÄÊıÄ¿£¬×ÜÊı¾İ¼¯ÊıÄ¿£¬ºÍ½»¼¯ÊıÄ¿
-# ·µ»Ø¸Ã½»¼¯µÄexactly¸ÅÂÊºÍat least ¸ÅÂÊ
-# ¶ÁÈ¡µÄoverlapInfoÎÄ¼şÖĞ°üº¬ÒÔÏÂĞÅÏ¢²¢¶¼ÓÃ¿Õ¸ñ¸ô¿ª£º ls1ÊıÄ¿ ls2ÊıÄ¿ ½»¼¯ÊıÄ¿ ×ÜÊı¾İ¼¯ÊıÄ¿
-# overlapFile ´ı¶ÁÈ¡µÄÎÄ¼ş
-# writefile ´ıĞ´ÈëµÄÎÄ¼ş
+# ç»™å®šls1å’Œls2çš„æ•°ç›®ï¼Œæ€»æ•°æ®é›†æ•°ç›®ï¼Œå’Œäº¤é›†æ•°ç›®
+# è¿”å›è¯¥äº¤é›†çš„exactlyæ¦‚ç‡å’Œat least æ¦‚ç‡
+# è¯»å–çš„overlapInfoæ–‡ä»¶ä¸­åŒ…å«ä»¥ä¸‹ä¿¡æ¯å¹¶éƒ½ç”¨ç©ºæ ¼éš”å¼€ï¼š ls1æ•°ç›® ls2æ•°ç›® äº¤é›†æ•°ç›® æ€»æ•°æ®é›†æ•°ç›®
+# overlapFile å¾…è¯»å–çš„æ–‡ä»¶
+# writefile å¾…å†™å…¥çš„æ–‡ä»¶
 # Author: zong0jie
 ###############################################################################
-#²ÎÊıÉè¶¨
-overlapFile="./compare_lists_cgi/output/RpvalueCal"  #´ı¶ÁÈ¡µÄjava²úÉúµÄÎÄ¼ş,ÒòÎª¶ÁÈ¡Ê±ÊÇ´Ócompare_lists_cgiµÄÉÏÒ»²ãÄ¿Â¼¶ÁÈ¡£¬ËùÒÔ´ËÊ±RµÄ¹¤×÷¿Õ¼äÎªcompare_lists_cgiµÄÉÏÒ»²ãÄ¿Â¼
+#å‚æ•°è®¾å®š
+overlapFile="./compare_lists_cgi/output/RpvalueCal"  #å¾…è¯»å–çš„javaäº§ç”Ÿçš„æ–‡ä»¶,å› ä¸ºè¯»å–æ—¶æ˜¯ä»compare_lists_cgiçš„ä¸Šä¸€å±‚ç›®å½•è¯»å–ï¼Œæ‰€ä»¥æ­¤æ—¶Rçš„å·¥ä½œç©ºé—´ä¸ºcompare_lists_cgiçš„ä¸Šä¸€å±‚ç›®å½•
 writefile="./compare_lists_cgi/output/Probability values"
 #################################################################################
 
@@ -43,7 +43,7 @@ atLeastPvalue=function(ls1,ls2,intersection,all)
 	i=0
 	atLstP=0
 	lsmin=min(ls1,ls2)
-	#½«ËùÓĞÊıÖµĞ¡ÓÚls1£¨Ğ´µÄ²»Ò»¶¨¶Ô£©µÄpvalueÀÛ¼ÓÆğÀ´
+	#å°†æ‰€æœ‰æ•°å€¼å°äºls1ï¼ˆå†™çš„ä¸ä¸€å®šå¯¹ï¼‰çš„pvalueç´¯åŠ èµ·æ¥
 	for(i in intersection:lsmin)
 	{
 		atLstP=atLstP+exactPvalue(ls1,ls2,i,all)
@@ -59,4 +59,3 @@ atlsPresult = paste(strFinal3,ovlp[3],strFinal4,atlsPvalue,sep=" ")
 write(strResult,file=writefile)
 write(exPresult,file=writefile,ap=T)
 write(atlsPresult,file=writefile,ap=T)
-

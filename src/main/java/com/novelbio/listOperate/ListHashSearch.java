@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
+
 
 /**
  * 获得Gff的项目信息<br/>
@@ -212,14 +214,14 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 			setOther();
 			getMapName2DetailNum();
 			getMapName2Detail();
-		} catch (ExceptionGff e) {
+		} catch (ExceptionNbcGFF e) {
 			throw e;
-		} catch (FileNotFoundException e) {
+		}catch (FileNotFoundException e) {
 			e.printStackTrace();
-			throw new ExceptionGff("cannot find gtffile " + gfffilename);
+			throw new ExceptionNbcGFF("cannot find gtffile " + gfffilename);
 		} catch (Exception e) {
 			e.printStackTrace();
-			throw new ExceptionGff("GffFile Formate Error:" + gfffilename, e);
+			throw new ExceptionNbcGFF("GffFile Formate Error:" + gfffilename, e);
 		}
 		return true;
 	}

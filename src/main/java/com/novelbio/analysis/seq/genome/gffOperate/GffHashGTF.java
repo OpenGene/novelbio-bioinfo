@@ -1,5 +1,6 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -13,6 +14,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.base.StringOperate;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -74,108 +76,121 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpTranscriptNameLast = "";
 		int line = 0;
 		for (String content : txtgff.readlines() ) {
-			line++;
-			if (StringOperate.isRealNull(content) || content.charAt(0) == '#') continue;
-			String[] ss = content.split("\t");// 按照tab分开
-			ss[8] = StringOperate.decode(ss[8]);
-			if (setContig.contains(ss[2].toLowerCase())) continue;
-			
-			int exonStart = Integer.parseInt(ss[3]), exonEnd = Integer.parseInt(ss[4]);
-			Boolean cisExon = null;
-			if (ss[6].equals("+")) {
-				cisExon = true;
-			} else if (ss[6].equals("-")) {
-				cisExon = false;
-			}
-			
-			// 新的染色体
-			if (!tmpChrID.equals(ss[0]) ) {
-				tmpChrID = ss[0];
-			}
-			
-			String[] isoName2GeneName = getIsoName2GeneName(ss[8]);
-			if (isoName2GeneName == null) {
-				txtgff.close();
-				throw new ExceptionNbcGFF("line " + line + " error, no isoName exist: " + content);
-			}
-			String tmpTranscriptName = isoName2GeneName[0], tmpGeneName = isoName2GeneName[1];
-			
-			if (setIsGene.contains(ss[2].toLowerCase())) continue;
-			
-			//出现新转录本有两种可能：
-			//1： 单开一行标记新的transcript
-			//2： 还是标记exon，只是后面的transcriptID 变了
-			if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())
-				||
-				(!tmpTranscriptName.equals(tmpTranscriptNameLast) 
-						&& !isHaveIso(tmpGeneName, tmpTranscriptName))
-					) 
-			{
-				GeneType geneType = GeneType.getMapMRNA2GeneType().get(ss[2].toLowerCase());
-				if (geneType == null) geneType = GeneType.mRNA;
-					
-				boolean cis = getLocCis(ss[6], tmpChrID, exonStart, exonEnd);
-				gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(tmpTranscriptName, tmpGeneName, geneType, cis);
-				addGffIso(tmpGeneName, gffGeneIsoInfo);
-				mapChrID2LsIso.put(tmpChrID, gffGeneIsoInfo);
-				tmpTranscriptNameLast = tmpTranscriptName;
-				mapIso2IsHaveExon.put(tmpTranscriptName, false);
-				if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())) {
+			try {
+				line++;
+				if (StringOperate.isRealNull(content) || content.charAt(0) == '#') continue;
+				String[] ss = content.split("\t");// 按照tab分开
+				ss[8] = StringOperate.decode(ss[8]);
+				if (setContig.contains(ss[2].toLowerCase())) continue;
+				
+				int exonStart = Integer.parseInt(ss[3]), exonEnd = Integer.parseInt(ss[4]);
+				Boolean cisExon = null;
+				if (ss[6].equals("+")) {
+					cisExon = true;
+				} else if (ss[6].equals("-")) {
+					cisExon = false;
+				}
+				
+				// 新的染色体
+				if (!tmpChrID.equals(ss[0]) ) {
+					tmpChrID = ss[0];
+				}
+				
+				String[] isoName2GeneName = getIsoName2GeneName(ss[8], geneNameFlag);
+				if (isoName2GeneName == null) {
+					txtgff.close();
+					throw new ExceptionNbcGFF("line " + line + " error, no isoName exist: " + content);
+				}
+				String tmpTranscriptName = isoName2GeneName[0], tmpGeneName = isoName2GeneName[1];
+				if (tmpTranscriptName == null) {
+					System.out.println();
+				}
+				if (setIsGene.contains(ss[2].toLowerCase())) continue;
+				
+				//出现新转录本有两种可能：
+				//1： 单开一行标记新的transcript
+				//2： 还是标记exon，只是后面的transcriptID 变了
+				if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())
+					||
+					(!tmpTranscriptName.equals(tmpTranscriptNameLast) 
+							&& !isHaveIso(tmpGeneName, tmpTranscriptName))
+						) 
+				{
+					GeneType geneType = GeneType.getMapMRNA2GeneType().get(ss[2].toLowerCase());
+					if (geneType == null) geneType = GeneType.mRNA;
+						
+					boolean cis = getLocCis(ss[6], tmpChrID, exonStart, exonEnd);
+					gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(tmpTranscriptName, tmpGeneName, geneType, cis);
+					addGffIso(tmpGeneName, gffGeneIsoInfo);
+					mapChrID2LsIso.put(tmpChrID, gffGeneIsoInfo);
+					tmpTranscriptNameLast = tmpTranscriptName;
+					mapIso2IsHaveExon.put(tmpTranscriptName, false);
+					if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())) {
+						continue;
+					}
+				}
+
+				gffGeneIsoInfo = getGffIso(tmpGeneName, tmpTranscriptName, exonStart, exonEnd);
+				if (gffGeneIsoInfo == null && !ss[2].toLowerCase().contains("utr")) {
+					logger.error("没找到其对应的转录本：" + content);
 					continue;
 				}
+				if (ss[2].equals("exon")) {
+					if (mapIso2IsHaveExon.get(tmpTranscriptName) == false) {
+						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+						mapIso2IsHaveExon.put(tmpTranscriptName, true);
+					} else {
+						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+					}	
+				} else if (ss[2].toLowerCase().equals("cds")) {
+					//TODO  ncbi上的gff3，cds的末尾是uag，而
+					//ucsc上的GTF，cds的末尾不是uag，而是uag的前一位。
+					//所以该方法在这里不适用，不过后面有个专门设定uag的方法，所以倒也无所谓了。
+					gffGeneIsoInfo.setATGUAGauto(exonStart, exonEnd);
+					if (mapIso2IsHaveExon.get(tmpTranscriptName) == null) {
+						logger.error("没有找到相应的GeneID:" + tmpTranscriptName);
+					}
+					if (!mapIso2IsHaveExon.get(tmpTranscriptName)) {
+						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+					}
+				} else if (ss[2].toLowerCase().equals(startCodeFlag)) {
+					if (cisExon == null || cisExon) {
+						gffGeneIsoInfo.setATG(exonStart);
+					} else {
+						gffGeneIsoInfo.setATG(exonEnd);
+					}
+				} else if (ss[2].toLowerCase().equals(stopCodeFlag)) {
+					if (cisExon == null || cisExon) {
+						gffGeneIsoInfo.setUAG(exonEnd);
+					} else {
+						gffGeneIsoInfo.setUAG(exonStart);
+					}
+				}
+			} catch (Exception e) {
+				txtgff.close();
+				if (e instanceof ExceptionNbcGFF) {
+					throw e;
+				}
+				throw new ExceptionNbcGFF("line " + line + " error, no isoName exist: " + content, e);
 			}
 
-			gffGeneIsoInfo = getGffIso(tmpGeneName, tmpTranscriptName, exonStart, exonEnd);
-			if (gffGeneIsoInfo == null && !ss[2].toLowerCase().contains("utr")) {
-				logger.error("没找到其对应的转录本：" + content);
-				continue;
-			}
-			if (ss[2].equals("exon")) {
-				if (mapIso2IsHaveExon.get(tmpTranscriptName) == false) {
-					gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
-					mapIso2IsHaveExon.put(tmpTranscriptName, true);
-				} else {
-					gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
-				}	
-			} else if (ss[2].toLowerCase().equals("cds")) {
-				//TODO  ncbi上的gff3，cds的末尾是uag，而
-				//ucsc上的GTF，cds的末尾不是uag，而是uag的前一位。
-				//所以该方法在这里不适用，不过后面有个专门设定uag的方法，所以倒也无所谓了。
-				gffGeneIsoInfo.setATGUAGauto(exonStart, exonEnd);
-				if (mapIso2IsHaveExon.get(tmpTranscriptName) == null) {
-					logger.error("没有找到相应的GeneID:" + tmpTranscriptName);
-				}
-				if (!mapIso2IsHaveExon.get(tmpTranscriptName)) {
-					gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
-				}
-			} else if (ss[2].toLowerCase().equals(startCodeFlag)) {
-				if (cisExon == null || cisExon) {
-					gffGeneIsoInfo.setATG(exonStart);
-				} else {
-					gffGeneIsoInfo.setATG(exonEnd);
-				}
-			} else if (ss[2].toLowerCase().equals(stopCodeFlag)) {
-				if (cisExon == null || cisExon) {
-					gffGeneIsoInfo.setUAG(exonEnd);
-				} else {
-					gffGeneIsoInfo.setUAG(exonStart);
-				}
-			}
 		}
 		CopeChrIso(mapChrID2LsIso);
 		txtgff.close();
 		mapID2Iso = null;
 	}
+
 	
-	private String[] getIsoName2GeneName(String ss8) {
+	protected static String[] getIsoName2GeneName(String ss8, String gffGeneNameFlag) {
+		ss8 = ss8.replace("\t", " ");
 		String geneNameFlag = "gene_name";
-		if (!StringOperate.isRealNull(this.geneNameFlag)) {
-			geneNameFlag = this.geneNameFlag;
+		if (!StringOperate.isRealNull(gffGeneNameFlag)) {
+			geneNameFlag = gffGeneNameFlag;
 			if (!ss8.contains(geneNameFlag) && ss8.contains("gene_name")) {
 				geneNameFlag = "gene_name";
 			}
 		}
-				
+		
 		if (!ss8.contains(geneNameFlag) && ss8.contains("gene_id")) {
 			geneNameFlag = "gene_id";
 		} else if (!ss8.contains(geneNameFlag) && !ss8.contains("gene_id") && ss8.contains("Name")) {
@@ -185,20 +200,42 @@ public class GffHashGTF extends GffHashGeneAbs{
 		}
 		
 		String[] iso2geneName = new String[2];
-		if (ss8.endsWith(";")) {
-			ss8 = ss8 + " ";
-		}
-		 String[] info = ss8.split("; ");
-		 for (String name : info) {
-			 name = name.trim();
-			if (name.startsWith("transcript_id")) {
-				iso2geneName[0] = name.replace("transcript_id", "").replace("=", "").replace("\"", "").trim();
-			} else if (name.startsWith(geneNameFlag)) {
-				iso2geneName[1] = name.replace(geneNameFlag, "").replace("=", "").replace("\"", "").trim();
-			} else if (name.startsWith("ID")) {
-				iso2geneName[0] = name.replace("ID", "").replace("=", "").replace("\"", "").trim();
+		List<String> lsAnnoInfo = new ArrayList<>();
+		StringBuilder stringBuilder = new StringBuilder();
+		boolean isInQuote = false;
+		for (char c : ss8.toCharArray()) {
+			if (c == '"') isInQuote = !isInQuote;
+			
+			if ((c == ' ' || c == ';' || c == '"') && !isInQuote) {
+				if (c=='"') stringBuilder.append('"');
+				
+				String info = stringBuilder.toString();
+				stringBuilder = new StringBuilder();
+				if (!StringOperate.isRealNull(info)) {
+					lsAnnoInfo.add(info);
+				}
+			} else {
+				stringBuilder.append(c);
 			}
 		}
+		String info = stringBuilder.toString();
+		stringBuilder = new StringBuilder();
+		if (!StringOperate.isRealNull(info)) {
+			lsAnnoInfo.add(info);
+		}
+		
+		for (int i = 0; i < lsAnnoInfo.size(); i+=2) {
+			String name = CmdOperate.removeQuot(lsAnnoInfo.get(i)) + " " + CmdOperate.removeQuot(lsAnnoInfo.get(i+1));
+			 name = name.trim();
+				if (name.startsWith("transcript_id")) {
+					iso2geneName[0] = name.replace("transcript_id", "").replace("=", "").replace("\"", "").trim();
+				} else if (name.startsWith(geneNameFlag)) {
+					iso2geneName[1] = name.replace(geneNameFlag, "").replace("=", "").replace("\"", "").trim();
+				} else if (name.startsWith("ID")) {
+					iso2geneName[0] = name.replace("ID", "").replace("=", "").replace("\"", "").trim();
+				}
+		}
+		
 		 return iso2geneName;
 	}
 

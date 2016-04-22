@@ -26,6 +26,9 @@ public class ServKEntry {
 	public List<KGentry> findByPathNameAndEntryId(String pathName, int entryID) {
 		return mapKEntry.findByPathNameAndEntryId(pathName, entryID);
 	}
+	public List<KGentry> findByPathName(String pathName) {
+		return mapKEntry.findByPathName(pathName);
+	}
 	public List<KGentry> findByNameAndTaxId(String name, int taxId) {
 		return mapKEntry.findByNameAndTaxId(name, taxId);
 	}
