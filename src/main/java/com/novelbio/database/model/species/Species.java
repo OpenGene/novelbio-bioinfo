@@ -34,6 +34,10 @@ import com.novelbio.database.service.servgeneanno.ManageSpecies;
 public class Species implements Cloneable {
 	private static Logger logger = Logger.getLogger(Species.class);
 	
+	public static final String Species = "species";
+	public static final String Version = "speciesVersion";
+	public static final String Dbtype = "dbType";
+	
 	int taxID = 0;
 	TaxInfo taxInfo = new TaxInfo();
 	String version = "";
