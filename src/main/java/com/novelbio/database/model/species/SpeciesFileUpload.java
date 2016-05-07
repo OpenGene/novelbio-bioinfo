@@ -69,6 +69,17 @@ public class SpeciesFileUpload {
 			throw new ExceptionNbcSpeciesUpload("保存路径错误，请检查");
 		}
 		
+		if (speciesFileType == EnumSpeciesFile.chromSeqFile 
+				|| speciesFileType == EnumSpeciesFile.refseqAllIsoPro 
+				|| speciesFileType == EnumSpeciesFile.refseqAllIsoRNA
+				|| speciesFileType == EnumSpeciesFile.refseqNCfile
+				|| speciesFileType == EnumSpeciesFile.refseqOneIsoPro
+				|| speciesFileType == EnumSpeciesFile.refseqOneIsoRNA
+				) {
+			if (!fileName.endsWith("fa")) {
+				fileName = FileOperate.changeFileSuffix(fileName, null, "fa");
+			}
+		}
 		String newFileName = FileOperate.addSep(savePath) + fileName;
 		String newFileTmp = FileOperate.changeFileSuffix(newFileName, DateUtil.getDateAndRandom(), null) + ".tmp.upload";
 		try {
@@ -97,6 +108,7 @@ public class SpeciesFileUpload {
 		}
 		
 		String newFileName = FileOperate.addSep(savePath) + fileName;
+		newFileName = FileOperate.changeFileSuffix(newFileName, null, "fa");
 		String newFileTmp = FileOperate.changeFileSuffix(newFileName, DateUtil.getDateAndRandom(), null);
 		try {
 			FileOperate.uploadFile(inputStream, newFileTmp, false, fileSize);

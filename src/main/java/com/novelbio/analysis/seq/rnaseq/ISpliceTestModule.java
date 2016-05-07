@@ -72,7 +72,7 @@ public interface ISpliceTestModule {
 			if (combine) {
 				iSpliceTestModule = new SpliceTestCombine();
 			} else {
-				iSpliceTestModule = new SpliceTestRepeat();
+				iSpliceTestModule = new SpliceTestRepeatNew();
 			}
 			return iSpliceTestModule;
 		}
@@ -714,7 +714,7 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 		FDistribution fDistribution = new FDistribution(dN*3, dD*3);
 		f = (chiCvT/dfCvT*3) / (chiIn/dfIn*3);
 		double pvalue = 1 - fDistribution.cumulativeProbability(f);
-		return pvalue;
+		return Math.max(pvalueCvT, pvalue);
 	}
 	
 	

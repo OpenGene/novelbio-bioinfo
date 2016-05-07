@@ -8,7 +8,6 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
 
 /** 从gff文件中获取转换过的chrId信息 */
 public class GffGetChrId {
@@ -50,7 +49,7 @@ public class GffGetChrId {
 					try {
 						String chrName = lsRegx.get(0)[0];
 						if (chrName.startsWith("NC_")) {
-							chrID = chrName.toLowerCase();
+							chrID = chrName;
 						} else {
 							chrID = "chr" + chrName;
 						}

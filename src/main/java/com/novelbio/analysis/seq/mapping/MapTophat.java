@@ -439,7 +439,7 @@ public class MapTophat implements MapRNA {
 			}
 			
 			cmdOperate.setRedirectOutToTmp(true);
-			cmdOperate.addCmdParamOutput(outPathPrefix, false);
+			cmdOperate.addCmdParamOutput(outPathPrefix);
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
 				FileOperate.DeleteFileFolder(FileOperate.addSep(outPathPrefix) + "tmp");

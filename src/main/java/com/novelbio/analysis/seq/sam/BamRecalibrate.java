@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -41,18 +42,19 @@ public class BamRecalibrate implements IntCmdSoft {
 //   --default_platform ILLUMINA \
 //   -o "$SAMPrix"_recal.bam
 	
-	String ExePath = "";
+	String exePath = "";
 	String refSequenceFile;
 	String bamSortedFile;
-//	int threadNum = 4;
+	int threadNum = 4;
 	/** 输入文件路径+vcf文件名 */
 	private Set<String> setSnpDBVcfFilePath = new HashSet<String>();
-	
+	private String unsafe = GATKRealign.ALL;
+
 	List<String> lsCmdInfo = new ArrayList<>();
 	
 	public BamRecalibrate() {
 		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.GATK);
-		ExePath = softWareInfo.getExePathRun();
+		exePath = softWareInfo.getExePathRun();
 	}
 	public void setRefSequenceFile(String refSequencFile) {
 		ExceptionNbcFileInputNotExist.validateFile(refSequencFile, "Recalibrate cannot run without a refSequencFile");
@@ -61,8 +63,12 @@ public class BamRecalibrate implements IntCmdSoft {
 	}
 	public void setBamFile(String bamFile) {
 		this.bamSortedFile = bamFile;
-		SamFile samFile = new SamFile(bamSortedFile);
-		samFile.sort();
+	}
+	public void setThreadNum(int threadNum) {
+		this.threadNum = threadNum;
+	}
+	public void setUnsafe(String unsafe) {
+		this.unsafe = unsafe;
 	}
 	/**
 	 * @param snpVcfFile 已知的snpdb等文件，用于校正。可以添加多个
@@ -101,20 +107,24 @@ public class BamRecalibrate implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdBaseRecal(outFileTmp));
 		cmdOperate.setRedirectOutToTmp(true);
 		cmdOperate.addCmdParamOutput(getRecalTableName(outFileTmp));
-		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("gatk base recal error:\n" + cmdOperate.getCmdExeStrReal());
+		try {
+			cmdOperate.runWithExp("gatk base recal error");
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		}
-		lsCmdInfo.add(cmdOperate.getCmdExeStr());
-
+		
 		cmdOperate = new CmdOperate(getLsCmdPrintReads(outFileTmp));
 		cmdOperate.setRedirectOutToTmp(true);
 		cmdOperate.addCmdParamOutput(outFileTmp);
-		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("gatk print reads error:\n" + cmdOperate.getCmdExeStrReal());
+		try {
+			cmdOperate.runWithExp("gatk print reads error:");
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		}
-		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		FileOperate.moveFile(true, outFileTmp, outFile);
 		return outFile;
 	}
@@ -124,14 +134,23 @@ public class BamRecalibrate implements IntCmdSoft {
 		lsCmd.add("java");
 		lsCmd.add("-Xmx4g");
 		lsCmd.add("-jar");
-		lsCmd.add(ExePath + "GenomeAnalysisTK.jar");
+		lsCmd.add(exePath + "GenomeAnalysisTK.jar");
 		lsCmd.add("-T"); lsCmd.add("BaseRecalibrator");
+		ArrayOperate.addArrayToList(lsCmd, getThread());
 		ArrayOperate.addArrayToList(lsCmd, getRefSequenceFile());
 		ArrayOperate.addArrayToList(lsCmd, getSortedBam());
-//		ArrayOperate.addArrayToList(lsCmd, getThreadNum());
 		ArrayOperate.addArrayToList(lsCmd, getRecalTable(outFile));
+		ArrayOperate.addArrayToList(lsCmd, getRecalPdf(outFile));
 		lsCmd.addAll(getKnownSite());
+		
 		return lsCmd;
+	}
+	
+	private String[] getThread() {
+		if (threadNum <= 0) return null;
+		if (threadNum > 20) threadNum = 20;
+		
+		return new String[]{"-nct", threadNum + ""};
 	}
 	
 	private List<String> getLsCmdPrintReads(String outFile) {
@@ -139,12 +158,15 @@ public class BamRecalibrate implements IntCmdSoft {
 		lsCmd.add("java");
 		lsCmd.add("-Xmx10g");
 		lsCmd.add("-jar");
-		lsCmd.add(ExePath + "GenomeAnalysisTK.jar");
+		lsCmd.add(exePath + "GenomeAnalysisTK.jar");
 		lsCmd.add("-T"); lsCmd.add("PrintReads");
+		ArrayOperate.addArrayToList(lsCmd, getThread());
 		ArrayOperate.addArrayToList(lsCmd, getRefSequenceFile());
 		ArrayOperate.addArrayToList(lsCmd, getSortedBam());
+		ArrayOperate.addArrayToList(lsCmd, getUnsafe());
 		lsCmd.add("-BQSR"); lsCmd.add(getRecalTableName(outFile));
 		ArrayOperate.addArrayToList(lsCmd, getOutRecalibrateBam(outFile));
+		
 		return lsCmd;
 	}
 	
@@ -154,9 +176,7 @@ public class BamRecalibrate implements IntCmdSoft {
 	private String[] getSortedBam() {
 		return new String[]{"-I", bamSortedFile};
 	}
-//	private String[] getThreadNum() {
-//		return new String[]{"-nt", threadNum + ""};
-//	}
+
 	private List<String> getKnownSite() {
 		List<String> lsKnowSite = new ArrayList<>();
 		for (String vcfFile : setSnpDBVcfFilePath) {
@@ -169,7 +189,9 @@ public class BamRecalibrate implements IntCmdSoft {
 	private String[] getRecalTable(String outFile) {
 		return new String[]{"-o", getRecalTableName(outFile)};
 	}
-	
+	private String[] getRecalPdf(String outFile) {
+		return new String[]{"-plots", getRecalTableName(outFile) + ".pdf"};
+	}
 	private String getRecalTableName(String outFile) {
 		return FileOperate.changeFileSuffix(outFile, "_recal_data", "grp");
 	}
@@ -181,5 +203,10 @@ public class BamRecalibrate implements IntCmdSoft {
 	public List<String> getCmdExeStr() {
 		return lsCmdInfo;
 	}
-	
+	private String[] getUnsafe() {
+		if (StringOperate.isRealNull(unsafe) || GATKRealign.SAFE.equalsIgnoreCase(unsafe)) {
+			return null;
+		}
+		return new String[]{"--unsafe", unsafe};
+	}
 }

@@ -3,11 +3,14 @@ package com.novelbio.analysis.seq.rnaseq;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.tools.FileObject;
+
 import ch.ethz.ssh2.log.Logger;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
@@ -131,17 +134,41 @@ public class VarScanSomatic implements IntCmdSoft {
 		for (int i = 0; i < lsConFile.size(); i++) {
 			setConFile(lsConFile.get(i));
 			setTumFile(lsTumFile.get(i));
-			setOutputSnp(outputDir + lsConPrefix.get(i) + "VS" + lsTumPrefix.get(i) + "_snp.txt");
-			setOutputIndel(outputDir + lsConPrefix.get(i) + "VS" + lsTumPrefix.get(i) + "_indel.txt");
+			String snpResult = getSnpFile(lsConPrefix.get(i), lsTumPrefix.get(i), false);
+			String indelResult = getIndelFile(lsConPrefix.get(i), lsTumPrefix.get(i), false);
+			if (FileOperate.isFileExistAndBigThan0(snpResult) && FileOperate.isFileExistAndBigThan0(indelResult)) {
+				continue;
+			}
+			String snpResultTmp = getSnpFile(lsConPrefix.get(i), lsTumPrefix.get(i), true);
+			String indelResultTmp = getIndelFile(lsConPrefix.get(i), lsTumPrefix.get(i), true);
+			
+			setOutputSnp(snpResultTmp);
+			setOutputIndel(indelResultTmp);
 			running();
+			FileOperate.moveFile(true, snpResultTmp, snpResult);
+			FileOperate.moveFile(true, indelResultTmp, indelResult);
 		}
 	}
+	
+	private String getSnpFile(String treat, String ctrl, boolean isTmp) {
+		String fileName = outputDir+ treat + "VS" + ctrl + "_snp.vcf";
+		if (isTmp) fileName = fileName + ".tmp";
+		return fileName;
+	}
+	
+	private String getIndelFile(String treat, String ctrl, boolean isTmp) {
+		String fileName = outputDir + treat + "VS" + ctrl + "_indel.vcf";
+		if (isTmp) fileName = fileName + ".tmp";
+		return fileName;
+	}
+	
 	public void running() {
 		List<String> lsCmd = getLsCmd();
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setIsConvertHdfsToLocal(false);
 		cmdOperate.addCmdParamOutput(outputDir);
 		cmdOperate.runWithExp();
+		
 	}
 	
 	public List<String> getLsCmd() {

@@ -131,9 +131,7 @@ public class CufflinksReconstruct implements IntCmdSoft {
 		} else if (lsResultGTF.size() == 1) {
 			resultGtf = lsResultGTF.get(0);
 		}
-		if (gffChrAbs.getGffHashGene() == null) {
-			FileOperate.copyFile(resultGtf, outPrefix + "CuffMerge.gtf", true);
-		}
+		FileOperate.copyFile(resultGtf, outPrefix + "CuffMerge.gtf", true);
 		if (isModifyNewGTF) {
 			modifyCufflinksGtf(resultGtf, outPrefix + "NBCTranscriptom.gtf");
 		}

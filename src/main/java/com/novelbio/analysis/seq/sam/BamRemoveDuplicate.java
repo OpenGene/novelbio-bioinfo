@@ -27,7 +27,7 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 //		     METRICS_FILE="$SAMPrix".dups \
 //			 OUTPUT="$SAMPrix"_RealnDeDup.bam 
 	
-	String ExePath = "";
+	String exePath = "";
 	String bamSortedFile;
 	boolean samtools = false;
 	List<String> lsCmdInfo = new ArrayList<>();
@@ -72,10 +72,10 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 	private void setExePath() {
 		if (samtools) {
 			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
-			ExePath = softWareInfo.getExePathRun();
+			exePath = softWareInfo.getExePathRun();
 		} else {
 			SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.picard);
-			ExePath = softWareInfo.getExePathRun();
+			exePath = softWareInfo.getExePathRun();
 		}
 	}
 	
@@ -88,19 +88,21 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdSamtools(outFileTmp));
 		cmdOperate.setRedirectOutToTmp(true);
 		cmdOperate.addCmdParamOutput(outFileTmp);
-		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
+		try {
+			cmdOperate.runWithExp("samtools remove duplicate error:");
+		} catch (Exception e) {
 			FileOperate.DeleteFileFolder(outFileTmp);
-			throw new ExceptionCmd("samtools remove duplicate error:" + cmdOperate.getCmdExeStr());
+			throw e;
+		} finally {
+			lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		}
 		FileOperate.moveFile(true, outFileTmp, outFile);
-		lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		return outFile;
 	}
 	
 	private List<String> getLsCmdSamtools(String outFile) {
 		List<String> lsCmd = new ArrayList<>();
-		lsCmd.add(ExePath + "samtools");
+		lsCmd.add(exePath + "samtools");
 		lsCmd.add("rmdup");
 		lsCmd.add(bamSortedFile);
 		lsCmd.add(outFile);
@@ -117,14 +119,18 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setIsConvertHdfsToLocal(false);
 		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
+		try {
+			cmdOperate.runWithExp("picard remove duplicate error");
+		} catch (Exception e) {
 			FileOperate.DeleteFileFolder(getMetricsFile(outTmp));
 			FileOperate.DeleteFileFolder(outTmp);
-			throw new ExceptionCmd("picard remove duplicate error:\n" + cmdOperate.getCmdExeStrReal());
+			throw e;
+		} finally {
+			lsCmdInfo.add(cmdOperate.getCmdExeStr());
 		}
 		FileOperate.moveFile(true, getMetricsFile(outTmp), getMetricsFile(outFile));
 		FileOperate.moveFile(true, outTmp, outFile);
-		lsCmdInfo.add(cmdOperate.getCmdExeStr());
+	
 		return outFile;
 	}
 	
@@ -134,7 +140,7 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		ArrayOperate.addArrayToList(lsCmd, getTmpPath());
 		lsCmd.add("-Xmx6g");
 		lsCmd.add("-jar");
-		lsCmd.add(ExePath + "picard_hdfs.jar");
+		lsCmd.add(exePath + "picard_hdfs.jar");
 		lsCmd.add("MarkDuplicates");
 		ArrayOperate.addArrayToList(lsCmd, getInputBam());
 		ArrayOperate.addArrayToList(lsCmd, getParam());

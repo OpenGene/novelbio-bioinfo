@@ -546,7 +546,7 @@ class SiteSnpIndelInfoInsert extends SiteSnpIndelInfo {
 			}
 		}
 		SeqFasta NR = null;
-		ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
+		ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIsoOnExon(LocStart, LocEnd);
 		if (lsTmp == null) {
 			NR = seqHash.getSeq(gffGeneIsoInfo.isCis5to3(), refSiteSnpIndelParent.getRefID(), LocStart, LocEnd);
 		}
@@ -818,7 +818,7 @@ class SiteSnpIndelInfoDeletion extends SiteSnpIndelInfo {
 			int LocStart = gffGeneIsoInfo.getLocAAbefore(refStartCis);
 			int LocEnd =gffGeneIsoInfo.getLocAAend(refEndCis);
 			refSeqIntactAA.setStartEndLoc(LocStart, LocEnd);
-			ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIso(LocStart, LocEnd);
+			ArrayList<ExonInfo> lsTmp = gffGeneIsoInfo.getRangeIsoOnExon(LocStart, LocEnd);
 			if (lsTmp == null) {
 				logger.error("检查一下：" + refSiteSnpIndelParent.getRefID() + "\t" + refSiteSnpIndelParent.getRefSnpIndelStart());
 				return;

@@ -175,12 +175,12 @@ public abstract class IndexMappingMaker {
 		
 		for (String path : lsCmd) {
 			if (path.equals(chrFile)) {
-				cmdOperate.addCmdParamInput(chrFile, false);
+				cmdOperate.addCmdParamInput(chrFile);
 			} else if (path.startsWith(parentPath)) {
-				cmdOperate.addCmdParamOutput(path, false);
+				cmdOperate.addCmdParamOutput(path);
 			}
 		}
-		cmdOperate.addCmdParamOutput(chrFile, false);
+		cmdOperate.addCmdParamOutput(chrFile);
 		cmdOperate.runWithExp(softWare.toString() + " index error:");
 		generateFinishFlag();
 	}

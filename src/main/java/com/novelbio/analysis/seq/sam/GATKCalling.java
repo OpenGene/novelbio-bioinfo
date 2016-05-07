@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
@@ -40,12 +39,17 @@ public class GATKCalling implements IntCmdSoft {
 	private String refFilePath;
 	/** 输入文件路径+vcf文件名 */
 	private String snpDBVcfFilePath;
-	private String glm = GATKCalling.BOTH;
+//	private String glm = GATKCalling.BOTH;
 	/** The minimum phred-scaled confidence threshold at which variants should be called */
 	private double stand_call_conf = 30.0;
 	/** The minimum phred-scaled confidence threshold at which variants should be emitted (and filtered with LowQual if less than the calling threshold) */
 	private double stand_emit_conf = 10.0;
-
+	
+	/** 会过滤掉mapquality小于20的reads */
+	private int mmq = -1;
+	/** 会过滤掉basequality小于10的位点 */
+	private int mbq = -1;
+	
 	public GATKCalling(String refFilePath) {
 		this.refFilePath = refFilePath;
 		this.snpDBVcfFilePath = null;
@@ -57,6 +61,12 @@ public class GATKCalling implements IntCmdSoft {
 		lsInputFilePath.add(inputFile);
 	}
 	
+	public void setMbq(int mbq) {
+		this.mbq = mbq;
+	}
+	public void setMmq(int mmq) {
+		this.mmq = mmq;
+	}
 	/**
 	 * variants calling by GATK<br>
 	 * @return 输出文件路径 + 输入文件名.recal.bam
@@ -66,10 +76,7 @@ public class GATKCalling implements IntCmdSoft {
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setRedirectOutToTmp(true);
 		cmdOperate.addCmdParamOutput(outVcf);
-		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("GATK error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
-		}
+		cmdOperate.runWithExp("GATK error");
 		return outVcf;
 	}
 	
@@ -77,16 +84,16 @@ public class GATKCalling implements IntCmdSoft {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("java"); lsCmd.add("-Xmx4g"); lsCmd.add("-jar");
 		lsCmd.add(exePath + "GenomeAnalysisTK.jar");
-		lsCmd.add("-T"); lsCmd.add("UnifiedGenotyper");
+		lsCmd.add("-T"); lsCmd.add("HaplotypeCaller");
 		ArrayOperate.addArrayToList(lsCmd, getRefFilePath());
 		ArrayOperate.addArrayToList(lsCmd, getOutPutPath());
 		lsCmd.addAll(getLsInputPath());
+		ArrayOperate.addArrayToList(lsCmd, getMbp());
+		ArrayOperate.addArrayToList(lsCmd, getMmq());
 		ArrayOperate.addArrayToList(lsCmd, getStandCallConf());
 		ArrayOperate.addArrayToList(lsCmd, getStandEmitConf());
-		ArrayOperate.addArrayToList(lsCmd, getGlm());
 		ArrayOperate.addArrayToList(lsCmd, getCigar());
 		ArrayOperate.addArrayToList(lsCmd, getDBsnpVcf());
-		System.out.println("GATK lsCmd IS " + lsCmd);
 		return lsCmd;
 	}
 	
@@ -107,16 +114,21 @@ public class GATKCalling implements IntCmdSoft {
 		return lsInputCmd;
 	}
 	
+	private String[] getMmq() {
+		if (mmq < 0) return null;
+		return new String[]{"-mmq", mmq + ""};
+	}
+	private String[] getMbp() {
+		if (mbq < 0) return null;
+		return new String[]{"-mbq", mbq + ""};
+	}
+	
 	private String[] getStandCallConf() {
 		return new String[]{"-stand_call_conf", stand_call_conf + ""};
 	}
 	
 	private String[] getStandEmitConf() {
 		return new String[]{"-stand_emit_conf", stand_emit_conf + ""};
-	}
-	
-	private String[] getGlm() {
-		return new String[]{"-glm", glm};
 	}
 	
 	private String[] getCigar() {
@@ -145,19 +157,19 @@ public class GATKCalling implements IntCmdSoft {
 		this.snpDBVcfFilePath = snpDBVcfFilePath;
 	}
 
-	/**
-	 * 这个不用改，意思同时找snp和indel<br>
-	 * Genotype likelihoods calculation model to employ -- SNP is the default
-	 * option, while INDEL is also available for calling indels and BOTH is
-	 * available for calling both together. The --genotype_likelihoods_model
-	 * argument is an enumerated type (Model), which can have one of the
-	 * following values:<br>
-	 * {@link #setGlm(GATKCalling.BOTH)} <br>
-	 * BOTH (default)
-	 */
-	public void setGlm(String glm) {
-		this.glm = glm;
-	}
+//	/**
+//	 * 这个不用改，意思同时找snp和indel<br>
+//	 * Genotype likelihoods calculation model to employ -- SNP is the default
+//	 * option, while INDEL is also available for calling indels and BOTH is
+//	 * available for calling both together. The --genotype_likelihoods_model
+//	 * argument is an enumerated type (Model), which can have one of the
+//	 * following values:<br>
+//	 * {@link #setGlm(GATKCalling.BOTH)} <br>
+//	 * BOTH (default)
+//	 */
+//	public void setGlm(String glm) {
+//		this.glm = glm;
+//	}
 	/** set the minimum phred-scaled confidence threshold at which variants should be called */
 	public void setStand_call_conf(double stand_call_conf) {
 		this.stand_call_conf = stand_call_conf;

@@ -523,7 +523,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			return null;
 		}
 		if (geneStructure == GeneStructure.CDS && !seqFastaResult.isAA(1)) {
-			logger.error("cds is not integrate " + gffGeneIsoInfo.getName());
+//			logger.error("cds is not integrate " + gffGeneIsoInfo.getName());
 			return null;
 		}
 		seqFastaResult.setName(gffGeneIsoInfo.getName());

@@ -110,7 +110,7 @@ public class SamReorder {
     
 	public SamFile reorderSam(SamFile samFile) {
 		String fileIn = samFile.getFileName();
-		String fileOut = FileOperate.changeFileSuffix(fileIn, "_reorder", null);
+		String fileOut = FileOperate.changeFileSuffix(fileIn, ".reorder", null);
 		return reorderSam(samFile, fileOut);
     }
     

@@ -21,7 +21,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class CufflinksGTF implements IntCmdSoft, IntReconstructIsoUnit {
 	private static final Logger logger = Logger.getLogger(CufflinksGTF.class);
-	private static final String tmpFolder = "tmp/";
+	public static final String tmpFolder = "tmp/";
 	
 	static int intronMin = 50;
 	static int intronMax = 500000;

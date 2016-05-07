@@ -81,7 +81,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	@Id
 	String id;
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public GeneType flagTypeGene = GeneType.mRNA;
+	public GeneType flagTypeGene = GeneType.ncRNA;
 //	/** 设定基因的转录起点上游长度，默认为0 */
 //	@Transient
 //	protected int upTss = 0;
@@ -161,12 +161,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public GeneType getGeneType() {
-		if (flagTypeGene == null) {
-			return GeneType.ncRNA;
-		}
-		if (flagTypeGene != GeneType.mRNA && ismRNA()) {
-			flagTypeGene = GeneType.mRNA;
+		if (ismRNA()) {
 			return GeneType.mRNA;
+		}
+		if (flagTypeGene == null || flagTypeGene == GeneType.mRNA) {
+			return GeneType.ncRNA;
 		}
 		return flagTypeGene;
 	}
@@ -785,7 +784,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (Math.abs(ATGsite - UAGsite) <= 1) {
 			return new ArrayList<ExonInfo>();
 		}
-		return getRangeIso(ATGsite, UAGsite);
+		return getRangeIsoOnExon(ATGsite, UAGsite);
 	}
 	/**
 	 * 获得3UTR的信息
@@ -794,14 +793,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public ArrayList<ExonInfo> getUTR3seq() {
-		return getRangeIso(UAGsite, getTESsite());
+		return getRangeIsoOnExon(UAGsite, getTESsite());
 	}
 	/**
 	 * 获得5UTR的信息
 	 * @return
 	 */
 	public ArrayList<ExonInfo> getUTR5seq() {
-		return getRangeIso(getTSSsite(), ATGsite);
+		return getRangeIsoOnExon(getTSSsite(), ATGsite);
 	}
 	/**
 	 * 指定一个起点和一个终点坐标，将这两个坐标间的外显子区域提取出来并返回
@@ -810,7 +809,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 如果这两个坐标不在外显子中，则返回空的list
 	 * @return
 	 */
-	public ArrayList<ExonInfo> getRangeIso(int startLoc, int EndLoc) {
+	public ArrayList<ExonInfo> getRangeIsoOnExon(int startLoc, int EndLoc) {
 		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
 		int start = 0, end = 0;
 		

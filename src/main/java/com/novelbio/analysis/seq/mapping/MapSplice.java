@@ -154,7 +154,7 @@ public class MapSplice implements MapRNA {
 			}
 			
 			cmdOperate.setRedirectOutToTmp(true);
-			cmdOperate.addCmdParamOutput(outFile, false);
+			cmdOperate.addCmdParamOutput(outFile);
 			
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {

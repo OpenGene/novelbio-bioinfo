@@ -1,6 +1,12 @@
 package com.novelbio.analysis.seq.sam;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.apache.log4j.Logger;
+import org.apache.regexp.recompile;
+import org.springframework.data.repository.NoRepositoryBean;
 
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -37,6 +43,7 @@ public class GATKRealign {
 	public static final String ALLOW_SEQ_DICT_INCOMPATIBILITY = "ALLOW_SEQ_DICT_INCOMPATIBILITY";
 	public static final String LENIENT_VCF_PROCESSING = "LENIENT_VCF_PROCESSING";
 	public static final String ALL = "ALL";
+	public static final String SAFE = "SAFE";
 	
 	/** 输入文件路径+bam文件名 */
 	private String inputFilePath;
@@ -113,4 +120,16 @@ public class GATKRealign {
 		this.unsafe = unsafe;
 	}
 	
+	
+	public static Map<String, String> getMapGatkSafe2Value() {
+		Map<String, String> mapGatkSafe2Value = new LinkedHashMap<>();
+		mapGatkSafe2Value.put(SAFE, SAFE);
+		mapGatkSafe2Value.put(ALLOW_SEQ_DICT_INCOMPATIBILITY, ALLOW_SEQ_DICT_INCOMPATIBILITY);
+		mapGatkSafe2Value.put(ALLOW_UNINDEXED_BAM, ALLOW_UNINDEXED_BAM);
+		mapGatkSafe2Value.put(ALLOW_UNSET_BAM_SORT_ORDER, ALLOW_UNSET_BAM_SORT_ORDER);
+		mapGatkSafe2Value.put(LENIENT_VCF_PROCESSING, LENIENT_VCF_PROCESSING);
+		mapGatkSafe2Value.put(NO_READ_ORDER_VERIFICATION, NO_READ_ORDER_VERIFICATION);
+		mapGatkSafe2Value.put(ALL, ALL);
+		return mapGatkSafe2Value;
+	}
 }

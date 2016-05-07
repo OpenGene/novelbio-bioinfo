@@ -5,10 +5,9 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.print.attribute.standard.MediaSize.ISO;
-
 import org.apache.log4j.Logger;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -26,20 +25,23 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class GffHashModifyNewGffORF {
 	public static void main(String[] args) {
-		GffHashGene gffBGI = new GffHashGene(GffType.NCBI, "/media/hdfs/nbCloud/staff/hongyanyan/wangxia/Ar.augustus_BGI.gff3");
-		GffHashGene gffNew = new GffHashGene(GffType.GTF, "/media/hdfs/nbCloud/staff/hongyanyan/wangxia/AR.prediction1_modify_utr.gtf");
+		String parentPath = "/home/novelbio/software/IGV_2.3.34/";
+		GffHashGene gffBGI = new GffHashGene(GffType.GTF, parentPath + "original.gtf");
+		GffHashGene gffNew = new GffHashGene(GffType.GTF, parentPath + "merged.gtf");
 		
-		GffHashModifyNewGffORF gffHashModifyNewGffORF = new GffHashModifyNewGffORF();
-		gffHashModifyNewGffORF.setGffHashGeneRaw(gffNew);
-		gffHashModifyNewGffORF.setGffHashGeneRef(gffBGI);
-		gffHashModifyNewGffORF.modifyGff();
-//		gffBGI.writeToGTF("/media/hdfs/nbCloud/staff/hongyanyan/wangxia/prediction1_modify_utr_changeName.gtf");
+		gffNew.writeToGTF(parentPath + "NBCTranscriptom4.gtf");
 		
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/hdfs/nbCloud/staff/hongyanyan/wangxia/BGIname2NBCname.txt", true);
-		for (String geneName : gffHashModifyNewGffORF.mapRef2ThisGeneName.keySet()) {
-			txtWrite.writefileln(geneName + "\t" + gffHashModifyNewGffORF.mapRef2ThisGeneName.get(geneName) );
-		}
-		txtWrite.close();
+//		GffHashModifyNewGffORF gffHashModifyNewGffORF = new GffHashModifyNewGffORF();
+//		gffHashModifyNewGffORF.setGffHashGeneRaw(gffNew);
+//		gffHashModifyNewGffORF.setGffHashGeneRef(gffBGI);
+//		gffHashModifyNewGffORF.modifyGff();
+//		gffNew.writeToGTF(parentPath + "NBCTranscriptom3.gtf");
+		
+//		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/test/stringtie/result.txt", true);
+//		for (String geneName : gffHashModifyNewGffORF.mapRef2ThisGeneName.keySet()) {
+//			txtWrite.writefileln(geneName + "\t" + gffHashModifyNewGffORF.mapRef2ThisGeneName.get(geneName) );
+//		}
+//		txtWrite.close();
 	}
 	private static final Logger logger = Logger.getLogger(GffHashModifyNewGffORF.class);
 	/** 待修该的Gff */
@@ -87,7 +89,7 @@ public class GffHashModifyNewGffORF {
 	}
 	public void modifyGff() {
 		Set<GffDetailGene> setGffGeneName = new HashSet<>();//用来去重复的
-		for (GffDetailGene gffDetailGeneRef : gffHashGeneRef.getGffDetailAll()) {
+		for (GffDetailGene gffDetailGeneRef : gffHashGeneRef.getLsGffDetailGenes()) {
 			//因为gff文件可能有错，gffgene的长度可能会大于mRNA的总长度，这时候就要遍历每个iso
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGeneRef.getLsCodSplit()) {
 				int median = (gffGeneIsoInfo.getStart() + gffGeneIsoInfo.getEnd())/2;
@@ -181,20 +183,36 @@ public class GffHashModifyNewGffORF {
 		}
 		return null;
 	}
+	
 	/**
 	 * 将isoname到set中查，查到了就改后缀，直到查不到为止
 	 * @param setIsoName
 	 * @param isoName
 	 * @return
 	 */
-	private String getNoDuplicateName(Set<String> setIsoName, String isoName) {
-		int i = 1;
-		//修改名字
-		while (setIsoName.contains(isoName)) {
-			isoName = FileOperate.changeFileSuffix(isoName, "", ""+i).replace("/", "");
-			i++;
+	@VisibleForTesting
+	protected static String getNoDuplicateName(Set<String> setIsoName, String isoName) {
+		if (!setIsoName.contains(isoName)) {
+			return isoName;
 		}
-		return isoName;
+		int i = 1;
+		String isoNameTmp = isoName;
+		int lastIndex = isoName.lastIndexOf("-");
+		if (lastIndex > 0) {
+			try {
+				int index = Integer.parseInt( isoName.substring(lastIndex+1, isoName.length()));
+				if (index < 100) {
+					isoNameTmp = isoName.substring(0, lastIndex);
+				}
+			} catch (Exception e) {}
+		}
+		String isoNameFinal = isoNameTmp + "-" +i;
+		//修改名字
+		while (setIsoName.contains(isoNameFinal)) {
+			i++;
+			isoNameFinal = isoNameTmp + "-" + i;
+		}
+		return isoNameFinal;
 	}
 	
 	/** 返回相似的ISO，注意这两个ISO的包含atg的exon必须一致或者至少是overlap的 */

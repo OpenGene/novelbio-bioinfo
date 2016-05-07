@@ -155,8 +155,7 @@ public class StringTie  implements IntCmdSoft, IntReconstructIsoUnit {
 	}
 	
 	public void reconstruct(String bamFile) {
-		String prefix = FileOperate.getFileNameSep(bamFile)[0];
-		List<String> lsCmd = getLsCmd(bamFile, prefix);
+		List<String> lsCmd = getLsCmd(bamFile);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
 		cmdOperate.setRedirectInToTmp(true);
 		cmdOperate.addCmdParamInput(bamFile);
@@ -164,7 +163,7 @@ public class StringTie  implements IntCmdSoft, IntReconstructIsoUnit {
 			cmdOperate.addCmdParamInput(gtfFile);
 		}
 		cmdOperate.setRedirectOutToTmp(true);
-		cmdOperate.addCmdParamOutput(getOutGtfName(prefix));
+		cmdOperate.addCmdParamOutput(getOutGtfName(bamFile));
 		this.lsCmd.add(cmdOperate.getCmdExeStr());
 		cmdOperate.runWithExp("StringTie error on file " + FileOperate.getFileName(bamFile));
 	}
@@ -172,7 +171,7 @@ public class StringTie  implements IntCmdSoft, IntReconstructIsoUnit {
 	@Override
 	public String getOutGtfName(String bamFile) {
 		String prefix = FileOperate.getFileNameSep(bamFile)[0];
-		String outGTFPath = FileOperate.addSep(outPath) + prefix + ".stringtie.transcripts.gtf";
+		String outGTFPath = FileOperate.addSep(outPath) + CufflinksGTF.tmpFolder + prefix + ".stringtie.transcripts.gtf";
 		return outGTFPath;
 	}
 	
@@ -181,7 +180,7 @@ public class StringTie  implements IntCmdSoft, IntReconstructIsoUnit {
 	 * @param prefix
 	 * @return
 	 */
-	public List<String> getLsCmd(String bamFileName, String prefix) {
+	public List<String> getLsCmd(String bamFileName) {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "stringtie");
 		lsCmd.add(bamFileName);
@@ -194,7 +193,7 @@ public class StringTie  implements IntCmdSoft, IntReconstructIsoUnit {
 		ArrayOperate.addArrayToList(lsCmd, getMinJuncCoverage());
 		ArrayOperate.addArrayToList(lsCmd, getJustOutRefIso());
 		addLsCmdStr(lsCmd, getIsRefFPKM());
-		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefixCmd(prefix));
+		ArrayOperate.addArrayToList(lsCmd, getOutPathPrefixCmd(bamFileName));
 		return lsCmd;
 	}
 	private void addLsCmdStr(List<String> lsCmd, String param) {
@@ -203,8 +202,8 @@ public class StringTie  implements IntCmdSoft, IntReconstructIsoUnit {
 	}
 	
 	/** 用于CMD */
-	private String[] getOutPathPrefixCmd(String prefix) {
-		return new String[]{"-o", getOutGtfName(prefix)};
+	private String[] getOutPathPrefixCmd(String bamFile) {
+		return new String[]{"-o", getOutGtfName(bamFile)};
 	}
 	
 	@Override

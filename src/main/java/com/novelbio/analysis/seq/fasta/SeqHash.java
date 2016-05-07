@@ -218,7 +218,7 @@ public class SeqHash implements SeqHashInt {
 		if (chrLen == null) return null;
 		
 		if (gffGeneIsoInfo.getStartAbs() < 0 || gffGeneIsoInfo.getEndAbs() > chrLen) {
-			logger.error("out of bound, the gene location is: " + gffGeneIsoInfo.getStartAbs() + "-" + gffGeneIsoInfo.getEndAbs() + ", but the chromosome length is: " + chrLen);
+//			logger.error("out of bound, the gene location is: " + gffGeneIsoInfo.getStartAbs() + "-" + gffGeneIsoInfo.getEndAbs() + ", but the chromosome length is: " + chrLen);
 			if (!isGetOutBoundSeq) {
 				return null;
 			}

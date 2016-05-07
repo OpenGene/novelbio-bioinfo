@@ -31,7 +31,7 @@ public class ReconstructIso implements IntCmdSoft {
 	/** 重新计算是否使用以前的结果 */
 	private boolean isUseOldResult = true;
 	
-	private ArrayListMultimap<String, SamFile> mapPrefix2SamFiles = ArrayListMultimap.create();
+	private ArrayListMultimap<String, String> mapPrefix2SamFilePaths = ArrayListMultimap.create();
 	private Set<String> setPrefix= new LinkedHashSet<String>();
 	
 	private List<String> lsCmd = new ArrayList<>();
@@ -68,18 +68,18 @@ public class ReconstructIso implements IntCmdSoft {
 	 * @param lsSamfiles2Prefix
 	 */
 	public void setLsBamFile2Prefix(ArrayList<String[]> lsSamfiles2Prefix) {
-		mapPrefix2SamFiles.clear();
+		mapPrefix2SamFilePaths.clear();
 		for (String[] strings : lsSamfiles2Prefix) {
-			mapPrefix2SamFiles.put(strings[1].trim(), new SamFile(strings[0]));
+			mapPrefix2SamFilePaths.put(strings[1].trim(), strings[0]);
 			setPrefix.add(strings[1].trim());
 		}
 	}
 	
 	private List<String> getSamFileSeperate(String prefix) {
-		List<SamFile> lsSamFiles = mapPrefix2SamFiles.get(prefix);
+		List<String> lsSamFiles = mapPrefix2SamFilePaths.get(prefix);
 		List<String> lsResult = new ArrayList<String>();
-		for (SamFile samFile : lsSamFiles) {
-			lsResult.add(samFile.getFileName());
+		for (String filename : lsSamFiles) {
+			lsResult.add(filename);
 		}
 		return lsResult;
 	}
@@ -125,6 +125,7 @@ public class ReconstructIso implements IntCmdSoft {
 		return outGtfModify;
 	}
 	
+	/** 过滤后的gtf文件 */
 	private String getOutFilteredGtf(String bamFile, int fpkmFilter) {
 		return FileOperate.changeFileSuffix(reconstructIsoInt.getOutGtfName(bamFile), "_filterWithFPKMlessThan" + fpkmFilter, null);
 	}

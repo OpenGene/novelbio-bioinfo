@@ -1,25 +1,28 @@
 package com.novelbio.test;
 
+import java.io.InputStream;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
-import org.apache.commons.math.stat.inference.ChiSquareTestImpl;
-import org.apache.commons.math3.distribution.FDistribution;
 import org.apache.commons.math3.stat.inference.TestUtils;
+import org.apache.hadoop.fs.FileStatus;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import smile.stat.hypothesis.ChiSqTest;
-import smile.stat.hypothesis.FTest;
 import smile.math.special.Beta;
-import smile.math.special.Gamma;
+import smile.stat.hypothesis.ChiSqTest;
 
 import com.novelbio.analysis.seq.fasta.ChrDensity;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -27,9 +30,31 @@ import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.analysis.seq.sam.SamToBamSort;
+import com.novelbio.base.PathDetail;
+import com.novelbio.base.dataOperate.DateUtil;
+import com.novelbio.base.dataOperate.SshScp;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.base.fileOperate.FileHadoop;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.fileOperate.HdfsInitial;
+import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.domain.kegg.KGIDgen2Keg;
+import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
+import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.domain.kegg.KGpathway;
+import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
+import com.novelbio.database.service.servkegg.ServKEntry;
+import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
+import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
+import com.novelbio.database.service.servkegg.ServKNIdKeg;
+import com.novelbio.database.service.servkegg.ServKPathway;
+import com.novelbio.generalConf.PathDetailNBC;
 import com.novelbio.listOperate.HistBin;
 import com.novelbio.listOperate.HistList;
 
@@ -39,126 +64,55 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-//		double[] aa = new double[]{123l,144l,105l};
-//		double[] bb = new double[]{93l,104l,135l};
-//		
-//		int[] aai = new int[]{123,144,105};
-//		int[] bbi = new int[]{93,104,135};
-//		
-//		FTest fTest = FTest.test(aa, bb);
-//		ChiSqTest chiSqTest = ChiSqTest.test(aai, bbi);
-//		
-//		System.out.println(chiSqTest.chisq);
-//		System.out.println(chiSquareDataSetsComparison(aai, bbi));
-//		int df1 = 2;
-//		int df2 = 2;
-//		double p = 2.0 * Beta.regularizedIncompleteBetaFunction(0.5 * df2, 0.5 * df1, df2 / (df2 + df1 * fTest.f));
-//		if (p > 1.0) {
-//            p = 2.0 - p;
-//        }
-//		System.out.println(fTest.pvalue);
-		
-//		System.out.println(chiSquareDataSetsComparison(new int[]{24,16}, new int[]{35,33}));
-//		System.out.println(chiSquareDataSetsComparison(new int[]{24,35}, new int[]{16,33}));
-//		System.out.println(chiSquareDataSetsComparison(new int[]{24,16}, new int[]{35,33}));
-
-//		int[] a = new int[]{24,35, 22};
-//		int[] b = new int[]{16,33, 31};
-//		
-//		long[] ad = new long[]{24,35, 22};
-//		long[] bd = new long[]{16,33, 31};
-//		
-//		ChiSqTest chiSqTest = ChiSqTest.test(a, b);
-//		System.out.println(chiSqTest.chisq);
-//		System.out.println(chiSqTest.pvalue);
-//		System.out.println();
-//		
-//		System.out.println(TestUtils.chiSquareTestDataSetsComparison(ad, bd));
-		
-		
-//		int[] a = new int[]{24,16};
-//		int[] b = new int[]{35,33};
-//		
-//		ChiSqTest chiSqTest = ChiSqTest.test(a, b);
-//		System.out.println(chiSqTest.chisq);
-//		System.out.println(chiSqTest.pvalue);
-//		System.out.println();
-//		int[] a = new int[]{24,35};
-//		int[] b = new int[]{16,33};
-//		
-//		ChiSqTest chiSqTest = ChiSqTest.test(a, b);
-//		System.out.println(chiSqTest.chisq);
-//		System.out.println(chiSqTest.pvalue);
-//		System.out.println();
-//		
-//		
-//		
-//		long[] al = new long[]{24,35};
-//		long[] bl = new long[]{16,33};
-////		
-////		
-//		ChiSquareTestImpl chiSquareTestImpl = new ChiSquareTestImpl();
-//		long[][] aaa = new long[2][2];
-//		aaa[0][0]=24; aaa[0][1] = 16;
-//		aaa[1][0] = 35; aaa[1][1] = 33;
-//		System.out.println();
-//		System.err.println(chiSquareTestImpl.chiSquare(aaa));
-//		System.err.println(chiSquareTestImpl.chiSquareTest(aaa));
-//		System.err.println(chiSquareTestImpl.chiSquareDataSetsComparison(aaa[0], aaa[1]));
-//		System.err.println(TestUtils.chiSquareDataSetsComparison(aaa[0], aaa[1]));
-//		System.err.println(org.apache.commons.math.stat.inference.TestUtils.chiSquareDataSetsComparison(aaa[0], aaa[1]));
-		
-//		double p = Gamma.regularizedUpperIncompleteGamma(0.5 * 1, 0.5 * chiSquareTestImpl.chiSquare(aaa));
-//		System.out.println(p);
-		double f= 0.2863;
-		int dfIn = 4;
-		int dfCvT = 3;
-		double p = 2.0 * Beta.regularizedIncompleteBetaFunction(0.5 * dfIn, 0.5 * dfCvT, dfIn / (dfIn + dfCvT * f));
-		if (p > 1.0) {
-		p = 2.0 - p;
-    }
-		System.out.println(p);
-		System.out.println();
-		double[] x = new double[]{24,35,32,26,31};
-		double[] y = new double[]{35,21,19,34};
-		FTest fTest = FTest.test(x, y);
-		System.out.println(fTest.f);
-		System.out.println(fTest.pvalue);
-		System.out.println(fTest.df1);
-		System.out.println(fTest.df2);
-		
-		
-		FDistribution fDistribution = new FDistribution(4, 3);
-		System.out.println(1-fDistribution.cumulativeProbability(3.493431855500827));
-//		p2 = org.apache.commons.math3.special.Beta.regularizedBeta(f, dfCvT ,dfIn);
-//		System.out.println(p2);
-//		dfIn = 6;
-//		dfCvT = 3;
-//		p1 = 2.0 * Beta.regularizedIncompleteBetaFunction(0.5 * dfIn, 0.5 * dfCvT, dfIn / (dfIn + dfCvT * f));
-//		p2 = 2.0 * org.apache.commons.math3.special.Beta.regularizedBeta(dfIn / (dfIn + dfCvT * f), 0.5 * dfIn, 0.5 * dfCvT );
-//		System.out.println(p1);
-//		System.out.println(p2);
-//		FTest
-//		p = 2.0 * Beta.inverseRegularizedIncompleteBetaFunction(0.5 * dfIn, 0.5 * dfCvT, dfIn / (dfIn + dfCvT * f));
-//		if (p > 1.0) {
-//			p = 2.0 - p;
-//        }
-//		System.out.println(p);
-//		
-//		p = 2.0 * Beta.regularizedIncompleteBetaFunction(0.5 * dfIn, 0.5 * dfCvT, dfIn / (dfIn + dfCvT * f));
-//		if (p > 1.0) {
-//			p = 2.0 - p;
-//        }
-//		System.out.println(p);
-//		ChiSqTest chiSqTest = ChiSqTest.test(a, b);
-//		System.out.println(chiSqTest.chisq);
-//		System.out.println(chiSqTest.pvalue);
-//		System.out.println();
-//		
-//		System.out.println(TestUtils.chiSquareTestDataSetsComparison(al, bl));
+		FileOperate.moveFile(true, "/media/nbfs/nbCloud/public/software/WebApp/171oldbak/test", "/media/nbfs/nbCloud/public/software/WebApp/171oldbak");
 	}
 	
+	public static void getGeneFromPath() throws Exception {
+		List<String> lsGeneName = new ArrayList<>();
+//		List<KGpathway> lsKGpathways = ServKPathway.getInstance().findAll();
+//		System.out.println();
+		KGpathway kGpathway = ServKPathway.getInstance().findByPathName("path:mmu11651");
+		List<KGentry> lsKGentry = ServKEntry.getInstance().findByPathName(kGpathway.getPathName());
+		for (KGentry kGentry : lsKGentry) {
+			
+			KGIDgen2Keg kgiDgen2Keg = ServKIDgen2Keg.getInstance().findByKegId(kGentry.getEntryName());
+			if (kgiDgen2Keg != null) {
+				GeneID geneID = new GeneID(GeneID.IDTYPE_GENEID, kgiDgen2Keg.getGeneID()+"", kgiDgen2Keg.getTaxID());
+				lsGeneName.add(geneID.getSymbol());
+			}
+		}
+		for (String symbol : lsGeneName) {
+			System.out.println(symbol);
+		}
+		
+	}
 	
+	private static void runPvalue(int repeat) throws Exception {}
+	
+	private static int[] getIntContent(String content) {
+		Random random = new Random();
+		
+		String[] ss = content.split("::");
+		int a = Integer.parseInt(ss[0]) + random.nextInt(100)-50;
+		if (a < 0) {
+			a = 2;
+		}
+		int b = Integer.parseInt(ss[1]) + random.nextInt(100)-50;
+		if (b < 0) {
+			b = 2;
+		}
+		
+		int[] result = new int[]{a, b};
+		return result;
+	}
+	
+	private static String getStrInt(List<int[]> lsCtrl) {
+		String ss = "";
+		for (int[] is : lsCtrl) {
+			ss+= is[0] + ":" + is[1] + "\t";
+		}
+		return ss;
+	}
 	
 	/**
 	 * 差异可变剪接计算pvalue

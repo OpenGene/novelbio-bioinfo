@@ -47,7 +47,7 @@ public class TestStringTie {
 	stringTie.setMinAnchorJuncLen(minAnchorJuncLen);
 	stringTie.setMinJuncCoverage(minJuncCoverage);
 
-	String cmd = stringTie.getLsCmd(inputbam,prefix).toString();   
+	String cmd = stringTie.getLsCmd(inputbam).toString();   
 //	System.out.println("cmd is " + cmd);
 	Assert.assertEquals(softwarePath + "stringtie  -G " + gtfFile +" -j 2 -m 200 -p 1 -g 50 -a 10 -o " + output + " " + workPath + "sample1.bam", cmd);
 }
