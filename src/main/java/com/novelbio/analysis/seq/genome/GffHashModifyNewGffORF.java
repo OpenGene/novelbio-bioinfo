@@ -25,23 +25,38 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class GffHashModifyNewGffORF {
 	public static void main(String[] args) {
-		String parentPath = "/home/novelbio/software/IGV_2.3.34/";
-		GffHashGene gffBGI = new GffHashGene(GffType.GTF, parentPath + "original.gtf");
-		GffHashGene gffNew = new GffHashGene(GffType.GTF, parentPath + "merged.gtf");
+//		String parentPath = "/media/nbfs/nbCloud/public/AllProject/project_550a6f82e4b0b3b73a8e211e/";
+//		GffHashGene gffBGI = new GffHashGene(GffType.GTF, parentPath + "task_56e8c41a60b2e0371245567a/other_result/2-100-0.gtf");
+//		GffHashGene gffNew = new GffHashGene(GffType.GTF, parentPath + "task_572f1cdb60b21a47c508334c/ReconstructTranscriptome_result/CuffMerge.gtf");
 		
-		gffNew.writeToGTF(parentPath + "NBCTranscriptom4.gtf");
+//		gffNew.writeToGTF(parentPath + "NBCTranscriptom4.gtf");
 		
 //		GffHashModifyNewGffORF gffHashModifyNewGffORF = new GffHashModifyNewGffORF();
 //		gffHashModifyNewGffORF.setGffHashGeneRaw(gffNew);
 //		gffHashModifyNewGffORF.setGffHashGeneRef(gffBGI);
 //		gffHashModifyNewGffORF.modifyGff();
-//		gffNew.writeToGTF(parentPath + "NBCTranscriptom3.gtf");
+//		gffNew.writeToGTF(parentPath + "task_572f1cdb60b21a47c508334c/ReconstructTranscriptome_result/NBCTranscriptom4.gtf");
 		
 //		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/test/stringtie/result.txt", true);
 //		for (String geneName : gffHashModifyNewGffORF.mapRef2ThisGeneName.keySet()) {
 //			txtWrite.writefileln(geneName + "\t" + gffHashModifyNewGffORF.mapRef2ThisGeneName.get(geneName) );
 //		}
 //		txtWrite.close();
+		
+		
+		
+		String parentPath = "/home/novelbio/NBCsource/test/gffmerge/";
+		GffHashGene gffBGI = new GffHashGene(GffType.GTF, parentPath + "merge_modify.gtf");
+		GffHashGene gffNew = new GffHashGene(GffType.GTF, parentPath + "CuffMerge.gtf");
+			
+		GffHashModifyNewGffORF gffHashModifyNewGffORF = new GffHashModifyNewGffORF();
+		gffHashModifyNewGffORF.setGffHashGeneRaw(gffNew);
+		gffHashModifyNewGffORF.setGffHashGeneRef(gffBGI);
+		gffHashModifyNewGffORF.modifyGff();
+		gffNew.writeToGTF(parentPath + "result2.gtf");
+		
+		
+		
 	}
 	private static final Logger logger = Logger.getLogger(GffHashModifyNewGffORF.class);
 	/** 待修该的Gff */
@@ -58,6 +73,9 @@ public class GffHashModifyNewGffORF {
 	Map<String, String> mapRef2ThisGeneName = new HashMap<>();
 	/** 基因名字对照表 */
 	Map<String, String> mapRef2ThisIsoName = new HashMap<>();
+	/** 用来去重复的 */
+	Set<String> setIsoNameRemoveRedundant = new HashSet<>();
+	
 	/**
 	 * 不用设定该方法了<br>
 	 * 设定基因的前缀，一般用物种名缩写加上随机数比较合适<br>
@@ -88,8 +106,11 @@ public class GffHashModifyNewGffORF {
 		return gffResult;
 	}
 	public void modifyGff() {
-		Set<GffDetailGene> setGffGeneName = new HashSet<>();//用来去重复的
+		setIsoNameRemoveRedundant.clear();
 		for (GffDetailGene gffDetailGeneRef : gffHashGeneRef.getLsGffDetailGenes()) {
+			if (gffDetailGeneRef.getNameSingle().equalsIgnoreCase("Traes_5DL_9FC634D23")) {
+				System.out.println();
+			}
 			//因为gff文件可能有错，gffgene的长度可能会大于mRNA的总长度，这时候就要遍历每个iso
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGeneRef.getLsCodSplit()) {
 				int median = (gffGeneIsoInfo.getStart() + gffGeneIsoInfo.getEnd())/2;
@@ -102,11 +123,11 @@ public class GffHashModifyNewGffORF {
 					continue;
 				}
 				GffDetailGene gffDetailGeneThis = gffCodGene.getGffDetailThis();
-				if (setGffGeneName.contains(gffDetailGeneThis)) {
-					continue;
-				}
-				setGffGeneName.add(gffDetailGeneThis);
 				modifyGffDetailGene(gffDetailGeneRef, gffDetailGeneThis);
+				GffDetailGene gffDetailGeneUp = gffCodGene.getGffDetailUp();
+				modifyGffDetailGene(gffDetailGeneRef, gffDetailGeneUp);
+				GffDetailGene gffDetailGeneDown = gffCodGene.getGffDetailDown();
+				modifyGffDetailGene(gffDetailGeneRef, gffDetailGeneDown);
 			}
 		}
 		gffResult = filterGene2();
@@ -144,21 +165,25 @@ public class GffHashModifyNewGffORF {
 	}
 	
 	private void modifyGffDetailGene(GffDetailGene gffDetailGeneRef, GffDetailGene gffDetailGeneThis) {
-		if (renameGene) {
-			gffDetailGeneThis.addItemName(gffDetailGeneRef.getNameSingle());
-		}
+		if (gffDetailGeneThis == null) return;
+		
+		boolean refChangeName = false;
 		Set<String> setIsoName = new HashSet<>();//用来去重复的
 		for (GffGeneIsoInfo gffIso : gffDetailGeneThis.getLsCodSplit()) {
 			GffGeneIsoInfo gffRefAtg = getSimilarIso(gffIso, gffDetailGeneRef);
-			GffGeneIsoInfo gffRefChangeName = gffDetailGeneRef.getSimilarIso(gffIso, 0.5);
+			GffGeneIsoInfo gffRefChangeName = gffDetailGeneRef.getSimilarIso(gffIso, 0.6);
 			gffRefChangeName = getChangeNameIso(gffRefChangeName, gffRefAtg);
 			if (gffRefChangeName == null) {
-//				String geneName = gffIso.getParentGeneName();
-//				if (geneName.startsWith("XLOC")) {
-//					gffIso.setParentGeneName(gffDetailGeneRef.getNameSingle());
-//				}
 				continue;
 			}
+			
+			if (setIsoNameRemoveRedundant.contains(gffIso.getName())) {
+				continue;
+			}
+			setIsoNameRemoveRedundant.add(gffIso.getName());
+			
+			refChangeName = true;
+			
 			if (renameGene) {
 				mapRef2ThisGeneName.put(gffRefChangeName.getParentGeneName(), gffIso.getParentGeneName());
 				gffIso.setParentGeneName(gffRefChangeName.getParentGeneName());
@@ -172,6 +197,10 @@ public class GffHashModifyNewGffORF {
 			if (gffRefAtg != null && gffRefAtg.ismRNA()) {
 				gffIso.setATGUAGauto(gffRefAtg.getATGsite(), gffRefAtg.getUAGsite());
 			}
+		}
+		
+		if (renameGene&&refChangeName) {
+			gffDetailGeneThis.addItemName(gffDetailGeneRef.getNameSingle());
 		}
 	}
 	
