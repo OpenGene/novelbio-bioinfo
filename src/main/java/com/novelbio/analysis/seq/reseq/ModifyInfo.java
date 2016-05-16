@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map.Entry;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
@@ -35,8 +36,7 @@ public class ModifyInfo implements Comparable<ModifyInfo>
 	 * @return
 	 */
 	public static ArrayList<ModifyInfo> getModifyInfo(String lastzFile, SeqFastaHash seqModifySeq) {
-		TxtReadandWrite txtLastz = new TxtReadandWrite(lastzFile, false);
-		ArrayList<String> lsInfo = txtLastz.readfileLs();
+		List<String> lsInfo = TxtReadandWrite.readfileLs(lastzFile);
 		String title = lsInfo.get(0);
 		
 		for (int i = 1; i < lsInfo.size(); i++) {

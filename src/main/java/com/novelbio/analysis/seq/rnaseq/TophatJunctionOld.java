@@ -165,7 +165,7 @@ public class TophatJunctionOld extends RunProcess<Integer> implements AlignmentR
 	private void readJuncFile(String condition, String junctionFile) {
 		setCondition(condition);
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(junctionFile, false);
-		for (String string : txtReadandWrite.readfileLs()) {
+		for (String string : txtReadandWrite.readlines()) {
 			if (string.startsWith("track")) {
 				continue;
 			}
@@ -177,6 +177,7 @@ public class TophatJunctionOld extends RunProcess<Integer> implements AlignmentR
 			int junct2 = Integer.parseInt(ss[2]) - Integer.parseInt(ss[10].split(",")[1]) + 1;
 			int junctionNum = Integer.parseInt(ss[4]);
 			addJunctionInfo(chrID, junct1, junct2, junctionNum);
+			txtReadandWrite.close();
 		}
 	}
 	

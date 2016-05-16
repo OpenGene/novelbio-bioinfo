@@ -1,20 +1,19 @@
 package com.novelbio.analysis.diffexpress;
 
 import java.util.ArrayList;
+import java.util.List;
+
+import junit.framework.TestCase;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.novelbio.analysis.diffexpress.DiffExpDESeq;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
-import junit.framework.TestCase;
-
 public class TestDiffExpDESeq extends TestCase {
 	DiffExpDESeq deSeq;
-	TxtReadandWrite txtScript;
 	@Before
 	public void setUp() {
 		deSeq = new DiffExpDESeq();
@@ -23,13 +22,13 @@ public class TestDiffExpDESeq extends TestCase {
 	
 	@Test
 	public void testScript() {
-		ArrayList<String> lsScript = setDuplicate();
+		List<String> lsScript = setDuplicate();
 		assertScriptDuplicate(lsScript);
 		
 		lsScript = setNoDuplicate();
 		assertScriptNoDuplicate(lsScript);
 	}
-	private ArrayList<String> setDuplicate() {
+	private List<String> setDuplicate() {
 		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
 		lsSampleColumn2GroupName.add(new String[] {"2","A"});
 		lsSampleColumn2GroupName.add(new String[] {"3","A"});
@@ -43,10 +42,9 @@ public class TestDiffExpDESeq extends TestCase {
 		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
 		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
 		String DEseqScript = deSeq.getOutScript();
-		txtScript = new TxtReadandWrite(DEseqScript, false);
-		return txtScript.readfileLs();
+		return TxtReadandWrite.readfileLs(DEseqScript);
 	}
-	private void assertScriptDuplicate(ArrayList<String> lsScript) {
+	private void assertScriptDuplicate(List<String> lsScript) {
 		assertEquals("filePath = \"" + PathDetail.getProjectPath() + "Tmp/\"", lsScript.get(0));
 		assertEquals("fileName = \"" + deSeq.getFileNameRawdata() + "\"", lsScript.get(1));
 		assertEquals("setwd(filePath)", lsScript.get(2));
@@ -75,7 +73,7 @@ public class TestDiffExpDESeq extends TestCase {
 		assertEquals("write.table( res, file=\""+ PathDetail.getProjectPath() + "CvsB.xls" +"\",sep=\"\\t\",row.names=F  )", lsScript.get(14));
 	}
 	
-	private ArrayList<String> setNoDuplicate() {
+	private List<String> setNoDuplicate() {
 		ArrayList<String[]> lsSampleColumn2GroupName = new ArrayList<String[]>();
 		lsSampleColumn2GroupName.add(new String[] {"2","A"});
 		lsSampleColumn2GroupName.add(new String[] {"3","B"});
@@ -89,10 +87,9 @@ public class TestDiffExpDESeq extends TestCase {
 		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "AvsC.xls", new String[]{"A","C"});
 		deSeq.addFileName2Compare(PathDetail.getProjectPath() + "CvsB.xls", new String[]{"C","B"});
 		String DEseqScript = deSeq.getOutScript();
-		txtScript = new TxtReadandWrite(DEseqScript, false);
-		return txtScript.readfileLs();
+		return TxtReadandWrite.readfileLs(DEseqScript);
 	}
-	private void assertScriptNoDuplicate(ArrayList<String> lsScript) {
+	private void assertScriptNoDuplicate(List<String> lsScript) {
 		assertEquals("filePath = \"" + PathDetail.getProjectPath() + "Tmp/\"", lsScript.get(0));
 		assertEquals("fileName = \"" + deSeq.getFileNameRawdata() + "\"", lsScript.get(1));
 		assertEquals("setwd(filePath)", lsScript.get(2));

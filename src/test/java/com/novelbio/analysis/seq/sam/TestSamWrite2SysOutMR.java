@@ -28,9 +28,7 @@ public class TestSamWrite2SysOutMR {
 		
 		sam2bam.writeToOs();
 		
-		TxtReadandWrite txtRead = new TxtReadandWrite(outputTest);
-		List<String> lsRecord = txtRead.readfileLs();
-		txtRead.close();
+		List<String> lsRecord = TxtReadandWrite.readfileLs(outputTest);
 		Iterator<String> itor = lsRecord.iterator();
 
 		assertEquals("@HD	VN:1.4", itor.next());

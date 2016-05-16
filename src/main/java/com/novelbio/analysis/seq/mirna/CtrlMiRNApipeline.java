@@ -234,7 +234,7 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		mirSpeciesPipline.setThreadNum(4);
 		mirSpeciesPipline.mappingPipeline(PathDetailNBC.getMiRNADat(), samMapMiRNARate);
 		lsCmd.addAll(mirSpeciesPipline.getCmdExeStr());
-//		mirSpeciesPipline.writeToFile();
+		mirSpeciesPipline.writeToFile();
 	}
 	@Override
 	public List<String> getCmdExeStr() {

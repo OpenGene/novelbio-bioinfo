@@ -49,14 +49,14 @@ public class DindelInfo implements Comparable<DindelInfo>{
 		
 		TxtReadandWrite txtIndel = new TxtReadandWrite(dindelInfoFile, false);
 		//很有可能没东西，也就是lsInfo.size == 0
-		ArrayList<String> lsInfo = txtIndel.readfileLs();
-		for (String string : lsInfo) {
+		for (String string : txtIndel.readlines()) {
 			if (string.startsWith("#")) {
 				continue;
 			}
 			DindelInfo deDindelInfo = new DindelInfo(string);
 			lsdDindelInfos.add(deDindelInfo);
 		}
+		txtIndel.close();
 		return lsdDindelInfos;
 	}
 	

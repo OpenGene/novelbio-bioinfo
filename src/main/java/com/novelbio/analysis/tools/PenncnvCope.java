@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -71,11 +72,9 @@ public class PenncnvCope {
 		this.gffType = GffType;
 	}
 	
-	public void readTxt(String txtFile)
-	{
+	public void readTxt(String txtFile) {
 		gffHashGene = new GffHashGene(gffType, gffFile);
-		TxtReadandWrite txtCNVRead = new TxtReadandWrite(txtFile, false);
-		ArrayList<String> lsCNV = txtCNVRead.readfileLs();
+		List<String> lsCNV = TxtReadandWrite.readfileLs(txtFile);
 		lsCNV.remove(0);
 		for (String string : lsCNV) {
 			String[] ss = string.split("\t");

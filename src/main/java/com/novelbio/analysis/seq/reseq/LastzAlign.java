@@ -109,9 +109,8 @@ public class LastzAlign {
 		fileLastz = AlignFile;
 		seq1Len = seqSubLen;
 		seq2Len = seqQueryLen;
-		TxtReadandWrite txtAlign = new TxtReadandWrite(AlignFile, false);
 		//很有可能没东西，也就是lsInfo.size == 0
-		ArrayList<String> lsInfo = txtAlign.readfileLs();
+		List<String> lsInfo = TxtReadandWrite.readfileLs(AlignFile);
 		if (lsInfo.size() == 1) {
 			booStartConfirm = false;
 			booEndConfirm = false;

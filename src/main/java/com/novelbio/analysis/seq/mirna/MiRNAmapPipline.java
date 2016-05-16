@@ -148,12 +148,12 @@ public class MiRNAmapPipline implements IntCmdSoft {
 	public void mappingPipeline() {
 		lsCmd.clear();
 		String outputSam = outPathTmpMapping + prefix + "_";
-		samFileMiRNA = outputSam +  "miRNA.sam";
-		samFileRfam = outputSam + "rfam.sam";
-		samFileNCRNA = outputSam + "ncRna.sam";
-		samFileGenome = outputSam + "Genome.sam";
+		samFileMiRNA = outputSam +  "miRNA.bam";
+		samFileRfam = outputSam + "rfam.bam";
+		samFileNCRNA = outputSam + "ncRna.bam";
+		samFileGenome = outputSam + "Genome.bam";
 		/** 全部reads mapping至全基因组上 */
-		samFileGenomeAll = outputSam + "GenomeAll.sam";
+		samFileGenomeAll = outputSam + "GenomeAll.bam";
 		
 		String outputTmpFinal = outPathTmpMapping + prefix + "_";
 		String fqFile = seqFile;

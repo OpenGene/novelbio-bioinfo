@@ -56,11 +56,11 @@ public class SoapsnpInfo  implements Comparable<SoapsnpInfo>{
 		
 		TxtReadandWrite txtSnp = new TxtReadandWrite(soapsnpFile, false);
 		//很有可能没东西，也就是lsInfo.size == 0
-		ArrayList<String> lsInfo = txtSnp.readfileLs();
-		for (String string : lsInfo) {
+		for (String string : txtSnp.readlines()) {
 			SoapsnpInfo soapsnpInfo = new SoapsnpInfo(string);
 			lsSoapsnpInfos.add(soapsnpInfo);
 		}
+		txtSnp.close();
 		return lsSoapsnpInfos;
 	}
 	/**

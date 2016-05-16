@@ -43,7 +43,7 @@ public class CmdIndexMake {
 		
 		String taxId = "9913";
 		String version = "bt_alt_Btau_5.0.1";
-		String softwareStr = "rfam";
+		String softwareStr = "bwa_mem";
 		boolean isLock = false;
 		
 		Species species = new Species(Integer.parseInt(taxId));
@@ -72,6 +72,9 @@ public class CmdIndexMake {
 		if (softwareStr == null) {
 			speciesIndexMappingMaker.makeIndex();
 		} else {
+			if (softwareStr.equals("bwa")) {
+				softwareStr = SoftWare.bwa_mem.toString();
+			}
 			SoftWare softWare = SoftWare.valueOf(softwareStr);
 			speciesIndexMappingMaker.makeIndexChr(softWare);
 		}

@@ -583,7 +583,7 @@ public class Species implements Cloneable {
 				if (lsSpeciesFiles.size() == 0) {
 					continue;
 				}
-			} else if (speciesType == EnumSpeciesType.miRNA && !ManageSpecies.getInstance().isHaveMiRNArecalculate(species.taxInfo)) {
+			} else if (speciesType == EnumSpeciesType.miRNA && !species.getTaxInfo().isHaveMiRNA()) {
 				continue;
 			}
 			setTaxID.add(taxInfo.getTaxID());

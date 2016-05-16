@@ -1,8 +1,6 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
 
-import java.io.File;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,7 +9,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.TreeSet;
 
 import org.apache.log4j.Logger;
@@ -20,10 +17,8 @@ import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.listOperate.ListAbs;
 import com.novelbio.listOperate.ListHashSearch;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
@@ -301,8 +296,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			writeAccID2GeneID(txtaccID2GeneID);
 		}
 		mapGeneID2AccID = new HashMap<String, String>();
-		TxtReadandWrite txtAcc2GenID = new TxtReadandWrite(txtaccID2GeneID);
-		ArrayList<String> lsAccID = txtAcc2GenID.readfileLs();
+		List<String> lsAccID = TxtReadandWrite.readfileLs(txtaccID2GeneID);
 		for (String string : lsAccID) {
 			if (string == null || string.trim().equals("")) {
 				continue;
@@ -315,7 +309,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 				mapGeneID2AccID.put(ss[1], ss[0]);
 			}
 		}
-		txtAcc2GenID.close();
 		return mapGeneID2AccID;
 	}
 	/**
