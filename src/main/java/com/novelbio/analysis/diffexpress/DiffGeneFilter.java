@@ -205,7 +205,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 		String outFile = getDifGeneFileName(excelFileName, excelPrefix);
 		List<String[]> lsResult = getLsDifGene();
 		
-		FileOperate.DeleteFileFolder(outFile);
+		FileOperate.deleteFileFolder(outFile);
 		ExcelOperate excelOperate = new ExcelOperate(outFile);
 		excelOperate.writeExcel(lsResult);
 		excelOperate.close();

@@ -42,7 +42,7 @@ public class TestSamReorder {
 			Assert.assertEquals(samRecordOut.toString(), samRecordIn.toString());
 		}
 		
-		FileOperate.DeleteFileFolder(outFile);
+		FileOperate.deleteFileFolder(outFile);
 	}
 	
 	/**
@@ -82,7 +82,7 @@ public class TestSamReorder {
 			assertEquals(samIn.getRefID().replace("chr", ""), samOut.getRefID());
 		}
 
-		FileOperate.DeleteFileFolder(outFileName);
+		FileOperate.deleteFileFolder(outFileName);
 	}
 	
 	/** 去除染色体名字中的chr，并重新输出为sam文件 */
@@ -125,7 +125,7 @@ public class TestSamReorder {
 	public void testReorderAndChangeChrIdSamReorder() {
 		SamFile samFileIn = new SamFile(inFile);
 		String fileOut = FileOperate.changeFileSuffix(inFile, "_reorder", null);
-		FileOperate.DeleteFileFolder(fileOut);
+		FileOperate.deleteFileFolder(fileOut);
 		Map<String, Long> mapChrId2Len = samFileIn.getMapChrID2Length();
 		
 		SamReorder samReorder = new SamReorder();
@@ -160,6 +160,6 @@ public class TestSamReorder {
 			}
 		}
 		
-		FileOperate.DeleteFileFolder(samFileOut.getFileName());
+		FileOperate.deleteFileFolder(samFileOut.getFileName());
 	}
 }

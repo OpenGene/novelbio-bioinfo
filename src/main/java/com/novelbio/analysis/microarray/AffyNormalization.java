@@ -153,7 +153,7 @@ public class AffyNormalization implements IntCmdSoft {
 	}
 	/** 删除中间文件 */
 	private void clean() {
-		FileOperate.DeleteFileFolder(outScript);
+		FileOperate.deleteFileFolder(outScript);
 	}
 
 	@Override

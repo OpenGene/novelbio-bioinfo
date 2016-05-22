@@ -119,8 +119,8 @@ public class BamRealign implements IntCmdSoft {
 		try {
 			cmdOperate.runWithExp("realign error:");
 		} catch (Exception e) {
-			FileOperate.DeleteFileFolder(getOutIntervalFile(outFileTmp)[1]);
-			FileOperate.DeleteFileFolder(outFileTmp);
+			FileOperate.deleteFileFolder(getOutIntervalFile(outFileTmp)[1]);
+			FileOperate.deleteFileFolder(outFileTmp);
 			throw e;
 		} finally {
 			lsCmdInfo.add(cmdOperate.getCmdExeStr());

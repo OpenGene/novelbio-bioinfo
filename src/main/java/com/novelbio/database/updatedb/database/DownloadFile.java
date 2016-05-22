@@ -76,7 +76,7 @@ public class DownloadFile {
 			fetch.setSavePath(saveto);
 			if (!fetch.downloadFile()) {
 				logger.error("download error:" + ftpFile);
-				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
+				FileOperate.deleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
 			}
 		}
 		for (String ftpFile : lsUniprot) {
@@ -88,7 +88,7 @@ public class DownloadFile {
 			fetch.setSavePath(saveto);
 			if (!fetch.downloadFile()) {
 				logger.error("download error:" + ftpFile);
-				FileOperate.DeleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
+				FileOperate.deleteFileFolder(saveto + FileOperate.getFileName(ftpFile));
 			}
 		}
 //		for (String gourl : lsGO) {

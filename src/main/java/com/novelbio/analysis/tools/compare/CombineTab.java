@@ -402,7 +402,7 @@ public class CombineTab {
 		String tmpFile = tempFolder + FileOperate.getFileNameSep(savePath)[0] + DateUtil.getDateAndRandom() + ".tiff";
 		String scriptPath = FileOperate.getPathName(savePath);
 		scriptPath = scriptPath + "script/";
-		FileOperate.DeleteFileFolder(scriptPath);
+		FileOperate.deleteFileFolder(scriptPath);
 		FileOperate.createFolders(scriptPath);
 		
 		VennImage vennImage = new VennImage(tmpFile,3000,3000);

@@ -82,7 +82,7 @@ public class BamIndex {
         try {
         	makeIndex(samFile.samReader, outFile);
         } catch (Exception e) {
-        	FileOperate.DeleteFileFolder(FileOperate.changeFileSuffix(outFile, "_tmp", null));
+        	FileOperate.deleteFileFolder(FileOperate.changeFileSuffix(outFile, "_tmp", null));
         	logger.error(e);
         	indexC();
         }

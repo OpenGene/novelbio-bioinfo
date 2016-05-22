@@ -88,8 +88,8 @@ public class RemoveRrna implements IntCmdSoft {
 		try {
 			mapDNAint.mapReads();
 		} catch (Exception e) {
-			FileOperate.DeleteFileFolder(outLeftTmp);
-			FileOperate.DeleteFileFolder(outRightTmp);
+			FileOperate.deleteFileFolder(outLeftTmp);
+			FileOperate.deleteFileFolder(outRightTmp);
 			throw e;
 		}
 		

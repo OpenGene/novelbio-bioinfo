@@ -57,7 +57,7 @@ public class TestFastQReadingChannel {
 		fastQReadingChannel.setThreadNum(8);
 		fastQReadingChannel.run();
 		
-		FileOperate.DeleteFileFolder(parentPath + "filter1.fq");
-		FileOperate.DeleteFileFolder(parentPath + "filter2.fq");
+		FileOperate.deleteFileFolder(parentPath + "filter1.fq");
+		FileOperate.deleteFileFolder(parentPath + "filter2.fq");
 	}
 }

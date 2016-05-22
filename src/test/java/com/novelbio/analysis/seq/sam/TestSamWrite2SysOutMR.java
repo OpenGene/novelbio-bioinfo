@@ -53,6 +53,6 @@ public class TestSamWrite2SysOutMR {
 			i++;
 		}
 		assertEquals(17, i);
-		FileOperate.DeleteFileFolder(outputTest);
+		FileOperate.deleteFileFolder(outputTest);
 	}
 }

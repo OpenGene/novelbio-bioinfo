@@ -255,8 +255,8 @@ public class MapBwaAln extends MapDNA {
 		combSeq();
 		bwaAln();
 		SamFile samFile = bwaSamPeSe();
-		FileOperate.DeleteFileFolder(leftCombFq);
-		FileOperate.DeleteFileFolder(rightCombFq);
+		FileOperate.deleteFileFolder(leftCombFq);
+		FileOperate.deleteFileFolder(rightCombFq);
 		return samFile;
 	}
 	
@@ -474,9 +474,9 @@ public class MapBwaAln extends MapDNA {
 	 * @param samFileName
 	 */
 	private void deleteFile() {
-		FileOperate.DeleteFileFolder(getSai(1));
+		FileOperate.deleteFileFolder(getSai(1));
 		if (isPairEnd()) {
-			FileOperate.DeleteFileFolder(getSai(2));
+			FileOperate.deleteFileFolder(getSai(2));
 		}
 	}
 	

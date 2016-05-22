@@ -43,8 +43,8 @@ public class TestMapDNA {
 	}
 	
 	private void deleteFolder() {
-		FileOperate.DeleteFileFolder(referenceTmpPath);
-		FileOperate.DeleteFileFolder(outPath);
+		FileOperate.deleteFileFolder(referenceTmpPath);
+		FileOperate.deleteFileFolder(outPath);
 	}
 	
 	@Test

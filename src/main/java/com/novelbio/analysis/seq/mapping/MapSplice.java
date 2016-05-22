@@ -158,7 +158,7 @@ public class MapSplice implements MapRNA {
 			
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
-				FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
+				FileOperate.deleteFileFolder(FileOperate.addSep(outFile) + "tmp");
 				throw new ExceptionCmd("error running mapsplice:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 			}
 			clearTmpReads_And_MoveFile();
@@ -207,7 +207,7 @@ public class MapSplice implements MapRNA {
 		String parentPath = FileOperate.getParentPathNameWithSep(outFile);
 		FileOperate.moveFile(FileOperate.addSep(outFile) + "alignments.bam", parentPath, prefix + MapSpliceSuffix,false);
 		FileOperate.moveFile(FileOperate.addSep(outFile) + "junctions.txt", parentPath, prefix + "_junctions.txt",false);
-		FileOperate.DeleteFileFolder(FileOperate.addSep(outFile) + "tmp");
+		FileOperate.deleteFileFolder(FileOperate.addSep(outFile) + "tmp");
 	}
 	
 	@Override

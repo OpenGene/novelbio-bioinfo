@@ -80,9 +80,9 @@ public class TestMapRNA {
 	}
 	
 	private void deleteFolder() {
-		FileOperate.DeleteFileFolder(referenceTmpPath);
-		FileOperate.DeleteFileFolder(gtfTmpPath);
-		FileOperate.DeleteFileFolder(outPath);
+		FileOperate.deleteFileFolder(referenceTmpPath);
+		FileOperate.deleteFileFolder(gtfTmpPath);
+		FileOperate.deleteFileFolder(outPath);
 	}
 	
 //	@Test
@@ -136,7 +136,7 @@ public class TestMapRNA {
 		Assert.assertTrue(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
 
 		deleteFolder();
-		FileOperate.DeleteFileFolder(gtfFile.replace(".gz", ""));
+		FileOperate.deleteFileFolder(gtfFile.replace(".gz", ""));
 	}
 	
 //	@Test
@@ -166,7 +166,7 @@ public class TestMapRNA {
 		Assert.assertTrue(FileOperate.isFileExistAndBigThan0(mapRNA.getFinishName()));
 
 		deleteFolder();
-		FileOperate.DeleteFileFolder(gtfFile.replace(".gz", ""));
+		FileOperate.deleteFileFolder(gtfFile.replace(".gz", ""));
 	}
 	
 //	@Test

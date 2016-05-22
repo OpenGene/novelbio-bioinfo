@@ -33,7 +33,7 @@ public class SpeciesFileDelete {
 			break;
 		}
 		case gffRepeatFile: {
-			FileOperate.DeleteFileFolder(speciesFile.getGffRepeatFile());
+			FileOperate.deleteFileFolder(speciesFile.getGffRepeatFile());
 			speciesFile.setGffRepeatFile(null);
 			break;
 		}
@@ -67,7 +67,7 @@ public class SpeciesFileDelete {
 			return;
 		}
 		String gffFile = speciesFile.getGffFile(gffDb);
-		FileOperate.DeleteFileFolder(gffFile);
+		FileOperate.deleteFileFolder(gffFile);
 		speciesFile.removeGffDB(gffDb);
 		speciesFile.save();
 	}
@@ -80,9 +80,9 @@ public class SpeciesFileDelete {
 		//删除染色体文件
 		String chromeSeq = speciesFile.getChromSeqFile();
 		if (FileOperate.isFileExistAndBigThan0(chromeSeq)) {
-			FileOperate.DeleteFileFolder(chromeSeq);
-			FileOperate.DeleteFileFolder(chromeSeq + ".fai");
-			FileOperate.DeleteFileFolder(FileOperate.changeFileSuffix(chromeSeq, "", "fai"));
+			FileOperate.deleteFileFolder(chromeSeq);
+			FileOperate.deleteFileFolder(chromeSeq + ".fai");
+			FileOperate.deleteFileFolder(FileOperate.changeFileSuffix(chromeSeq, "", "fai"));
         }
 		speciesFile.setChromSeq(null);
 		speciesFile.save();
@@ -130,7 +130,7 @@ public class SpeciesFileDelete {
 		String refName = FileOperate.getFileNameSep(refFileName)[0];
 		List<String> lsRefInfo = FileOperate.getLsFoldFileName(refPath, refName, "*");
 		for (String refInfo : lsRefInfo) {
-			FileOperate.DeleteFileFolder(refInfo);
+			FileOperate.deleteFileFolder(refInfo);
 		}
 	}
 	

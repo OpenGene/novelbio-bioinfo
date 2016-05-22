@@ -81,7 +81,7 @@ public class BamMergeJava implements BamMergeInt {
 	String outFileTmp = FileOperate.changeFileSuffix(outFileName, "_tmp", null);
 	String outInfo = FileOperate.changeFileSuffix(outFileName, "_mergeReadsNum", "txt");
 	merge(outFileTmp, outInfo);
-	FileOperate.DeleteFileFolder(outInfo);
+	FileOperate.deleteFileFolder(outInfo);
     	if (!FileOperate.isFileExistAndBigThanSize(outFileTmp, 0)) {
 			throw new ExceptionSamError("cannot merge file: " + outFileName);
 		}

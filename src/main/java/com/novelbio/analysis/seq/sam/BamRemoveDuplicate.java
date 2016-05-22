@@ -91,7 +91,7 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		try {
 			cmdOperate.runWithExp("samtools remove duplicate error:");
 		} catch (Exception e) {
-			FileOperate.DeleteFileFolder(outFileTmp);
+			FileOperate.deleteFileFolder(outFileTmp);
 			throw e;
 		} finally {
 			lsCmdInfo.add(cmdOperate.getCmdExeStr());
@@ -122,8 +122,8 @@ public class BamRemoveDuplicate implements IntCmdSoft {
 		try {
 			cmdOperate.runWithExp("picard remove duplicate error");
 		} catch (Exception e) {
-			FileOperate.DeleteFileFolder(getMetricsFile(outTmp));
-			FileOperate.DeleteFileFolder(outTmp);
+			FileOperate.deleteFileFolder(getMetricsFile(outTmp));
+			FileOperate.deleteFileFolder(outTmp);
 			throw e;
 		} finally {
 			lsCmdInfo.add(cmdOperate.getCmdExeStr());

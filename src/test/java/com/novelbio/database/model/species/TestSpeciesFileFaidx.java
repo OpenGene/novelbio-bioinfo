@@ -69,6 +69,6 @@ public class TestSpeciesFileFaidx {
 	
 	@After
 	public void delete() {
-		FileOperate.DeleteFileFolder(parentPath + "species");
+		FileOperate.deleteFileFolder(parentPath + "species");
 	}
 }

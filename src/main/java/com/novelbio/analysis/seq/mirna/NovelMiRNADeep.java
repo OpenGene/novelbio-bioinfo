@@ -277,7 +277,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 
  
-		FileOperate.DeleteFileFolder(collapseReadsFa);
+		FileOperate.deleteFileFolder(collapseReadsFa);
 		FileOperate.delFile(arfFile);
 		
 		lsCmdRun.add(fastaInput);
@@ -302,8 +302,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
  
 		
 		lsCmd.add(cmdOperate.getCmdExeStr());
-		FileOperate.DeleteFileFolder(fastaInput);
-		FileOperate.DeleteFileFolder(bedSeqFileName);
+		FileOperate.deleteFileFolder(fastaInput);
+		FileOperate.deleteFileFolder(bedSeqFileName);
 		createReportFile = true;
 	}
 	
@@ -381,7 +381,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		String mirDeep_runs_Path = "mirdeep_runs/run_" + suffix;
 		String mirDeep_pdfs_Path = "pdfs_" + suffix;
 		
-		FileOperate.DeleteFileFolder(mirDeep_runs_Path + "/tmp");
+		FileOperate.deleteFileFolder(mirDeep_runs_Path + "/tmp");
 		
 		lsFileName.add(expression_html);
 		lsFileName.add(result_html);
@@ -405,13 +405,13 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		for (String string : lsOldPrepareTmp) {
 			long time = DateUtil.getNowTimeLong() - FileOperate.getTimeLastModify(string);
 			if (time > 86400000 * 3) {
-				FileOperate.DeleteFileFolder(string);
+				FileOperate.deleteFileFolder(string);
 			}
 		}
 		lsOldPrepareTmp = FileOperate.getLsFoldFileName("mirdeep_runs", "run", null);
 		for (String string : lsOldPrepareTmp) {
 			if (DateUtil.getNowTimeLong() - FileOperate.getTimeLastModify(string) > 86400000 * 3) {
-				FileOperate.DeleteFileFolder(string);
+				FileOperate.deleteFileFolder(string);
 			}
 		}
 	}

@@ -82,7 +82,7 @@ public class CopyFile {
 			}
 			txtRead.close();
 		}
-		FileOperate.DeleteFileFolder(fileCopied);
+		FileOperate.deleteFileFolder(fileCopied);
 		try { Thread.sleep(1000); } catch (InterruptedException e) { }
 		txtWriteCopiedFile = new TxtReadandWrite(fileCopied, true);
 		for (String string : setFileAlreadyCopied) {

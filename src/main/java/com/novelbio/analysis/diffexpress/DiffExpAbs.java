@@ -61,7 +61,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	List<String[]> lsGeneInfo = new ArrayList<String[]>();
 	/**
 	 * 一系列的表示基因分组的列，输入的时候就按照col进行了排序<br>
-	 * 0: colNum, 实际number<br>
+	 * 0: colNum, 实际number，从1开始计数<br>
 	 * 1: SampleGroupName
 	 */
 	List<String[]> lsSampleColumn2GroupName;
@@ -155,7 +155,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	}
 	/**
 	 * 一系列的表示基因分组的列<br>
-	 * 0: colNum, 实际number<br>
+	 * 0: colNum, 实际number，从1开始计数<br>
 	 * 1: SampleGroupName
 	 */
 	public void setCol2Sample(List<String[]> lsSampleColumn2GroupName) {
@@ -285,7 +285,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		calculate = true;
 		//清空文件
 		for (String fileName : mapOutFileName2Compare.keySet()) {
-			FileOperate.DeleteFileFolder(fileName);
+			FileOperate.deleteFileFolder(fileName);
 		}
 		writeToGeneFile();
 		setMapSample_2_time2value();
@@ -309,7 +309,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 		calculate = true;
 		//清空文件
 		for (String fileName : mapOutFileName2Compare.keySet()) {
-			FileOperate.DeleteFileFolder(fileName);
+			FileOperate.deleteFileFolder(fileName);
 		}
 		writeToGeneFile();
 		setMapSample_2_time2value();
@@ -498,7 +498,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 			List<String[]> lsResult = modifySingleResultFile(fileName, groupPaire[0], groupPaire[1]);
 //			FileOperate.DeleteFileFolder(outFileName + outPutSuffix);
 			//防止R还没输出结果就去读取
-			FileOperate.DeleteFileFolder(fileName);
+			FileOperate.deleteFileFolder(fileName);
 			//防止R还没输出结果就去读取
 			try { Thread.sleep(50); } catch (Exception e) { }
 			//TODO 这里写输出文件名不合适，等待修改
@@ -568,8 +568,8 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	
 	/** 删除中间文件 */
 	public void clean() {
-		FileOperate.DeleteFileFolder(outScript);
-		FileOperate.DeleteFileFolder(fileNameRawdata);
+		FileOperate.deleteFileFolder(outScript);
+		FileOperate.deleteFileFolder(fileNameRawdata);
 	}
 	
 	/** 将中间文件拷贝到指定文件夹，文件夹必须存在 */

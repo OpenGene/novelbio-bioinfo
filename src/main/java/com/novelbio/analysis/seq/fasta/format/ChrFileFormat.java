@@ -104,7 +104,7 @@ public class ChrFileFormat {
 		
 		SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
 		samIndexRefsequence.setRefsequence(outSeq);
-		FileOperate.DeleteFileFolder(samIndexRefsequence.getIndexSequence());
+		FileOperate.deleteFileFolder(samIndexRefsequence.getIndexSequence());
 		samIndexRefsequence.indexSequence();
 	}
 

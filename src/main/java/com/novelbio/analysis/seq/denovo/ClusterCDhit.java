@@ -255,7 +255,7 @@ nr时<br>
 	/** 清空临时文件 */
 	public void clearTmpFile() {
 		for (String tmpFile : setTmpFile) {
-			FileOperate.DeleteFileFolder(tmpFile);
+			FileOperate.deleteFileFolder(tmpFile);
 			setTmpFile.remove(tmpFile);
 		}
 	}

@@ -88,7 +88,7 @@ public abstract class TrinityClusterIso {
 
 	public void removeTmpFile() {
 		for (String fileName : lsTmpFileName) {
-			FileOperate.DeleteFileFolder(fileName);
+			FileOperate.deleteFileFolder(fileName);
 		}
 	}
 	

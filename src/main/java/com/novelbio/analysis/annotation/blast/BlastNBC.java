@@ -224,7 +224,7 @@ public class BlastNBC implements IntCmdSoft {
 		cmdOperate.setInputFile(queryFasta);
 		cmdOperate.run();
 		if (deleteQueryFasta) {
-			FileOperate.DeleteFileFolder(queryFasta);
+			FileOperate.deleteFileFolder(queryFasta);
 		}
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("blast error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());

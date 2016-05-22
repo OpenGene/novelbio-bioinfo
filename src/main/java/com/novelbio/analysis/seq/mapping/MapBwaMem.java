@@ -224,8 +224,8 @@ public class MapBwaMem extends MapDNA {
 		thread.start();
 		InputStream inputStream = cmdOperate.getStreamStd();
 		SamFile samResult = copeSamStream(true, inputStream, isNeedSort);
-		FileOperate.DeleteFileFolder(leftCombFq);
-		FileOperate.DeleteFileFolder(rightCombFq);
+		FileOperate.deleteFileFolder(leftCombFq);
+		FileOperate.deleteFileFolder(rightCombFq);
 		if (samResult != null && !cmdOperate.isRunning() && cmdOperate.isFinishedNormal()) {
 			return samResult;
 		} else {

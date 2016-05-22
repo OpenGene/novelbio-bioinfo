@@ -442,7 +442,7 @@ public class MapTophat implements MapRNA {
 			cmdOperate.addCmdParamOutput(outPathPrefix);
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
-				FileOperate.DeleteFileFolder(FileOperate.addSep(outPathPrefix) + "tmp");
+				FileOperate.deleteFileFolder(FileOperate.addSep(outPathPrefix) + "tmp");
 				throw new ExceptionCmd("error running tophat:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 			}
 			changeFileName();

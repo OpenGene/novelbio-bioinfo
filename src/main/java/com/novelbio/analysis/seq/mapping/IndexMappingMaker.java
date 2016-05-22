@@ -740,7 +740,7 @@ public static class IndexMapSplice extends IndexMappingMaker {
 			return;
 		}
 		
-		FileOperate.DeleteFileFolder(chrSepFold);
+		FileOperate.deleteFileFolder(chrSepFold);
 		FileOperate.createFolders(chrSepFold);
 		NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
 		ncbIchromFaChangeFormat.setChromFaPath(chrFile, "");

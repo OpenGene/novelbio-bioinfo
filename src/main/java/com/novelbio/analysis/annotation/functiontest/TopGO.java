@@ -234,11 +234,11 @@ public class TopGO implements IntCmdSoft {
 	}
 	/** 删除中间文件 */
 	private void clean() {
-		FileOperate.DeleteFileFolder(exeScript);
-		FileOperate.DeleteFileFolder(BGGeneFile);
-		FileOperate.DeleteFileFolder(CalGeneIDFile);
-		FileOperate.DeleteFileFolder(rawGoResultFile);
-		FileOperate.DeleteFileFolder(GOInfoFile);
+		FileOperate.deleteFileFolder(exeScript);
+		FileOperate.deleteFileFolder(BGGeneFile);
+		FileOperate.deleteFileFolder(CalGeneIDFile);
+		FileOperate.deleteFileFolder(rawGoResultFile);
+		FileOperate.deleteFileFolder(GOInfoFile);
 	}
 	
 	/** 返回获得的结果文件 */

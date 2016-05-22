@@ -30,7 +30,7 @@ public class TestCap3Cluster {
 		Assert.assertEquals(30, lsGeneId2TransId.size());
 		Assert.assertEquals("Contig1\tTRINITY_DN28859_c0_g1_i1@@32R_24h", lsGeneId2TransId.get(0));
 		
-		FileOperate.DeleteFileFolder(geneId2TransIdFile);
+		FileOperate.deleteFileFolder(geneId2TransIdFile);
 	}
 	
 	@Test
@@ -53,7 +53,7 @@ public class TestCap3Cluster {
 		Assert.assertEquals(7, lsGeneId2TransId.size());
 		Assert.assertEquals("Contig2\tTRINITY_DN28868_c0_g1_i1@@32R_24h", lsGeneId2TransId.get(0));
 		
-		FileOperate.DeleteFileFolder(geneId2TransIdFile);
+		FileOperate.deleteFileFolder(geneId2TransIdFile);
 	}
 	
 	@Test
@@ -71,7 +71,7 @@ public class TestCap3Cluster {
 			setGeneId2.add(seqFasta.getSeqName());
         }
 		Assert.assertEquals(setGeneId, setGeneId2);
-		FileOperate.DeleteFileFolder(cap3Cluster.finalClusterResult);
+		FileOperate.deleteFileFolder(cap3Cluster.finalClusterResult);
 	}
 	
 }

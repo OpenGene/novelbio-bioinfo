@@ -157,7 +157,7 @@ public abstract class MapDNA implements MapDNAint {
 	}
 	/** 运行失败后删除文件 */
 	protected void deleteFailFile() {
-		FileOperate.DeleteFileFolder(getOutNameCope());
+		FileOperate.deleteFileFolder(getOutNameCope());
 	}
 	/** 根据是否转化为bam文件以及是否排序，返回相应的文件名 */
 	public String getOutNameCope() {

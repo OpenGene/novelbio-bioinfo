@@ -202,7 +202,7 @@ public class SicerControl {
 		
 		//删除复制的临时文件
 		for (String string : lsCopyFiles) {
-			FileOperate.DeleteFileFolder(string);
+			FileOperate.deleteFileFolder(string);
 		}
 		lsCopyFiles.clear();
 	}

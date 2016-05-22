@@ -43,7 +43,7 @@ public class TestSamReducer {
 		Assert.assertEquals("HWI-D00175:261:C6L59ANXX:7:1101:10429:21613", samRecord.getName());
 		Assert.assertEquals(samRecordTxt, "mchr1_@_10019193_@_HWI-D00175:261:C6L59ANXX:7:1101:10429:21613\t" + samRecord.toString());
 		samFile.close();
-		FileOperate.DeleteFileFolder(outFile);
+		FileOperate.deleteFileFolder(outFile);
 	}
 	
 	/** Reducer输出为标准输出流 */
@@ -112,7 +112,7 @@ public class TestSamReducer {
 		}
 		Assert.assertEquals(48, i);
 		samFile.close();
-		FileOperate.DeleteFileFolder(outFile);
+		FileOperate.deleteFileFolder(outFile);
 	}
 	
 }

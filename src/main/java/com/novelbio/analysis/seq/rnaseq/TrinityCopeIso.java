@@ -131,8 +131,8 @@ public class TrinityCopeIso extends TrinityClusterIso {
 		}
 		//清空文件
 		clusterSeq.clearTmpFile();
-		FileOperate.DeleteFileFolder(clusterSeq.getOutClusterInfo());
-		FileOperate.DeleteFileFolder(clusterSeq.getOutClusterSeq());
+		FileOperate.deleteFileFolder(clusterSeq.getOutClusterInfo());
+		FileOperate.deleteFileFolder(clusterSeq.getOutClusterSeq());
 		return mapGeneName2LsSeqFasta;
 	}
 	

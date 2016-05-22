@@ -117,7 +117,7 @@ public class BlastUp2DB {
 	public void checkFile() throws BlastFileException {
 		String gene2AccFile = blastFileInfo.getFileName();
 		if (!FileOperate.isFileExistAndBigThanSize(gene2AccFile, 0)) {
-			FileOperate.DeleteFileFolder(gene2AccFile);
+			FileOperate.deleteFileFolder(gene2AccFile);
 			throw new BlastFileException("file is not exist:" + gene2AccFile);
 		}
 		int taxIdQ = blastFileInfo.getQueryTaxID();
@@ -167,7 +167,7 @@ public class BlastUp2DB {
 		
 		
 		if (errorInfo != null) {
-			FileOperate.DeleteFileFolder(blastFileInfo.realFileAndName());
+			FileOperate.deleteFileFolder(blastFileInfo.realFileAndName());
 			throw new BlastFileException(errorInfo);
 		}
 	}

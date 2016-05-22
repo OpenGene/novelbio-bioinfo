@@ -146,7 +146,7 @@ public class CuffMerge implements IntCmdSoft {
 //			FileOperate.DeleteFileFolder(tmpGtfRecord);
 			throw new ExceptionCmd("cuffmerge error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + errInfo);
 		}
-		FileOperate.DeleteFileFolder(tmpGtfRecord);
+		FileOperate.deleteFileFolder(tmpGtfRecord);
 		return outMergedFile;
 	}
 	

@@ -63,7 +63,7 @@ public class BamMerge implements BamMergeInt {
 			CmdOperate cmdOperate = new CmdOperate(getLsCmd(outFileNameTmp));
 			cmdOperate.run();
 			if (!cmdOperate.isFinishedNormal()) {
-				FileOperate.DeleteFileFolder(outFileNameTmp);
+				FileOperate.deleteFileFolder(outFileNameTmp);
 				throw new ExceptionCmd("sam merge error:\n" + cmdOperate.getCmdExeStrReal());
 			}
 			FileOperate.moveFile(true, outFileNameTmp, outFileName);

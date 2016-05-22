@@ -42,6 +42,6 @@ public class TestSpeciesMirnaFile {
 	
 	@After
 	public void delete() {
-		FileOperate.DeleteFileFolder(parentPath + "miRNA");
+		FileOperate.deleteFileFolder(parentPath + "miRNA");
 	}
 }

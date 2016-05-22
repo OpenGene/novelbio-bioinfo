@@ -85,7 +85,7 @@ public class SpeciesFileUpload {
 		try {
 			FileOperate.uploadFile(inputStream, newFileTmp, false, fileSize);
 		} catch (IOException e) {
-			FileOperate.DeleteFileFolder(newFileTmp);
+			FileOperate.deleteFileFolder(newFileTmp);
 			throw e;
 		}
 		SpeciesFileDelete speciesFileDelete = new SpeciesFileDelete(speciesFile);
@@ -113,13 +113,13 @@ public class SpeciesFileUpload {
 		try {
 			FileOperate.uploadFile(inputStream, newFileTmp, false, fileSize);
 		} catch (IOException e) {
-			FileOperate.DeleteFileFolder(newFileTmp);
+			FileOperate.deleteFileFolder(newFileTmp);
 			throw e;
 		}
 		FileOperate.moveFile(true, newFileTmp, newFileName);
 		TaxInfo taxInfo = ManageSpecies.getInstance().queryTaxInfo(taxId);
 		String oldFile = ManageSpecies.getInstance().getRrnaFileWithPath(taxInfo);
-		FileOperate.DeleteFileFolder(oldFile);
+		FileOperate.deleteFileFolder(oldFile);
 		taxInfo.setRrnaFile(fileName);
 		ManageSpecies.getInstance().saveTaxInfo(taxInfo);
 	}

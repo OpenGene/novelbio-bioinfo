@@ -93,8 +93,8 @@ public class TestChrFileFormat {
 	@Test
 	public void testExtractSeq() {
 		String refSeqResult = FileOperate.changeFileSuffix(refSeq, "_modify", null);
-		FileOperate.DeleteFileFolder(refSeqResult);
-		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
+		FileOperate.deleteFileFolder(refSeqResult);
+		FileOperate.deleteFileFolder(refSeqResult + ".fai");
 		
 		Set<String> setChrId = new HashSet<>();
 		setChrId.add("chr2"); setChrId.add("contig1"); setChrId.add("contig3");
@@ -118,15 +118,15 @@ public class TestChrFileFormat {
 		}
 		Assert.assertEquals(setChrId.size(), mapChrId2LenNew.size());
 		
-		FileOperate.DeleteFileFolder(refSeqResult);
-		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
+		FileOperate.deleteFileFolder(refSeqResult);
+		FileOperate.deleteFileFolder(refSeqResult + ".fai");
 	}
 	
 	@Test
 	public void testChrSeqWithOutGff() {
 		String refSeqResult = FileOperate.changeFileSuffix(refSeq, "_modify", null);
-		FileOperate.DeleteFileFolder(refSeqResult);
-		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
+		FileOperate.deleteFileFolder(refSeqResult);
+		FileOperate.deleteFileFolder(refSeqResult + ".fai");
 		
 		int minLen = 1000;
 		
@@ -152,15 +152,15 @@ public class TestChrFileFormat {
 		chrSeqHash.close();
 		chrSeqHash2.close();
 		
-		FileOperate.DeleteFileFolder(refSeqResult);
-		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
+		FileOperate.deleteFileFolder(refSeqResult);
+		FileOperate.deleteFileFolder(refSeqResult + ".fai");
 	}
 	
 	@Test
 	public void testChrSeqWithGffNoNumLimit() {
 		String refSeqResult = FileOperate.changeFileSuffix(refSeq, "_modifyGffNoLimit", null);
-		FileOperate.DeleteFileFolder(refSeqResult);
-		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
+		FileOperate.deleteFileFolder(refSeqResult);
+		FileOperate.deleteFileFolder(refSeqResult + ".fai");
 		int minLen = 1000;
 		Set<String> setChrId = readGffFile(gffFile);
 		
@@ -189,15 +189,15 @@ public class TestChrFileFormat {
 		chrSeqHash.close();
 		chrSeqHash2.close();
 		
-		FileOperate.DeleteFileFolder(refSeqResult);
-		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
+		FileOperate.deleteFileFolder(refSeqResult);
+		FileOperate.deleteFileFolder(refSeqResult + ".fai");
 	}
 	
 	@Test
 	public void testChrSeqWithGffWithLimit() {
 		String refSeqResult = FileOperate.changeFileSuffix(refSeq, "_modifyGffWithLimit", null);
-		FileOperate.DeleteFileFolder(refSeqResult);
-		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
+		FileOperate.deleteFileFolder(refSeqResult);
+		FileOperate.deleteFileFolder(refSeqResult + ".fai");
 		int minLen = 200;
 		int maxNum = 4;
 		int realNum = 5;//gff文件中有五条
@@ -227,8 +227,8 @@ public class TestChrFileFormat {
 		chrSeqHash.close();
 		chrSeqHash2.close();
 		
-		FileOperate.DeleteFileFolder(refSeqResult);
-		FileOperate.DeleteFileFolder(refSeqResult + ".fai");
+		FileOperate.deleteFileFolder(refSeqResult);
+		FileOperate.deleteFileFolder(refSeqResult + ".fai");
 	}
 	
 	private Set<String> readGffFile(String gffFile) {

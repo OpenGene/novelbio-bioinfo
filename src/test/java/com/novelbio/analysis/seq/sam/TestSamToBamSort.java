@@ -46,8 +46,8 @@ public class TestSamToBamSort extends TestCase {
 		for (SamRecord samRecord : samFile.readLinesOverlap("chrc", 2000, 140659)) {
 			System.out.println(samRecord);
 		}
-		FileOperate.DeleteFileFolder(outFile);
-		FileOperate.DeleteFileFolder(indexFile);
+		FileOperate.deleteFileFolder(outFile);
+		FileOperate.deleteFileFolder(indexFile);
 	}
 	
 	public void testNotAddMulti() {
@@ -73,7 +73,7 @@ public class TestSamToBamSort extends TestCase {
 			}
 		}
 		
-		FileOperate.DeleteFileFolder(outFile);
+		FileOperate.deleteFileFolder(outFile);
 	}
 	
 	private SAMSequenceDictionary getSeqDict() {
