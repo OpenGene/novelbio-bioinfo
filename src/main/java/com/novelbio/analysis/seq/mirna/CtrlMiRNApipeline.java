@@ -159,12 +159,12 @@ public class CtrlMiRNApipeline implements IntCmdSoft {
 		if (!lsSpeciesBlastTo.isEmpty()) {
 			blastToOtherSpecies();
 		}
-		expMirMature.writeFile(true, outPath + "/miRNA_All_Counts.txt", EnumExpression.Counts);
-		expMirMature.writeFile(true, outPath + "/miRNA_All_UQ.txt", EnumExpression.UQPM);
+		expMirMature.writeFile(true, outPath + "/miRNA.All.Counts.exp.txt", EnumExpression.Counts);
+		expMirMature.writeFile(true, outPath + "/miRNA.All.UQ.exp.txt", EnumExpression.UQPM);
 
-		expMirPre.writeFile(true, outPath + "/miRNAPre_All_Counts.txt", EnumExpression.Counts);
-		expMirPre.writeFile(true, outPath + "/miRNAPre_All_UQ.txt", EnumExpression.UQPM);
-		mirnaIso.writeToFile(outPath + "/miRNA_Iso.txt");
+		expMirPre.writeFile(true, outPath + "/miRNAPre.All.Counts.exp.txt", EnumExpression.Counts);
+		expMirPre.writeFile(true, outPath + "/miRNAPre.All.UQ.exp.txt", EnumExpression.UQPM);
+		mirnaIso.writeToFile(outPath + "/miRNA.Iso.txt");
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outPath + "/miRNAmappingStatistics", true);
 		txtWrite.ExcelWrite(samMapMiRNARate.getLsResult());
 		txtWrite.close();

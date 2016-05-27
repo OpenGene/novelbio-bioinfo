@@ -151,13 +151,13 @@ public class VarScanSomatic implements IntCmdSoft {
 	}
 	
 	private String getSnpFile(String treat, String ctrl, boolean isTmp) {
-		String fileName = outputDir+ treat + "VS" + ctrl + "_snp.vcf";
+		String fileName = outputDir+ treat + "VS" + ctrl + ".snp.vcf";
 		if (isTmp) fileName = fileName + ".tmp";
 		return fileName;
 	}
 	
 	private String getIndelFile(String treat, String ctrl, boolean isTmp) {
-		String fileName = outputDir + treat + "VS" + ctrl + "_indel.vcf";
+		String fileName = outputDir + treat + "VS" + ctrl + ".indel.vcf";
 		if (isTmp) fileName = fileName + ".tmp";
 		return fileName;
 	}

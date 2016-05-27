@@ -176,21 +176,23 @@ public class N50statistics {
 		for (Integer seqLen : lsSeqLen) {
 			contigNum ++;
 			tmpN = tmpN + seqLen;
-			if (tmpN*100 / allContigsLen >= Nvalue) {
-				String[] tmpNvalue = new String[3];
-				tmpNvalue[0] = "N" + Nvalue;
-				if (lastSeqLen == 0 || tmpN*100 / allContigsLen == Nvalue) {
-					tmpNvalue[1] = seqLen + "";
-				} else {
-					tmpNvalue[1] = lastSeqLen + "";
-				}
-				tmpNvalue[2] = contigNum + "";
+			while (tmpN*100 / allContigsLen >= Nvalue) {
 				Nvalue += NvalueStep;
-				if (Nvalue > 100) {
-					break;
-				}
-				lsNinfo.add(tmpNvalue);
 			}
+			Nvalue -= NvalueStep;
+			
+			String[] tmpNvalue = new String[3];
+			tmpNvalue[0] = "N" + Nvalue;
+			if (Nvalue >= 50) {
+				N50Len = seqLen;
+			}
+			tmpNvalue[1] = seqLen + "";
+			tmpNvalue[2] = contigNum + "";
+			if (Nvalue > 100) {
+				break;
+			}
+			lsNinfo.add(tmpNvalue);
+			
 			lastSeqLen = seqLen;
 		}
 		if (Nvalue != 100 ) {
@@ -201,8 +203,6 @@ public class N50statistics {
 			lsNinfo.add(tmpNvalue);
 		}
 		lsNinfo.add(0, new String[]{"Nvalue", "Length", "ContigNum"});
-		String[] arrN50Len = lsNinfo.get(11);
-		N50Len = Integer.parseInt(arrN50Len[1]);
 	}
 	
 	private void statisticContigLen() {

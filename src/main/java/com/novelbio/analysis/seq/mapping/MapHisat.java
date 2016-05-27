@@ -171,7 +171,7 @@ public class MapHisat implements MapRNA {
 	private static Logger logger = LoggerFactory.getLogger(MapHisat.class);
 	
 	/** mapping文件的后缀，包含 ".bam" 字符串 */
-	public static final String MapSpliceSuffix = "_hisat2.bam";
+	public static final String MAPHISAT2SUFFIX = ".hisat2.bam";
 	
 	private String exePathHist;
 	/** 
@@ -276,7 +276,7 @@ public class MapHisat implements MapRNA {
 	/** 输出文件 */
 	@Override
 	public void setOutPathPrefix(String outPathPrefix) {
-		this.outputSam = FileOperate.changeFileSuffix(outPathPrefix, "", "bam");
+		this.outputSam = FileOperate.changeFileSuffix(outPathPrefix, "", MAPHISAT2SUFFIX);
 	}
 
 	@Override
@@ -516,7 +516,7 @@ public class MapHisat implements MapRNA {
 
 		String prefix = FileOperate.getFileName(outputSam);
 		String parentPath = FileOperate.getParentPathNameWithSep(outputSam);
-		String mapHisatBam = parentPath + prefix + MapSpliceSuffix;
+		String mapHisatBam = parentPath + prefix + MAPHISAT2SUFFIX;
 		if (!FileOperate.isFileExistAndBigThanSize(mapHisatBam, 1_000_000) ||
 				!FileOperate.isFileExistAndBigThanSize(mapHisatBam, 1_000)
 				) {

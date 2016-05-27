@@ -367,6 +367,9 @@ public class Species implements Cloneable {
 	 * @return
 	 */
 	public String getRfamFile(boolean spciesSpecific) {
+		if (!spciesSpecific) {
+			return SpeciesFile.getRfamAll();
+		}
 		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
 			return null;
 		}

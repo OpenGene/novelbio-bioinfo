@@ -180,7 +180,12 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	private void setConfigFile() {
 		miRNAmappingPipline.setMiRNApreSeq(species.getMiRNAhairpinFile());
 		miRNAmappingPipline.setNcRNAseq(species.getRefseqNCfile());
-		miRNAmappingPipline.setRfamSeq(species.getRfamFile(rfamSpeciesSpecific));
+		if (species.getTaxID() != 0) {
+			miRNAmappingPipline.setRfamSeq(species.getRfamFile(rfamSpeciesSpecific));
+		} else {
+			miRNAmappingPipline.setRfamSeq(species.getRfamFile(rfamSpeciesSpecific));
+		}
+	
 		miRNAmappingPipline.setGenome(species.getIndexChr(SoftWare.bwa_aln));//默认bwa做mapping
 	}
 	

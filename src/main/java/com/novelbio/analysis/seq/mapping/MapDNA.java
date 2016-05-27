@@ -163,7 +163,7 @@ public abstract class MapDNA implements MapDNAint {
 	public String getOutNameCope() {
 		String resultSamName = FileOperate.changeFileSuffix(outFileName, "", "bam");
 		if (isNeedSort) {
-			resultSamName = FileOperate.changeFileSuffix(resultSamName, "_sorted", null);
+			resultSamName = FileOperate.changeFileSuffix(resultSamName, ".sorted", null);
 		}
 		return resultSamName;
 	}

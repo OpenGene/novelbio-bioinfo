@@ -417,10 +417,17 @@ public class SpeciesFile {
 	 */
 	public String getRfamFile(boolean speciesSpecific) {
 		String node = "rfam/";
-		String speciesPath = pathParent + node + getPathToVersion();
-		return speciesPath + (speciesSpecific?  "rfamFile":  "rfamFileAll");//TODO
+		if (speciesSpecific) {
+			return getRfamAll();
+		} else {
+			return pathParent + node + getPathToVersion() + "rfamFile";
+		}
 	}
 	
+	public static String getRfamAll() {
+		String node = "rfam/";
+		return pathParent + node + 0 + "/rfamFileAll";
+	}
 	/**
 	 * 仔仔细细的全部比较一遍，方便用于数据库升级
 	 * @param obj

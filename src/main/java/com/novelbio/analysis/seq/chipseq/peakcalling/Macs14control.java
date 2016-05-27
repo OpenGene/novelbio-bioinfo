@@ -59,7 +59,7 @@ public class Macs14control  implements IntCmdSoft {
 		if (FileOperate.isFileDirectory(pathoutput) && (pathoutput.endsWith("\\") || pathoutput.endsWith("/"))) {
 			pathoutput = pathoutput + "result";
 		}
-		this.resultFile = FileOperate.changeFileSuffix(pathoutput, "_peak_modify", "xls");
+		this.resultFile = FileOperate.changeFileSuffix(pathoutput, ".peak.loc", "xls");
 		macs14.setPathoutput(pathoutput);
 	}
 	public void setpathinputColl(String pathinputCol) {

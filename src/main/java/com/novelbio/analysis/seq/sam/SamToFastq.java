@@ -51,7 +51,7 @@ public class SamToFastq implements AlignmentRecorder {
 		String fileName = samFile.getFileName();
 		this.samToFastqType = samToFastqType;
 		this.isPairend = samFile.isPairend();
-		fileName = FileOperate.changeFileSuffix(fileName, samToFastqType.getSuffix(), "fastq.gz");
+		fileName = FileOperate.changeFileSuffix(fileName, samToFastqType.getSuffix(), "fq.gz");
 		
 		outFileName = getFinalName(fileName, false);
 		if (isGenerateTmpFile) {
@@ -86,9 +86,9 @@ public class SamToFastq implements AlignmentRecorder {
 			outFileName[1] = outFile2;
 		}
 		if (isGenerateTmpFile) {
-			outFileNameTmp[0] = FileOperate.changeFileSuffix(outFileName[0], "_tmp", null);
+			outFileNameTmp[0] = FileOperate.changeFileSuffix(outFileName[0], ".tmp", null);
 			if (isPairend) {
-				outFileNameTmp[1] = FileOperate.changeFileSuffix(outFileName[1], "_tmp", null);
+				outFileNameTmp[1] = FileOperate.changeFileSuffix(outFileName[1], ".tmp", null);
 			}
 		}
 		initialFq();
@@ -249,14 +249,14 @@ public class SamToFastq implements AlignmentRecorder {
 	private String[] getFinalName(String outFileName, boolean isTmp) {
 		String[] finalFileName = new String[isPairend? 2 : 1];
 		if (isPairend) {
-			finalFileName[0] = FileOperate.changeFileSuffix(outFileName, "_1", "fastq|fq", null);
-			finalFileName[1] = FileOperate.changeFileSuffix(outFileName, "_2", "fastq|fq", null);
+			finalFileName[0] = FileOperate.changeFileSuffix(outFileName, ".1", "fastq|fq", null);
+			finalFileName[1] = FileOperate.changeFileSuffix(outFileName, ".2", "fastq|fq", null);
 		} else {
 			finalFileName[0] = outFileName;
 		}
 		if (isTmp) {
 			for (int i = 0; i < finalFileName.length; i++) {
-				finalFileName[i] = FileOperate.changeFileSuffix(finalFileName[i], "_tmp", "fastq|fq", null);
+				finalFileName[i] = FileOperate.changeFileSuffix(finalFileName[i], ".tmp", "fastq|fq", null);
 			}
 		}
 
@@ -287,21 +287,21 @@ public class SamToFastq implements AlignmentRecorder {
 	
 	public static enum EnumSamToFastqType {
 		/** 全部reads */
-		AllReads("_All"),
+		AllReads(".All"),
 		/** Mapped Reads，双端测序只要有一段比对上就算是比对上了 */
-		MappedReads("_Mapped"),
+		MappedReads(".Mapped"),
 		/** 双端测序只提取两端都比对上的 */
-		MappedReadsPairend("_BothMapped"),
+		MappedReadsPairend(".BothMapped"),
 		/** 双端测序一端比上另一端没比上 */
-		MappedReadsOnlyOne("_OneMapOneNot"),
+		MappedReadsOnlyOne(".OneMapOneNot"),
 		/** 双端测序，把所有没比对上的reads输出到一个fq文件中，不区分是否双端。
 		 * 主要用于tophat的结果，因为tophat是排过序的bam文件，直接提取序列会很
 		 * 占内存 */
-		UnmappedReadsOneFile("_UnmappedOneFile"),
+		UnmappedReadsOneFile(".UnmappedOneFile"),
 		/** 双端测序只要有一个没比对上的 */
-		UnmappedReads("_OneReadsIsNot"),
+		UnmappedReads(".OneReadsIsNot"),
 		/** 双端测序两端都没比对上的 */
-		UnmappedReadsBoth("_BothUnMapped");
+		UnmappedReadsBoth(".BothUnMapped");
 		
 		String suffix;
 		EnumSamToFastqType(String suffix) {

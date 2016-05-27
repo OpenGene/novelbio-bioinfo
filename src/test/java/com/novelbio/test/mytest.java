@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import smile.math.special.Beta;
 import smile.stat.hypothesis.ChiSqTest;
 
+import com.google.common.collect.Lists;
 import com.novelbio.analysis.seq.fasta.ChrDensity;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
@@ -28,6 +29,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
+import com.novelbio.analysis.seq.rnaseq.Trinity;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
@@ -64,7 +66,7 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		FileOperate.moveFile(true, "/media/nbfs/nbCloud/public/software/WebApp/171oldbak/test", "/media/nbfs/nbCloud/public/software/WebApp/171oldbak");
+		System.out.println(FileOperate.changeFilePrefix("/a/b/c/", "sf", "pdf"));
 	}
 	
 	public static void getGeneFromPath() throws Exception {

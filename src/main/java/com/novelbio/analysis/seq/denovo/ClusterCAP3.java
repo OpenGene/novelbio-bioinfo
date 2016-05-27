@@ -140,7 +140,7 @@ public class ClusterCAP3 implements IntCmdSoft {
 		finalClusterResult = outDir + "All-Unigene.final.fa";
 		outMergedFile = getOutMergedFile();
 		
-		String outTransFile = outDir + "All-cap3-transcripts.fa";
+		String outTransFile = outDir + "All-cap3.transcripts.fa";
 		
 		if (!FileOperate.isFileExistAndBigThanSize(outMergedFile, 0)) {
 			ClusterCAP3.mergeTrinity(mapPrefix2TrinityFile, outMergedFile);
@@ -157,7 +157,7 @@ public class ClusterCAP3 implements IntCmdSoft {
 				
 		ContigId2TranId contigIDToTranID = new ContigId2TranId();
 		contigIDToTranID.setCAP3File(outClusterFile, setGeneId);
-		contigIDToTranID.setOutContigIDToTranIDFile(FileOperate.changeFileSuffix(outClusterFile, "_gene2trans", "list"));
+		contigIDToTranID.setOutContigIDToTranIDFile(FileOperate.changeFileSuffix(outClusterFile, ".gene2trans", "list"));
 		contigIDToTranID.generateCompareTab();
 		Set<String> setTransId = contigIDToTranID.getSetTransId();
 		generateTranscriptFa(setTransId, outMergedFile, outTransFile);

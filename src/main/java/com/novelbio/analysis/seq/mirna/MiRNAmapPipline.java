@@ -147,7 +147,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 	/** mapping的流水线 */
 	public void mappingPipeline() {
 		lsCmd.clear();
-		String outputSam = outPathTmpMapping + prefix + "_";
+		String outputSam = outPathTmpMapping + prefix + ".";
 		samFileMiRNA = outputSam +  "miRNA.bam";
 		samFileRfam = outputSam + "rfam.bam";
 		samFileNCRNA = outputSam + "ncRna.bam";
@@ -155,7 +155,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		/** 全部reads mapping至全基因组上 */
 		samFileGenomeAll = outputSam + "GenomeAll.bam";
 		
-		String outputTmpFinal = outPathTmpMapping + prefix + "_";
+		String outputTmpFinal = outPathTmpMapping + prefix + ".";
 		String fqFile = seqFile;
 		String unMappedFq = "";
 		String unMappedMiRNA = fqFile;
@@ -218,12 +218,12 @@ public class MiRNAmapPipline implements IntCmdSoft {
 	}
 	/** 仅mapping至MiRNA上 */
 	public void mappingMiRNA() {		
-		String outputSam = outPathTmpMapping + prefix + "_";
+		String outputSam = outPathTmpMapping + prefix + ".";
 		samFileMiRNA = outputSam +  "miRNA.sam";
 		/** 全部reads mapping至全基因组上 */
 		samFileGenomeAll = outputSam + "GenomeAll.sam";
 		
-		String outputTmpFinal = outPathTmpMapping + prefix + "_";
+		String outputTmpFinal = outPathTmpMapping + prefix + ".";
 		String fqFile = seqFile;
 		String unMappedFq = "";
 		if (FileOperate.isFileExist(miRNApreSeq)) {

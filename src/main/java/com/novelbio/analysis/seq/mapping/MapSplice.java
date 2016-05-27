@@ -16,9 +16,9 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 public class MapSplice implements MapRNA {
 	/** mapping文件的后缀，包含 ".bam" 字符串 */
-	public static final String MapSpliceSuffix = "_mapsplice.bam";
+	public static final String MapSpliceSuffix = ".mapsplice.bam";
 	/** mapsplice mapping完后又用bowtie2 mapping的后缀，包含 ".bam" 字符串 */
-	public static final String MapSpliceAllSuffix = "_mapspliceAll.bam";
+	public static final String MapSpliceAllSuffix = ".mapspliceAll.bam";
 	
 	String exePath = "";
 	/** bowtie就是用来做索引的 */
@@ -206,7 +206,7 @@ public class MapSplice implements MapRNA {
 		String prefix = FileOperate.getFileName(outFile);
 		String parentPath = FileOperate.getParentPathNameWithSep(outFile);
 		FileOperate.moveFile(FileOperate.addSep(outFile) + "alignments.bam", parentPath, prefix + MapSpliceSuffix,false);
-		FileOperate.moveFile(FileOperate.addSep(outFile) + "junctions.txt", parentPath, prefix + "_junctions.txt",false);
+		FileOperate.moveFile(FileOperate.addSep(outFile) + "junctions.txt", parentPath, prefix + ".junctions.txt",false);
 		FileOperate.deleteFileFolder(FileOperate.addSep(outFile) + "tmp");
 	}
 	
@@ -224,11 +224,11 @@ public class MapSplice implements MapRNA {
 	private FastQ deCompressFq(FastQ fastQ) {
 		String fileName = fastQ.getReadFileName();
 		fileName = fileName.replace("fastq.gz", "fastq").replace("fq.gz", "fastq");
-		String newFastqName = FileOperate.changeFileSuffix(fileName, "_decompress", null);
+		String newFastqName = FileOperate.changeFileSuffix(fileName, ".decompress", null);
 		if (FileOperate.isFileExistAndBigThanSize(newFastqName, 0)) {
 			return new FastQ(newFastqName);
 		}
-		String fastqTmp = FileOperate.changeFileSuffix(newFastqName, "_tmp", null);
+		String fastqTmp = FileOperate.changeFileSuffix(newFastqName, ".tmp", null);
 		FastQ fastQdecompress = new FastQ(fastqTmp, true);
 		for (FastQRecord fastQRecord : fastQ.readlines()) {
 			fastQdecompress.writeFastQRecord(fastQRecord);

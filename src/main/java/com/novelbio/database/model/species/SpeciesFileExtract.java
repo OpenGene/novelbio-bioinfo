@@ -50,7 +50,7 @@ public class SpeciesFileExtract {
 		}
 		//如果文件里面的染色体，或者说contig太多，就会将短的去掉
 		String chromeSeq = speciesFile.getChromSeqFile();
-		if (FileOperate.isFileExistAndBigThanSize(chromeSeq, 0)) {
+		if (FileOperate.isFileExistAndBigThan0(chromeSeq)) {
 			SamIndexRefsequence samIndexRefsequence = new SamIndexRefsequence();
 			samIndexRefsequence.setRefsequence(chromeSeq);
 			samIndexRefsequence.indexSequence();

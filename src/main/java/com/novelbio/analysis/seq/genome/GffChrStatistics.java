@@ -34,6 +34,8 @@ import com.novelbio.database.model.species.Species;
 public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatiscticsProcessInfo> implements Cloneable, AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(GffChrAnno.class);
 	
+	public static final String GeneStructureSuffix = ".gene_structure.txt";
+	
 	GffChrAbs gffChrAbs;
 	
 	int[] tssRegion = new int[]{-2000, 2000};

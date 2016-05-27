@@ -705,9 +705,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 	public static String getSavePic(String pathAndName) {
 		String pathChrPic = null;
 		if (pathAndName.endsWith("/") || pathAndName.endsWith("\\")) {
-			pathChrPic = pathAndName + "ChrDistribution.png";
+			pathChrPic = pathAndName + "chr_distribution.png";
 		} else {
-			pathChrPic = FileOperate.changeFilePrefix(pathAndName, "ChrDistribution_", "png");
+			pathChrPic = FileOperate.changeFilePrefix(pathAndName, ".chr_distribution", "png");
 		}
 		return pathChrPic;
 	}
@@ -715,11 +715,11 @@ public class SamFileStatistics implements AlignmentRecorder {
 	public static String getSaveExcel(String pathAndName) {
 		String excelName = null;
 		if (pathAndName.endsWith("/") || pathAndName.endsWith("\\")) {
-			excelName = pathAndName + "MappingStatistic.xls";
-		} else if(FileOperate.getFileName(pathAndName).startsWith("MappingStatistic_")) {
+			excelName = pathAndName + "mapping_statistic.xls";
+		} else if(FileOperate.getFileName(pathAndName).contains("mapping_statistics")) {
 			return pathAndName;
 		} else {
-			excelName = FileOperate.changeFilePrefix(pathAndName, "MappingStatistic_", "xls");
+			excelName = FileOperate.changeFileSuffix(pathAndName, ".mapping_statistics", "xls");
 		}
 		return excelName;
 	}

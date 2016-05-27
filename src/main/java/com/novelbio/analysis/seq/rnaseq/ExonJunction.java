@@ -479,9 +479,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		if (resultFile != null) {
 			String outFile = "";
 			if (FileOperate.isFileDirectory(resultFile)) {
-				outFile = resultFile + condition1 +"vs" + condition2 + ".txt";
+				outFile = resultFile + condition1 +"vs" + condition2 + ".alldiff.txt";
 			} else {
-				outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, "txt");
+				outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, ".alldiff.txt");
 			}
 			writeToFile(outFile, lsResult);
 		}
@@ -527,7 +527,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			if (FileOperate.isFileDirectory(resultFile)) {
 				outFile = resultFile + condition1 +"vs" + condition2 + ".txt";
 			} else {
-				outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, "txt");
+				outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, ".alldiff.txt");
 			}
 			writeToFile(outFile, lsResult);
 		}

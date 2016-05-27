@@ -102,7 +102,7 @@ public class MirTargetMammal implements IntCmdSoft {
 	
 
 	private String predictMiranda() {
-		String mirandaFile = FileOperate.changeFileSuffix(predictResultFinal, "_miranda", "gz");
+		String mirandaFile = FileOperate.changeFileSuffix(predictResultFinal, ".miranda", "gz");
 		RNAmiranda rnAmiranda = new RNAmiranda();
 		rnAmiranda.setMiRNAseq(inputMiRNAseq);
 		rnAmiranda.setUtr3File(getInput3UTRseq());
@@ -114,7 +114,7 @@ public class MirTargetMammal implements IntCmdSoft {
 		}
 
 		rnAmiranda.setPredictResultFile(mirandaFile);
-		String mirandaOut = FileOperate.changeFileSuffix(predictResultFinal, "_miranda_modify", null);
+		String mirandaOut = FileOperate.changeFileSuffix(predictResultFinal, ".miranda_modify", null);
 		if (!FileOperate.isFileExistAndBigThanSize(mirandaFile, 0)) {
 			lsCmd.addAll(rnAmiranda.getCmdExeStr());
 			rnAmiranda.mirnaPredict();
@@ -139,7 +139,7 @@ public class MirTargetMammal implements IntCmdSoft {
 	}
 	
 	private String predictRNAhybrid() {
-		String rnaHybridFile = FileOperate.changeFileSuffix(predictResultFinal, "_rnahybrid", "gz");
+		String rnaHybridFile = FileOperate.changeFileSuffix(predictResultFinal, ".rnahybrid", "gz");
 
 		RNAhybrid rnAhybrid = new RNAhybrid();
 		rnAhybrid.setMiRNAseq(inputMiRNAseq);
@@ -152,7 +152,7 @@ public class MirTargetMammal implements IntCmdSoft {
 			rnAhybrid.setTargetPvalue(pvalue);
 		}
 		rnAhybrid.setPredictResultFile(rnaHybridFile);
-		String rnaHybridOut = FileOperate.changeFileSuffix(predictResultFinal, "_rnahybrid_modify", null);
+		String rnaHybridOut = FileOperate.changeFileSuffix(predictResultFinal, ".rnahybrid_modify", null);
 		if (!FileOperate.isFileExistAndBigThanSize(rnaHybridFile, 0)) {
 			lsCmd.addAll(rnAhybrid.getCmdExeStr());
 			rnAhybrid.mirnaPredictRun();
@@ -182,7 +182,7 @@ public class MirTargetMammal implements IntCmdSoft {
 		combineTab.setColCompareOverlapID(1, 2);
 		ArrayList<String[]> lsCombine = combineTab.getResultLsIntersection();
 		try {
-			combineTab.renderScriptAndDrawImage(FileOperate.changeFileSuffix(predictResultFinal, "_Ven", "png"), "", "");
+			combineTab.renderScriptAndDrawImage(FileOperate.changeFileSuffix(predictResultFinal, ".Ven", "png"), "", "");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

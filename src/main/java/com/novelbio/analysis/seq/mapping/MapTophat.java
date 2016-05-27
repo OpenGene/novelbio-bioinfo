@@ -44,11 +44,11 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  */
 public class MapTophat implements MapRNA {
 	private static Logger logger = LoggerFactory.getLogger(MapTophat.class);
-	public static final String UnmapSuffix = "_tophat_unmapped.bam";//没有mapping的bam文件的前缀
+	public static final String UnmapSuffix = ".tophat.unmapped.bam";//没有mapping的bam文件的前缀
 	/** mapping文件的后缀，包含 ".bam" 字符串 */
-	public static final String TophatSuffix = "_tophat_sorted.bam";
+	public static final String TophatSuffix = ".tophat.sorted.bam";
 	/** tophat mapping完后又用bowtie2 mapping的后缀，包含 ".bam" 字符串 */
-	public static final String TophatAllSuffix = "_tophatAll.bam";
+	public static final String TophatAllSuffix = ".tophatAll.bam";
 	
 	StrandSpecific strandSpecifictype = StrandSpecific.NONE;
 	List<FastQ> lsLeftFq = new ArrayList<FastQ>();
@@ -525,7 +525,7 @@ public class MapTophat implements MapRNA {
 		String parentPath = FileOperate.getParentPathNameWithSep(outPathPrefix);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "accepted_hits.bam", parentPath, prefix + TophatSuffix,false);
 		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "unmapped.bam", parentPath, prefix + UnmapSuffix,false);
-		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "junctions.bed", parentPath, prefix + "_junctions.bed",false);
+		FileOperate.moveFile(FileOperate.addSep(outPathPrefix) + "junctions.bed", parentPath, prefix + ".junctions.bed",false);
 	}
 	
 	/**

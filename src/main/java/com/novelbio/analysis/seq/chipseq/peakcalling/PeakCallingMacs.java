@@ -90,11 +90,7 @@ public class PeakCallingMacs implements IntCmdSoft {
 	
 	/** 获得结果文件，如果结果文件不存在，就进行peakcalling*/
 	public String getResultPeakFile() {
-		String resultFile = FileOperate.changeFileSuffix(outFileName, "_peaks", "xls");
-		if (!FileOperate.isFileExist(resultFile)) {
-			runPeakCalling();
-		}
-		return resultFile;
+		return FileOperate.changeFileSuffix(outFileName, "peaks", "xls");
 	}
 	/**
 	 * 判定输入文件
@@ -163,8 +159,14 @@ public class PeakCallingMacs implements IntCmdSoft {
 	}
 	
 	public void runPeakCalling() {
+		String resultFile = getResultPeakFile();
+		if (FileOperate.isFileExistAndBigThan0(resultFile)) {
+			return;
+		}
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		cmdOperate.runWithExp();
+		String resultFileTmp = FileOperate.changeFileSuffix(outFileName, "_peaks", "xls");
+		FileOperate.moveFile(true, resultFileTmp, resultFile);
 	}
 	
 	public void clear() {

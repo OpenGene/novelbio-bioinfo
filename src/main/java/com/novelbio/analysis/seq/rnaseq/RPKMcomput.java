@@ -605,18 +605,18 @@ public class RPKMcomput implements AlignmentRecorder {
 	}
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
 	public void writeToFile(String resultExpPrefix, boolean isCountNCrna) {
-		String suffixRPKM = "All_RPKM", suffixUQRPKM = "All_UQ", 
-				suffixCounts = "All_Counts", tpm = "All_TPM", ncrna = "All_ncRNA_Statistics";
+		String suffixRPKM = "All.RPKM", suffixUQRPKM = "All.UQ", 
+				suffixCounts = "All.Counts", tpm = "All.TPM", ncrna = "All.ncRNA.Statistics";
 		if (isCalculateFPKM()) {
-			suffixRPKM = "All_FPKM";
-			suffixUQRPKM = "All_UQ";
-			suffixCounts = "All_Fragments";
+			suffixRPKM = "All.FPKM";
+			suffixUQRPKM = "All.UQ";
+			suffixCounts = "All.Fragments";
 		}
 		if (!resultExpPrefix.endsWith("/") && !resultExpPrefix.endsWith("\\")) {
-			suffixRPKM = "_" + suffixRPKM;
-			suffixUQRPKM = "_" + suffixUQRPKM;
-			suffixCounts = "_" + suffixCounts;
-			tpm = "_" + tpm;
+			suffixRPKM = "." + suffixRPKM;
+			suffixUQRPKM = "." + suffixUQRPKM;
+			suffixCounts = "." + suffixCounts;
+			tpm = "." + tpm;
 		}
 		
 		String outTPM = FileOperate.changeFileSuffix(resultExpPrefix, tpm, "exp.txt");
@@ -655,12 +655,12 @@ public class RPKMcomput implements AlignmentRecorder {
 		outPathPrefix = FileOperate.getPathName(outPathPrefix) + "tmp/";
 		FileOperate.createFolders(outPathPrefix);
 		String fileNamePrefix = outPathPrefix + geneExpTable.getCurrentCondition();
-		String suffixRPKM = "_RPKM", suffixUQRPKM = "_UQ", suffixAllReads = "_AllReads",
-				suffixCounts = "_Counts", suffixTpm = "_TPM", suffixNCrna = "_ncRNA_Statistics";
+		String suffixRPKM = ".RPKM", suffixUQRPKM = ".UQ", suffixAllReads = ".AllReads",
+				suffixCounts = ".Counts", suffixTpm = ".TPM", suffixNCrna = ".ncRNA.Statistics";
 		if (isCalculateFPKM()) {
-			suffixRPKM = "_FPKM";
-			suffixUQRPKM = "_UQ";
-			suffixCounts = "_Fragments";
+			suffixRPKM = ".FPKM";
+			suffixUQRPKM = ".UQ";
+			suffixCounts = ".Fragments";
 		}
 		
 		String outTPM = fileNamePrefix + suffixTpm + ".exp.txt";
@@ -702,12 +702,12 @@ public class RPKMcomput implements AlignmentRecorder {
 	public boolean isExistTmpResultAndReadExp(String outPathPrefix, boolean isCountNCrna) {
 		outPathPrefix = FileOperate.getPathName(outPathPrefix) + "tmp/";
 		String fileNamePrefix = outPathPrefix + geneExpTable.getCurrentCondition();
-		String suffixRPKM = "_RPKM", suffixUQRPKM = "_UQ", suffixAllReads = "_AllReads",
-				suffixCounts = "_Counts", suffixTpm = "_TPM", suffixNCrna = "_ncRNA_Statistics";
+		String suffixRPKM = ".RPKM", suffixUQRPKM = ".UQ", suffixAllReads = ".AllReads",
+				suffixCounts = ".Counts", suffixTpm = ".TPM", suffixNCrna = ".ncRNA.Statistics";
 		if (isCalculateFPKM()) {
-			suffixRPKM = "_FPKM";
-			suffixUQRPKM = "_UQ";
-			suffixCounts = "_Fragments";
+			suffixRPKM = ".FPKM";
+			suffixUQRPKM = ".UQ";
+			suffixCounts = ".Fragments";
 		}
 		
 		String outTPM = fileNamePrefix + suffixTpm + ".exp.txt";
