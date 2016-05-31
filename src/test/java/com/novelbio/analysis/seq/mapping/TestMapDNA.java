@@ -18,7 +18,7 @@ public class TestMapDNA {
 	String parentPath = "src/test/resources/test_file/";
 	String referenceFileRaw = parentPath + "reference/testTrinity.fa";
 	String referenceTmpPath = FileOperate.getParentPathNameWithSep(referenceFileRaw) + "tmpPath2/";
-	String referenceFile =  referenceTmpPath + "ref2.fa";
+	String referenceFile =  referenceTmpPath + "ref2.fasta";
 
 	String outPath = parentPath + "dnamapresult/";
 	MapDNA mapDNA;

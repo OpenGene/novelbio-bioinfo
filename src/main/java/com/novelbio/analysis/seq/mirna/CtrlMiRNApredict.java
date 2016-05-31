@@ -162,8 +162,8 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 		expMirPre.addAllReads(miRNACount.getCountPreAll());
 		expMirPre.addGeneExp(miRNACount.getMapMiRNApre2Value());
 		
-		expMirPre.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_NovelMirPre_Counts.txt", EnumExpression.Counts);
-		expMirMature.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + "_NovelMirMature_Counts.txt", EnumExpression.Counts);
+		expMirPre.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + ".NovelMirPre.Counts.txt", EnumExpression.Counts);
+		expMirMature.writeFile(false, outPathSample + prefix + FileOperate.getSepPath() + prefix + ".NovelMirMature.Counts.txt", EnumExpression.Counts);
 	}
 	
 	private AlignSeqReading getAlignSeqReading(AlignSeq alignSeq, AlignmentRecorder alignmentRecorder) {
@@ -188,10 +188,10 @@ public class CtrlMiRNApredict implements IntCmdSoft {
 	
 	public void writeToFile() {
 		String outPathNovel = outPath + "novelMiRNA/";
-		expMirPre.writeFile(true, outPathNovel + "NovelMirPreAll_Counts.txt", EnumExpression.Counts);
-		expMirMature.writeFile(true, outPathNovel + "NovelMirMatureAll_Counts.txt", EnumExpression.Counts);
-		expMirPre.writeFile(true, outPathNovel + "NovelMirPreAll_UQTPM.txt", EnumExpression.UQPM);
-		expMirMature.writeFile(true, outPathNovel + "NovelMirMatureAll_UQTPM.txt", EnumExpression.UQPM);
+		expMirPre.writeFile(true, outPathNovel + "NovelMirPreAll.Counts.txt", EnumExpression.Counts);
+		expMirMature.writeFile(true, outPathNovel + "NovelMirMatureAll.Counts.txt", EnumExpression.Counts);
+		expMirPre.writeFile(true, outPathNovel + "NovelMirPreAll.UQTPM.txt", EnumExpression.UQ);
+		expMirMature.writeFile(true, outPathNovel + "NovelMirMatureAll.UQTPM.txt", EnumExpression.UQ);
 	}
 	
 	private void setMiRNACount_And_Anno() {

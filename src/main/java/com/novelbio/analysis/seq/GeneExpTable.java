@@ -411,7 +411,7 @@ public class GeneExpTable {
 		List<String[]> lsResult = new ArrayList<>();
 		lsResult.add(getCurrentTitle());
 		double uq = 0;
-		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
+		if (enumExpression == EnumExpression.UQ || enumExpression == EnumExpression.UQRPKM) {
 			uq = getUQ(currentCondition);
 		}
 		for (String geneName : mapGene_2_Cond2Exp.keySet()) {
@@ -445,7 +445,7 @@ public class GeneExpTable {
 	public Double getGeneExp(String geneName, EnumExpression enumExpression, String condition) {
 		setAllreadsPerConditon();
 		Map<String, Double> mapCondition2UQ = null; 
-		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
+		if (enumExpression == EnumExpression.UQ || enumExpression == EnumExpression.UQRPKM) {
 			mapCondition2UQ = getMapCond2UQ();
 		}
 		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
@@ -510,7 +510,7 @@ public class GeneExpTable {
 		}
 		
 		Map<String, Double> mapCondition2UQ = null; 
-		if (enumExpression == EnumExpression.UQPM || enumExpression == EnumExpression.UQRPKM) {
+		if (enumExpression == EnumExpression.UQ || enumExpression == EnumExpression.UQRPKM) {
 			mapCondition2UQ = getMapCond2UQ();
 		}
 		for (String geneName : getSetGeneName()) {
@@ -639,7 +639,7 @@ public class GeneExpTable {
 			resultValue = value*mapreadsNum*1000/allReadsNum/geneLen + "";
 		} else if (enumExpression == EnumExpression.UQRPKM) {
 			resultValue = value*geneExp*1000/upQuerterNum/geneLen + "";
-		} else if (enumExpression == EnumExpression.UQPM) {
+		} else if (enumExpression == EnumExpression.UQ) {
 			resultValue = value*geneExp/upQuerterNum + "";
 		} else if (enumExpression == EnumExpression.Ratio) {
 			resultValue = df.format(value/allReadsNum) + "";
@@ -665,7 +665,7 @@ public class GeneExpTable {
 			resultValue = value*mapreadsNum*1000/allReadsNum/geneLen;
 		} else if (enumExpression == EnumExpression.UQRPKM) {
 			resultValue = value*geneExp*1000/upQuerterNum/geneLen;
-		} else if (enumExpression == EnumExpression.UQPM) {
+		} else if (enumExpression == EnumExpression.UQ) {
 			resultValue = value*geneExp/upQuerterNum;
 		} else if (enumExpression == EnumExpression.Ratio) {
 			resultValue = value/allReadsNum;

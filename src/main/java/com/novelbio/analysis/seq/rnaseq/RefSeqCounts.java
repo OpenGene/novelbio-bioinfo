@@ -68,8 +68,8 @@ public class RefSeqCounts implements AlignmentRecorder {
 			refSeqCounts.geneExpTable.writeFile(false, resultPath + prefix, EnumExpression.Counts);
 		}
 		refSeqCounts.geneExpTable.writeFile(true, resultPath + "All" + ".txt", EnumExpression.Counts);
-		refSeqCounts.geneExpTable.writeFile(true, resultPath + "All_RPKM" + ".txt", EnumExpression.RPKM);
-		refSeqCounts.geneExpTable.writeFile(true, resultPath + "All_TPM" + ".txt", EnumExpression.TPM);
+		refSeqCounts.geneExpTable.writeFile(true, resultPath + "All.RPKM" + ".txt", EnumExpression.RPKM);
+		refSeqCounts.geneExpTable.writeFile(true, resultPath + "All.TPM" + ".txt", EnumExpression.TPM);
 	}
 	
 	public static void main2(String[] args) {
@@ -83,8 +83,8 @@ public class RefSeqCounts implements AlignmentRecorder {
 		refSeqCounts.setMapIsoId2Len(samFile.getMapChrID2Length());
 		refSeqCounts.geneExpTable.read(parentPath + "7.Gene_Expression/zongjieExp/All.txt", EnumAddAnnoType.notAdd);
 
-		refSeqCounts.geneExpTable.writeFile(true, expPath + "All_new" + ".txt", EnumExpression.Counts);
-		refSeqCounts.geneExpTable.writeFile(true, expPath + "All_RPKM" + ".txt", EnumExpression.RPKM);
+		refSeqCounts.geneExpTable.writeFile(true, expPath + "All.new" + ".txt", EnumExpression.Counts);
+		refSeqCounts.geneExpTable.writeFile(true, expPath + "All.RPKM" + ".txt", EnumExpression.RPKM);
 	}
 	GeneExpTable geneExpTable = new GeneExpTable(TitleFormatNBC.GeneID);
 

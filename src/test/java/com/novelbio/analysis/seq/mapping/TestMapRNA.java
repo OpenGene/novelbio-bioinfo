@@ -23,7 +23,7 @@ public class TestMapRNA {
 	String referenceTmpPath = FileOperate.getParentPathNameWithSep(referenceFileRaw) + "tmpPath2/";
 	String gtfTmpPath = FileOperate.getParentPathNameWithSep(referenceFileRaw) + "tmpPathGtf/";
 
-	String referenceFile =  referenceTmpPath + "ref2.fa";
+	String referenceFile =  referenceTmpPath + "ref2.fasta";
 	String outPath = parentPath + "rnamapresult/";
 	String gtfFileRaw = parentPath + "TAIR10_Gff3_simple_with_contig.gtf.gz";
 	String gtfFile = gtfTmpPath + "TAIR10_Gff3_simple_with_contig.gtf";

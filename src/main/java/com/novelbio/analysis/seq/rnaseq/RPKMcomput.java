@@ -568,7 +568,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * exonlength的单位是kb
 	 */
 	public List<String[]> getLsUQPMs() {
-		return geneExpTable.getLsAllCountsNum(EnumExpression.UQPM);
+		return geneExpTable.getLsAllCountsNum(EnumExpression.UQ);
 	}
 	/** 返回ncRNA的情况，只有NCBI的模式物种，本项目才有意义 */
 	public List<String[]> getLsNCrnaStatistics() {
@@ -601,38 +601,27 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * exonlength的单位是kb
 	 */
 	public List<String[]> getLsUQPMsCurrent() {
-		return geneExpTable.getLsCountsNum(EnumExpression.UQPM);
+		return geneExpTable.getLsCountsNum(EnumExpression.UQ);
 	}
 	/** 输入文件前缀，把所有结果写入该文件为前缀的文本中 */
 	public void writeToFile(String resultExpPrefix, boolean isCountNCrna) {
-		String suffixRPKM = "All.RPKM", suffixUQRPKM = "All.UQ", 
-				suffixCounts = "All.Counts", tpm = "All.TPM", ncrna = "All.ncRNA.Statistics";
-		if (isCalculateFPKM()) {
-			suffixRPKM = "All.FPKM";
-			suffixUQRPKM = "All.UQ";
-			suffixCounts = "All.Fragments";
-		}
-		if (!resultExpPrefix.endsWith("/") && !resultExpPrefix.endsWith("\\")) {
-			suffixRPKM = "." + suffixRPKM;
-			suffixUQRPKM = "." + suffixUQRPKM;
-			suffixCounts = "." + suffixCounts;
-			tpm = "." + tpm;
+		String outTPM = getFileCountsNameAll(resultExpPrefix, isCalculateFPKM(), EnumExpression.TPM);
+		String outRPKM =  getFileCountsNameAll(resultExpPrefix, isCalculateFPKM(), EnumExpression.RPKM);
+		String outUQ = getFileCountsNameAll(resultExpPrefix, isCalculateFPKM(), EnumExpression.UQ);
+		String outCounts = getFileCountsNameAll(resultExpPrefix, isCalculateFPKM(), EnumExpression.Counts);
+		String outNcRNA = null;
+		if (isCountNCrna) {
+			outNcRNA =  getFileCountsNameNcRNA(resultExpPrefix);
 		}
 		
-		String outTPM = FileOperate.changeFileSuffix(resultExpPrefix, tpm, "exp.txt");
-		String outRPKM = FileOperate.changeFileSuffix(resultExpPrefix, suffixRPKM, "exp.txt");
-		String outNCrna = FileOperate.changeFileSuffix(resultExpPrefix, ncrna, "exp.txt");
-
-		String outCounts = FileOperate.changeFileSuffix(resultExpPrefix, suffixCounts, "exp.txt");
-		String outUQRPKM = FileOperate.changeFileSuffix(resultExpPrefix, suffixUQRPKM, "exp.txt");
 		
 		List<String[]> lsTpm = getLsTPMs();
 		List<String[]> lsRpkm = getLsRPKMs();
-		List<String[]> lsUQRpkm = getLsUQPMs();
+		List<String[]> lsUQ = getLsUQPMs();
 		List<String[]> lsCounts2 = getLsCounts();
 		if (isCountNCrna) {
 			List<String[]> lsNCRNA = getLsNCrnaStatistics();
-			TxtReadandWrite txtNCRNA = new TxtReadandWrite(outNCrna, true);
+			TxtReadandWrite txtNCRNA = new TxtReadandWrite(outNcRNA, true);
 			txtNCRNA.ExcelWrite(lsNCRNA);
 			txtNCRNA.close();
 		}
@@ -640,13 +629,13 @@ public class RPKMcomput implements AlignmentRecorder {
 		txtWriteRpm.ExcelWrite(lsTpm);
 		TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
 		txtWriteRpkm.ExcelWrite(lsRpkm);
-		TxtReadandWrite txtWriteUQRpkm = new TxtReadandWrite(outUQRPKM, true);
-		txtWriteUQRpkm.ExcelWrite(lsUQRpkm);
+		TxtReadandWrite txtWriteUQ = new TxtReadandWrite(outUQ, true);
+		txtWriteUQ.ExcelWrite(lsUQ);
 		TxtReadandWrite txtWriteCounts = new TxtReadandWrite(outCounts, true);
 		txtWriteCounts.ExcelWrite(lsCounts2);
 		txtWriteCounts.close();
 		txtWriteRpkm.close();
-		txtWriteUQRpkm.close();
+		txtWriteUQ.close();
 		txtWriteRpm.close();
 	}
 	
@@ -655,25 +644,21 @@ public class RPKMcomput implements AlignmentRecorder {
 		outPathPrefix = FileOperate.getPathName(outPathPrefix) + "tmp/";
 		FileOperate.createFolders(outPathPrefix);
 		String fileNamePrefix = outPathPrefix + geneExpTable.getCurrentCondition();
-		String suffixRPKM = ".RPKM", suffixUQRPKM = ".UQ", suffixAllReads = ".AllReads",
-				suffixCounts = ".Counts", suffixTpm = ".TPM", suffixNCrna = ".ncRNA.Statistics";
-		if (isCalculateFPKM()) {
-			suffixRPKM = ".FPKM";
-			suffixUQRPKM = ".UQ";
-			suffixCounts = ".Fragments";
+
+		String outTPM = getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.TPM);
+		String outRPKM =  getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.RPKM);
+		String outUQ = getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.UQ);
+		String outCounts = getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.Counts);
+		String readsNumFile = getFileCountsNum(fileNamePrefix);
+		String outNcRNA = null;
+		if (isCountNCrna) {
+			outNcRNA =  getFileCountsNameNcRNA(fileNamePrefix);
 		}
-		
-		String outTPM = fileNamePrefix + suffixTpm + ".exp.txt";
-		String outRPKM =  fileNamePrefix + suffixRPKM + ".exp.txt";
-		String outUQRPKM =  fileNamePrefix + suffixUQRPKM + ".exp.txt";
-		String outCounts =  fileNamePrefix + suffixCounts + ".exp.txt";
-		String outNcRNA =  fileNamePrefix + suffixNCrna + ".exp.txt";
-		String AllReads =  fileNamePrefix + suffixAllReads + ".exp.txt";
 		
 		List<String[]> lsCounts = getLsCountsCurrent();
 		List<String[]> lsTpm = getLsTPMsCurrent();
 		List<String[]> lsRpkm = getLsRPKMsCurrent();
-		List<String[]> lsUQRpkm = getLsUQPMsCurrent();
+		List<String[]> lsUQ = getLsUQPMsCurrent();
 		if (isCountNCrna) {
 			List<String[]> lsNCrna = getLsNCrnaStatisticsCurrent();
 			TxtReadandWrite txtWriteNCrna = new TxtReadandWrite(outNcRNA, true);
@@ -685,8 +670,8 @@ public class RPKMcomput implements AlignmentRecorder {
 		txtWriteRpm.ExcelWrite(lsTpm);
 		TxtReadandWrite txtWriteRpkm = new TxtReadandWrite(outRPKM, true);
 		txtWriteRpkm.ExcelWrite(lsRpkm);
-		TxtReadandWrite txtWriteUQRpkm = new TxtReadandWrite(outUQRPKM, true);
-		txtWriteUQRpkm.ExcelWrite(lsUQRpkm);
+		TxtReadandWrite txtWriteUQRpkm = new TxtReadandWrite(outUQ, true);
+		txtWriteUQRpkm.ExcelWrite(lsUQ);
 		TxtReadandWrite txtWriteCounts = new TxtReadandWrite(outCounts, true);
 		txtWriteCounts.ExcelWrite(lsCounts);
 		txtWriteCounts.close();
@@ -694,7 +679,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		txtWriteUQRpkm.close();
 		txtWriteRpm.close();
 		
-		TxtReadandWrite txtWriteAllReads = new TxtReadandWrite(AllReads, true);
+		TxtReadandWrite txtWriteAllReads = new TxtReadandWrite(readsNumFile, true);
 		txtWriteAllReads.writefileln(Double.valueOf(currentReadsNum).longValue() + "");
 		txtWriteAllReads.close();
 	}
@@ -702,31 +687,23 @@ public class RPKMcomput implements AlignmentRecorder {
 	public boolean isExistTmpResultAndReadExp(String outPathPrefix, boolean isCountNCrna) {
 		outPathPrefix = FileOperate.getPathName(outPathPrefix) + "tmp/";
 		String fileNamePrefix = outPathPrefix + geneExpTable.getCurrentCondition();
-		String suffixRPKM = ".RPKM", suffixUQRPKM = ".UQ", suffixAllReads = ".AllReads",
-				suffixCounts = ".Counts", suffixTpm = ".TPM", suffixNCrna = ".ncRNA.Statistics";
-		if (isCalculateFPKM()) {
-			suffixRPKM = ".FPKM";
-			suffixUQRPKM = ".UQ";
-			suffixCounts = ".Fragments";
-		}
-		
-		String outTPM = fileNamePrefix + suffixTpm + ".exp.txt";
-		String outRPKM =  fileNamePrefix + suffixRPKM + ".exp.txt";
-		String outUQRPKM =  fileNamePrefix + suffixUQRPKM + ".exp.txt";
-		String outCounts =  fileNamePrefix + suffixCounts + ".exp.txt";
-		String AllReads =  fileNamePrefix + suffixAllReads + ".exp.txt";
+		String outTPM = getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.TPM);
+		String outRPKM =  getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.RPKM);
+		String outUQ = getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.UQ);
+		String outCounts = getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.Counts);
+		String readsNumFile = getFileCountsNum(fileNamePrefix);
 		String outNcRNA = null;
 		if (isCountNCrna) {
-			outNcRNA =  fileNamePrefix + suffixNCrna + ".txt";
+			outNcRNA =  getFileCountsNameNcRNA(fileNamePrefix);
 		}
 		
 
 		boolean isExist = false;
 		if (FileOperate.isFileExistAndBigThanSize(outTPM, 0)
 				&& FileOperate.isFileExistAndBigThanSize(outRPKM, 0)
-				&& FileOperate.isFileExistAndBigThanSize(outUQRPKM, 0)
+				&& FileOperate.isFileExistAndBigThanSize(outUQ, 0)
 				&& FileOperate.isFileExistAndBigThanSize(outCounts, 0)
-				&& FileOperate.isFileExistAndBigThanSize(AllReads, 0)
+				&& FileOperate.isFileExistAndBigThanSize(readsNumFile, 0)
 				) {
 			isExist = true;
 		}
@@ -737,15 +714,16 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		
 		if (isExist) {
-			readExpInfo(outCounts, AllReads, outNcRNA);
+			readExpInfo(outCounts, readsNumFile, outNcRNA);
 		}
 	
 		return isExist;
 	}
 	
-	private void readExpInfo(String allCountsFile, String allReadsFile, String allRNAtypeFile) {
+
+	private void readExpInfo(String allCountsFile, String readsNumFile, String allRNAtypeFile) {
 		geneExpTable.read(allCountsFile, EnumAddAnnoType.notAdd);
-		TxtReadandWrite txtRead = new TxtReadandWrite(allReadsFile);
+		TxtReadandWrite txtRead = new TxtReadandWrite(readsNumFile);
 		String allCounts = txtRead.readFirstLine();
 		txtRead.close();
 		long allCountsL = (long) Double.parseDouble(allCounts);;
@@ -760,8 +738,46 @@ public class RPKMcomput implements AlignmentRecorder {
 		return null;
 	}
 	
+	/** 获得单个样本的文件名 */
+	public static String getFileCountsName(String outAndPrefix, boolean isFPKM, EnumExpression expressType) {
+		String suffix = "." + expressType.toString();
+		if (expressType == EnumExpression.RPKM && isFPKM) {
+			suffix = ".FPKM";
+		}
+		return outAndPrefix + suffix + ".exp.txt";
+	}
+	/** 获得总样本的文件名 */
+	public static String getFileCountsNameNcRNA(String outAndPrefix) {
+		return outAndPrefix + ".ncRNA.Statistics.exp.txt";
+	}
+	/** 获得总样本的文件名 */
+	public static String getFileCountsNum(String outAndPrefix) {
+		return outAndPrefix + ".readsnum.txt";
+	}
+	/** 获得总样本的文件名 */
+	public static String getFileCountsNameAll(String outPathPrefix, boolean isFPKM, EnumExpression expressType) {
+		String suffix = "." + expressType.toString();
+		if (expressType == EnumExpression.RPKM && isFPKM) {
+			suffix = ".FPKM";
+		}
+		suffix = "All" + suffix;
+		
+		if (!outPathPrefix.endsWith("/") && !outPathPrefix.endsWith("\\")) {
+			suffix = "." + suffix;
+		}
+		return outPathPrefix + suffix + ".exp.txt";
+	}
+	/** 获得总样本的文件名 */
+	public static String getFileCountsNameNcRNAAll(String outPathPrefix) {
+		String suffix = "All.ncRNA.Statistics.exp.txt";
+		if (!outPathPrefix.endsWith("/") && !outPathPrefix.endsWith("\\")) {
+			suffix = "." + suffix;
+		}
+		return outPathPrefix + suffix;
+	}
+	
 	public static enum EnumExpression {
-		RawValue, TPM, RPKM, UQRPKM, UQPM, Counts, 
+		RawValue, TPM, RPKM, UQRPKM, UQ, Counts, 
 		/** 某个item占总测序量的比例 */
 		Ratio
 	}

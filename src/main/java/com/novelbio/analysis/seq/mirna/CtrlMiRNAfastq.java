@@ -252,13 +252,13 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	* @param miRNAmappingPipline
 	*/
 	private void countMiRNA(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_mirPre_Counts.txt", 0) 
-				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_mirMature_Counts.txt", 0)
-				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_mirna_Iso.txt", 0)
+		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + ".mirPre.Counts.txt", 0) 
+				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + ".mirMature.Counts.txt", 0)
+				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + ".mirna.Iso.txt", 0)
 				) {
-			expMirPre.read(outPath + prefix + "_mirPre_Counts.txt", EnumAddAnnoType.notAdd);
-			expMirMature.read(outPath + prefix + "_mirMature_Counts.txt", EnumAddAnnoType.notAdd);
-			mirnaIso.read(outPath + prefix + "_mirna_Iso.txt");
+			expMirPre.read(outPath + prefix + ".mirPre.Counts.txt", EnumAddAnnoType.notAdd);
+			expMirMature.read(outPath + prefix + ".mirMature.Counts.txt", EnumAddAnnoType.notAdd);
+			mirnaIso.read(outPath + prefix + ".mirna.Iso.txt");
 			return;
 		}
 		
@@ -282,10 +282,10 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	 * @param solo 单独计数
 	 *  */
 	private void countRfam(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RfamClass.txt", 0) 
-				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RfamID.txt", 0)) {
-			expRfamClass.read(outPath + prefix + "_RfamClass.txt", EnumAddAnnoType.notAdd);
-			expRfamID.read(outPath + prefix + "_RfamID.txt", EnumAddAnnoType.notAdd);
+		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + ".RfamClass.txt", 0) 
+				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + ".RfamID.txt", 0)) {
+			expRfamClass.read(outPath + prefix + ".RfamClass.txt", EnumAddAnnoType.notAdd);
+			expRfamID.read(outPath + prefix + ".RfamID.txt", EnumAddAnnoType.notAdd);
 			return;
 		}
 		
@@ -302,8 +302,8 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	 * @param solo 单独计数
 	 *  */
 	private void countNCrna(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_NCRNA.txt", 0)) {
-			expNcRNA.read(outPath + prefix + "_NCRNA.txt", EnumAddAnnoType.notAdd);
+		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + ".NCRNA.txt", 0)) {
+			expNcRNA.read(outPath + prefix + ".NCRNA.txt", EnumAddAnnoType.notAdd);
 			return;
 		}
 		
@@ -321,17 +321,17 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	 * @param solo 单独计数
 	 *  */
 	private void countRepeatGene(String outPath, String prefix, MiRNAmapPipline miRNAmappingPipline) {
-		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_GeneStructure.txt", 0)
+		if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + ".GeneStructure.txt", 0)
 				&& !FileOperate.isFileExistAndBigThanSize(species.getGffRepeat(), 0)) {
-			expGeneStructure.read(outPath + prefix + "_GeneStructure.txt", EnumAddAnnoType.notAdd);
+			expGeneStructure.read(outPath + prefix + ".GeneStructure.txt", EnumAddAnnoType.notAdd);
 			return;
-		} else if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_GeneStructure.txt", 0) 
-				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RepeatFamily.txt", 0)
-				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + "_RepeatName.txt", 0)
+		} else if (isUseOldResult && FileOperate.isFileExistAndBigThanSize(outPath + prefix + ".GeneStructure.txt", 0) 
+				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + ".RepeatFamily.txt", 0)
+				&& FileOperate.isFileExistAndBigThanSize(outPath + prefix + ".RepeatName.txt", 0)
 				) {
-			expGeneStructure.read(outPath + prefix + "_GeneStructure.txt", EnumAddAnnoType.notAdd);
-			expRepeatName.read(outPath + prefix + "_RepeatName.txt", EnumAddAnnoType.notAdd);
-			expRepeatFamily.read(outPath + prefix + "_RepeatFamily.txt", EnumAddAnnoType.notAdd);
+			expGeneStructure.read(outPath + prefix + ".GeneStructure.txt", EnumAddAnnoType.notAdd);
+			expRepeatName.read(outPath + prefix + ".RepeatName.txt", EnumAddAnnoType.notAdd);
+			expRepeatFamily.read(outPath + prefix + ".RepeatFamily.txt", EnumAddAnnoType.notAdd);
 			return;
 		}
 		
@@ -365,22 +365,22 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 	}
 	
 	private void writeToFileCurrent(String outPath, String prefix) {
-		expMirPre.writeFile(false, outPath + prefix + "_mirPre_Counts.txt", EnumExpression.Counts);
-		expMirMature.writeFile(false, outPath + prefix + "_mirMature_Counts.txt", EnumExpression.Counts);
-		expGeneStructure.writeFile(false, outPath + prefix + "_GeneStructure.txt", EnumExpression.Counts);
-		expRepeatFamily.writeFile(false, outPath + prefix + "_RepeatFamily.txt", EnumExpression.Counts);
-		expRepeatName.writeFile(false, outPath + prefix + "_RepeatName.txt", EnumExpression.Counts);
-		expNcRNA.writeFile(false, outPath + prefix + "_NCRNA.txt", EnumExpression.Counts);
-		expRfamClass.writeFile(false, outPath + prefix + "_RfamClass.txt", EnumExpression.Counts);
-		expRfamID.writeFile(false, outPath + prefix + "_RfamID.txt", EnumExpression.Counts);
-		mirnaIso.writeFile(false, outPath + prefix + "_mirna_Iso.txt");
+		expMirPre.writeFile(false, outPath + prefix + ".mirPre.Counts.txt", EnumExpression.Counts);
+		expMirMature.writeFile(false, outPath + prefix + ".mirMature.Counts.txt", EnumExpression.Counts);
+		expGeneStructure.writeFile(false, outPath + prefix + ".GeneStructure.txt", EnumExpression.Counts);
+		expRepeatFamily.writeFile(false, outPath + prefix + ".RepeatFamily.txt", EnumExpression.Counts);
+		expRepeatName.writeFile(false, outPath + prefix + ".RepeatName.txt", EnumExpression.Counts);
+		expNcRNA.writeFile(false, outPath + prefix + ".NCRNA.txt", EnumExpression.Counts);
+		expRfamClass.writeFile(false, outPath + prefix + ".RfamClass.txt", EnumExpression.Counts);
+		expRfamID.writeFile(false, outPath + prefix + ".RfamID.txt", EnumExpression.Counts);
+		mirnaIso.writeFile(false, outPath + prefix + ".mirna.Iso.txt");
 	}
 
 	
 	/** 将汇总结果写入文本 */
 	public void writeToFile() {
-		expMirPre.writeFile(true, outPathTmpMapping + "mirPreAll_Counts.txt", EnumExpression.Counts);
-		expMirMature.writeFile(true, outPathTmpMapping + "mirMatureAll_Counts.txt", EnumExpression.Counts);
+		expMirPre.writeFile(true, outPathTmpMapping + "mirPreAll.Counts.txt", EnumExpression.Counts);
+		expMirMature.writeFile(true, outPathTmpMapping + "mirMatureAll.Counts.txt", EnumExpression.Counts);
 		expGeneStructure.writeFile(true, outPath + "GeneStructureAll.txt", EnumExpression.Counts);
 		expRepeatFamily.writeFile(true, outPath + "RepeatFamilyAll.txt", EnumExpression.Counts);
 		expNcRNA.writeFile(true, outPath + "NCRNAAll.txt", EnumExpression.Counts);

@@ -124,7 +124,7 @@ public class TestGeneExpTable {
 		}
 		printInfo(sampleName, true, EnumExpression.Counts);
 		printInfo(sampleName, true, EnumExpression.TPM);
-		printInfo(sampleName, true, EnumExpression.UQPM);
+		printInfo(sampleName, true, EnumExpression.UQ);
 		printInfo(sampleName, true, EnumExpression.RPKM);
 		printInfo(sampleName, true, EnumExpression.UQRPKM);
 		
