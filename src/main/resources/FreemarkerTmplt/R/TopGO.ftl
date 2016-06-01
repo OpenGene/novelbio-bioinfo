@@ -5,7 +5,13 @@ library(topGO)
 GOType="${GOtype}"
 GONum=${GONum}
 GoResult="${GoResultFile}"
+GoMapPdfPrefix="${GoMapPdfPrefix}"
+
 GOInfoFile="${GOInfoFile}"
+
+firstSigNodesNum=${firstSigNodes}
+useInfo="${useInfo}"
+
 
 calGeneID = scan("${CalGeneIDFile}",what="character")
 geneID2GO = readMappings(file = "${BGGeneFile}")
@@ -26,6 +32,7 @@ logP =-log2(as.numeric(allRes[[6]]))
 fdr=p.adjust(as.numeric(allRes[[6]]),"BH")
 allResResult = cbind(allRes[1],allRes[2],allRes[4],allNumSig,allRes[3],allNumBG,allRes[6],fdr,foldEnrichment,logP)
 write.table(allResResult, file = GoResult, sep="\t")
+printGraph(GOdata, resultFis, firstSigNodes = firstSigNodesNum, fn.prefix = GoMapPdfPrefix, useInfo = useInfo, pdfSW = TRUE)
 
 write("",file=GOInfoFile)
 for(i in 1:GONum)

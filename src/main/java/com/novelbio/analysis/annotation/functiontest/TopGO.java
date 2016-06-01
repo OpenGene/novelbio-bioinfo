@@ -31,6 +31,8 @@ public class TopGO implements IntCmdSoft {
 	String workSpace;
 	String exeScript = "";
 	
+	int firstSigNodes = 10;
+	String useInfo = "def";
 	/** topgo的信息 */
 	GOtype goType = GOtype.BP;
 	GoAlgorithm goAlgorithm;
@@ -40,6 +42,8 @@ public class TopGO implements IntCmdSoft {
 	
 	/** 输出GO结果数据 */
 	String rawGoResultFile = "";
+	String goMapPdfPrefix = "";
+	
 	/** 输出GO的信息，用来做Go2Gene表的 */
 	String GOInfoFile = "";
 	/** 展示多少个GOTerm */
@@ -67,19 +71,20 @@ public class TopGO implements IntCmdSoft {
 		workSpace = PathDetail.getRworkspaceTmp();
 	}
 	private void setExeScriptPath() {
-		exeScript = PathDetail.getRworkspaceTmp() + "TopGO_" + goType.getOneWord() + "_" + goAlgorithm.toString() + "_"  + DateUtil.getDateAndRandom() + ".R";
+		exeScript = PathDetail.getRworkspaceTmp() + "TopGO." + goType.getOneWord() + "." + goAlgorithm.toString() + "."  + DateUtil.getDateAndRandom() + ".R";
 	}
 	/** 输入文件 */
 	private void setRawGoResultFile() {
-		this.rawGoResultFile = workSpace + "TopGOResult_"  + goType.getOneWord() + "_" + goAlgorithm.toString() + "_" + DateUtil.getDateAndRandom() + ".txt";
+		this.rawGoResultFile = workSpace + "TopGOResult."  + goType.getOneWord() + "." + goAlgorithm.toString() + "." + DateUtil.getDateAndRandom() + ".txt";
+		this.goMapPdfPrefix = workSpace + "TopGOResult."  + goType.getOneWord() + "." + goAlgorithm.toString() + "." + DateUtil.getDateAndRandom();
 	}
 	/** 输入文件 */
 	private void setGOInfoFile() {
-		this.GOInfoFile = workSpace + "TopGOInfo_"  + goType.getOneWord() + "_" + goAlgorithm.toString() + "_" + DateUtil.getDateAndRandom() + ".txt";
-		this.BGGeneFile = workSpace + "TopGOBG_"  + goType.getOneWord() + "_" + goAlgorithm.toString() + "_" + DateUtil.getDateAndRandom() + ".txt";
+		this.GOInfoFile = workSpace + "TopGOInfo."  + goType.getOneWord() + "." + goAlgorithm.toString() + "." + DateUtil.getDateAndRandom() + ".txt";
+		this.BGGeneFile = workSpace + "TopGOBG."  + goType.getOneWord() + "." + goAlgorithm.toString() + "." + DateUtil.getDateAndRandom() + ".txt";
 	}
 	private void setCalGeneIDFilePath() {
-		CalGeneIDFile = PathDetail.getRworkspaceTmp() + "TopGO_CalGeneIDFile_" + goType.getOneWord() + "_" + goAlgorithm.toString() + "_" + DateUtil.getDateAndRandom() + ".txt";
+		CalGeneIDFile = PathDetail.getRworkspaceTmp() + "TopGO.CalGeneIDFile." + goType.getOneWord() + "." + goAlgorithm.toString() + "." + DateUtil.getDateAndRandom() + ".txt";
 	}
 	
 	/** 待检验的基因 */
@@ -114,7 +119,13 @@ public class TopGO implements IntCmdSoft {
 		mapData.put("GOtype", goType.getTwoWord());
 		mapData.put("GONum",  displayGoNum + "");
 		
+		mapData.put("firstSigNodes",  firstSigNodes + "");
+		mapData.put("useInfo",  useInfo + "");
+
+		
 		mapData.put("GoResultFile",  FileHadoop.convertToLocalPath(rawGoResultFile.replace("\\", "/")));
+		mapData.put("GoMapPdfPrefix",  FileHadoop.convertToLocalPath(goMapPdfPrefix.replace("\\", "/")));
+
 		mapData.put("GOInfoFile",  FileHadoop.convertToLocalPath(GOInfoFile.replace("\\", "/")));
 		
 		mapData.put("CalGeneIDFile", FileHadoop.convertToLocalPath(CalGeneIDFile.replace("\\", "/")));
@@ -137,6 +148,12 @@ public class TopGO implements IntCmdSoft {
 		}
 	}
 	
+	public String getTopGoPdfFile() {
+		return goMapPdfPrefix + "_" + getAlgorithm() + "_" + firstSigNodes + "_" + useInfo + ".pdf";
+	}
+	public String getTopGoScript() {
+		return exeScript;
+	}
 	private String getAlgorithm() {
 		String resultAlgorithm = GoAlgorithm.elim.toString();
 		if (goAlgorithm != null) {
@@ -234,7 +251,7 @@ public class TopGO implements IntCmdSoft {
 	}
 	/** 删除中间文件 */
 	private void clean() {
-		FileOperate.deleteFileFolder(exeScript);
+//		FileOperate.deleteFileFolder(exeScript);
 		FileOperate.deleteFileFolder(BGGeneFile);
 		FileOperate.deleteFileFolder(CalGeneIDFile);
 		FileOperate.deleteFileFolder(rawGoResultFile);

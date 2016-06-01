@@ -130,4 +130,11 @@ public class ElimGOFunTest extends NovelGOFunTest {
 		});
 		return lStatisticTestItem2GeneElimGos;
 	}
+	
+	public String getTopGoPdfFile() {
+		return topGO.getTopGoPdfFile();
+	}
+	public String getTopGoScript() {
+		return topGO.getTopGoScript();
+	}
 }
