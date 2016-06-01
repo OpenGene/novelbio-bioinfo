@@ -707,7 +707,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 		if (pathAndName.endsWith("/") || pathAndName.endsWith("\\")) {
 			pathChrPic = pathAndName + "chr_distribution.png";
 		} else {
-			pathChrPic = FileOperate.changeFilePrefix(pathAndName, ".chr_distribution", "png");
+			pathChrPic = pathAndName + ".chr_distribution.png";
 		}
 		return pathChrPic;
 	}
@@ -719,7 +719,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 		} else if(FileOperate.getFileName(pathAndName).contains("mapping_statistics")) {
 			return pathAndName;
 		} else {
-			excelName = FileOperate.changeFileSuffix(pathAndName, ".mapping_statistics", "xls");
+			excelName = pathAndName + ".mapping_statistics.xls";
 		}
 		return excelName;
 	}

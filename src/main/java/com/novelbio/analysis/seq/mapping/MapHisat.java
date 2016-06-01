@@ -276,7 +276,7 @@ public class MapHisat implements MapRNA {
 	/** 输出文件 */
 	@Override
 	public void setOutPathPrefix(String outPathPrefix) {
-		this.outputSam = FileOperate.changeFileSuffix(outPathPrefix, "", MAPHISAT2SUFFIX);
+		this.outputSam = outPathPrefix + MAPHISAT2SUFFIX;
 	}
 
 	@Override
@@ -565,7 +565,7 @@ public class MapHisat implements MapRNA {
 	/** 把gtfFile改称spliceTxt文件，如果文件已经存在则直接返回 */
 	public static String convert2SpliceTxt(String gtfFile) {
 		String spliceTxt = FileOperate.getParentPathNameWithSep(gtfFile) + FileOperate.getFileName(gtfFile);
-		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, "_spliceSite", "txt");
+		spliceTxt = FileOperate.changeFileSuffix(spliceTxt, ".spliceSite", "txt");
 		if (!FileOperate.isFileExistAndBigThan0(spliceTxt)) {
 			GffHashGene gffHashGene = new GffHashGene(gtfFile);
 			writeSpliceTxt(gffHashGene, spliceTxt);

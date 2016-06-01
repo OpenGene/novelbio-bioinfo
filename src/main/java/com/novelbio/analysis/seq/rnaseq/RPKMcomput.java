@@ -740,9 +740,9 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	/** 获得单个样本的文件名 */
 	public static String getFileCountsName(String outAndPrefix, boolean isFPKM, EnumExpression expressType) {
-		String suffix = "." + expressType.toString();
+		String suffix = "." + expressType.toString().toLowerCase();
 		if (expressType == EnumExpression.RPKM && isFPKM) {
-			suffix = ".FPKM";
+			suffix = ".FPKM".toLowerCase();
 		}
 		return outAndPrefix + suffix + ".exp.txt";
 	}
@@ -756,11 +756,11 @@ public class RPKMcomput implements AlignmentRecorder {
 	}
 	/** 获得总样本的文件名 */
 	public static String getFileCountsNameAll(String outPathPrefix, boolean isFPKM, EnumExpression expressType) {
-		String suffix = "." + expressType.toString();
+		String suffix = "." + expressType.toString().toLowerCase();
 		if (expressType == EnumExpression.RPKM && isFPKM) {
-			suffix = ".FPKM";
+			suffix = ".FPKM".toLowerCase();
 		}
-		suffix = "All" + suffix;
+		suffix = "all" + suffix;
 		
 		if (!outPathPrefix.endsWith("/") && !outPathPrefix.endsWith("\\")) {
 			suffix = "." + suffix;
@@ -769,7 +769,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	}
 	/** 获得总样本的文件名 */
 	public static String getFileCountsNameNcRNAAll(String outPathPrefix) {
-		String suffix = "All.ncRNA.Statistics.exp.txt";
+		String suffix = "all.ncRNA.Statistics.exp.txt";
 		if (!outPathPrefix.endsWith("/") && !outPathPrefix.endsWith("\\")) {
 			suffix = "." + suffix;
 		}
