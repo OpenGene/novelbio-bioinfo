@@ -1,5 +1,6 @@
 package com.novelbio.test;
 
+import java.io.File;
 import java.io.InputStream;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.analysis.seq.sam.SamToBamSort;
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.SshScp;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -66,7 +68,24 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(FileOperate.changeFilePrefix("/a/b/c/", "sf", "pdf"));
+//		PatternOperate patternOperate = new PatternOperate("(@[\\w-_]+?)\\(([\\w-_]+?)\\)");
+//		System.out.println(patternOperate.getPatFirst("@size_q(fse)(fef)"));
+//		Random random = new Random();
+//		System.out.println(random.nextInt(3));
+//		FileOperate.moveFoldFile("/home/novelbio/tmp/rscript/tmp", "/home/novelbio/tmp/rscript", true);
+		String cmd="hisat2 -p 3 -5 0 -3 0 --min-intronlen 20 --max-intronlen 500000 -1 /media/nbfs/nbCloud/public/AllProject/project_574ba1fb45ce3ad2541b9de7/task_575e719660b2beecc9ae3422/other_result/S45_07A_150500152_L006_1_part.fq.gz -2 /media/nbfs/nbCloud/public/AllProject/project_574ba1fb45ce3ad2541b9de7/task_575e719660b2beecc9ae3422/other_result/S45_07A_150500152_L006_2_part.fq.gz -S /home/novelbio/tmp/2016-06-14-09-27-3130048_tmp.hisatDateBaseTest1/hisatDateBaseTest.sam";
+//		String cmd="hisat2";
+
+		List<String> lsCmd = Lists.newArrayList(cmd.split(" "));
+		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		try {
+			cmdOperate.runWithExp();
+
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
+		
+		System.out.println();
 	}
 	
 	public static void getGeneFromPath() throws Exception {
