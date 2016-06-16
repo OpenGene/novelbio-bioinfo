@@ -127,7 +127,7 @@ public class Pindel implements IntCmdSoft {
 	}
 	
 	protected String creatConfigFile(){
-		String outConfigFile = PathDetail.getTmpPathRandom() + "/" + "config.txt";
+		String outConfigFile = PathDetail.getTmpPathRandom() + "config.txt";
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outConfigFile, true);
 		for (int i = 0; i < lsInputFile.size(); i++) {
 			String localPath = FileHadoop.convertToLocalPath(lsInputFile.get(i));

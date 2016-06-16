@@ -51,7 +51,6 @@ public class TestMapDNA {
 	public void testBowtie() {
 		copyFile();
 		
-		CmdOperate.setTmpPath("/home/novelbio/tmp");
 		mapDNA = new MapBowtie2();
 		mapDNA.getIndexMaker().setLock(false);
 		String leftFqName = parentPath + "fastq/PE/L_correct.1.fq.gz";
@@ -94,7 +93,6 @@ public class TestMapDNA {
 	public void testBwaMem() {
 		copyFile();
 		
-		CmdOperate.setTmpPath("/home/novelbio/tmp");
 		MapBwaMem mapDNA = new MapBwaMem();
 		String leftFqName = parentPath + "fastq/PE/L_correct.1.fq.gz";
 		String rightFqName = parentPath + "fastq/PE/R_correct.2.fq.gz";

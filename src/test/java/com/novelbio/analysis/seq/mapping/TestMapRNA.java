@@ -110,8 +110,7 @@ public class TestMapRNA {
 //	@Test
 	public void testTophat() {
 		copyFile();
-		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
-
+		
 		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);
 		((MapTophat)mapRNA).setBowtieVersion(SoftWare.bowtie);
 
@@ -142,7 +141,6 @@ public class TestMapRNA {
 //	@Test
 	public void testTophatWithGffChrAbs() {
 		copyFile();
-		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
 		
 		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);		
 		((MapTophat)mapRNA).setBowtieVersion(SoftWare.bowtie);
@@ -172,7 +170,6 @@ public class TestMapRNA {
 //	@Test
 	public void testTophat_without_GTF() {
 		copyFile();
-		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
 		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);
 		((MapTophat)mapRNA).setBowtieVersion(SoftWare.bowtie);
 		mapRNA.setRefIndex(referenceFile);
@@ -194,7 +191,6 @@ public class TestMapRNA {
 //	@Test
 	public void testTophat2() {
 		copyFile();
-		CmdOperate.setTmpPath("/home/novelbio/tmp/indexTophat");
 
 		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);
 
@@ -219,7 +215,6 @@ public class TestMapRNA {
 	@Test
 	public void testMapHisat() {
 		copyFile();
-		CmdOperate.setTmpPath("/home/novelbio/tmp/indexHisat2");
 
 		MapHisat mapRNA = (MapHisat)MapRNAfactory.generateMapRNA(SoftWare.hisat2);
 		mapRNA.setExePathHist("/home/novelbio/下载/hisat2-2.0.1-beta/");

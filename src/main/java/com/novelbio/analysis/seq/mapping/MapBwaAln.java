@@ -13,12 +13,12 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRGroup;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 
 /**
@@ -262,7 +262,7 @@ public class MapBwaAln extends MapDNA {
 	
 	private void generateTmpPath() {
 		if (tmpPath == null) {
-			tmpPath = FileOperate.addSep(CmdOperate.getCmdTmpPath()) + DateUtil.getDateAndRandom() + FileOperate.getSepPath();
+			tmpPath = FileOperate.addSep(PathDetail.getTmpPathWithSep()) + DateUtil.getDateAndRandom() + FileOperate.getSepPath();
 			FileOperate.createFolders(tmpPath);
 		}
 	}

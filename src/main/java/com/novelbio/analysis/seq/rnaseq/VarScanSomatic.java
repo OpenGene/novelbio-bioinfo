@@ -48,7 +48,7 @@ public class VarScanSomatic implements IntCmdSoft {
 	/** output directory*/
 	String outputDir;
 	/** If set to 1, outputs in VCF format */
-	int outputVcf;
+	int outputVcf = 1;
 	/** Output file for SNP calls [default: output.snp] */
 	String outputSnp;
 	/** Output file for indel calls [default: output.indel] */
@@ -106,8 +106,12 @@ public class VarScanSomatic implements IntCmdSoft {
 	public void setOutputDir(String outputDir) {
 		this.outputDir = outputDir;
 	}
-	public void setOutoutVcf(int outputVcf) {
-		this.outputVcf = outputVcf;
+	public void setOutoutVcf(boolean isOutputVcf) {
+		if (isOutputVcf) {
+			this.outputVcf = 1;
+		} else {
+			this.outputVcf = 0;
+		}
 	}
 
 	public void setMinCovNor(int minCovNor) {
