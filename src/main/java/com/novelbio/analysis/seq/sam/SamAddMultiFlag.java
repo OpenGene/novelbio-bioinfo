@@ -6,10 +6,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 import org.apache.log4j.Logger;
 
@@ -68,32 +66,58 @@ public class SamAddMultiFlag {
 	 */
 	private void addMapSamRecord(Map<String, List<SamRecord>> mapMateInfo2pairReads) {
 		int multiHitNum = mapMateInfo2pairReads.size();
-		int i = 0;
-		for (List<SamRecord> samRecords : mapMateInfo2pairReads.values()) {
-			i++;
-			for (SamRecord samRecord : samRecords) {
-				if (samRecord != null) {
-					samRecord.setMultiHitNum(multiHitNum);
-					samRecord.setMapIndexNum(i);
-					
-					while (queueSamRecords.remainingCapacity() < capacity/200) {
-						try {
-							Thread.sleep(200);
-							logger.debug(queueSamRecords.size());
-						} catch (Exception e) {
-							// TODO: handle exception
-						}
-						
-					}
-					queueSamRecords.add(samRecord);
-				}
+		Set<SamRecord> setSamRecordsSingle = new HashSet<>();
+		
+		int numSingle = 0;
+		for (List<SamRecord> lsSamRecords : mapMateInfo2pairReads.values()) {
+			if (lsSamRecords.size() < 2) {
+				numSingle ++;
+				setSamRecordsSingle.addAll(lsSamRecords);
+				continue;
 			}
+			if (lsSamRecords.size() == 2) {
+				continue;
+			}
+			
+			for (int j = 2; j < lsSamRecords.size(); j++) {
+				setSamRecordsSingle.add(lsSamRecords.get(j));
+			}
+		}
+		multiHitNum = mapMateInfo2pairReads.size() - numSingle + setSamRecordsSingle.size();
+		int i = 1;
+		for (List<SamRecord> lsSamRecords : mapMateInfo2pairReads.values()) {
+			if (lsSamRecords.size() < 2) continue;
+			
+			lsSamRecords.get(0).setMultiHitNum(multiHitNum);
+			lsSamRecords.get(0).setMapIndexNum(i);
+			lsSamRecords.get(1).setMultiHitNum(multiHitNum);
+			lsSamRecords.get(1).setMapIndexNum(i);
+			
+			i++;
+
+			while (queueSamRecords.remainingCapacity() < capacity/200) {
+				try {
+					Thread.sleep(200);
+					logger.debug(queueSamRecords.size());
+				} catch (Exception e) {
+					// TODO: handle exception
+				}	
+			}
+			queueSamRecords.add(lsSamRecords.get(0));
+			queueSamRecords.add(lsSamRecords.get(1));
+			
+		}
+		for (SamRecord samRecord : setSamRecordsSingle) {
+			samRecord.setMultiHitNum(multiHitNum);
+			samRecord.setMapIndexNum(i);
+			queueSamRecords.add(samRecord);
+			i++;
 		}
 	}
 	
 	private void addSamRecordToMap(boolean isPairend, SamRecord samRecord, 
 			Map<String, List<SamRecord>> mapMateInfo2pairReads) {
-		String pairInfo = samRecord.getNameAndFirstSite();
+		String pairInfo = getFirstNameAndSite(samRecord);
 		if (isPairend) {
 			//首先看第一端是否出现，出现了就获取第一端，然后放到第二端
 			if (mapMateInfo2pairReads.containsKey(pairInfo)) {
@@ -157,8 +181,33 @@ public class SamAddMultiFlag {
 	private void addNewRecordInMap(SamRecord samRecord, Map<String, List<SamRecord>> mapMateInfo2pairReads) {
 		List<SamRecord> lsRecords = new ArrayList<SamRecord>();
 		lsRecords.add(samRecord);
-		String pairMateInfo = samRecord.getNameAndFirstSite();
+		String pairMateInfo = getFirstNameAndSite(samRecord);
 		mapMateInfo2pairReads.put(pairMateInfo, lsRecords);
+	}
+	
+	/**
+	 * 如果是单端，则直接返回名字和比对位点
+	 * 如果是双端，则返回第一条比对上的名字和位点
+	 * @param samRecord
+	 * @return
+	 */
+	private String getFirstNameAndSite(SamRecord samRecord) {
+		if (!isPairend) {
+			return samRecord.getName() + samRecord.getRefID() + samRecord.getStartAbs();
+		} else {
+			String cis = samRecord.getName() + samRecord.getRefID() + samRecord.getStartAbs();
+			String trans = samRecord.getName() + samRecord.getMateRefID() + samRecord.getMateAlignmentStart();
+			if (samRecord.isMapped() && samRecord.isMateMapped()) {
+				return samRecord.isFirstRead()? cis : trans;
+			} else if (samRecord.isMapped() && !samRecord.isMateMapped()) {
+				return cis;
+			} else if (!samRecord.isMapped() && samRecord.isMateMapped()) {
+				return trans;
+			} else if (!samRecord.isMapped() && !samRecord.isMateMapped()) {
+				return cis;
+			}
+			return null;
+		}
 	}
 	
 	/** 完成添加tags的过程

@@ -2,11 +2,15 @@ package com.novelbio.test;
 
 import java.io.File;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
 import org.apache.hadoop.fs.FileStatus;
@@ -22,6 +26,7 @@ import com.google.common.collect.Lists;
 import com.novelbio.analysis.seq.fasta.ChrDensity;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
+import com.novelbio.analysis.seq.fastq.FastQC;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -34,6 +39,7 @@ import com.novelbio.analysis.seq.rnaseq.Trinity;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.analysis.seq.sam.SamToBam;
 import com.novelbio.analysis.seq.sam.SamToBamSort;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
@@ -68,24 +74,33 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-//		PatternOperate patternOperate = new PatternOperate("(@[\\w-_]+?)\\(([\\w-_]+?)\\)");
-//		System.out.println(patternOperate.getPatFirst("@size_q(fse)(fef)"));
-//		Random random = new Random();
-//		System.out.println(random.nextInt(3));
-//		FileOperate.moveFoldFile("/home/novelbio/tmp/rscript/tmp", "/home/novelbio/tmp/rscript", true);
-		String cmd="hisat2 -p 3 -5 0 -3 0 --min-intronlen 20 --max-intronlen 500000 -1 /media/nbfs/nbCloud/public/AllProject/project_574ba1fb45ce3ad2541b9de7/task_575e719660b2beecc9ae3422/other_result/S45_07A_150500152_L006_1_part.fq.gz -2 /media/nbfs/nbCloud/public/AllProject/project_574ba1fb45ce3ad2541b9de7/task_575e719660b2beecc9ae3422/other_result/S45_07A_150500152_L006_2_part.fq.gz -S /home/novelbio/tmp/2016-06-14-09-27-3130048_tmp.hisatDateBaseTest1/hisatDateBaseTest.sam";
-//		String cmd="hisat2";
-
-		List<String> lsCmd = Lists.newArrayList(cmd.split(" "));
-		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		try {
-			cmdOperate.runWithExp();
-
-		} catch (Exception e) {
-			// TODO: handle exception
+		SamFile samFile = new SamFile("/home/novelbio/software/appYarnXian/aaa.bam");
+		int i = 0;
+		Map<String, int[]> mapName2Value = new HashMap<>();
+		for (SamRecord samRecord : samFile.readLines()) {
+			if (samRecord.isUniqueMapping() || samRecord.getMapIndexNum() == 1) {
+				i++;
+				if (mapName2Value.containsKey(samRecord.getName())) {
+					int[] num = mapName2Value.get(samRecord.getName());
+					num[0] = num[0] + 1;
+				} else {
+					int[] num = new int[]{1};
+					mapName2Value.put(samRecord.getName(), num);
+				}
+			}
+		}
+		System.out.println(i);
+		for (String name : mapName2Value.keySet()) {
+			if (mapName2Value.get(name)[0] > 2) {
+				System.out.println(name);
+			}
 		}
 		
-		System.out.println();
+
+//		SamFile samFile = new SamFile("/hdfs:/nbCloud/public/AllProject/project_575e4e7445ce4a7ea48c356f/task_5762762060b2caaf21b35a40/RNASeqMap_result/BT474-naiyao.hisat2.bam");
+//
+//		SamToBamSort samToBamSort = new SamToBamSort("/home/novelbio/software/appYarnXian/aaa.bam", samFile, true);
+//		samToBamSort.convert();
 	}
 	
 	public static void getGeneFromPath() throws Exception {

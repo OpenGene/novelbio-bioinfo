@@ -543,10 +543,10 @@ public class SamRecord implements AlignRecord {
 		
 		return fastQRecord;
 	}
-	/** 返回名字和左端序列的起点信息 */
-	public String getNameAndFirstSite() {
-		return isFirstRead()? getName() + getRefID() + getStartAbs() : getName() + getMateRefID() + getMateAlignmentStart();
-	}
+//	/** 返回名字和左端序列的起点信息 */
+//	public String getNameAndFirstSite() {
+//		return isFirstRead()? getName() + getRefID() + getStartAbs() : getName() + getMateRefID() + getMateAlignmentStart();
+//	}
 
 	@Override
 	public int getStartAbs() {
