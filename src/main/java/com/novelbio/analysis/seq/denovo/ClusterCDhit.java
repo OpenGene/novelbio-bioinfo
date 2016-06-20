@@ -214,7 +214,7 @@ nr时<br>
 		ArrayOperate.addArrayToList(lsCmd, isAccurate());
 		
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
+		cmdOperate.runWithExp();
 		lsCluster.clear();
 	}
 	

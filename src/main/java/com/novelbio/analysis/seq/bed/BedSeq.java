@@ -248,7 +248,7 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 		lsCmd.add(sortBedFile);
 		
 		cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
+		cmdOperate.runWithExp();
 		return sortBedFile;
 	}
 	

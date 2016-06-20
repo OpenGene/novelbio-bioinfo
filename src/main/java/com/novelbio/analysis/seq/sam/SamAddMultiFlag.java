@@ -20,7 +20,7 @@ public class SamAddMultiFlag {
 	ArrayBlockingQueue<SamRecord> queueSamRecords = new ArrayBlockingQueue<>(capacity);
 	boolean isFinished = false;
 	
-	boolean isPairend;
+	Boolean isPairend;
 	Set<String> setTmp = new HashSet<>();
 	/** 相同名字的序列 */
 	Map<String, List<SamRecord>> mapMateInfo2pairReads = new LinkedHashMap<>();
@@ -34,6 +34,7 @@ public class SamAddMultiFlag {
 	}
 	
 	public void addSamRecord(SamRecord samRecord) {
+		if (isPairend == null) isPairend = samRecord.isHavePairEnd();
 		try {
 			if (!samRecord.isMapped()) {
 				logger.debug("unmapped");

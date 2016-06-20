@@ -81,7 +81,7 @@ public class AlignmentMuscle implements IntCmdSoft{
 		}
 		cmdOperate.addCmdParamOutput(getTmpOutFile());
 		
-		cmdOperate.run();
+		cmdOperate.runWithExp();
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("run trinity error:", cmdOperate);
 		}

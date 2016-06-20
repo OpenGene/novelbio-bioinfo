@@ -222,7 +222,7 @@ public class BlastNBC implements IntCmdSoft {
 		}
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdBlast());
 		cmdOperate.setInputFile(queryFasta);
-		cmdOperate.run();
+		cmdOperate.runWithExp();
 		if (deleteQueryFasta) {
 			FileOperate.deleteFileFolder(queryFasta);
 		}

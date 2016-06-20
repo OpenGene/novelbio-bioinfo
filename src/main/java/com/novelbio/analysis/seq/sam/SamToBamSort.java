@@ -32,6 +32,11 @@ public class SamToBamSort {
 		samToBam.setIsPairend(isPairend);
 		samToBamOutFile.setOutFileName(outFileName);
 	}
+	/** 需要转化成的bam文件名 */
+	public SamToBamSort(String outFileName, InputStream inStream) {
+		samToBam.setInStream(inStream);
+		samToBamOutFile.setOutFileName(outFileName);
+	}
 	/** 是否写入bam文件，默认写入
 	 * 有时候mapping但不需要写入文件，譬如过滤掉rrna reads的时候，
 	 * 只需要将没有mapping的reads输出即可，并不需要要把bam文件输出

@@ -248,7 +248,7 @@ public class MapBwaMem extends MapDNA {
 		List<String> lsListCmd = new ArrayList<String>();
 		lsListCmd.addAll(getLsCmd());
 		CmdOperate cmdOperate = new CmdOperate(lsListCmd);
-		cmdOperate.run();
+		cmdOperate.runWithExp();
 	}
 
 

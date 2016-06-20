@@ -198,7 +198,7 @@ public class TopGO implements IntCmdSoft {
 		lsCmd.add(PathDetail.getRscript());
 		lsCmd.add(exeScript);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
+		cmdOperate.runWithExp();
 	}
 	private void readResult() {
 		TxtReadandWrite txtRGo2Gene = new TxtReadandWrite(rawGoResultFile, false);

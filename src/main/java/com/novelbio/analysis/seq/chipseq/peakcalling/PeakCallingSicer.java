@@ -313,7 +313,7 @@ public class PeakCallingSicer implements IntCmdSoft {
 		ArrayList<String> lsOutFile = new ArrayList<String>();;
 		List<String> lsCmd = getLsCmd(sicerType);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
-		cmdOperate.run();
+		cmdOperate.runWithExp();
 		if (sicerType == PeakCallingSicerType.SICERrb) {
 			String resultPathAndFile = outputDir + koBedFile.split("\\.")[0] + "-W" + windowSize + "-G" + gapSize + "-E" + Evalue + ".scoreisland";
 			
