@@ -179,7 +179,7 @@ OutDir=6
 
 	@Override
 	protected void run() {
-		Rrunning("DEGseq");
+		running("DEGseq");
 		for (String tmpFile : mapTmp2Out.keySet()) {
 			String realFile = mapTmp2Out.get(tmpFile);
 			FileOperate.moveFile(true, tmpFile, realFile);

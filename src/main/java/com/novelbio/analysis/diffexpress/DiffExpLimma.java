@@ -215,7 +215,7 @@ public class DiffExpLimma extends DiffExpAbs{
 	}
 	@Override
 	protected void run() {
-		Rrunning("Limma");
+		running("Limma");
 	}
 	
 	static String logfc = "logFC";

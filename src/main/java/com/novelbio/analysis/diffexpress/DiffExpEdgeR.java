@@ -134,7 +134,7 @@ public class DiffExpEdgeR extends DiffExpAbs {
 
 	@Override
 	protected void run() {
-		Rrunning("EdgeR");
+		running("EdgeR");
 	}
 	
 	@Override

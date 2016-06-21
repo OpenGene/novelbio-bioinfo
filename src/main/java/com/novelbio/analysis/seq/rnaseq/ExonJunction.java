@@ -81,7 +81,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.setOneGeneOneSpliceEvent(false);
 		exonJunction.addBamSorted("Ex", parentPath + "exclusion.bam");
 		exonJunction.addBamSorted("In", parentPath + "inclusion.bam");
-		exonJunction.setCompareGroups("Ex", "In");
+		exonJunction.setCompareGroups("Ex", "In", "ExvsIn");
 		exonJunction.setResultFile(parentPath + "result-sep-exon");
 		exonJunction.setJunctionMinAnchorLen(0);
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
@@ -116,7 +116,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		String parentPath = "/home/novelbio/NBCresource/www/";
 		exonJunction.addBamSorted("KD", parentPath + "KD.accepted.bam");
 		exonJunction.addBamSorted("WT", parentPath + "WT.accepted.bam");
-		exonJunction.setCompareGroups("KD", "WT");
+		exonJunction.setCompareGroups("KD", "WT", "KDvsWT");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.setResultFile(parentPath + "result_20151220-mse");
 
@@ -156,7 +156,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.addBamSorted("h2", parentPath + "H2.chr20_51504-1271232.bam");
 		exonJunction.addBamSorted("h2", parentPath + "H3.chr20_51504-1271232.bam");
 
-		exonJunction.setCompareGroups("ctr", "h2");
+		exonJunction.setCompareGroups("ctr", "h2", "ctrvsh2");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.setResultFile(parentPath + "result_20151007");
 
@@ -192,6 +192,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	/** 本次比较的condition */
 	String condition1, condition2;
+	String outPrefix;
+	
 	/** condition到排序的bam文件 */
 	ArrayListMultimap<String, AlignSamReading> mapCond2SamReader = ArrayListMultimap.create();
 	ArrayListMultimap<String, SamFile> mapCond2SamFile = ArrayListMultimap.create();
@@ -373,9 +375,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		return lsAlignments;
 	}
 
-	public void setCompareGroups(String condition1, String condition2) {
+	public void setCompareGroups(String condition1, String condition2, String outPrefix) {
 		this.condition1 = condition1;
 		this.condition2 = condition2;
+		this.outPrefix = outPrefix;
 	}
 	
 	public void addBamSorted(String condition, String sortedBamFile) {
@@ -472,16 +475,15 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			runGetInfo.setRunningInfo(guiAnnoInfo);
 		}
 		
-		setCompareGroups(condition1, condition2);
 		lsResult = getTestResult_FromIso();
 		ExonSplicingTest.sortAndFdr(lsResult, fdrCutoff);
 		
 		if (resultFile != null) {
 			String outFile = "";
 			if (FileOperate.isFileDirectory(resultFile)) {
-				outFile = resultFile + condition1 +"vs" + condition2 + ".alldiff.txt";
+				outFile = resultFile + outPrefix + ".alldiff.txt";
 			} else {
-				outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, ".alldiff.txt");
+				outFile = FileOperate.changeFileSuffix(resultFile, "_"+outPrefix, ".alldiff.txt");
 			}
 			writeToFile(outFile, lsResult);
 		}
@@ -508,7 +510,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		for (String chrId : setChrId) {
 			if (runGetInfo != null) {
 				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
-				guiAnnoInfo.setInfo2(condition1 +"vs" + condition2 + " calculate chromesome: " + chrId);
+				guiAnnoInfo.setInfo2(outPrefix + " calculate chromesome: " + chrId);
 				List<Double> lsRegion = new ArrayList<>();
 				lsRegion.add((double) i);
 				lsRegion.add(0.0);
@@ -525,9 +527,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		if (resultFile != null) {
 			String outFile = "";
 			if (FileOperate.isFileDirectory(resultFile)) {
-				outFile = resultFile + condition1 +"vs" + condition2 + ".txt";
+				outFile = resultFile + outPrefix + ".txt";
 			} else {
-				outFile = FileOperate.changeFileSuffix(resultFile, "_"+condition1 +"vs" + condition2, ".alldiff.txt");
+				outFile = FileOperate.changeFileSuffix(resultFile, "_"+outPrefix, ".alldiff.txt");
 			}
 			writeToFile(outFile, lsResult);
 		}
@@ -610,7 +612,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		loadExp(chrId);
 		setSplicingType(chrId);
 		
-		setCompareGroups(condition1, condition2);
 		List<ExonSplicingTest> lsExonSplicingTests = getTestResult_FromIso(chrId);
 		
 		if (runGetInfo != null) {
@@ -1196,7 +1197,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		boolean isGetSeq = seqHash == null ? false : true;
 		TxtReadandWrite txtOutSeq = null;
 		if (isGetSeq) {
-			txtOutSeq = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_Seq", "fasta.gz"), true);
+			txtOutSeq = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, ".Seq", "fasta.gz"), true);
 		}
 		
 		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2));
@@ -1223,7 +1224,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 
 		Map<SplicingAlternativeType, int[]> mapSplicingType2Num = statisticsSplicingEvent();
-		TxtReadandWrite txtStatistics = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, "_statistics", "txt"), true);
+		TxtReadandWrite txtStatistics = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, ".statistics", "txt"), true);
 		for (String content : getStatisticTmplt()) {
 			if (content.contains("${statistics}")) {
 				for (Entry<SplicingAlternativeType, int[]> exonSplicingInfo : mapSplicingType2Num.entrySet()) {
@@ -1341,6 +1342,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	public void clear() {
 		condition1 = null; condition2 = null;
+		outPrefix = null;
 		lsResult = null;
 		lsSplicingTests= null;
 		mapCond2SamFile.clear();
@@ -1364,6 +1366,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			}
 			txtWrite.writefileln(seqFasta.toStringNRfasta());
 		}
+		txtWrite.close();
 	}
 	
 	private static SeqFasta getSeqfasta(String name, String chrId, int start, int end, GffChrAbs gffChrAbs) {

@@ -102,7 +102,7 @@ public class DiffExpEBSeq extends DiffExpAbs{
 	
 	@Override
 	protected void run() {
-		Rrunning("EBSeq");
+		running("EBSeq");
 	}
 
 	@Override

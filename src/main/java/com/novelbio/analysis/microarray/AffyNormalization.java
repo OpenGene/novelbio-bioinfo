@@ -127,10 +127,10 @@ public class AffyNormalization implements IntCmdSoft {
 	 */
 	public void run() {
 		generateScript();
-		Rrunning("Normalize");
+		running("Normalize");
 		clean();
 	}
-	protected void Rrunning(String cmdName) {
+	protected void running(String cmdName) {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(PathDetail.getRscript());
 		lsCmd.add(outScript.replace("\\", "/"));

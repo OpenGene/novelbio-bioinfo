@@ -170,7 +170,7 @@ public class DiffExpDESeq extends DiffExpAbs {
 	
 	@Override
 	protected void run() {
-		Rrunning("DEseq");
+		running("DEseq");
 	}
 	protected List<String[]> modifySingleResultFile(String outFileName, String treatName, String controlName) {
 		ArrayList<String[]> lsResult = new ArrayList<String[]>();
