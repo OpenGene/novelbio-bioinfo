@@ -57,7 +57,7 @@ public class SamAddMultiFlag {
 			addSamRecordToMap(isPairend, samRecord, mapMateInfo2pairReads);
 			lastSeqName = samRecord.getName();
 		} catch (Exception e) {
-			logger.error(e);
+			throw e;
 		}
 	}
 	
@@ -95,20 +95,37 @@ public class SamAddMultiFlag {
 			lsSamRecords.get(1).setMapIndexNum(i);
 			
 			i++;
-
+			int m = 0;
 			while (queueSamRecords.remainingCapacity() < capacity/200) {
+				m++;
+				if (m > 200) {
+					throw new ExceptionSamError("cannot write sam record in file");
+				}
 				try {
 					Thread.sleep(200);
 					logger.debug(queueSamRecords.size());
 				} catch (Exception e) {
 					// TODO: handle exception
-				}	
+				}
 			}
 			queueSamRecords.add(lsSamRecords.get(0));
 			queueSamRecords.add(lsSamRecords.get(1));
 			
 		}
 		for (SamRecord samRecord : setSamRecordsSingle) {
+			int m = 0;
+			while (queueSamRecords.remainingCapacity() < capacity/200) {
+				m++;
+				if (m > 200) {
+					throw new ExceptionSamError("cannot write sam record in file");
+				}
+				try {
+					Thread.sleep(200);
+					logger.debug(queueSamRecords.size());
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+			}
 			samRecord.setMultiHitNum(multiHitNum);
 			samRecord.setMapIndexNum(i);
 			queueSamRecords.add(samRecord);

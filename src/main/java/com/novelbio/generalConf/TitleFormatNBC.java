@@ -8,7 +8,7 @@ public enum TitleFormatNBC {
 	/** 公司名缩写 */
 	CompanyNameAbbr("NovelBio"),
 	GeneID("GeneID"), MirName("MirName"),
-	QueryID("QueryID"), AccID("AccID"), Symbol("Symbol"), Pvalue("P-Value"), Log2Pnegative("(-log2P)"), Adjusted_PValue("Adjusted_PValue "),
+	QueryID("QueryID"), AccID("AccID"), Symbol("Symbol"), Pvalue("P-Value"), Log2Pnegative("(-log2P)"), Log10Pnegative("(-log10P)"),  Adjusted_PValue("Adjusted_PValue "),
 	GeneName("GeneName"), GeneType("GeneType"),
 	SubjectID("SubjectID"),
 	

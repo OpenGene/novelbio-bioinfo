@@ -158,7 +158,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 					lsInfo.add(gffGeneIsoInfo.getParentGeneName());
 					lsInfo.add(geneID.getDescription());
 				} else {
-					lsInfo.add("");
+					lsInfo.add(gffGeneIsoInfo.getParentGeneName());
 					lsInfo.add("");
 				}
 			} catch (Exception e) {

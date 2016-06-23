@@ -17,9 +17,7 @@ public class StatisticTestResult {
 	public static String getTitle(TestType testType) {
 		return testType + "_Result";
 	}
-	
-	static int logBaseNum = 2;
-	
+		
 	String itemID;
 	String itemTerm;
 	
@@ -98,7 +96,16 @@ public class StatisticTestResult {
 	 * @return
 	 */
 	public double getLog2Pnegative() {
-		return -Math.log(pvalue)/Math.log(logBaseNum);
+		return -Math.log(pvalue)/Math.log(2);
+	}
+	
+	/**
+	 * 返回负logp
+	 * @param num 底数譬如-log2P，或者-log10P
+	 * @return
+	 */
+	public double getLog10Pnegative() {
+		return -Math.log(pvalue)/Math.log(10);
 	}
 	
 	private void setFDR(double fdr) {
@@ -146,7 +153,7 @@ public class StatisticTestResult {
 		lsTitle.add(getPvalue() + "");
 		lsTitle.add(fdr + "");
 		lsTitle.add(getEnrichment() + "");
-		lsTitle.add(getLog2Pnegative() + "");
+		lsTitle.add(getLog10Pnegative() + "");
 		return lsTitle.toArray(new String[0]);
 	}
 	
@@ -185,7 +192,7 @@ public class StatisticTestResult {
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.FDR.toString());
 		lsTitle.add(TitleFormatNBC.Enrichment.toString());
-		lsTitle.add(TitleFormatNBC.Log2Pnegative.toString());		
+		lsTitle.add(TitleFormatNBC.Log10Pnegative.toString());		
 	}
 	
 	/**

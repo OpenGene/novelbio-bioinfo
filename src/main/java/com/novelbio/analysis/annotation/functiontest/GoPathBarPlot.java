@@ -40,9 +40,9 @@ public class GoPathBarPlot {
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
 		for (int i = 0; i < barNum; i++) {
 			if (i < lsTestResults.size())
-				dataset.addValue(lsTestResults.get(i).getLog2Pnegative(), "", lsTestResults.get(i).getItemTerm());
+				dataset.addValue(lsTestResults.get(i).getLog10Pnegative(), "", lsTestResults.get(i).getItemTerm());
 		}
-		JFreeChart chart = ChartFactory.createBarChart(title, null, "-Log2(P-value)", dataset, PlotOrientation.HORIZONTAL, false, false, false);
+		JFreeChart chart = ChartFactory.createBarChart(title, null, "-Log10(P-value)", dataset, PlotOrientation.HORIZONTAL, false, false, false);
 		// chart.getRenderingHints().put(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 		// 设置图标题的字体
 		chart.getTitle().setFont(new Font("黑体", Font.BOLD, 30));
