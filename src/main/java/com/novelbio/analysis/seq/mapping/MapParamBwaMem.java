@@ -57,8 +57,9 @@ public class MapParamBwaMem {
 	
 	/**在双端模式中，使用SW(Smith-Waterman algorithm)来检测没有回帖的数据，而不会尝试去找到适合双端的匹配形式
 	 * In the paired-end mode, perform SW to rescue missing hits only but do not try to find hits that fit a proper pair.
+	 * 打开该参数后，在mapping过程中或跳过fit a proper pair 的步骤，也就意味着结果不会给出read mapped in proper pair这样的一个FLAG
 	 */
-	boolean swData = true;
+	boolean swData = false;
 	
 	public void setExePath(String exePath) {
 	    this.exePath = exePath;
