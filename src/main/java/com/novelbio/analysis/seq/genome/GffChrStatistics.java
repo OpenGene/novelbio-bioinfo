@@ -21,6 +21,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.analysis.seq.wig.Contig;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
@@ -175,11 +177,28 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		}
 		isAlignFile = true;
 	}
-	
 	public void addAlignRecord(AlignRecord alignRecord) {
-		List<Align> lsAligns = alignRecord.getAlignmentBlocks();
+		if (!alignRecord.isMapped()) return;
+
+		if (alignRecord instanceof SamRecord) {
+			addSamRecord((SamRecord)alignRecord);
+		} else {
+			List<Align> lsAligns = alignRecord.getAlignmentBlocks();
+			for (Align align : lsAligns) {
+				double prop = (double)1/lsAligns.size()/alignRecord.getMappedReadsWeight();
+				if(searchSite(prop, align)) {
+				}
+			}
+		}
+	}
+	private void addSamRecord(SamRecord samRecord) {
+		if (samRecord.getMappedReadsWeight() > 1 && samRecord.getMapIndexNum() != 1) {
+			return;
+		}
+		
+		List<Align> lsAligns = samRecord.getAlignmentBlocks();
 		for (Align align : lsAligns) {
-			double prop = (double)1/lsAligns.size()/alignRecord.getMappedReadsWeight();
+			double prop = (double)1/lsAligns.size();
 			if(searchSite(prop, align)) {
 			}
 		}

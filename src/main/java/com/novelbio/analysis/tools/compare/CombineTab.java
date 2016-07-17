@@ -3,6 +3,7 @@ package com.novelbio.analysis.tools.compare;
 import java.awt.image.BufferedImage;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -119,6 +120,8 @@ public class CombineTab {
 	public void setColCompareOverlapID(ArrayList<Integer> lsColID) {
 		Set<Integer> setID = new LinkedHashSet<>();
 		for (Integer integer : lsColID) {
+			if (integer < 1) continue;
+			
 			setID.add(integer-1);
 		}
 		this.colCompareOverlapID = new int[setID.size()];
@@ -138,6 +141,31 @@ public class CombineTab {
 	public void setColExtractDetail(String condTxt, String codName, int... colDetail) {
 		Set<Integer> setID = new LinkedHashSet<>();
 		for (Integer integer : colDetail) {
+			if (integer < 1) continue;
+			
+			setID.add(integer-1);
+		}
+		int[] colReal = new int[setID.size()];
+		int i = 0;
+		for (Integer integer : setID) {
+			colReal[i++] = integer;
+		}
+		mapFileName2ExtractColNum.put(condTxt, colReal);
+		mapFileName2ConditionAbbr.put(condTxt,codName);
+		runningFlag = false;
+	}
+	
+	
+	/**
+	 * 获得每个文件名, 对于每个文件，设定它的ID列
+	 * @param condTxt 文本名
+	 * @param codName 该文本的简称
+	 * @param colDetail 该文本具体获取哪几列
+	 */
+	public void setColExtractDetail(String condTxt, String codName, Collection<Integer> colNum) {
+		Set<Integer> setID = new LinkedHashSet<>();
+		for (Integer integer : colNum) {
+			if (integer < 1) continue;
 			setID.add(integer-1);
 		}
 		int[] colReal = new int[setID.size()];
@@ -166,6 +194,7 @@ public class CombineTab {
 	public void setColDetai(String condTxt,int... colDetail) {
 		Set<Integer> setID = new LinkedHashSet<>();
 		for (Integer integer : colDetail) {
+			if (integer < 1) continue;
 			setID.add(integer-1);
 		}
 		int[] colReal = new int[setID.size()];
@@ -194,7 +223,7 @@ public class CombineTab {
 			ArrayList<String[]> lsInfoCodAllCols = getFileInfoAllCols(filename);
 			
 			//添加公共列的title，因为每个文档的公共列都一致，譬如第1，2，3列。所以只要添加一次即可
-			if (lsTitle.size() == 0) {
+			if (lsTitle.isEmpty()) {
 				for (int i = 0; i < colCompareOverlapID.length; i++) {
 					lsTitle.add(lsInfoCodAllCols.get(0)[i]);
 				}

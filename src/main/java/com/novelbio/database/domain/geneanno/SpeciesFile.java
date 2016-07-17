@@ -256,6 +256,9 @@ public class SpeciesFile {
 		if (gffDB == null) {
 			return getGffFile();
 		}
+		if (ArrayOperate.isEmpty(mapDB2GffTypeAndFile)) {
+			return null;
+		}
 		return EnumSpeciesFile.gffGeneFile.getSavePath(taxID, this) + mapDB2GffTypeAndFile.get(gffDB.toLowerCase())[1];
 	}
 	

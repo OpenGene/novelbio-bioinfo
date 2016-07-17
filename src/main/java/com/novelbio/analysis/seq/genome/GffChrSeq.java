@@ -365,7 +365,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 			
 			String parentName = gffGeneIsoInfo.getParentGeneName();
 			if (!mapParentName2Iso.containsKey(parentName) || 
-					mapParentName2Iso.get(parentName).getLen() < gffGeneIsoInfo.getLen()) {
+					mapParentName2Iso.get(parentName).getLenExon(0) < gffGeneIsoInfo.getLenExon(0)) {
 				mapParentName2Iso.put(parentName, gffGeneIsoInfo);
 			}
 		}

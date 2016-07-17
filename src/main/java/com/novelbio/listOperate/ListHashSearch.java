@@ -5,8 +5,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 
@@ -20,7 +22,7 @@ import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
  */
 public abstract class ListHashSearch <T extends ListDetailAbs, E extends ListCodAbs<T>, 
 K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
-	private static final Logger logger = Logger.getLogger(ListHashSearch.class);
+	private static final Logger logger = LoggerFactory.getLogger(ListHashSearch.class);
 	/**
 	 * <b>key为小写</b><br>
 	 * 哈希表LOC--LOC细节<br>
@@ -143,6 +145,9 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 		}
 		return mapChrID2ListGff;
 	}
+	
+	Map<String, int[]> mapChrId2Num = new HashMap<>(); 
+	
 	/**
 	 * 获得的每一个信息都是实际的而没有clone
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
@@ -155,7 +160,7 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 		chrID = chrID.toLowerCase();
 		M Loclist =  getMapChrID2LsGff().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
-			logger.debug("Find UnKnown chrID: " + chrID);
+			addChrIdCannotFind(chrID);
 			return null;
 		}
 		E gffCod1 = Loclist.searchLocation(cod1);//(chrID, Math.min(cod1, cod2));
@@ -173,10 +178,22 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 		chrID = chrID.toLowerCase();
 		M Loclist =  getMapChrID2LsGff().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
-			logger.info("unknown chrID: " + chrID);
+			addChrIdCannotFind(chrID);
 			return null;
 		}
 		return Loclist.searchLocationDu(cod1, cod2);
+	}
+	
+	private void addChrIdCannotFind(String chrId) {
+		int[] chrIdNum = mapChrId2Num.get(chrId);
+		if (chrIdNum == null) {
+			chrIdNum = new int[1];
+			mapChrId2Num.put(chrId, chrIdNum);
+		}
+		chrIdNum[0] = chrIdNum[0]+1;
+		if (chrIdNum[0] == 1 || chrIdNum[0] % 10000 == 0) {
+			logger.error("cannot find chrId {} for {} times", chrId, chrIdNum[0]);
+		}
 	}
 	
 	/**
