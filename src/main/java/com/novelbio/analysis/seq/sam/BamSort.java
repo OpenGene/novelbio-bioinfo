@@ -2,12 +2,11 @@ package com.novelbio.analysis.seq.sam;
 
 import htsjdk.samtools.SAMFileHeader;
 import htsjdk.samtools.SAMFileHeader.SortOrder;
-import htsjdk.samtools.SAMFileReader;
-import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMFileWriterFactory;
 import htsjdk.samtools.SAMFileWriterImpl;
 import htsjdk.samtools.SAMSequenceDictionary;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +32,7 @@ public class BamSort {
 	SAMSequenceDictionary samSequenceDictionary;
 	int maxRecordsInRam = 5000000;
 	String ExePath = "";
-
+		
 	public void setSamFile(SamFile samFile) {
 		this.samFile = samFile;
 		SAMFileWriterImpl.setDefaultMaxRecordsInRam(maxRecordsInRam);
@@ -66,8 +65,8 @@ public class BamSort {
 	 */
 	@Deprecated
 	public String sortSamtools(String outFile) {
-		SAMFileReader reader = samFile.getSamReader().getSamFileReader();
-		if (reader.getFileHeader().getSortOrder() == SortOrder.coordinate) {
+		SAMFileHeader header = samFile.getHeader();
+		if (header.getSortOrder() == SortOrder.coordinate) {
 			return samFile.getFileName();
 		}
 		List<String> lsCmd = new ArrayList<>();
@@ -90,8 +89,7 @@ public class BamSort {
 			return sortBamFile;
 		}
 
-		SAMFileReader reader = samFile.getSamReader().getSamFileReader();
-		SAMFileHeader samFileHeader = reader.getFileHeader();
+		SAMFileHeader samFileHeader = samFile.getHeader();
 		if (samFileHeader.getSortOrder() == SortOrder.coordinate) {
 			return samFile.getFileName();
 		}
@@ -112,33 +110,37 @@ public class BamSort {
 			isFilterUnique = true;
 			BamFilterUnique.setAttributeUnique(samFileHeader);
 		}
-
-		SAMFileWriter writer = new SAMFileWriterFactory().makeSAMOrBAMWriter(samFileHeader, false, FileOperate.getFile(tmpFile));				
 		
+		OutputStream os = null;
+		try {
+			os = FileOperate.getOutputStream(tmpFile);
+		} catch (IOException e1) {
+			throw new ExceptionSamError("cannot open sam out file " + tmpFile);
+		}
+		
+		SamWriter writer = new SamWriter(false, samFileHeader, os, true);
 		int i = 0;
-		for (SamRecord rec : samFile.readLines()) {
-			if (isFilterUnique && !rec.isUniqueMapping()) {
-				continue;
+		
+		try {
+			for (SamRecord rec : samFile.readLines()) {
+				if (isFilterUnique && !rec.isUniqueMapping()) {
+					continue;
+				}
+				if (i++ % 10000000 == 0) {
+					logger.info("write " + i + " reads");
+				}
+				if (samSequenceDictionary != null) {
+					samReorder.copeReads(rec);
+				}
+				writer.writeToSamFileln(rec);
 			}
-			if (i++ % 10000000 == 0) {
-				logger.info("write " + i + " reads");
-			}
-			if (samSequenceDictionary != null) {
-				samReorder.copeReads(rec);
-			}
-			try {
-				writer.addAlignment(rec.getSamRecord());
-			} catch (Exception e) {
-				logger.error("write error: " + rec.toString() , e);
-			}
-			
-			// progress.record(rec);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			samFile.close();
+			writer.close();
 		}
 
-		// log.info("Finished reading inputs, merging and writing to output now.");
-
-		reader.close();
-		writer.close();
 		FileOperate.moveFile(true, tmpFile, sortBamFile);
 		return sortBamFile;
 	}
