@@ -2,6 +2,7 @@ package com.novelbio.database.domain.geneanno;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +18,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.StringOperate;
@@ -39,8 +41,7 @@ import com.novelbio.generalConf.PathDetailNBC;
  })
 public class SpeciesFile {
 	private static final Logger logger = LoggerFactory.getLogger(SpeciesFile.class);
-
-
+	
 	/** 物种文件夹名称 */
 	public static final String SPECIES_FOLDER = "species";
 	/** 相对路径，类似 /media/hdfs/nbCloud/public/nbcplatform/ ，注意不要把genome写进去<br>
@@ -568,6 +569,10 @@ public class SpeciesFile {
 		return ManageSpecies.getInstance();
 	}
 	
+	@VisibleForTesting
+	public static void setPathParent(String pathParent) {
+		SpeciesFile.pathParent = pathParent;
+	}
 }
 
 /** 比较GFFDB的比较器 */

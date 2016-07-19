@@ -146,8 +146,17 @@ public class SpeciesIndexMappingMaker {
 	/** 对染色体文件建立索引 */
 	public void makeIndexChr(SoftWare softWare) {
 		String chrFile = speciesFile.getChromSeqFile();
+		String chrFolder = null;
 		String chrFileIndex = getSequenceIndex(EnumSpeciesFile.chromSeqFile, softWare);
-		
+		if (softWare == SoftWare.mapsplice) {
+			SpeciesFileSepChr sepChr = new SpeciesFileSepChr();
+			sepChr.setSpeciesFile(speciesFile);
+			sepChr.setLock(isLock);
+			sepChr.generateChrSepFiles();
+			chrFile = sepChr.getChrSepFileOne();
+			chrFolder = sepChr.getChrSepFolder();
+			chrFileIndex = IndexMapSplice.modifyChrSeqName(chrFileIndex);
+		}
 		copyFileAndIndex(chrFile, chrFileIndex);
 
 		if (softWare == SoftWare.tophat) {
@@ -161,7 +170,7 @@ public class SpeciesIndexMappingMaker {
 				logger.info("sucessfully finish tophat index using bowtie2 on {}, with version {} and gffdb " + gffdb, speciesFile.getTaxID(), speciesFile.getVersion());
 			}
 		} else if (softWare == SoftWare.mapsplice) {
-			makeMapspliceIndex(chrFileIndex);
+			makeMapspliceIndex(chrFileIndex, chrFolder);
 			logger.info("sucessfully finish mapsplice index on {}, with version {}", speciesFile.getTaxID(), speciesFile.getVersion());
 		} else {
 			makeIndexNormal(softWare, chrFileIndex);
@@ -208,7 +217,7 @@ public class SpeciesIndexMappingMaker {
 		indexMappingMaker.IndexMake();
     }
 	
-	private void makeMapspliceIndex(String chrFile) {
+	private void makeMapspliceIndex(String chrFile, String chrFolder) {
 		Set<String> setChrId = null;
 		if (speciesFile.getGffType() != null) {
 			GffHashGene gffHashGene = new GffHashGene(speciesFile.getGffType(), speciesFile.getGffFile());
@@ -216,7 +225,9 @@ public class SpeciesIndexMappingMaker {
         }
 		
 		IndexMapSplice indexMappingMaker = (IndexMapSplice)IndexMappingMaker.createIndexMaker(SoftWare.mapsplice);
+		
 		indexMappingMaker.setChrIndex(chrFile);
+		indexMappingMaker.setChrSepFolder(chrFolder);
 		indexMappingMaker.setSetChrInclude(setChrId);
 		indexMappingMaker.setLock(isLock);
 		indexMappingMaker.IndexMake();

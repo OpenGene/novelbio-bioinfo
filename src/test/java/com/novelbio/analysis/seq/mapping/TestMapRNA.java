@@ -85,7 +85,7 @@ public class TestMapRNA {
 		FileOperate.deleteFileFolder(outPath);
 	}
 	
-//	@Test
+	@Test
 	public void testMapSplice() {
 		copyFile();
 
@@ -107,7 +107,7 @@ public class TestMapRNA {
 		deleteFolder();
 	}
 	
-//	@Test
+	@Test
 	public void testTophat() {
 		copyFile();
 		
@@ -138,7 +138,7 @@ public class TestMapRNA {
 		FileOperate.deleteFileFolder(gtfFile.replace(".gz", ""));
 	}
 	
-//	@Test
+	@Test
 	public void testTophatWithGffChrAbs() {
 		copyFile();
 		
@@ -167,7 +167,7 @@ public class TestMapRNA {
 		FileOperate.deleteFileFolder(gtfFile.replace(".gz", ""));
 	}
 	
-//	@Test
+	@Test
 	public void testTophat_without_GTF() {
 		copyFile();
 		mapRNA = MapRNAfactory.generateMapRNA(SoftWare.tophat);
@@ -188,7 +188,7 @@ public class TestMapRNA {
 		deleteFolder();
 	}
 	
-//	@Test
+	@Test
 	public void testTophat2() {
 		copyFile();
 
@@ -209,7 +209,7 @@ public class TestMapRNA {
 
 		lsLeftFq.clear();
 		lsRightFq.clear();
-//		deleteFolder();
+		deleteFolder();
 	}
 	
 	@Test

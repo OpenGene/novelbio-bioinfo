@@ -9,6 +9,7 @@ import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.model.species.SpeciesFileExtract;
+import com.novelbio.database.model.species.SpeciesFileSepChr;
 import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
 import com.novelbio.database.model.species.SpeciesMirnaFile;
 
@@ -19,9 +20,12 @@ public class CmdIndexMake {
 				|| args[0].replace("-", "").equalsIgnoreCase("help")) {
 			System.out.println("java -jar indexmake.jar -taxid 9606 -version GRCh38 -software hisat2 -islock true");
 			System.out.println("software have several params, below is the list");
+			
 			System.out.println("mirna");
 			System.out.println("rfam");
+			System.out.println("sepchr");
 			System.out.println("refseq");
+
 			System.out.println("");
 			System.out.println("bwa_mem");
 			System.out.println("bowtie");
@@ -61,14 +65,16 @@ public class CmdIndexMake {
 		Species species = new Species(Integer.parseInt(taxId));
 		species.setVersion(version);
 		
-		indexChrFile(species);
+		faidexChrFile(species);
 		
 		if (StringOperate.isRealNull(softwareStr)) {
 			extractMirna(species);
 			extractRfam(species);
+			sepChr(species, isLock);
+			extractRefseq(species);
+
 			index(species, softwareStr, isLock);
 			extractMirna(species);
-			extractRfam(species);
 			return;
 		}
 		
@@ -76,6 +82,8 @@ public class CmdIndexMake {
 			extractMirna(species);
 		} else if (softwareStr.equals("rfam")) {
 			extractRfam(species);
+		} else if (softwareStr.equals("sepchr")) {
+			sepChr(species, isLock);
 		} else if (softwareStr.equals("refseq")) {
 			extractRefseq(species);
 		} else {
@@ -83,10 +91,18 @@ public class CmdIndexMake {
 		}
 	}
 	
-	private static void indexChrFile(Species species) {
+	private static void faidexChrFile(Species species) {
 		SpeciesFile speciesFile = species.getSelectSpeciesFile();
 		SpeciesFileExtract speciesFileExtract = new SpeciesFileExtract(speciesFile);
 		speciesFileExtract.indexChrFile();
+	}
+	
+	/** 把染色体切分成一条染色体一个文本，放在一个文件夹中 */
+	private static void sepChr(Species species, boolean isLock) {
+		SpeciesFileSepChr sepChr = new SpeciesFileSepChr();
+		sepChr.setSpeciesFile(species.getSelectSpeciesFile());
+		sepChr.setLock(isLock);
+		sepChr.generateChrSepFiles();
 	}
 	
 	private static void index(Species species, String softwareStr, boolean isLock) {

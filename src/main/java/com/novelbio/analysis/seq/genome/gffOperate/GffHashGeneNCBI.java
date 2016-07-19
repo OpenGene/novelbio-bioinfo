@@ -433,6 +433,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			logger.error("出现未知exon：" + ArrayOperate.cmbString(ss, "\t"), e);
 			return false;
 		}
+		if (gffGeneIsoInfo == null) {
+			return false;
+		}
+		
 		String geneID = getGeneID(rnaID);
 		if (mapGeneName2IsHaveExon.get(geneID) == null) {
 			logger.error("没有找到相应的GeneID:" + geneID);
@@ -670,6 +674,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		if (lsGffGeneIsoInfo.size() == 0) {
 			mapRnaID2GeneID.put(rnaID, rnaID);
 			GffDetailGene gffDetailGene = getGffDetailGenID(rnaID);
+			if (gffDetailGene == null) {
+				logger.error("cannot find rnaId " + rnaID);
+				return null;
+			}
 			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(
 					gffDetailGene.getNameSingle(),
 					gffDetailGene.getNameSingle(), geneType);

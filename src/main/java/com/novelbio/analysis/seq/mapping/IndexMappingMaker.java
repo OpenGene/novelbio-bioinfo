@@ -1,7 +1,5 @@
 package com.novelbio.analysis.seq.mapping;
 
-import htsjdk.samtools.reference.FastaSequenceIndex;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +12,6 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -29,6 +26,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.species.SpeciesFileSepChr;
 import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
 import com.novelbio.generalConf.PathDetailNBC;
 
@@ -609,12 +607,10 @@ public static class IndexTophat extends IndexMappingMaker {
 public static class IndexMapSplice extends IndexMappingMaker {
 	/** mapsplice的后缀名，因为mapsplice要求文本中的序列不能太多，譬如小于4000条 */
 	private static final String mapSpliceSuffix = ".novelbio_mapSplice_suffix";
-	protected static int maxSeqNum = 4000;
-	private static int minLen = 1000;
 	
 	Set<String> setChrInclude;
 	String chrRaw;
-	String chrSepFold;
+	String chrSepFolder;
 	
 	/** 有的chr文件中会包含太多的 chrId，譬如 trinity的结果会产生几万个 chrId
 	 * 而mapsplice要求 每个chr一个文本，所以这里我们为了防止文本产生太多，需要将含有太多 chr 的染色体文件进行过滤，仅保留长的几千个文件 */
@@ -630,6 +626,9 @@ public static class IndexMapSplice extends IndexMappingMaker {
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		if (gffHashGene == null) return;
 		setChrInclude = gffHashGene.getMapChrID2LsGff().keySet();
+	}
+	public void setChrSepFolder(String chrSepFolder) {
+		this.chrSepFolder = chrSepFolder;
 	}
 	/** 包含有基因的chrId，可以从gff文件中获取 */
 	public void setSetChrInclude(Set<String> setChrInclude) {
@@ -681,17 +680,28 @@ public static class IndexMapSplice extends IndexMappingMaker {
 		} else {
 			//先判定 修正过的chrFile是否存在，如果存在则返回
 			//如果不存在，则标记需要生成 修正的chrFile
-			chrFile = FileOperate.changeFileSuffix(chrRaw, mapSpliceSuffix, null);
+			chrFile = modifyChrSeqName(chrRaw);
 			modifyChrFile = true;
 			if (!FileOperate.isFileExistAndBigThanSize(chrFile, 0)) {
 				Map<String, Long> mapChrID2ChrLen = SamIndexRefsequence.generateIndexAndGetMapChrId2Len(chrRaw);
-				if (mapChrID2ChrLen.size() <= maxSeqNum) {
+				if (mapChrID2ChrLen.size() <= SpeciesFileSepChr.maxSeqNum) {
 					chrFile = chrRaw;
 					modifyChrFile = false;
 				}
 			}
 		}
-		chrSepFold = FileOperate.addSep(FileOperate.changeFileSuffix(chrFile, "_sep_fold", ""));
+		if (StringOperate.isRealNull(chrSepFolder)) {
+			chrSepFolder = FileOperate.addSep(FileOperate.changeFileSuffix(chrFile, "_sep_fold", ""));
+		}
+	}
+	
+	/**
+	 * 修改成mapsplice特定的文件名，也就是加上mapSpliceSuffix的后缀，该后缀表明本chrSeq中染色体的数量已经小于SpeciesFileSepChr.maxSeqNum
+	 * @param chrSeq
+	 * @return
+	 */
+	public static String modifyChrSeqName(String chrSeq) {
+		return FileOperate.changeFileSuffix(chrSeq, mapSpliceSuffix, null);
 	}
 	
 	/** 将染色体文件进行过滤，仅保留4000来条染色体，因为太多的话mapsplice可能会报错 */
@@ -706,8 +716,8 @@ public static class IndexMapSplice extends IndexMappingMaker {
 			chrFileFormat.setIncludeChrId(setChrInclude);
 			chrFileFormat.setRefSeq(chrRaw);
 			chrFileFormat.setResultSeq(chrFile);
-			chrFileFormat.setMinLen(minLen);
-			chrFileFormat.setMaxNum(maxSeqNum);
+			chrFileFormat.setMinLen(SpeciesFileSepChr.minLen);
+			chrFileFormat.setMaxNum(SpeciesFileSepChr.maxSeqNum);
 			chrFileFormat.rebuild();
 		} else {
 			FileOperate.copyFile(chrRaw, chrFile, true);
@@ -717,11 +727,12 @@ public static class IndexMapSplice extends IndexMappingMaker {
 		samIndexRefsequence.setRefsequence(chrFile);
 		samIndexRefsequence.indexSequence();
 	}
+	
 	/** 生成一个文件夹，其中每条染色体一个文件 */
 	private void generateChrSepFold() {
 		boolean isNeedGenerate = true;
-		if (FileOperate.isFileFolderExist(chrSepFold)) {
-			List<String> lsFileName = FileOperate.getLsFoldFileName(chrSepFold);
+		if (FileOperate.isFileFolderExist(chrSepFolder)) {
+			List<String> lsFileName = FileOperate.getLsFoldFileName(chrSepFolder);
 			Set<String> setChrId = new HashSet<>();
 			for (String chrName : lsFileName) {
 				String chrId = FileOperate.getFileNameSep(chrName)[0].split(" ")[0].toString().toLowerCase();
@@ -740,15 +751,15 @@ public static class IndexMapSplice extends IndexMappingMaker {
 			return;
 		}
 		
-		FileOperate.deleteFileFolder(chrSepFold);
-		FileOperate.createFolders(chrSepFold);
+		FileOperate.deleteFileFolder(chrSepFolder);
+		FileOperate.createFolders(chrSepFolder);
 		NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
 		ncbIchromFaChangeFormat.setChromFaPath(chrFile, "");
-		ncbIchromFaChangeFormat.writeToSepFile(chrSepFold);
+		ncbIchromFaChangeFormat.writeToSepFile(chrSepFolder);
 	}
 	
 	public String getChrSepFolder() {
-		return chrSepFold;
+		return chrSepFolder;
 	}
 	
 	@Override

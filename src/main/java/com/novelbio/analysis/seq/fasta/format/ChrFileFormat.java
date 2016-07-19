@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGetChrId;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -89,7 +90,7 @@ public class ChrFileFormat {
 	}
 	
 	public void rebuild() {
-		if (setChrIdInclude == null || setChrIdInclude.isEmpty()) setChrIdInclude = new HashSet<>();
+		if (ArrayOperate.isEmpty(setChrIdInclude)) setChrIdInclude = new HashSet<>();
 		
 		if (StringOperate.isRealNull(outSeq)) {
 			outSeq = refseq;
