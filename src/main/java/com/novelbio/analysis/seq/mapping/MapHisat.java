@@ -641,10 +641,6 @@ public class MapHisat implements MapRNA {
 		FileOperate.moveFile(true, tmp, spliceTxt);
 	}
 	
-	public static Map<String, Integer> getMapSensitive() {
-		return MapBowtie2.getMapSensitive();
-	}
-
 	@Override
     public IndexMappingMaker getIndexMappingMaker() {
 	    return indexHisat2;

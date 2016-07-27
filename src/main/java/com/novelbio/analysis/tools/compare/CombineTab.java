@@ -15,9 +15,11 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.SepSign;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
@@ -157,10 +159,11 @@ public class CombineTab {
 	
 	
 	/**
+	 * 
 	 * 获得每个文件名, 对于每个文件，设定它的ID列
 	 * @param condTxt 文本名
 	 * @param codName 该文本的简称
-	 * @param colDetail 该文本具体获取哪几列
+	 * @param colNum 从1开始计数
 	 */
 	public void setColExtractDetail(String condTxt, String codName, Collection<Integer> colNum) {
 		Set<Integer> setID = new LinkedHashSet<>();
@@ -545,4 +548,58 @@ public class CombineTab {
 	public Map<String, Integer> getMapSample2GeneNum() {
 		return mapPrefix2NumOnly;
 	}
+	
+	public static List<Integer> getLsIntegers(String colInfo) {
+		if (StringOperate.isRealNull(colInfo)) {
+			return Lists.newArrayList(0);
+		}
+		colInfo = colInfo.replace(",", " ").replace(";", " ");
+		
+		String[] ss = colInfo.split(" +");
+		Set<Integer> setCols = new LinkedHashSet<>();
+		for (String colTmp : ss) {
+			if (StringOperate.isRealNull(colTmp)) {
+				continue;
+			}
+			colTmp = colTmp.trim();
+			if (colTmp.contains("-")) {
+				setCols.addAll(getLsSequenceNum(colTmp));
+			} else {
+				try {
+					setCols.add(Integer.parseInt(colTmp));
+				} catch (Exception e) {
+					throw new RuntimeException("cannot contain " + colTmp);
+				}
+			}
+		}
+		return new ArrayList<>(setCols);
+	}
+	
+	private static List<Integer> getLsSequenceNum(String colSeq) {
+		String[] ss = colSeq.trim().split("-");
+		if (ss.length > 2) {
+			throw new RuntimeException("cannot contain " + colSeq);
+		}
+		int start = 0, end = 0;
+		try {
+			start = Integer.parseInt(ss[0]);
+			end = Integer.parseInt(ss[1]);
+		} catch (Exception e) {
+			throw new RuntimeException("cannot contain " + colSeq);
+		}
+		
+		List<Integer> lsCols = new ArrayList<>();
+		
+		if (start <= end) {
+			for (int i = start; i <= end; i++) {
+				lsCols.add(i);
+			}
+		} else {
+			for (int i = start; i >= end; i--) {
+				lsCols.add(i);
+			}
+		}
+		return lsCols;
+	}
+	
 }

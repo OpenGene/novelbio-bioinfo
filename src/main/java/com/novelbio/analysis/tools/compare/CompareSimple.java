@@ -1,5 +1,6 @@
 package com.novelbio.analysis.tools.compare;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -7,9 +8,16 @@ import java.util.List;
 import java.util.Set;
 
 import com.novelbio.base.SepSign;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 
+/**
+ * 给两个文本取交集，给定第一列，然后取交集
+ * @author zong0jie
+ * @data 2016-07-25
+ */
 public class CompareSimple {
 	/** 文件1是否有title */
 	boolean isHaveTitleFile1 = true;
@@ -17,14 +25,17 @@ public class CompareSimple {
 	boolean isHaveTitleFile2 = true;
 	
 	String file1;
+	String prefix1 = "";
 	String file2;
+	String prefix2 = "";
 	
-	String title1;
-	String title2;
+	String[] title1;
+	String[] title2;
 	
 	/** 待比较的列，从0开始计数 */
 	List<Integer> lsCompareCols = new ArrayList<>();
-	
+	List<Integer> lsCompareCols2 = new ArrayList<>();
+
 	LinkedHashMap<String, List<String[]>> mapAccId2LsLineFile1;
 	LinkedHashMap<String, List<String[]>> mapAccId2LsLineFile2;
 	List<String> lsKeys2 = new ArrayList<>();
@@ -35,6 +46,11 @@ public class CompareSimple {
 		lsCompareCols.add(compareColNum - 1);
 	}
 	/** file1的accId在第几列，从1开始 */
+	public void setCompareColNum2(int compareColNum) {
+		lsCompareCols2.clear();
+		lsCompareCols2.add(compareColNum - 1);
+	}
+	/** file1的accId在第几列，从1开始 */
 	public void setCompareColNum(String compareColStr) {
 		List<Integer> lsCompare = CombineTab.getLsIntegers(compareColStr);
 		lsCompareCols.clear();
@@ -43,30 +59,92 @@ public class CompareSimple {
 		}
 	}
 	
-	private void readFiles() {
-		mapAccId2LsLineFile1 = readFile(file1);
-		mapAccId2LsLineFile2 = readFile(file2);
-		
-		if (isHaveTitleFile1) {
-			title1 = TxtReadandWrite.readFirstLine(file1);
+	/**
+	 * @param file1
+	 * prefix为文件名，会在取好交集后在每一列的title上加上 prefix_
+	 */
+	public void setFile1(String file1) {
+		this.file1 = file1;
+		this.prefix1 = FileOperate.getFileNameSep(file1)[0] + "_";
+	}
+	/**
+	 * @param file2
+	 * prefix为文件名，会在取好交集后在每一列的title上加上 prefix_
+	 */
+	public void setFile2(String file2) {
+		this.file2 = file2;
+		this.prefix2 = FileOperate.getFileNameSep(file2)[0] + "_";
+	}
+	
+	/**
+	 * @param file1
+	 * @param prefix1 前缀，会在取好交集后在每一列的title上加上 prefix_
+	 */
+	public void setFile1(String file1, String prefix1) {
+		this.file1 = file1;
+		if (!StringOperate.isRealNull(prefix1)) {
+			this.prefix1 = prefix1 + "_";
 		}
-		if (isHaveTitleFile2) {
-			title2 = TxtReadandWrite.readFirstLine(file2);
+	}
+	/**
+	 * @param file2
+	 * @param prefix1 前缀，会在取好交集后在每一列的title上加上 prefix_
+	 */
+	public void setFile2(String file2, String prefix2) {
+		this.file2 = file2;
+		if (!StringOperate.isRealNull(prefix1)) {
+			this.prefix2 = prefix2 + "_";
 		}
 	}
 	
+	public void readFiles() {
+		if (lsCompareCols2.isEmpty()) {
+			lsCompareCols2 = lsCompareCols;
+		}
+		Path path1 = FileOperate.getPath(file1);
+		Path path2 = FileOperate.getPath(file2);
+		mapAccId2LsLineFile1 = readFile(path1, lsCompareCols);
+		mapAccId2LsLineFile2 = readFile(path2, lsCompareCols2);
+		
+		if (isHaveTitleFile1) {
+			String title1Str = TxtReadandWrite.readFirstLine(path1);
+			this.title1 = modifyTitle(mapAccId2LsLineFile1.values().iterator().next().get(0), title1Str);
+		}
+		if (isHaveTitleFile2) {
+			String title2Str = TxtReadandWrite.readFirstLine(path2);
+			this.title2 = modifyTitle(mapAccId2LsLineFile2.values().iterator().next().get(0), title2Str);
+		}
+	}
 	
+	public List<String[]> getLsOverlapInfoWithTitle() {
+		String[] colCompare = getCompareColInfo(title1, lsCompareCols);
+		//去除title1中的比较列（譬如比较第一列 accId，则去除第一列）
+		String[] title1Sub = ArrayOperate.deletElement(title1, lsCompareCols);
+		String[] title2Sub = ArrayOperate.deletElement(title2, lsCompareCols2);
+		for (int i = 0; i < title1Sub.length; i++) {
+			title1Sub[i] = prefix1 + title1Sub[i];
+		}
+		for (int i = 0; i < title2Sub.length; i++) {
+			title2Sub[i] = prefix2 + title2Sub[i];
+		}
+		String resultTitle[] = combineStringArray(colCompare, title1Sub, title2Sub);
+		List<String[]> lsResult = getLsOverlapInfoWithoutTitle();
+		lsResult.add(0, resultTitle);
+		return lsResult;
+	}
 	
 	/**
 	 * 获得取好交集的结果，交集列放在第一列
 	 * @return
 	 */
-	private List<String[]> getLsOverlapInfo() {
+	public List<String[]> getLsOverlapInfoWithoutTitle() {
 		List<String[]> lsInfos = new ArrayList<>();
 		for (String key : getLsOverlapIds()) {
-			List<String[]> lsFile1Info = removeOverlapCols(mapAccId2LsLineFile1.get(key));
-			List<String[]> lsFile2Info = removeOverlapCols(mapAccId2LsLineFile2.get(key));
-			String[] colCompare = getCompareColInfo(lsFile1Info.get(0));
+			List<String[]> lsFile1Info = mapAccId2LsLineFile1.get(key);
+			List<String[]> lsFile2Info = mapAccId2LsLineFile2.get(key);
+			String[] colCompare = getCompareColInfo(lsFile1Info.get(0), lsCompareCols);
+			lsFile1Info = removeOverlapCols(lsFile1Info, lsCompareCols);
+			lsFile2Info = removeOverlapCols(lsFile2Info, lsCompareCols2);
 			for (String[] info1 : lsFile1Info) {
 				for (String[] info2 : lsFile2Info) {
 					String resultTmp[] = combineStringArray(colCompare, info1, info2);
@@ -88,7 +166,7 @@ public class CompareSimple {
 		return setOverlapKeys;
 	}
 	
-	private LinkedHashMap<String, List<String[]>> readFile(String file) {
+	private LinkedHashMap<String, List<String[]>> readFile(Path file, List<Integer> lsCompareCols) {
 		LinkedHashMap<String, List<String[]>> mapAccId2LsLineFile = new LinkedHashMap<>();
 		TxtReadandWrite txtRead = new TxtReadandWrite(file);
 		int start = isHaveTitleFile1? 2 : 1;
@@ -103,6 +181,7 @@ public class CompareSimple {
 			
 			List<String[]> lsLines = mapAccId2LsLineFile.get(key);
 			if (lsLines == null) {
+				lsLines = new ArrayList<>();
 				mapAccId2LsLineFile.put(key, lsLines);
 			}
 			lsLines.add(ss);
@@ -111,10 +190,8 @@ public class CompareSimple {
 		return mapAccId2LsLineFile;
 	}
 	
-	
-	
 	/** 删除取交集的那几列 */
-	private List<String[]> removeOverlapCols(List<String[]> lsInfo) {
+	private static List<String[]> removeOverlapCols(List<String[]> lsInfo, List<Integer> lsCompareCols) {
 		List<String[]> removeOverlap = new ArrayList<>();
 		for (String[] strings : lsInfo) {
 			String[] info = ArrayOperate.deletElement(strings, lsCompareCols);
@@ -134,12 +211,26 @@ public class CompareSimple {
 		return lsFinal.toArray(new String[0]);
 	}
 	
-	private String[] getCompareColInfo(String[] infos) {
+	private String[] getCompareColInfo(String[] infos, List<Integer> lsCompareCols) {
 		String[] compareCol = new String[lsCompareCols.size()];
 		int i = 0;
 		for (Integer integer : lsCompareCols) {
 			compareCol[i++] = infos[integer];
 		}
 		return compareCol;
+	}
+	
+	/** 把title修改为跟内容一致的长度 */
+	private static String[] modifyTitle(String[] info, String title) {
+		String[] ss = title.split("\t");
+		List<String> lsTtileFinal = new ArrayList<>();
+		for (int i = 0; i < info.length; i++) {
+			if (i < ss.length) {
+				lsTtileFinal.add(ss[i]);
+			} else {
+				lsTtileFinal.add("");
+			}
+		}
+		return lsTtileFinal.toArray(new String[0]);
 	}
 }

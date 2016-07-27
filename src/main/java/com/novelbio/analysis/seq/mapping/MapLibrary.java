@@ -10,7 +10,7 @@ public enum MapLibrary {
 	public static HashMap<String, MapLibrary> getMapLibrary() {
 		LinkedHashMap<String, MapLibrary> mapReadsQualtiy = new LinkedHashMap<String, MapLibrary>();
 //		mapReadsQualtiy.put("SingleEnd", SingleEnd);
-		mapReadsQualtiy.put("Single/PairEnd", PairEnd);
+		mapReadsQualtiy.put("Single_or_PairEnd", PairEnd);
 		mapReadsQualtiy.put("MatePair", MatePair);
 		mapReadsQualtiy.put("MatePairLong", MatePairLong);
 		return mapReadsQualtiy;

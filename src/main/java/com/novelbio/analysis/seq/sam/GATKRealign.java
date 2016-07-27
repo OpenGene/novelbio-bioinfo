@@ -120,7 +120,11 @@ public class GATKRealign {
 		this.unsafe = unsafe;
 	}
 	
-	
+	/**
+	 * key 是展示使用
+	 * value 是实际的值
+	 * @return
+	 */
 	public static Map<String, String> getMapGatkSafe2Value() {
 		Map<String, String> mapGatkSafe2Value = new LinkedHashMap<>();
 		mapGatkSafe2Value.put(SAFE, SAFE);

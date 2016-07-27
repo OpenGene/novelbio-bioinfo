@@ -99,7 +99,7 @@ public class SamAddMultiFlag {
 			while (queueSamRecords.remainingCapacity() < capacity/200) {
 				m++;
 				if (m > 200) {
-					throw new ExceptionSamError("cannot write sam record in file");
+					throw new ExceptionSamError("cannot write sam record to file");
 				}
 				try {
 					Thread.sleep(200);
@@ -117,7 +117,7 @@ public class SamAddMultiFlag {
 			while (queueSamRecords.remainingCapacity() < capacity/200) {
 				m++;
 				if (m > 200) {
-					throw new ExceptionSamError("cannot write sam record in file");
+					throw new ExceptionSamError("cannot write sam record to file");
 				}
 				try {
 					Thread.sleep(200);
