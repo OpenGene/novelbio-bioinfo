@@ -40,15 +40,44 @@ public class CompareSimple {
 	LinkedHashMap<String, List<String[]>> mapAccId2LsLineFile2;
 	List<String> lsKeys2 = new ArrayList<>();
 	
+	
+	/**
+	 * 是否把比较的那一列提取到第一列
+	 * 譬如有时候我们会把A表第三列和B表第四列取交集，那么是否要把A表第三列和B表第四列提取到第一列
+	 */
+	boolean isExtractColToFirstCol = true;
+	
+	/**
+	 * 是否把比较的那一列提取到第一列
+	 * 譬如有时候我们会把A表第三列和B表第四列取交集，那么是否要把A表第三列和B表第四列提取到第一列
+	 */
+	public void setExtractColToFirstCol(boolean isExtractColToFirstCol) {
+		this.isExtractColToFirstCol = isExtractColToFirstCol;
+	}
+	
 	/** file1的accId在第几列，从1开始 */
 	public void setCompareColNum(int compareColNum) {
 		lsCompareCols.clear();
 		lsCompareCols.add(compareColNum - 1);
 	}
 	/** file1的accId在第几列，从1开始 */
+	public void setCompareColNum(List<Integer> lsCompareCols) {
+		this.lsCompareCols.clear();
+		for (Integer integer : lsCompareCols) {
+			this.lsCompareCols.add(integer - 1);
+		}
+	}
+	/** file2的accId在第几列，从1开始 */
 	public void setCompareColNum2(int compareColNum) {
 		lsCompareCols2.clear();
 		lsCompareCols2.add(compareColNum - 1);
+	}
+	/** file2的accId在第几列，从1开始 */
+	public void setCompareColNum2(List<Integer> lsCompareCols2) {
+		this.lsCompareCols2.clear();
+		for (Integer integer : lsCompareCols2) {
+			this.lsCompareCols2.add(integer - 1);
+		}
 	}
 	/** file1的accId在第几列，从1开始 */
 	public void setCompareColNum(String compareColStr) {
@@ -92,7 +121,7 @@ public class CompareSimple {
 	 */
 	public void setFile2(String file2, String prefix2) {
 		this.file2 = file2;
-		if (!StringOperate.isRealNull(prefix1)) {
+		if (!StringOperate.isRealNull(prefix2)) {
 			this.prefix2 = prefix2 + "_";
 		}
 	}
@@ -117,9 +146,8 @@ public class CompareSimple {
 	}
 	
 	public List<String[]> getLsOverlapInfoWithTitle() {
-		String[] colCompare = getCompareColInfo(title1, lsCompareCols);
-		//去除title1中的比较列（譬如比较第一列 accId，则去除第一列）
-		String[] title1Sub = ArrayOperate.deletElement(title1, lsCompareCols);
+		String[] colCompare = isExtractColToFirstCol ? getCompareColInfo(title1, lsCompareCols) : new String[0];
+		String[] title1Sub = isExtractColToFirstCol ? ArrayOperate.deletElement(title1, lsCompareCols) : title1;
 		String[] title2Sub = ArrayOperate.deletElement(title2, lsCompareCols2);
 		for (int i = 0; i < title1Sub.length; i++) {
 			title1Sub[i] = prefix1 + title1Sub[i];
@@ -143,11 +171,14 @@ public class CompareSimple {
 			List<String[]> lsFile1Info = mapAccId2LsLineFile1.get(key);
 			List<String[]> lsFile2Info = mapAccId2LsLineFile2.get(key);
 			String[] colCompare = getCompareColInfo(lsFile1Info.get(0), lsCompareCols);
-			lsFile1Info = removeOverlapCols(lsFile1Info, lsCompareCols);
+			if (isExtractColToFirstCol) {
+				lsFile1Info = removeOverlapCols(lsFile1Info, lsCompareCols);
+			}
 			lsFile2Info = removeOverlapCols(lsFile2Info, lsCompareCols2);
+
 			for (String[] info1 : lsFile1Info) {
 				for (String[] info2 : lsFile2Info) {
-					String resultTmp[] = combineStringArray(colCompare, info1, info2);
+					String resultTmp[] = isExtractColToFirstCol ?  combineStringArray(colCompare, info1, info2) : combineStringArray(info1, info2);
 					lsInfos.add(resultTmp);
 				}
 			}
