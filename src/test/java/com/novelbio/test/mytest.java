@@ -1,21 +1,16 @@
 package com.novelbio.test;
 
-import java.io.File;
-import java.io.InputStream;
-import java.nio.file.Files;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
-import org.apache.hadoop.fs.FileStatus;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.util.Shell;
+import org.apache.hadoop.util.Shell.ShellCommandExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,45 +21,32 @@ import com.google.common.collect.Lists;
 import com.novelbio.analysis.seq.fasta.ChrDensity;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.fastq.FastQC;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
-import com.novelbio.analysis.seq.rnaseq.Trinity;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.analysis.seq.sam.SamToBam;
-import com.novelbio.analysis.seq.sam.SamToBamSort;
-import com.novelbio.base.PathDetail;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.DateUtil;
-import com.novelbio.base.dataOperate.SshScp;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
-import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.fileOperate.HdfsInitial;
-import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
-import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
+import com.novelbio.database.model.species.SpeciesFileSepChr;
 import com.novelbio.database.service.servkegg.ServKEntry;
-import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
-import com.novelbio.database.service.servkegg.ServKNIdKeg;
 import com.novelbio.database.service.servkegg.ServKPathway;
-import com.novelbio.generalConf.PathDetailNBC;
 import com.novelbio.listOperate.HistBin;
 import com.novelbio.listOperate.HistList;
 
@@ -74,34 +56,68 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		SamFile samFile = new SamFile("/home/novelbio/software/appYarnXian/aaa.bam");
-		int i = 0;
-		Map<String, int[]> mapName2Value = new HashMap<>();
-		for (SamRecord samRecord : samFile.readLines()) {
-			if (samRecord.isUniqueMapping() || samRecord.getMapIndexNum() == 1) {
-				i++;
-				if (mapName2Value.containsKey(samRecord.getName())) {
-					int[] num = mapName2Value.get(samRecord.getName());
-					num[0] = num[0] + 1;
-				} else {
-					int[] num = new int[]{1};
-					mapName2Value.put(samRecord.getName(), num);
+		String str = "chr_97483430_97561047_chr12_97561047_97483431_-77616_RMST";
+		PatternOperate patternOperate = new PatternOperate("[a-z,A-Z]+_{0,1}\\d*_\\d+_\\d+_-{0,1}\\d+");
+		List<String> lsChrName = patternOperate.getPat(str);
+		for (String chrName : lsChrName) {
+			System.out.println(chrName);
+		}
+		str = str.replaceFirst(lsChrName.get(0), "");
+		System.out.println(str);
+	}
+	
+	private static List<Integer> getLsIntegers(String colInfo) {
+		if (StringOperate.isRealNull(colInfo)) {
+			return Lists.newArrayList(0);
+		}
+		colInfo = colInfo.replace(",", " ").replace(";", " ");
+		
+		String[] ss = colInfo.split(" +");
+		Set<Integer> setCols = new LinkedHashSet<>();
+		for (String colTmp : ss) {
+			if (StringOperate.isRealNull(colTmp)) {
+				continue;
+			}
+			if (colTmp.contains("-")) {
+				setCols.addAll(getLsSequenceNum(colTmp));
+			} else {
+				try {
+					setCols.add(Integer.parseInt(colTmp));
+				} catch (Exception e) {
+					throw new RuntimeException("cannot contain " + colTmp);
 				}
 			}
 		}
-		System.out.println(i);
-		for (String name : mapName2Value.keySet()) {
-			if (mapName2Value.get(name)[0] > 2) {
-				System.out.println(name);
-			}
+		return new ArrayList<>(setCols);
+	}
+	
+	private static List<Integer> getLsSequenceNum(String colSeq) {
+		String[] ss = colSeq.trim().split("-");
+		if (ss.length > 2) {
+			throw new RuntimeException("cannot contain " + colSeq);
+		}
+		int start = 0, end = 0;
+		try {
+			start = Integer.parseInt(ss[0]);
+			end = Integer.parseInt(ss[1]);
+		} catch (Exception e) {
+			throw new RuntimeException("cannot contain " + colSeq);
 		}
 		
-
-//		SamFile samFile = new SamFile("/hdfs:/nbCloud/public/AllProject/project_575e4e7445ce4a7ea48c356f/task_5762762060b2caaf21b35a40/RNASeqMap_result/BT474-naiyao.hisat2.bam");
-//
-//		SamToBamSort samToBamSort = new SamToBamSort("/home/novelbio/software/appYarnXian/aaa.bam", samFile, true);
-//		samToBamSort.convert();
+		List<Integer> lsCols = new ArrayList<>();
+		
+		if (start <= end) {
+			for (int i = start; i <= end; i++) {
+				lsCols.add(i);
+			}
+		} else {
+			for (int i = start; i >= end; i--) {
+				lsCols.add(i);
+			}
+		}
+		return lsCols;
 	}
+	
 	
 	public static void getGeneFromPath() throws Exception {
 		List<String> lsGeneName = new ArrayList<>();

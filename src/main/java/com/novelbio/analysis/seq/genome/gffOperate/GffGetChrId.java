@@ -1,8 +1,10 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -13,7 +15,26 @@ import com.novelbio.base.dataStructure.PatternOperate;
 public class GffGetChrId {
 	private static final Logger logger = Logger.getLogger(GffGetChrId.class);
 	
+	/**
+	 * key: 类似NC_XXX，为小写
+	 * value: 类似chr1
+	 */
 	Map<String, String> mapId2ChrId = new HashMap<>();
+	
+	Set<String> setChrIdAll = new HashSet<>();
+	
+	public boolean isHaveChrId(String chrId) {
+		return setChrIdAll.contains(chrId.toLowerCase());
+	}
+	
+	/** 把给定的chrId做一个转换，转化成gff修正后的chrId，如将NC_123转化成chr1 */
+	public String getChrId(String chrId) {
+		String chrIdNew = mapId2ChrId.get(chrId.toLowerCase());
+		if (chrIdNew == null) {
+			chrIdNew = chrId;
+		}
+		return chrIdNew;
+	}
 	
 	/**
 	 * 逐行输入，然后就可以返回具体的Id
@@ -22,10 +43,11 @@ public class GffGetChrId {
 	 * @return
 	 */
 	public String getChrID(String[] ss) {
-		String chrID = mapId2ChrId.get(ss[0]);
+		String chrID = mapId2ChrId.get(ss[0].toLowerCase());
 		if (chrID != null) return chrID;
 		if (ss[0].toLowerCase().startsWith("chr")) {
-			mapId2ChrId.put(ss[0], ss[0].toLowerCase());
+			mapId2ChrId.put(ss[0].toLowerCase(), ss[0].toLowerCase());
+			setChrIdAll.add(ss[0].toLowerCase());
 			return ss[0].toLowerCase();
 		}
 
@@ -58,13 +80,17 @@ public class GffGetChrId {
 						chrID = ss[0];
 					}
 				}
-				mapId2ChrId.put(ss[0], chrID);
+				setChrIdAll.add(ss[0].toLowerCase());
+				setChrIdAll.add(chrID.toLowerCase());
+
+				mapId2ChrId.put(ss[0].toLowerCase(), chrID);
 			}
 		} catch (Exception e) {
 		}
-		String chrIDResult = mapId2ChrId.get(ss[0]);
+		String chrIDResult = mapId2ChrId.get(ss[0].toLowerCase());
 		if (chrIDResult == null) {
-			mapId2ChrId.put(ss[0], ss[0]);
+			mapId2ChrId.put(ss[0].toLowerCase(), ss[0]);
+			setChrIdAll.add(ss[0].toLowerCase());
 			chrIDResult = ss[0];
 		}
 		return chrIDResult;
