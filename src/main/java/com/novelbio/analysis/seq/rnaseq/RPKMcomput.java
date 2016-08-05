@@ -48,7 +48,6 @@ public class RPKMcomput implements AlignmentRecorder {
 	/** 默认不考虑方向 */
 	StrandSpecific strandSpecific = StrandSpecific.NONE;
 	boolean isPairend = false;
-	boolean calculateFPKM = true;
 	boolean upQuartile = false;
 	/** 是否仅计算 unique mapped reads */
 	boolean isUniqueMapped = false;
@@ -68,9 +67,9 @@ public class RPKMcomput implements AlignmentRecorder {
 	/** 计数器，获得当前样本的总体 reads数， 用来算rpkm的 */
 	double currentReadsNum = 0;
 	
-	/** 是否计算FPKM，同时有FPKM和pairend才算是FPKM */
+	/** 是否计算FPKM, pairend计算FPKM */
 	public boolean isCalculateFPKM() {
-		return isPairend && calculateFPKM;
+		return isPairend;
 	}
 	
 	public void setSorted(boolean isSorted) {
@@ -141,13 +140,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		this.strandSpecific = strandSpecific;
 	}
-	/** 双端数据是否计算FPKM，单端设置该参数无效 */
-	public void setCalculateFPKM(boolean calculateFPKM) {
-		this.calculateFPKM = calculateFPKM;
-		if (!calculateFPKM) {
-			mapKey2SamRecord.clear();
-		}
-	}
+
 	/**
 	 * 设定样本名，同时清空currentReadsNum这个计数器
 	 * 区分大小写
@@ -164,6 +157,9 @@ public class RPKMcomput implements AlignmentRecorder {
 		if (!alignRecord.isMapped() || (isUniqueMapped && !alignRecord.isUniqueMapping())) return;
 		List<SamRecord> lSamRecords = null;
 		
+		if (alignRecord.getName().contains("ST-E00276:159:H37Y7ALXX:8:2221:9983:21807")) {
+			logger.info("ssssssssss");
+		}
 		if (mapKey2SamRecord.size() > 1000000) {
 			for (SamRecord samRecord : mapKey2SamRecord.values()) {
 				if (samRecord.isFirstRead()) {
@@ -222,7 +218,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		List<SamRecord> lsResult = new ArrayList<SamRecord>();
 		SamRecord samRecord = (SamRecord)alignRecord;
 		//是否计算RPKM
-		if (!isPairend || !calculateFPKM) {
+		if (!isPairend) {
 			lsResult.add(samRecord);
 			return lsResult;
 		}
@@ -329,7 +325,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	 * 移除setSamReads中过时的reads
 	 */
 	private void removeSetOverDue() {
-		if (isPairend && calculateFPKM && mapKey2SamRecord.size() > 10000) {
+		if (isPairend && mapKey2SamRecord.size() > 10000) {
 			logger.debug(mapKey2SamRecord.size() + "\t" +parNum);
 		}
 //		if (isPairend && setSamReads.size() <= numForFragment) return;
@@ -531,7 +527,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	@Override
 	public void summary() {
-		if (isPairend && calculateFPKM) {
+		if (isPairend) {
 			for (SamRecord samRecord : mapKey2SamRecord.values()) {
 				List<SamRecord> lsSamRecords = new ArrayList<SamRecord>();
 				lsSamRecords.add(samRecord);
@@ -688,7 +684,9 @@ public class RPKMcomput implements AlignmentRecorder {
 		outPathPrefix = FileOperate.getPathName(outPathPrefix) + "tmp/";
 		String fileNamePrefix = outPathPrefix + geneExpTable.getCurrentCondition();
 		String outTPM = getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.TPM);
-		String outRPKM =  getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.RPKM);
+		String outRPKM =  getFileCountsName(fileNamePrefix, false, EnumExpression.RPKM);
+		String outFPKM =  getFileCountsName(fileNamePrefix, true, EnumExpression.RPKM);
+
 		String outUQ = getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.UQ);
 		String outCounts = getFileCountsName(fileNamePrefix, isCalculateFPKM(), EnumExpression.Counts);
 		String readsNumFile = getFileCountsNum(fileNamePrefix);
@@ -700,7 +698,7 @@ public class RPKMcomput implements AlignmentRecorder {
 
 		boolean isExist = false;
 		if (FileOperate.isFileExistAndBigThanSize(outTPM, 0)
-				&& FileOperate.isFileExistAndBigThanSize(outRPKM, 0)
+				&& (FileOperate.isFileExistAndBigThan0(outRPKM) || FileOperate.isFileExistAndBigThan0(outFPKM))
 				&& FileOperate.isFileExistAndBigThanSize(outUQ, 0)
 				&& FileOperate.isFileExistAndBigThanSize(outCounts, 0)
 				&& FileOperate.isFileExistAndBigThanSize(readsNumFile, 0)

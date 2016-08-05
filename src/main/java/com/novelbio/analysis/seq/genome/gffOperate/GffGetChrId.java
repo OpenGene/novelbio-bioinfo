@@ -76,7 +76,7 @@ public class GffGetChrId {
 							chrID = "chr" + chrName;
 						}
 					} catch (Exception e) {
-						logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + ArrayOperate.cmbString(ss, "\t"));
+//						logger.error("本位置出错，错误的region，本来一个region应该是一个染色体，这里不知道是什么 " + ArrayOperate.cmbString(ss, "\t"));
 						chrID = ss[0];
 					}
 				}
