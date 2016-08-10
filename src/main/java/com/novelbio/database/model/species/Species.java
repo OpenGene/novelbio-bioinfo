@@ -446,46 +446,7 @@ public class Species implements Cloneable {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefSeqFile(isAllIso, true);
 	}
-	/** 指定mapping的软件，获得该软件所对应的索引文件
-	 * 没有就新建一个，格式<br>
-	 * softMapping.toString() + "_Chr_Index/"
-	 *  */
-	public String getIndexChr(SoftWare softMapping) {
-		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
-			return null;
-		}
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
-		return speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, softMapping);
-	}
-	
-	public String getIndexRef(SoftWare softMap, int mapTo) {
-		String chrFileResult;
-		if (mapTo == CHROM) {
-			chrFileResult = getIndexChr(softMap);
-		} else if (mapTo == REFSEQ_ALL_ISO) {
-			chrFileResult = getIndexRef(softMap, true);
-		} else if (mapTo == REFSEQ_LONGEST_ISO) {
-			chrFileResult = getIndexRef(softMap, false);
-		} else {
-			throw new ExceptionNbcParamError("no such mapTo param " + mapTo);
-		}
-		return chrFileResult;
-	}
-	
-	/** 指定mapping的软件，获得该软件所对应的索引文件
-	 * 没有就新建一个，格式<br>
-	 * softMapping.toString() + "_Ref_Index/" 
-	 *  */
-	public String getIndexRef(SoftWare softMapping, boolean isAllIso) {
-		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
-			return null;
-		}
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
-		EnumSpeciesFile enumSpeciesFile = isAllIso? EnumSpeciesFile.refseqAllIsoRNA : EnumSpeciesFile.refseqOneIsoRNA;
-		return speciesIndexMappingMake.getSequenceIndex(enumSpeciesFile, softMapping);
-	}
+
 	////////////////////////    升级   //////////////////////////////////////////////////////////////////////////////////////
 
 	/** 用数据库查找的方式，遍历refseq文件，然后获得gene2iso的表 */
@@ -539,6 +500,20 @@ public class Species implements Cloneable {
 		return speciesClone;
 	}
 	
+	@Deprecated
+	public String getSeqFile(int mapTo) {
+		return getSeqFile(SeqType.getSeqType(mapTo));
+	}
+	
+	@Deprecated
+	public String getIndexRef(String softMap, int mapTo) {
+		return getSeqIndex(SeqType.getSeqType(mapTo), softMap);
+	}
+	@Deprecated
+	public String getIndexRef(SoftWare softMap, int mapTo) {
+		return getSeqIndex(SeqType.getSeqType(mapTo), softMap.toString());
+	}
+	
 	/** 根据指定的SeqType，返回相应的序列 */
 	public String getSeqFile(SeqType seqType) {
 		if (seqType == SeqType.genome) {
@@ -552,7 +527,7 @@ public class Species implements Cloneable {
 		}
 	}
 	
-	public String getSeqIndex(SeqType seqType, SoftWare softMapping) {
+	public String getSeqIndex(SeqType seqType, String softMapping) {
 		if (seqType == SeqType.genome) {
 			return getIndexChr(softMapping);
 		} else if (seqType == SeqType.refseqAllIso) {
@@ -563,7 +538,53 @@ public class Species implements Cloneable {
 			return "";
 		}
 	}
+	/** 指定mapping的软件，获得该软件所对应的索引文件
+	 * 没有就新建一个，格式<br>
+	 * softMapping.toString() + "_Chr_Index/"
+	 *  */
+	public String getIndexChr(SoftWare softMapping) {
+		return getIndexChr(softMapping.toString());
+	}
+	/** 指定mapping的软件，获得该软件所对应的索引文件
+	 * 没有就新建一个，格式<br>
+	 * softMapping.toString() + "_Chr_Index/"
+	 *  */
+	public String getIndexChr(String softMapping) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
+		return speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, softMapping);
+	}
 	
+	/** 指定mapping的软件，获得该软件所对应的索引文件
+	 * 没有就新建一个，格式<br>
+	 * softMapping.toString() + "_Ref_Index/" 
+	 *  */
+	public String getIndexRef(String softMapping, boolean isAllIso) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
+		EnumSpeciesFile enumSpeciesFile = isAllIso? EnumSpeciesFile.refseqAllIsoRNA : EnumSpeciesFile.refseqOneIsoRNA;
+		return speciesIndexMappingMake.getSequenceIndex(enumSpeciesFile, softMapping);
+	}
+	
+	/** 指定mapping的软件，获得该软件所对应的索引文件
+	 * 没有就新建一个，格式<br>
+	 * softMapping.toString() + "_Ref_Index/" 
+	 *  */
+	private String getIndexRef(SoftWare software, boolean isAllIso) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
+		EnumSpeciesFile enumSpeciesFile = isAllIso? EnumSpeciesFile.refseqAllIsoRNA : EnumSpeciesFile.refseqOneIsoRNA;
+		return speciesIndexMappingMake.getSequenceIndex(enumSpeciesFile, software.toString());
+	}
 	/**
 	 * 返回该版本物种所含有的Genome，RefSeqAllIso，RefSeqOneIso
 	 * 的信息
@@ -587,7 +608,19 @@ public class Species implements Cloneable {
 	}
 	
 	public static enum SeqType {
-		genome, refseqAllIso, refseqOneIso
+		genome, refseqAllIso, refseqOneIso;
+		
+		public static SeqType getSeqType(int seqTypeInt) {
+			if (seqTypeInt == CHROM) {
+				return genome;
+			} else if (seqTypeInt == REFSEQ_ALL_ISO) {
+				return refseqAllIso;
+			} else if (seqTypeInt == REFSEQ_LONGEST_ISO) {
+				return refseqOneIso;
+			} else {
+				throw new ExceptionNbcParamError("cannot find seqtype " + seqTypeInt);
+			}
+		}
 //		, rfamAll, rfamSpecies, miRNAmature, miRNAhairpin
 	}
 	

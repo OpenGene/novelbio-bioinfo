@@ -330,11 +330,7 @@ public class MapSplice implements MapRNA {
     public IndexMappingMaker getIndexMappingMaker() {
 	    return indexMaker;
     }
-	@Override
-	public SoftWare getSoftWare() {
-		return SoftWare.mapsplice;
-	}
-	
+
 	@Override
 	public List<String> getCmdExeStr() {
 		prepareReads();

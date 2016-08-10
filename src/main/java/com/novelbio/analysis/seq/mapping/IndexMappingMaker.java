@@ -39,9 +39,9 @@ import com.novelbio.generalConf.PathDetailNBC;
 public abstract class IndexMappingMaker {
 	private static final Logger logger = LoggerFactory.getLogger(IndexMappingMaker.class);
 	
-	private static Map<SoftWare, Class<?>> mapSoft2Index = new HashMap<>();
-	private static Set<SoftWare> lsSoftDna = new LinkedHashSet<>();
-	private static Set<SoftWare> lsSoftRna = new LinkedHashSet<>();
+	private static Map<String, Class<?>> mapSoft2Index = new HashMap<>();
+	private static Set<String> lsSoftDna = new LinkedHashSet<>();
+	private static Set<String> lsSoftRna = new LinkedHashSet<>();
 	
 	static {
 		Class<?>[] clazzs = IndexMappingMaker.class.getDeclaredClasses();
@@ -73,7 +73,7 @@ public abstract class IndexMappingMaker {
 	
 	String outFileName;
 	
-	SoftWare softWare;
+	String softWare;
 	
 	private String version;
 	
@@ -82,14 +82,14 @@ public abstract class IndexMappingMaker {
 	public IndexMappingMaker(SoftWare softWare) {
 		SoftWareInfo softWareInfo = new SoftWareInfo(softWare);
 		this.exePath = softWareInfo.getExePathRun();
-		this.softWare = softWare;
+		this.softWare = softWare.toString();
 	}
 	
 	public void setExePath(String exePath) {
 		this.exePath = exePath;
 	}
 	
-	public SoftWare getSoftWare() {
+	public String getSoftWare() {
 	    return softWare;
     }
 	
@@ -197,7 +197,7 @@ public abstract class IndexMappingMaker {
 	/** 用这个来标记index是否完成 */
 	protected String getIndexFinishedFlag() {
 		String suffix = softWare.toString();
-		if (softWare == SoftWare.bwa_aln || softWare == SoftWare.bwa_mem) {
+		if (StringOperate.isEqual(softWare, SoftWare.bwa_mem.toString()) || StringOperate.isEqual(softWare, SoftWare.bwa_aln.toString())) {
 			suffix = "bwa";
 		}
 		return FileOperate.changeFileSuffix(chrFile, "_indexFinished_" + suffix, "");
@@ -225,8 +225,12 @@ public abstract class IndexMappingMaker {
 	
 	//TODO 考虑修改成spring托管
 	public static IndexMappingMaker createIndexMaker(SoftWare softWare) {
-		if (softWare.toString().startsWith("bwa_")) {
-			softWare = SoftWare.bwa_mem;
+		return createIndexMaker(softWare.toString());
+	}
+	
+	public static IndexMappingMaker createIndexMaker(String softWare) {
+		if (softWare.startsWith("bwa_")) {
+			softWare = SoftWare.bwa_mem.toString();
         }
 		if (!mapSoft2Index.containsKey(softWare)) {
 			throw new ExceptionNbcMappingSoftNotSupport("cannot find mapping software " + softWare);
@@ -244,7 +248,6 @@ public abstract class IndexMappingMaker {
 
 		}
 	}
-	
 	public static class ExceptionNbcMappingSoftNotSupport extends RuntimeException {
 		private static final long serialVersionUID = 4141495075098892818L;
 
@@ -254,12 +257,12 @@ public abstract class IndexMappingMaker {
 	}
 	
 	/** 返回全体可以建索引的软件 */
-	public static Set<SoftWare> getLsIndexDNA() {
+	public static Set<String> getLsIndexDNA() {
 		return lsSoftDna;
 	}
 	
 	/** 返回全体可以建索引的软件 */
-	public static Set<SoftWare> getLsIndexRNA() {
+	public static Set<String> getLsIndexRNA() {
 		return lsSoftRna;
 	}
 	
@@ -447,7 +450,7 @@ public static class IndexTophat extends IndexMappingMaker {
 	}
 	
 	public SoftWare getBowtieSoft() {
-		return indexBowtie.softWare;
+		return SoftWare.valueOf(indexBowtie.softWare);
 	}
 	
 	protected void tryMakeIndex() {
@@ -532,7 +535,7 @@ public static class IndexTophat extends IndexMappingMaker {
 	private List<String> getLsCmdIndexGtf() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "tophat");
-		if (indexBowtie.softWare == SoftWare.bowtie) {
+		if (StringOperate.isEqual(indexBowtie.softWare, SoftWare.bowtie.toString())) {
 			lsCmd.add("--bowtie1");
 		}
 		
@@ -656,7 +659,7 @@ public static class IndexMapSplice extends IndexMappingMaker {
 	/** 用这个来标记index是否完成 */
 	private String getIndexFinishedFlag(String chrFile) {
 		String suffix = softWare.toString();
-		if (softWare == SoftWare.bwa_aln || softWare == SoftWare.bwa_mem) {
+		if (StringOperate.isEqual(softWare, SoftWare.bwa_mem.toString()) || StringOperate.isEqual(softWare, SoftWare.bwa_aln.toString())) {
 			suffix = "bwa";
 		}
 		return FileOperate.changeFileSuffix(chrFile, "_indexFinished_" + suffix, "");

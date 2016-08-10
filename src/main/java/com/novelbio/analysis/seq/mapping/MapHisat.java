@@ -550,12 +550,6 @@ public class MapHisat implements MapRNA {
 		samToBamSort.convert();
 		return samToBamSort.getSamFileBam();
 	}
-	
-
-	@Override
-	public SoftWare getSoftWare() {
-		return SoftWare.hisat2;
-	}
 
 	@Override
 	public String getFinishName() {

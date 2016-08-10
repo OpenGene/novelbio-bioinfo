@@ -116,8 +116,7 @@ public class CmdIndexMake {
 			if (softwareStr.equals("bwa")) {
 				softwareStr = SoftWare.bwa_mem.toString();
 			}
-			SoftWare softWare = SoftWare.valueOf(softwareStr);
-			speciesIndexMappingMaker.makeIndexChr(softWare);
+			speciesIndexMappingMaker.makeIndexChr(softwareStr);
 		}
 	}
 	

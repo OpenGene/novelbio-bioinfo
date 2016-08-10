@@ -62,9 +62,9 @@ public class TestSpeciesIndexMappingMaker {
 	}
 	
 	private void testIndexChrMake(SpeciesIndexMappingMaker speciesIndexMappingMaker, SoftWare software) {
-		speciesIndexMappingMaker.makeIndexChr(software);
+		speciesIndexMappingMaker.makeIndexChr(software.toString());
 		
-		String chrFile = speciesIndexMappingMaker.getSequenceIndex(EnumSpeciesFile.chromSeqFile, software);
+		String chrFile = speciesIndexMappingMaker.getSequenceIndex(EnumSpeciesFile.chromSeqFile, software.toString());
 		String softwareName = software.toString();
 		if (softwareName.startsWith("bwa_")) {
 			softwareName = "bwa";

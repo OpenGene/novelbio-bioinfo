@@ -5,6 +5,7 @@ import junit.framework.TestCase;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.Species;
+import com.novelbio.database.model.species.Species.SeqType;
 import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
 
 public class TestSpeciesFile extends TestCase {
@@ -32,10 +33,10 @@ public class TestSpeciesFile extends TestCase {
 		assertEquals(SpeciesFile.pathParent + "species/9606/hg19_GRCh37/refprotein_all_iso/proteinAllIso_hg19_GRCh37.fa", seqName);
 		
 		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
-		String indexBwa = speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, SoftWare.bwa_aln);
+		String indexBwa = speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, SoftWare.bwa_aln.toString());
 		assertEquals(SpeciesFile.pathParent + "index/bwa/9606/hg19_GRCh37/Chr_Index/chrAll.fa", indexBwa);
 		
-		String indexBowtie = speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, SoftWare.bowtie);
+		String indexBowtie = speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, SoftWare.bowtie.toString());
 		assertEquals(SpeciesFile.pathParent + "index/bowtie/9606/hg19_GRCh37/Chr_Index/chrAll.fa", indexBowtie);
 		
 		IndexMappingMaker indexBowtieMaker = IndexMappingMaker.createIndexMaker(SoftWare.bowtie);
@@ -46,7 +47,7 @@ public class TestSpeciesFile extends TestCase {
 		species.getMapVersion2Species().put("hg19_GRCh37".toLowerCase(), speciesFile);
 		species.setVersion("hg19_GRCh37");
 		assertEquals(SpeciesFile.pathParent + "index/bwa/9606/hg19_GRCh37/Chr_Index/chrAll.fa", species.getIndexChr(SoftWare.bwa_aln));
-		assertEquals(SpeciesFile.pathParent + "index/bwa/9606/hg19_GRCh37/Ref_OneIso_Index/rnaOneIso_hg19_GRCh37.fa", species.getIndexRef(SoftWare.bwa_aln, false));
+		assertEquals(SpeciesFile.pathParent + "index/bwa/9606/hg19_GRCh37/Ref_OneIso_Index/rnaOneIso_hg19_GRCh37.fa", species.getSeqIndex(SeqType.refseqOneIso, SoftWare.bwa_aln.toString()));
 	}
 	
 }

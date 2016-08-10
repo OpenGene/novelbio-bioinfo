@@ -56,7 +56,6 @@ public interface MapRNA extends IntCmdSoft {
 
 	/** 参数设定不能用于solid 还没加入gtf的选项，也就是默认没有gtf */
 	public void mapReads();
-	SoftWare getSoftWare();
 	
 	public IndexMappingMaker getIndexMappingMaker();
 	
