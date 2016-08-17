@@ -482,6 +482,7 @@ public abstract class FunctionTest implements Cloneable {
 				String ItemTerm = getItemTerm(statisticTestResult.getItemID());
 				if (ItemTerm == null) {
 					logger.error("cannot find item {} in db", statisticTestResult.getItemID());
+					continue;
 				}
 				statisticTestResult.setItemTerm(ItemTerm);
 				lsTestResult.add(statisticTestResult);

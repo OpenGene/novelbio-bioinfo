@@ -129,6 +129,8 @@ public class SpeciesFileSepChr {
 			e.printStackTrace();
 		}
 		try {
+			logger.info("start splite " + chrSeq);
+
 			if (FileOperate.isFileExistAndBigThan0(getChrSepFinishFlag(chrSeq))) return;
 			
 			String chrSeqFileOne = generateChrFile(chrSeq);

@@ -3,6 +3,8 @@ package com.novelbio.database;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.base.StringOperate;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
@@ -14,11 +16,12 @@ import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
 import com.novelbio.database.model.species.SpeciesMirnaFile;
 
 public class CmdIndexMake {
+	private static final Logger logger = LoggerFactory.getLogger(CmdIndexMake.class);
 	
 	public static void main(String[] args) {
 		if (args == null || args.length == 0 
 				|| args[0].replace("-", "").equalsIgnoreCase("help")) {
-			System.out.println("java -jar indexmake.jar -taxid 9606 -version GRCh38 -software hisat2 -islock true");
+			System.out.println("java -jar indexmake.jar -taxid 9606 -version GRCh38 -software mirna -islock true");
 			System.out.println("software have several params, below is the list");
 			
 			System.out.println("mirna");
@@ -45,6 +48,7 @@ public class CmdIndexMake {
 		try {
 			cliParser = new GnuParser().parse(opts, args);
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.exit(1);
 		}
 		String taxId = cliParser.getOptionValue("taxid");
@@ -61,12 +65,12 @@ public class CmdIndexMake {
 //		String version = "tair10";
 //		String softwareStr = "rfam";
 //		boolean isLock = false;
-		
+
 		Species species = new Species(Integer.parseInt(taxId));
 		species.setVersion(version);
-		
+
 		faidexChrFile(species);
-		
+
 		if (StringOperate.isRealNull(softwareStr)) {
 			extractMirna(species);
 			extractRfam(species);
@@ -77,7 +81,7 @@ public class CmdIndexMake {
 			extractMirna(species);
 			return;
 		}
-		
+
 		if (softwareStr.equals("mirna")) {
 			extractMirna(species);
 		} else if (softwareStr.equals("rfam")) {
