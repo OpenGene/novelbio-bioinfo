@@ -98,7 +98,7 @@ public class SamAddMultiFlag {
 			int m = 0;
 			while (queueSamRecords.remainingCapacity() < capacity/200) {
 				m++;
-				if (m > 200) {
+				if (m > 1000) {
 					throw new ExceptionSamError("cannot write sam record to file");
 				}
 				try {
