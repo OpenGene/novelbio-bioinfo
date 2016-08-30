@@ -30,13 +30,13 @@ public class TrfMature extends ListDetailAbs {
 			return null;
 		}
 		TrfPre trfPre = getParent();
-		if (trfPre == null || trfPre.getTrfPreSeq() == null) {
+		if (trfPre == null || trfPre.getSeq() == null) {
 			return null;
 		}
 		
 		SeqFasta seqFastaMature = new SeqFasta();
 		seqFastaMature.setName(getNameSingle());
-		seqFastaMature.setSeq(trfPre.getTrfPreSeq().toString().substring(getStartAbs()-1, getEndAbs()));
+		seqFastaMature.setSeq(trfPre.getSeq().toString().substring(getStartAbs()-1, getEndAbs()));
 		seqFastaMature.setDNA(true);
 		return seqFastaMature;
 	}

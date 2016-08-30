@@ -20,7 +20,11 @@ public class AlignSamReading extends AlignSeqReading {
 	private static final Logger logger = Logger.getLogger(AlignSamReading.class);
 	
 	List<? extends Alignment> lsAlignments;
-
+	
+	public AlignSamReading() {
+		super();
+	}
+	
 	public AlignSamReading(SamFile samFile) {
 		super(samFile);
 	}

@@ -19,52 +19,52 @@ public class CmdIndexMake {
 	private static final Logger logger = LoggerFactory.getLogger(CmdIndexMake.class);
 	
 	public static void main(String[] args) {
-		if (args == null || args.length == 0 
-				|| args[0].replace("-", "").equalsIgnoreCase("help")) {
-			System.out.println("java -jar indexmake.jar -taxid 9606 -version GRCh38 -software mirna -islock true");
-			System.out.println("software have several params, below is the list");
-			
-			System.out.println("mirna");
-			System.out.println("rfam");
-			System.out.println("sepchr");
-			System.out.println("refseq");
-
-			System.out.println("");
-			System.out.println("bwa_mem");
-			System.out.println("bowtie");
-			System.out.println("bowtie2");
-			System.out.println("");
-			System.out.println("hisat2");
-			System.out.println("tophat");
-			System.out.println("mapsplice");
-			System.exit(0);
-        }
-		Options opts = new Options();
-		opts.addOption("taxid", true, "taxid");
-		opts.addOption("version", true, "version");
-		opts.addOption("software", true, "software");
-		opts.addOption("islock", true, "islock");
-		CommandLine cliParser = null;
-		try {
-			cliParser = new GnuParser().parse(opts, args);
-		} catch (Exception e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		String taxId = cliParser.getOptionValue("taxid");
-		String version = cliParser.getOptionValue("version");
-		String softwareStr = cliParser.getOptionValue("software");
+//		if (args == null || args.length == 0 
+//				|| args[0].replace("-", "").equalsIgnoreCase("help")) {
+//			System.out.println("java -jar indexmake.jar -taxid 9606 -version GRCh38 -software mirna -islock true");
+//			System.out.println("software have several params, below is the list");
+//			
+//			System.out.println("mirna");
+//			System.out.println("rfam");
+//			System.out.println("sepchr");
+//			System.out.println("refseq");
+//
+//			System.out.println("");
+//			System.out.println("bwa_mem");
+//			System.out.println("bowtie");
+//			System.out.println("bowtie2");
+//			System.out.println("");
+//			System.out.println("hisat2");
+//			System.out.println("tophat");
+//			System.out.println("mapsplice");
+//			System.exit(0);
+//        }
+//		Options opts = new Options();
+//		opts.addOption("taxid", true, "taxid");
+//		opts.addOption("version", true, "version");
+//		opts.addOption("software", true, "software");
+//		opts.addOption("islock", true, "islock");
+//		CommandLine cliParser = null;
+//		try {
+//			cliParser = new GnuParser().parse(opts, args);
+//		} catch (Exception e) {
+//			e.printStackTrace();
+//			System.exit(1);
+//		}
+//		String taxId = cliParser.getOptionValue("taxid");
+//		String version = cliParser.getOptionValue("version");
+//		String softwareStr = cliParser.getOptionValue("software");
+//		
+//		boolean isLock = true;
+//		String isLockStr = cliParser.getOptionValue("islock");
+//		if (!StringOperate.isRealNull(isLockStr) && (!isLockStr.trim().equalsIgnoreCase("t") && !isLockStr.trim().equalsIgnoreCase("true"))) {
+//			isLock = false;
+//		}
 		
-		boolean isLock = true;
-		String isLockStr = cliParser.getOptionValue("islock");
-		if (!StringOperate.isRealNull(isLockStr) && (!isLockStr.trim().equalsIgnoreCase("t") && !isLockStr.trim().equalsIgnoreCase("true"))) {
-			isLock = false;
-		}
-		
-//		String taxId = "3702";
-//		String version = "tair10";
-//		String softwareStr = "rfam";
-//		boolean isLock = false;
+		String taxId = "10116";
+		String version = "rnor6_NCBI";
+		String softwareStr = "tophat";
+		boolean isLock = false;
 
 		Species species = new Species(Integer.parseInt(taxId));
 		species.setVersion(version);

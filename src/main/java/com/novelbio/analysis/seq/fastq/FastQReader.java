@@ -274,7 +274,13 @@ class FastQReader implements Closeable {
 			}
 			return itContent;
 		} catch (Exception e) {
-			return null;
+			ExceptionFastq eFastq;
+			if (e instanceof ExceptionFastq) {
+				eFastq = (ExceptionFastq)e;
+			} else {
+				eFastq = new ExceptionFastq("read file pe error", e);
+			}
+			throw eFastq;
 		}
 	}
 	
@@ -288,7 +294,13 @@ class FastQReader implements Closeable {
 			Iterable<FastQRecord[]> itContent = readPerlinesPE();
 			return itContent;
 		} catch (Exception e) {
-			return null;
+			ExceptionFastq eFastq;
+			if (e instanceof ExceptionFastq) {
+				eFastq = (ExceptionFastq)e;
+			} else {
+				eFastq = new ExceptionFastq("read file pe error", e);
+			}
+			throw eFastq;
 		}
 	}
 	/**

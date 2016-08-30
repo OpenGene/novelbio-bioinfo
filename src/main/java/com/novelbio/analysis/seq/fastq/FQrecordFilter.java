@@ -12,6 +12,9 @@ public abstract class FQrecordFilter implements FQrecordCopeInt {
 	/** 裁剪序列时最短为多少， 默认为20
 	 */
 	public void setTrimMinLen(int trimMinLen) {
+		if (trimMinLen < 5) {
+			trimMinLen = 5;
+		}
 		this.readsMinLen = trimMinLen;
 	}
 	/** 裁剪序列时最短为多少， 默认为20

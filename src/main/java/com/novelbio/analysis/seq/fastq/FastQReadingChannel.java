@@ -215,6 +215,7 @@ public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
 					queueResult.add(future);
 				}
 				if (readsNum % 500000 == 0) {
+					logger.info("read lines " + readsNum + " percentage " + fastQs[0].getReadPercentage());
 					setGUIinfo(readByte, readsNum, fastQs[0]);
 				}
 			}

@@ -24,6 +24,10 @@ public enum TitleFormatNBC {
 	
 	miRNAName("miRNAName"), miRNApreName("miRNApreName"),
 	mirSequence("mirSequence"), mirPreSequence("mirPreSequence"),
+	
+	trfRNAName("trfRNAName"), trfRNApreName("trfRNApreName"),
+	trfSequence("trfSequence"), trfPreSequence("trfPreSequence"),
+	
 	mirMappingType("mirMappingType"),
 	
 	RfamID("RfamID"), RfamType("RfamType"), RfamAnnotaion("RfamAnnotaion"), RfamDescription("RfamDescription"), RfamClass("RfamClass"),

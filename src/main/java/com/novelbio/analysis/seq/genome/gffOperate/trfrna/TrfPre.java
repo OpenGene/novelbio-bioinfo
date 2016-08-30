@@ -11,7 +11,7 @@ public class TrfPre extends ListBin<TrfMature> {
 		seqTrfPre.setSeq(mirPreSeq);
 		seqTrfPre.setDNA(true);
 	}
-	public SeqFasta getTrfPreSeq() {
+	public SeqFasta getSeq() {
 		return seqTrfPre;
 	}
 	
