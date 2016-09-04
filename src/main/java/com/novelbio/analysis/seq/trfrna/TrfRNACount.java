@@ -114,7 +114,7 @@ public class TrfRNACount implements AlignmentRecorder {
 		
 		trfPreExp.addGeneExp(samRecord.getRefID(), value);
 
-		String subName = trfRNAList.searchMirName(samRecord.getRefID(), samRecord.getStartAbs(), samRecord.getEndAbs());
+		String subName = trfRNAList.searchMirNameMid(samRecord.getRefID(), samRecord.getStartAbs(), samRecord.getEndAbs());
 		//找不到名字的就不写如miRNA成熟体列表
 		if (subName != null) {
 			trfMatureExp.addGeneExp(subName, value);

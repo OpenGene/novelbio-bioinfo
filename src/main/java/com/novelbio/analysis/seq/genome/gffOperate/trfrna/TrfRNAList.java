@@ -20,6 +20,7 @@ public class TrfRNAList extends ListHashSearch<TrfMature, ListCodAbs<TrfMature>,
 		this.speciesName = speciesName;
 	}
 	/**
+	 * 拿起点和终点overlap查找
 	 * 如果没有找到，则返回null
 	 * @param mirName mir的名字
 	 * @param start 具体的
@@ -28,6 +29,23 @@ public class TrfRNAList extends ListHashSearch<TrfMature, ListCodAbs<TrfMature>,
 	 */
 	public String searchMirName(String mirName, int start, int end) {
 		TrfMature element = searchElement(mirName, start, end);
+		if (element == null) {
+			logger.debug("cannot find miRNA on: " + mirName + " " + start + " " + end);
+
+			return null;
+		}
+		return element.getNameSingle();
+	}
+	/**
+	 * 拿重心位点查找
+	 * 如果没有找到，则返回null
+	 * @param mirName mir的名字
+	 * @param start 具体的
+	 * @param end
+	 * @return
+	 */
+	public String searchMirNameMid(String mirName, int start, int end) {
+		TrfMature element = searchElement(mirName, (start+end)/2);
 		if (element == null) {
 			logger.debug("cannot find miRNA on: " + mirName + " " + start + " " + end);
 

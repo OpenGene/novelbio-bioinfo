@@ -214,6 +214,20 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 		}
 		return lsResult.get(0);
 	}
+	/**
+	 * 直接返回这个cod所在的Element
+	 * @param chrID
+	 * @param cod
+	 * @return
+	 */
+	public T searchElement(String chrID, int cod) {
+		E codLoc = searchLocation(chrID, cod);
+		if (codLoc == null) {
+			return null;
+		}
+		T result = codLoc.getGffDetailThis();
+		return result;
+	}
 	
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面
