@@ -211,7 +211,7 @@ public class SpeciesFileSepChr {
 			return FileOperate.changeFileSuffix(chrSeqOne, ".sepOne", null);
 		}
 		
-		if (FileOperate.isFileExistAndBigThan0(chrSeqOne) && !chrSeqOne.equals(chrSeq)) {
+		if (FileOperate.isFileExistAndBigThan0(chrSeqOne) && !FileOperate.getFileName(chrSeqOne).equals(FileOperate.getFileName(chrSeq))) {
 			return FileOperate.changeFileSuffix(chrSeqOne, ".sepOne", null);
 		}
 		return chrSeqOne;

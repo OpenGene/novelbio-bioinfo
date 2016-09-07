@@ -146,12 +146,15 @@ public class SpeciesIndexMappingMaker {
 	/** 对染色体文件建立索引 */
 	public void makeIndexChr(String softWare) {
 		String chrFile = speciesFile.getChromSeqFile();
+		SamIndexRefsequence.generateIndexAndGetMapChrId2Len(chrFile);
+
 		String chrFolder = null;
 		String chrFileIndex = getSequenceIndex(EnumSpeciesFile.chromSeqFile, softWare);
 		if (StringOperate.isEqual(softWare, SoftWare.mapsplice.toString())) {
 			SpeciesFileSepChr sepChr = new SpeciesFileSepChr();
 			sepChr.setSpeciesFile(speciesFile);
 			sepChr.setLock(isLock);
+			sepChr.setGenomePath(genomePath);
 			sepChr.generateChrSepFiles();
 			chrFile = sepChr.getChrSepFileOne();
 			chrFolder = sepChr.getChrSepFolder();
