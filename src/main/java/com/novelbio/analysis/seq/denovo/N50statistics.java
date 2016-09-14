@@ -177,7 +177,7 @@ public class N50statistics {
 		for (Integer seqLen : lsSeqLen) {
 			contigNum ++;
 			tmpN = tmpN + seqLen;
-			while (tmpN*100 / allContigsLen > Nvalue) {
+			while (tmpN*10000 / allContigsLen > Nvalue*100) {
 				Nvalue += NvalueStep;
 			}
 			Nvalue -= NvalueStep;
