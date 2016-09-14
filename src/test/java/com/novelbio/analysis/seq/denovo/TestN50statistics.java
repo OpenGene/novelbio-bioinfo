@@ -28,17 +28,29 @@ public class TestN50statistics {
 //		int num = 50;
 //		n50.set(lsSeqLen);
 		
-		String chrFile = "/home/novelbio/git/NBCplatform/src/test/resources/test_file/denovo/merged.cap3.singlets.fa";
+//		String chrFile = "/home/novelbio/git/NBCplatform/src/test/resources/test_file/denovo/merged.cap3.singlets.fa";
+		String chrFile = "/home/novelbio/git/NBCplatform/src/test/resources/test_file/denovo/Trinity.fasta.gz";
 		N50statistics n50 = new N50statistics(chrFile);
 		n50.doStatistics();
 		n50.getLsNinfo();
-		Assert.assertEquals(1705, n50.getAllContigsLen());
-		Assert.assertEquals(275, n50.getN50Len());
-		Assert.assertEquals(266, n50.getN50Len());
+//		Assert.assertEquals(1705, n50.getAllContigsLen());
+//		Assert.assertEquals(275, n50.getN50Len());
+//		Assert.assertEquals(266, n50.getN50Len());	
+		
+		Assert.assertEquals(198559, n50.getAllContigsLen());
+		
+//		Trinity计算出来的N50结果为5519,我们计算出来的是5460;	
+		Assert.assertEquals(5519, n50.getN50Len());
+
+		Assert.assertEquals(5460, n50.getN50Len());
+		
 //		Assert.assertEquals(1705, n50.getAllContigsLen());
 //		Assert.assertEquals(130, n50.getN50Len(40));
 //		Assert.assertEquals(2, n50.);
 //		Assert.assertEquals(3, n50.getN50Num(40));
+		
+		
+		
 		
 		try{
 //				n50.getN50Len(101);
