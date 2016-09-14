@@ -183,7 +183,7 @@ public class N50statistics {
 			
 			String[] tmpNvalue = new String[3];
 			tmpNvalue[0] = "N" + Nvalue;
-			if (Nvalue >= 50) {
+			if (Nvalue <= 50) {
 				N50Len = seqLen;
 			}
 			tmpNvalue[1] = seqLen + "";
