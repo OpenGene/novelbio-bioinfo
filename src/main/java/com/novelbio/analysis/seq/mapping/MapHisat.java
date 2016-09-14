@@ -550,12 +550,6 @@ public class MapHisat implements MapRNA {
 		samToBamSort.convert();
 		return samToBamSort.getSamFileBam();
 	}
-	
-
-	@Override
-	public SoftWare getSoftWare() {
-		return SoftWare.hisat2;
-	}
 
 	@Override
 	public String getFinishName() {
@@ -641,10 +635,6 @@ public class MapHisat implements MapRNA {
 		FileOperate.moveFile(true, tmp, spliceTxt);
 	}
 	
-	public static Map<String, Integer> getMapSensitive() {
-		return MapBowtie2.getMapSensitive();
-	}
-
 	@Override
     public IndexMappingMaker getIndexMappingMaker() {
 	    return indexHisat2;

@@ -146,7 +146,7 @@ public class ManageBlastInfo {
 	public Map<String, Species> getMapSpeciesOnyInBlast(String usrId) {
 		Map<String, Species> mapName2Species = new HashMap<>();
 		List<BlastFileInfo> lsBlastFileInfo = null;
-		if (usrId != null && !usrId.equals("")) {
+		if (!StringOperate.isRealNull(usrId)) {
 			lsBlastFileInfo = repoBlastFileInfo.findByUserId(usrId);
 		} else {
 			lsBlastFileInfo = repoBlastFileInfo.findAll();

@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -257,7 +258,44 @@ public class Species implements Cloneable {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getChromSeqFile();
 	}
-
+	
+	/**
+	 * 把染色体进行切分后的文件夹
+	 * 由于某些基因组，譬如小麦等，其染色体数量会有几万条，为了提高效率，
+	 * 我们会结合gff文件，以及染色体长度，选择大约前4000条染色体生成文件夹，多
+	 * 的就不要了
+	 * 
+	 * @return
+	 */
+	public String getChromSeqSepFolder() {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
+		
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		SpeciesFileSepChr sepChr = new SpeciesFileSepChr();
+		sepChr.setSpeciesFile(speciesFile);
+		return sepChr.getChrSepFolder();
+	}
+	/**
+	 * 把染色体进行切分后的文件夹
+	 * 由于某些基因组，譬如小麦等，其染色体数量会有几万条，为了提高效率，
+	 * 我们会结合gff文件，以及染色体长度，选择大约前4000条染色体生成文件夹，多
+	 * 的就不要了
+	 * 这时候我们需要一个仅包含上述染色体的chr文件
+	 * 
+	 * @return
+	 */
+	public String getChromSeqSepOne() {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
+		
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		SpeciesFileSepChr sepChr = new SpeciesFileSepChr();
+		sepChr.setSpeciesFile(speciesFile);
+		return sepChr.getChrSepFileOne();
+	}
 	/** 获得这个species在本version下的全体GffDB */
 	public Map<String, String> getMapGffDBAll() {
 		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
@@ -408,31 +446,7 @@ public class Species implements Cloneable {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getRefSeqFile(isAllIso, true);
 	}
-	/** 指定mapping的软件，获得该软件所对应的索引文件
-	 * 没有就新建一个，格式<br>
-	 * softMapping.toString() + "_Chr_Index/"
-	 *  */
-	public String getIndexChr(SoftWare softMapping) {
-		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
-			return null;
-		}
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
-		return speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, softMapping);
-	}
-	/** 指定mapping的软件，获得该软件所对应的索引文件
-	 * 没有就新建一个，格式<br>
-	 * softMapping.toString() + "_Ref_Index/" 
-	 *  */
-	public String getIndexRef(SoftWare softMapping, boolean isAllIso) {
-		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
-			return null;
-		}
-		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
-		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
-		EnumSpeciesFile enumSpeciesFile = isAllIso? EnumSpeciesFile.refseqAllIsoRNA : EnumSpeciesFile.refseqOneIsoRNA;
-		return speciesIndexMappingMake.getSequenceIndex(enumSpeciesFile, softMapping);
-	}
+
 	////////////////////////    升级   //////////////////////////////////////////////////////////////////////////////////////
 
 	/** 用数据库查找的方式，遍历refseq文件，然后获得gene2iso的表 */
@@ -486,6 +500,20 @@ public class Species implements Cloneable {
 		return speciesClone;
 	}
 	
+	@Deprecated
+	public String getSeqFile(int mapTo) {
+		return getSeqFile(SeqType.getSeqType(mapTo));
+	}
+	
+	@Deprecated
+	public String getIndexRef(String softMap, int mapTo) {
+		return getSeqIndex(SeqType.getSeqType(mapTo), softMap);
+	}
+	@Deprecated
+	public String getIndexRef(SoftWare softMap, int mapTo) {
+		return getSeqIndex(SeqType.getSeqType(mapTo), softMap.toString());
+	}
+	
 	/** 根据指定的SeqType，返回相应的序列 */
 	public String getSeqFile(SeqType seqType) {
 		if (seqType == SeqType.genome) {
@@ -499,7 +527,7 @@ public class Species implements Cloneable {
 		}
 	}
 	
-	public String getSeqIndex(SeqType seqType, SoftWare softMapping) {
+	public String getSeqIndex(SeqType seqType, String softMapping) {
 		if (seqType == SeqType.genome) {
 			return getIndexChr(softMapping);
 		} else if (seqType == SeqType.refseqAllIso) {
@@ -510,7 +538,53 @@ public class Species implements Cloneable {
 			return "";
 		}
 	}
+	/** 指定mapping的软件，获得该软件所对应的索引文件
+	 * 没有就新建一个，格式<br>
+	 * softMapping.toString() + "_Chr_Index/"
+	 *  */
+	public String getIndexChr(SoftWare softMapping) {
+		return getIndexChr(softMapping.toString());
+	}
+	/** 指定mapping的软件，获得该软件所对应的索引文件
+	 * 没有就新建一个，格式<br>
+	 * softMapping.toString() + "_Chr_Index/"
+	 *  */
+	public String getIndexChr(String softMapping) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
+		return speciesIndexMappingMake.getSequenceIndex(EnumSpeciesFile.chromSeqFile, softMapping);
+	}
 	
+	/** 指定mapping的软件，获得该软件所对应的索引文件
+	 * 没有就新建一个，格式<br>
+	 * softMapping.toString() + "_Ref_Index/" 
+	 *  */
+	public String getIndexRef(String softMapping, boolean isAllIso) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
+		EnumSpeciesFile enumSpeciesFile = isAllIso? EnumSpeciesFile.refseqAllIsoRNA : EnumSpeciesFile.refseqOneIsoRNA;
+		return speciesIndexMappingMake.getSequenceIndex(enumSpeciesFile, softMapping);
+	}
+	
+	/** 指定mapping的软件，获得该软件所对应的索引文件
+	 * 没有就新建一个，格式<br>
+	 * softMapping.toString() + "_Ref_Index/" 
+	 *  */
+	private String getIndexRef(SoftWare software, boolean isAllIso) {
+		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
+			return null;
+		}
+		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
+		SpeciesIndexMappingMaker speciesIndexMappingMake = new SpeciesIndexMappingMaker(speciesFile);
+		EnumSpeciesFile enumSpeciesFile = isAllIso? EnumSpeciesFile.refseqAllIsoRNA : EnumSpeciesFile.refseqOneIsoRNA;
+		return speciesIndexMappingMake.getSequenceIndex(enumSpeciesFile, software.toString());
+	}
 	/**
 	 * 返回该版本物种所含有的Genome，RefSeqAllIso，RefSeqOneIso
 	 * 的信息
@@ -534,7 +608,19 @@ public class Species implements Cloneable {
 	}
 	
 	public static enum SeqType {
-		genome, refseqAllIso, refseqOneIso
+		genome, refseqAllIso, refseqOneIso;
+		
+		public static SeqType getSeqType(int seqTypeInt) {
+			if (seqTypeInt == CHROM) {
+				return genome;
+			} else if (seqTypeInt == REFSEQ_ALL_ISO) {
+				return refseqAllIso;
+			} else if (seqTypeInt == REFSEQ_LONGEST_ISO) {
+				return refseqOneIso;
+			} else {
+				throw new ExceptionNbcParamError("cannot find seqtype " + seqTypeInt);
+			}
+		}
 //		, rfamAll, rfamSpecies, miRNAmature, miRNAhairpin
 	}
 	
@@ -586,7 +672,7 @@ public class Species implements Cloneable {
 				if (lsSpeciesFiles.size() == 0) {
 					continue;
 				}
-			} else if (speciesType == EnumSpeciesType.miRNA && !species.getTaxInfo().isHaveMiRNA()) {
+			} else if (speciesType == EnumSpeciesType.miRNA && (species.getTaxInfo().isHaveMiRNA() == null || !species.getTaxInfo().isHaveMiRNA())) {
 				continue;
 			}
 			setTaxID.add(taxInfo.getTaxID());
@@ -716,6 +802,17 @@ public class Species implements Cloneable {
 		public ExceptionSpeceis(String msg) {
 			super(msg);
 		}
+	}
+	
+	public static final int CHROM = 8;
+	public static final int REFSEQ_ALL_ISO = 4;
+	public static final int REFSEQ_LONGEST_ISO = 2;
+	public static HashMap<String, Integer> getMapStr2Index() {
+		HashMap<String, Integer> mapStr2Index = new LinkedHashMap<>();
+		mapStr2Index.put("chromosome", CHROM);
+		mapStr2Index.put("refseq", REFSEQ_ALL_ISO);
+		mapStr2Index.put("refseq Longest Iso", REFSEQ_LONGEST_ISO);
+		return mapStr2Index;
 	}
 	
 	public static enum EnumSpeciesType {

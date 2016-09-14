@@ -1,7 +1,5 @@
 package com.novelbio.analysis.seq.mapping;
 
-import htsjdk.samtools.reference.FastaSequenceIndex;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -14,7 +12,6 @@ import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
@@ -29,6 +26,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.species.SpeciesFileSepChr;
 import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
 import com.novelbio.generalConf.PathDetailNBC;
 
@@ -41,9 +39,9 @@ import com.novelbio.generalConf.PathDetailNBC;
 public abstract class IndexMappingMaker {
 	private static final Logger logger = LoggerFactory.getLogger(IndexMappingMaker.class);
 	
-	private static Map<SoftWare, Class<?>> mapSoft2Index = new HashMap<>();
-	private static Set<SoftWare> lsSoftDna = new LinkedHashSet<>();
-	private static Set<SoftWare> lsSoftRna = new LinkedHashSet<>();
+	private static Map<String, Class<?>> mapSoft2Index = new HashMap<>();
+	private static Set<String> lsSoftDna = new LinkedHashSet<>();
+	private static Set<String> lsSoftRna = new LinkedHashSet<>();
 	
 	static {
 		Class<?>[] clazzs = IndexMappingMaker.class.getDeclaredClasses();
@@ -75,7 +73,7 @@ public abstract class IndexMappingMaker {
 	
 	String outFileName;
 	
-	SoftWare softWare;
+	String softWare;
 	
 	private String version;
 	
@@ -84,14 +82,14 @@ public abstract class IndexMappingMaker {
 	public IndexMappingMaker(SoftWare softWare) {
 		SoftWareInfo softWareInfo = new SoftWareInfo(softWare);
 		this.exePath = softWareInfo.getExePathRun();
-		this.softWare = softWare;
+		this.softWare = softWare.toString();
 	}
 	
 	public void setExePath(String exePath) {
 		this.exePath = exePath;
 	}
 	
-	public SoftWare getSoftWare() {
+	public String getSoftWare() {
 	    return softWare;
     }
 	
@@ -199,7 +197,7 @@ public abstract class IndexMappingMaker {
 	/** 用这个来标记index是否完成 */
 	protected String getIndexFinishedFlag() {
 		String suffix = softWare.toString();
-		if (softWare == SoftWare.bwa_aln || softWare == SoftWare.bwa_mem) {
+		if (StringOperate.isEqual(softWare, SoftWare.bwa_mem.toString()) || StringOperate.isEqual(softWare, SoftWare.bwa_aln.toString())) {
 			suffix = "bwa";
 		}
 		return FileOperate.changeFileSuffix(chrFile, "_indexFinished_" + suffix, "");
@@ -227,8 +225,12 @@ public abstract class IndexMappingMaker {
 	
 	//TODO 考虑修改成spring托管
 	public static IndexMappingMaker createIndexMaker(SoftWare softWare) {
-		if (softWare.toString().startsWith("bwa_")) {
-			softWare = SoftWare.bwa_mem;
+		return createIndexMaker(softWare.toString());
+	}
+	
+	public static IndexMappingMaker createIndexMaker(String softWare) {
+		if (softWare.startsWith("bwa_")) {
+			softWare = SoftWare.bwa_mem.toString();
         }
 		if (!mapSoft2Index.containsKey(softWare)) {
 			throw new ExceptionNbcMappingSoftNotSupport("cannot find mapping software " + softWare);
@@ -246,7 +248,6 @@ public abstract class IndexMappingMaker {
 
 		}
 	}
-	
 	public static class ExceptionNbcMappingSoftNotSupport extends RuntimeException {
 		private static final long serialVersionUID = 4141495075098892818L;
 
@@ -256,12 +257,12 @@ public abstract class IndexMappingMaker {
 	}
 	
 	/** 返回全体可以建索引的软件 */
-	public static Set<SoftWare> getLsIndexDNA() {
+	public static Set<String> getLsIndexDNA() {
 		return lsSoftDna;
 	}
 	
 	/** 返回全体可以建索引的软件 */
-	public static Set<SoftWare> getLsIndexRNA() {
+	public static Set<String> getLsIndexRNA() {
 		return lsSoftRna;
 	}
 	
@@ -449,7 +450,7 @@ public static class IndexTophat extends IndexMappingMaker {
 	}
 	
 	public SoftWare getBowtieSoft() {
-		return indexBowtie.softWare;
+		return SoftWare.valueOf(indexBowtie.softWare);
 	}
 	
 	protected void tryMakeIndex() {
@@ -534,7 +535,7 @@ public static class IndexTophat extends IndexMappingMaker {
 	private List<String> getLsCmdIndexGtf() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(exePath + "tophat");
-		if (indexBowtie.softWare == SoftWare.bowtie) {
+		if (StringOperate.isEqual(indexBowtie.softWare, SoftWare.bowtie.toString())) {
 			lsCmd.add("--bowtie1");
 		}
 		
@@ -609,12 +610,10 @@ public static class IndexTophat extends IndexMappingMaker {
 public static class IndexMapSplice extends IndexMappingMaker {
 	/** mapsplice的后缀名，因为mapsplice要求文本中的序列不能太多，譬如小于4000条 */
 	private static final String mapSpliceSuffix = ".novelbio_mapSplice_suffix";
-	protected static int maxSeqNum = 4000;
-	private static int minLen = 1000;
 	
 	Set<String> setChrInclude;
 	String chrRaw;
-	String chrSepFold;
+	String chrSepFolder;
 	
 	/** 有的chr文件中会包含太多的 chrId，譬如 trinity的结果会产生几万个 chrId
 	 * 而mapsplice要求 每个chr一个文本，所以这里我们为了防止文本产生太多，需要将含有太多 chr 的染色体文件进行过滤，仅保留长的几千个文件 */
@@ -630,6 +629,9 @@ public static class IndexMapSplice extends IndexMappingMaker {
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		if (gffHashGene == null) return;
 		setChrInclude = gffHashGene.getMapChrID2LsGff().keySet();
+	}
+	public void setChrSepFolder(String chrSepFolder) {
+		this.chrSepFolder = chrSepFolder;
 	}
 	/** 包含有基因的chrId，可以从gff文件中获取 */
 	public void setSetChrInclude(Set<String> setChrInclude) {
@@ -657,7 +659,7 @@ public static class IndexMapSplice extends IndexMappingMaker {
 	/** 用这个来标记index是否完成 */
 	private String getIndexFinishedFlag(String chrFile) {
 		String suffix = softWare.toString();
-		if (softWare == SoftWare.bwa_aln || softWare == SoftWare.bwa_mem) {
+		if (StringOperate.isEqual(softWare, SoftWare.bwa_mem.toString()) || StringOperate.isEqual(softWare, SoftWare.bwa_aln.toString())) {
 			suffix = "bwa";
 		}
 		return FileOperate.changeFileSuffix(chrFile, "_indexFinished_" + suffix, "");
@@ -681,17 +683,28 @@ public static class IndexMapSplice extends IndexMappingMaker {
 		} else {
 			//先判定 修正过的chrFile是否存在，如果存在则返回
 			//如果不存在，则标记需要生成 修正的chrFile
-			chrFile = FileOperate.changeFileSuffix(chrRaw, mapSpliceSuffix, null);
+			chrFile = modifyChrSeqName(chrRaw);
 			modifyChrFile = true;
 			if (!FileOperate.isFileExistAndBigThanSize(chrFile, 0)) {
 				Map<String, Long> mapChrID2ChrLen = SamIndexRefsequence.generateIndexAndGetMapChrId2Len(chrRaw);
-				if (mapChrID2ChrLen.size() <= maxSeqNum) {
+				if (mapChrID2ChrLen.size() <= SpeciesFileSepChr.maxSeqNum) {
 					chrFile = chrRaw;
 					modifyChrFile = false;
 				}
 			}
 		}
-		chrSepFold = FileOperate.addSep(FileOperate.changeFileSuffix(chrFile, "_sep_fold", ""));
+		if (StringOperate.isRealNull(chrSepFolder)) {
+			chrSepFolder = FileOperate.addSep(FileOperate.changeFileSuffix(chrFile, "_sep_fold", ""));
+		}
+	}
+	
+	/**
+	 * 修改成mapsplice特定的文件名，也就是加上mapSpliceSuffix的后缀，该后缀表明本chrSeq中染色体的数量已经小于SpeciesFileSepChr.maxSeqNum
+	 * @param chrSeq
+	 * @return
+	 */
+	public static String modifyChrSeqName(String chrSeq) {
+		return FileOperate.changeFileSuffix(chrSeq, mapSpliceSuffix, null);
 	}
 	
 	/** 将染色体文件进行过滤，仅保留4000来条染色体，因为太多的话mapsplice可能会报错 */
@@ -706,8 +719,8 @@ public static class IndexMapSplice extends IndexMappingMaker {
 			chrFileFormat.setIncludeChrId(setChrInclude);
 			chrFileFormat.setRefSeq(chrRaw);
 			chrFileFormat.setResultSeq(chrFile);
-			chrFileFormat.setMinLen(minLen);
-			chrFileFormat.setMaxNum(maxSeqNum);
+			chrFileFormat.setMinLen(SpeciesFileSepChr.minLen);
+			chrFileFormat.setMaxNum(SpeciesFileSepChr.maxSeqNum);
 			chrFileFormat.rebuild();
 		} else {
 			FileOperate.copyFile(chrRaw, chrFile, true);
@@ -717,11 +730,12 @@ public static class IndexMapSplice extends IndexMappingMaker {
 		samIndexRefsequence.setRefsequence(chrFile);
 		samIndexRefsequence.indexSequence();
 	}
+	
 	/** 生成一个文件夹，其中每条染色体一个文件 */
 	private void generateChrSepFold() {
 		boolean isNeedGenerate = true;
-		if (FileOperate.isFileFolderExist(chrSepFold)) {
-			List<String> lsFileName = FileOperate.getLsFoldFileName(chrSepFold);
+		if (FileOperate.isFileFolderExist(chrSepFolder)) {
+			List<String> lsFileName = FileOperate.getLsFoldFileName(chrSepFolder);
 			Set<String> setChrId = new HashSet<>();
 			for (String chrName : lsFileName) {
 				String chrId = FileOperate.getFileNameSep(chrName)[0].split(" ")[0].toString().toLowerCase();
@@ -740,15 +754,15 @@ public static class IndexMapSplice extends IndexMappingMaker {
 			return;
 		}
 		
-		FileOperate.deleteFileFolder(chrSepFold);
-		FileOperate.createFolders(chrSepFold);
+		FileOperate.deleteFileFolder(chrSepFolder);
+		FileOperate.createFolders(chrSepFolder);
 		NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
 		ncbIchromFaChangeFormat.setChromFaPath(chrFile, "");
-		ncbIchromFaChangeFormat.writeToSepFile(chrSepFold);
+		ncbIchromFaChangeFormat.writeToSepFile(chrSepFolder);
 	}
 	
 	public String getChrSepFolder() {
-		return chrSepFold;
+		return chrSepFolder;
 	}
 	
 	@Override

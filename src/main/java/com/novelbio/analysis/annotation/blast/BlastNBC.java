@@ -320,6 +320,10 @@ public class BlastNBC implements IntCmdSoft {
 			return false;
 		}
 		CmdOperate cmdOperate = new CmdOperate(getLsCmdFormatDB());
+		cmdOperate.setRedirectInToTmp(true);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamInput(databaseSeq);
+		cmdOperate.addCmdParamOutput(databaseSeq);
 		cmdOperate.runWithExp("make database error:");
 		return true;
 	}

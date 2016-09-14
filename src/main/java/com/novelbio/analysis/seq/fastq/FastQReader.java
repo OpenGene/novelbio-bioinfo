@@ -38,7 +38,7 @@ class FastQReader implements Closeable {
 	
 	/** 另一端的读取文件，双端读取的时候才有用，两端是对应的读 */
 	FastQReader fastQReadMate;
-	boolean isCheckFormat = true;
+	boolean isCheckFormat = false;
 	int readsLenAvg = 0;
 	boolean isInterleaved = false;
 	
@@ -274,7 +274,13 @@ class FastQReader implements Closeable {
 			}
 			return itContent;
 		} catch (Exception e) {
-			return null;
+			ExceptionFastq eFastq;
+			if (e instanceof ExceptionFastq) {
+				eFastq = (ExceptionFastq)e;
+			} else {
+				eFastq = new ExceptionFastq("read file pe error", e);
+			}
+			throw eFastq;
 		}
 	}
 	
@@ -288,7 +294,13 @@ class FastQReader implements Closeable {
 			Iterable<FastQRecord[]> itContent = readPerlinesPE();
 			return itContent;
 		} catch (Exception e) {
-			return null;
+			ExceptionFastq eFastq;
+			if (e instanceof ExceptionFastq) {
+				eFastq = (ExceptionFastq)e;
+			} else {
+				eFastq = new ExceptionFastq("read file pe error", e);
+			}
+			throw eFastq;
 		}
 	}
 	/**
@@ -311,6 +323,11 @@ class FastQReader implements Closeable {
 		return new Iterable<FastQRecord[]>() {
 			public Iterator<FastQRecord[]> iterator() {
 				return new Iterator<FastQRecord[]>() {
+					// 如果fastqRecord不均一，则需要
+					LinkedList<FastQRecord> lsFastqRecordsLeft = new LinkedList<>();
+					LinkedList<FastQRecord> lsFastqRecordsRight = new LinkedList<>();
+
+					
 					FastQRecord[] fastQRecords = getLine();
 					public boolean hasNext() {
 						return fastQRecords != null;
@@ -323,14 +340,38 @@ class FastQReader implements Closeable {
 					public void remove() {
 						throw new UnsupportedOperationException();
 					}
+					
+					private FastQRecord getLeftFq() {
+						FastQRecord fqL = null;
+						if (!lsFastqRecordsLeft.isEmpty()) {
+							fqL = lsFastqRecordsLeft.poll();
+						} else {
+							fqL = itL.next();
+						}
+						return fqL;
+					}
+					private FastQRecord getRightFq() {
+						FastQRecord fqR = null;
+						if (!lsFastqRecordsRight.isEmpty()) {
+							fqR = lsFastqRecordsRight.poll();
+						} else {
+							fqR = itR.next();
+						}
+						return fqR;
+					}
+					
+					private boolean isLeftEmpty() {
+						return lsFastqRecordsLeft.isEmpty() && !itL.hasNext();
+					}
+					
 					FastQRecord[] getLine() {
 						lineNum[0]++;
 
 						
 						FastQRecord[] fastQRecord = new FastQRecord[2];
-						
-						fastQRecord[0] = itL.next();
-						fastQRecord[1] = itR.next();
+						fastQRecord[0] = getLeftFq();
+						fastQRecord[1] = getRightFq();
+
 						if (fastQRecord[0] == null && fastQRecord[1] == null) {
 							return null;
 						} else if (!(fastQRecord[0] != null && fastQRecord[1] != null)) {
@@ -345,36 +386,38 @@ class FastQReader implements Closeable {
 								throw new ExceptionFastq(txtSeqFile.getFileName() + " pairend file have lots of reads that does't paired, please check.\n error lines: " +  lineNum[0] + getPercentageInfoString()
 										+ FileOperate.getFileName(getFileName()) + " " + FileOperate.getFileName(fastQReadMate.getFileName()));
 							}
-							int readErrNumL = getReadNextNum();
-							int readErrNumR = fastQReadMate.getReadNextNum();
-							if ((readErrNumL == 0 && readErrNumR == 0) || (readErrNumL != 0 && readErrNumR != 0)) {
-								throw new ExceptionFastq("input file is not pairend at num " +  lineNum[0] + getPercentageInfoString()
-										+ FileOperate.getFileName(getFileName()) + " " + FileOperate.getFileName(fastQReadMate.getFileName()));
-							}
 							
-							resetReadNextNum(); fastQReadMate.resetReadNextNum();
-							boolean readRightRecord = false;
-							if (readErrNumL == 0) {
-								//往下查10000条
-								for (int i = 0; i < retryNum; i++) {
-									fastQRecord[0] = itL.next();
-									if (FastQRecord.isPairedByName(fastQRecord[0], fastQRecord[1])) {
-										readRightRecord = true;
-										break;
-									}									
+							boolean readCorrecttRecord = false;
+							
+							LinkedList<FastQRecord> lsFastqL = new LinkedList<>();
+							lsFastqL.addFirst(fastQRecord[0]);
+							
+							for (int i = 0; i < retryNum && !isLeftEmpty(); i++) {
+								fastQRecord[0] = getLeftFq();
+								if (FastQRecord.isPairedByName(fastQRecord[0], fastQRecord[1])) {
+									readCorrecttRecord = true;
+									break;
+								} else {
+									lsFastqL.addFirst(fastQRecord[0]);
 								}
-							} else {
-								//往下查10000条
+							}
+							if (!readCorrecttRecord) {
+								for (FastQRecord fq : lsFastqL) {
+									lsFastqRecordsLeft.addFirst(fq);
+								}
+								
+								
+								fastQRecord[0] = getLeftFq();
 								for (int i = 0; i < retryNum; i++) {
-									fastQRecord[1] = itR.next();
+									fastQRecord[1] = getRightFq();
 									if (FastQRecord.isPairedByName(fastQRecord[0], fastQRecord[1])) {
-										readRightRecord = true;
+										readCorrecttRecord = true;
 										break;
 									}
 								}
 							}
 							
-							if (!readRightRecord) {
+							if (!readCorrecttRecord) {
 								throw new ExceptionFastq("input file is not pairend at num " + lineNum[0] + getPercentageInfoString()
 										+ FileOperate.getFileName(getFileName()) + " " + FileOperate.getFileName(fastQReadMate.getFileName()));
 							}
@@ -387,6 +430,9 @@ class FastQReader implements Closeable {
 			}
 		};
 	}
+	
+	
+	
 	public Iterable<FastQRecord[]> readlinesInterleavedPE() {
 		final Iterator<FastQRecord> itFqPE = readlines().iterator();
 		return new Iterable<FastQRecord[]>() {

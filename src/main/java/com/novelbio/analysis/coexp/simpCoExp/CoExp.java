@@ -350,10 +350,10 @@ class CoexPair {
 	
 	public static String[] getTitleAnnoCoexp() {
 		List<String> lsTitle = new ArrayList<>();
-		lsTitle.add(TitleFormatNBC.AccID.toString());
+		lsTitle.add(TitleFormatNBC.AccID.toString() + "1");
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());
-		lsTitle.add(TitleFormatNBC.AccID.toString());
+		lsTitle.add(TitleFormatNBC.AccID.toString() + "2");
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());
 		lsTitle.add("pearson");
@@ -364,8 +364,8 @@ class CoexPair {
 	}
 	public static String[] getTitleCoexp() {
 		List<String> lsTitle = new ArrayList<>();
-		lsTitle.add(TitleFormatNBC.AccID.toString());
-		lsTitle.add(TitleFormatNBC.AccID.toString());
+		lsTitle.add(TitleFormatNBC.AccID.toString() + "1");
+		lsTitle.add(TitleFormatNBC.AccID.toString() + "2");
 		lsTitle.add("pearson");
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.FDR.toString());
@@ -375,18 +375,18 @@ class CoexPair {
 	
 	public static String[] getTitleAnno() {
 		List<String> lsTitle = new ArrayList<>();
-		lsTitle.add(TitleFormatNBC.AccID.toString());
+		lsTitle.add(TitleFormatNBC.AccID.toString() + "1");
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());
-		lsTitle.add(TitleFormatNBC.AccID.toString());
+		lsTitle.add(TitleFormatNBC.AccID.toString() + "2");
 		lsTitle.add(TitleFormatNBC.Symbol.toString());
 		lsTitle.add(TitleFormatNBC.Description.toString());
 		return lsTitle.toArray(new String[0]);
 	}
 	public static String[] getTitle() {
 		List<String> lsTitle = new ArrayList<>();
-		lsTitle.add(TitleFormatNBC.AccID.toString());
-		lsTitle.add(TitleFormatNBC.AccID.toString());
+		lsTitle.add(TitleFormatNBC.AccID.toString() + "1");
+		lsTitle.add(TitleFormatNBC.AccID.toString() + "2");
 		return lsTitle.toArray(new String[0]);
 	}
 }

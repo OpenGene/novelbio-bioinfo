@@ -78,7 +78,10 @@ public class MapSplice implements MapRNA {
 	public void setRefIndex(String chrFile) {
 		indexMaker.setChrIndex(chrFile);
 	}
-	
+	/** 这个输入的应该是一个包含分割Chr文件的文件夹 */
+	public void setRefIndexFolder(String chrSepFolder) {
+		indexMaker.setChrSepFolder(chrSepFolder);
+	}
 	@Override
 	public void setGtfFiles(String gtfFile) {
 		this.gtfFile = gtfFile;
@@ -327,11 +330,7 @@ public class MapSplice implements MapRNA {
     public IndexMappingMaker getIndexMappingMaker() {
 	    return indexMaker;
     }
-	@Override
-	public SoftWare getSoftWare() {
-		return SoftWare.mapsplice;
-	}
-	
+
 	@Override
 	public List<String> getCmdExeStr() {
 		prepareReads();

@@ -35,7 +35,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess> impleme
 	static String flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix = "_pre";
 
 	/** 获得miRNA定位信息 */
-	MiRNAList listMiRNALocation;
+	protected MiRNAList listMiRNALocation;
 	/** miRNA前体 */
 	SeqFastaHash seqFastaHashPreMiRNA = null;
 	/** miRNA成熟体 */
@@ -171,7 +171,7 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess> impleme
 	 * @param matureID miRNA成熟体名字
 	 * @return
 	 */
-	private String getMiRNAmatureSeq(String mirID, String matureID) {
+	protected String getMiRNAmatureSeq(String mirID, String matureID) {
 		if (seqFastaHashMatureMiRNA.getSeqFasta(matureID) != null) {
 			return seqFastaHashMatureMiRNA.getSeqFasta(matureID).toString();
 		}
@@ -231,7 +231,6 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess> impleme
 	 * @param outTxt
 	 */
 	private void countMiRNA() {
-		int countLoop = 0;		
 		for (AlignRecord alignRecord : alignSeqMiRNA.readLines()) {
 			if (!alignRecord.isMapped()) {
 				continue;
@@ -240,17 +239,11 @@ public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess> impleme
 			
 			suspendCheck();
 			if (flagStop) break;
-			countLoop++;
-//			if (countLoop % 1000 == 0) {
-//				MiRNAcountProcess miRNAcountProcess = new MiRNAcountProcess();
-//				miRNAcountProcess.setReadsNum(countLoop);
-//				if (runGetInfo != null) {
-//					runGetInfo.setRunningInfo(miRNAcountProcess);
-//				}
-//			}
 		}
 		summary();
 	}
+	
+	
 	/** 一行一行处理
 	 * 并填充hashmap
 	 *  */

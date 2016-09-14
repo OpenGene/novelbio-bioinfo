@@ -82,10 +82,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/**
 	 * 这两个是一对，一个是rnaID对应多个iso，常见于TRNA 另一个这个存储ISO对应的坐标
 	 */
-	private ArrayListMultimap<String, GffGeneIsoInfo> mapRnaID2LsIso = ArrayListMultimap
-			.create();
-	private ArrayListMultimap<String, ExonInfo> mapRnaID2LsIsoLocInfo = ArrayListMultimap
-			.create();
+	private ArrayListMultimap<String, GffGeneIsoInfo> mapRnaID2LsIso = ArrayListMultimap.create();
+	private ArrayListMultimap<String, ExonInfo> mapRnaID2LsIsoLocInfo = ArrayListMultimap.create();
 	private Map<String, Align> mapGeneID2Region = new HashMap<>();
 	private GffGetChrId gffGetChrId = new GffGetChrId();
 
@@ -433,6 +431,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			logger.error("出现未知exon：" + ArrayOperate.cmbString(ss, "\t"), e);
 			return false;
 		}
+		if (gffGeneIsoInfo == null) {
+			return false;
+		}
+		
 		String geneID = getGeneID(rnaID);
 		if (mapGeneName2IsHaveExon.get(geneID) == null) {
 			logger.error("没有找到相应的GeneID:" + geneID);
@@ -670,6 +672,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		if (lsGffGeneIsoInfo.size() == 0) {
 			mapRnaID2GeneID.put(rnaID, rnaID);
 			GffDetailGene gffDetailGene = getGffDetailGenID(rnaID);
+			if (gffDetailGene == null) {
+				logger.error("cannot find rnaId " + rnaID);
+				return null;
+			}
 			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(
 					gffDetailGene.getNameSingle(),
 					gffDetailGene.getNameSingle(), geneType);

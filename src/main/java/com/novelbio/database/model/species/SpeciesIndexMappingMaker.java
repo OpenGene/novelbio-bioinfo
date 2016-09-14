@@ -68,18 +68,18 @@ public class SpeciesIndexMappingMaker {
 	 * @param softWare
 	 * @return
 	 */
-	public String getSequenceIndex(EnumSpeciesFile indexSeq, SoftWare softWare) {
-		if (softWare == SoftWare.bwa_aln) softWare = SoftWare.bwa_mem;
+	public String getSequenceIndex(EnumSpeciesFile indexSeq, String softWare) {
+		if (StringOperate.isEqual(softWare, SoftWare.bwa_aln.toString())) softWare = SoftWare.bwa_mem.toString();
 	      
 		if (!mapFile2IndexPath.containsKey(indexSeq)) {
 			throw new ExceptionNbcMappingSoftNotSupport(indexSeq + " is not a validate sequence file");
         }
 		
-		Set<SoftWare> setIndex = IndexMappingMaker.getLsIndexDNA();
-		setIndex.addAll(IndexMappingMaker.getLsIndexRNA());
-		if (!setIndex.contains(softWare)) {
-			throw new ExceptionNbcMappingSoftNotSupport("cannot find mapping software " + softWare.toString());
-        }
+//		Set<String> setIndex = IndexMappingMaker.getLsIndexDNA();
+//		setIndex.addAll(IndexMappingMaker.getLsIndexRNA());
+//		if (!setIndex.contains(softWare)) {
+//			throw new ExceptionNbcMappingSoftNotSupport("cannot find mapping software " + softWare.toString());
+//        }
 		
 		String path = getParentPathIndex(indexSeq, softWare.toString());
 		if (indexSeq == EnumSpeciesFile.chromSeqFile) {
@@ -95,17 +95,17 @@ public class SpeciesIndexMappingMaker {
 	}
 	
 	public void makeIndex() {
-		Set<SoftWare> setIndexDNA = IndexMappingMaker.getLsIndexDNA();
-		Set<SoftWare> setIndexRNA = IndexMappingMaker.getLsIndexRNA();
+		Set<String> setIndexDNA = IndexMappingMaker.getLsIndexDNA();
+		Set<String> setIndexRNA = IndexMappingMaker.getLsIndexRNA();
 
-		for (SoftWare softWare : setIndexDNA) {
+		for (String softWare : setIndexDNA) {
 			makeIndexChr(softWare);
 			makeIndexRef(softWare, true);
 			makeIndexRef(softWare, false);
         }
 		
-		for (SoftWare softWare : setIndexRNA) {
-			if (softWare == SoftWare.rsem) {
+		for (String softWare : setIndexRNA) {
+			if (StringOperate.isEqual(softWare, SoftWare.rsem.toString())) {
 				makeIndexRefRsem(softWare, true);
 				makeIndexRefRsem(softWare, false);
 	            	continue;
@@ -114,7 +114,7 @@ public class SpeciesIndexMappingMaker {
         }
 	}
 	
-	public void makeIndexRef(SoftWare softWare, boolean isAllIso) {
+	public void makeIndexRef(String softWare, boolean isAllIso) {
 		String refAllIso = speciesFile.getRefSeqFile(isAllIso, false);
 		EnumSpeciesFile refFile = isAllIso? EnumSpeciesFile.refseqAllIsoRNA: EnumSpeciesFile.refseqOneIsoRNA;
 		String refAllIndex = getSequenceIndex(refFile, softWare);
@@ -129,7 +129,7 @@ public class SpeciesIndexMappingMaker {
 		logger.info("sucessfully finish {} index on {}, with version " + speciesFile.getVersion() + " " + FileOperate.getFileName(refAllIndex), softwareName, speciesFile.getTaxID());
 	}
 	
-	private void makeIndexRefRsem(SoftWare softWare, boolean isAllIso) {
+	private void makeIndexRefRsem(String softWare, boolean isAllIso) {
 		String refIso = speciesFile.getRefSeqFile(isAllIso, false);
 		EnumSpeciesFile enumFileType = isAllIso? EnumSpeciesFile.refseqAllIsoRNA: EnumSpeciesFile.refseqOneIsoRNA;
 		String refIsoIndex = getSequenceIndex(enumFileType, softWare);
@@ -144,13 +144,25 @@ public class SpeciesIndexMappingMaker {
 	}
 	
 	/** 对染色体文件建立索引 */
-	public void makeIndexChr(SoftWare softWare) {
+	public void makeIndexChr(String softWare) {
 		String chrFile = speciesFile.getChromSeqFile();
+		SamIndexRefsequence.generateIndexAndGetMapChrId2Len(chrFile);
+
+		String chrFolder = null;
 		String chrFileIndex = getSequenceIndex(EnumSpeciesFile.chromSeqFile, softWare);
-		
+		if (StringOperate.isEqual(softWare, SoftWare.mapsplice.toString())) {
+			SpeciesFileSepChr sepChr = new SpeciesFileSepChr();
+			sepChr.setSpeciesFile(speciesFile);
+			sepChr.setLock(isLock);
+			sepChr.setGenomePath(genomePath);
+			sepChr.generateChrSepFiles();
+			chrFile = sepChr.getChrSepFileOne();
+			chrFolder = sepChr.getChrSepFolder();
+			chrFileIndex = IndexMapSplice.modifyChrSeqName(chrFileIndex);
+		}
 		copyFileAndIndex(chrFile, chrFileIndex);
 
-		if (softWare == SoftWare.tophat) {
+		if (StringOperate.isEqual(softWare, SoftWare.tophat.toString())) {
 			makeTophatIndexBowtie(SoftWare.bowtie, null, chrFileIndex);
 			makeTophatIndexBowtie(SoftWare.bowtie2, null, chrFileIndex);
 
@@ -160,8 +172,8 @@ public class SpeciesIndexMappingMaker {
 				makeTophatIndexBowtie(SoftWare.bowtie2, gffdb, chrFileIndex);
 				logger.info("sucessfully finish tophat index using bowtie2 on {}, with version {} and gffdb " + gffdb, speciesFile.getTaxID(), speciesFile.getVersion());
 			}
-		} else if (softWare == SoftWare.mapsplice) {
-			makeMapspliceIndex(chrFileIndex);
+		} else if (StringOperate.isEqual(softWare, SoftWare.mapsplice.toString())) {
+			makeMapspliceIndex(chrFileIndex, chrFolder);
 			logger.info("sucessfully finish mapsplice index on {}, with version {}", speciesFile.getTaxID(), speciesFile.getVersion());
 		} else {
 			makeIndexNormal(softWare, chrFileIndex);
@@ -174,7 +186,7 @@ public class SpeciesIndexMappingMaker {
 	}
 	
 	/** 拷贝chr文件和fai文件到索引文件夹下 */
-	private void copyFileAndIndex(String seqFile, String seqFileIndex) {
+	public static void copyFileAndIndex(String seqFile, String seqFileIndex) {
 		String parentPath = FileOperate.getPathName(seqFileIndex);
 		FileOperate.createFolders(parentPath);
 		String seqFileFai = SamIndexRefsequence.getIndexFile(seqFile);
@@ -186,7 +198,7 @@ public class SpeciesIndexMappingMaker {
 	}
 	
 	/** 普通建索引 */
-	private void makeIndexNormal(SoftWare softWare, String chrFile) {
+	private void makeIndexNormal(String softWare, String chrFile) {
 		IndexMappingMaker indexMappingMaker = IndexMappingMaker.createIndexMaker(softWare);
 		indexMappingMaker.setChrIndex(chrFile);
 		indexMappingMaker.setLock(isLock);
@@ -208,7 +220,7 @@ public class SpeciesIndexMappingMaker {
 		indexMappingMaker.IndexMake();
     }
 	
-	private void makeMapspliceIndex(String chrFile) {
+	private void makeMapspliceIndex(String chrFile, String chrFolder) {
 		Set<String> setChrId = null;
 		if (speciesFile.getGffType() != null) {
 			GffHashGene gffHashGene = new GffHashGene(speciesFile.getGffType(), speciesFile.getGffFile());
@@ -216,7 +228,9 @@ public class SpeciesIndexMappingMaker {
         }
 		
 		IndexMapSplice indexMappingMaker = (IndexMapSplice)IndexMappingMaker.createIndexMaker(SoftWare.mapsplice);
+		
 		indexMappingMaker.setChrIndex(chrFile);
+		indexMappingMaker.setChrSepFolder(chrFolder);
 		indexMappingMaker.setSetChrInclude(setChrId);
 		indexMappingMaker.setLock(isLock);
 		indexMappingMaker.IndexMake();

@@ -63,7 +63,7 @@ public class GeneExpTable {
 	public GeneExpTable(String geneAccIDName) {
 		this.geneTitleName = geneAccIDName;
 	}
-
+	public GeneExpTable() {}
 	
 	/**
 	 * <b>添加前需要指定condition</b>
@@ -581,7 +581,7 @@ public class GeneExpTable {
 	}
 		
 	/** 如果allReads没有设定，则设定每个时期的allReads数量为该时期counts数加和 */
-	protected void setAllreadsPerConditon() {
+	public void setAllreadsPerConditon() {
 		for (String condition : setCondition) {
 			setConditionAllreads(condition);
 		}

@@ -14,7 +14,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class TestChrFileFormat {
-	String parentPath = "src/test/resources/test_file/reference/ara/";
+	String parentPath = "src/test/resources/test_file/reference/arabidopsis_sub//";
 	String gffFile = parentPath + "TAIR10_Gff3_simple_with_contig.gtf.gz";
 	String refSeq = parentPath + "chrAll.fa";
 	
@@ -231,7 +231,7 @@ public class TestChrFileFormat {
 		FileOperate.deleteFileFolder(refSeqResult + ".fai");
 	}
 	
-	private Set<String> readGffFile(String gffFile) {
+	public static Set<String> readGffFile(String gffFile) {
 		GffGetChrId gffGetChrId = new GffGetChrId();
 		Set<String> setGff = new HashSet<>();
 		TxtReadandWrite txtRead = new TxtReadandWrite(gffFile);

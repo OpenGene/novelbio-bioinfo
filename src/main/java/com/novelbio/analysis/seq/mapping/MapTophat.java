@@ -148,10 +148,6 @@ public class MapTophat implements MapRNA {
 	public void setIndelLen(int indelLen) {
 		this.indelLen = indelLen;
 	}
-	@Override
-	public SoftWare getSoftWare() {
-		return indexMaker.getBowtieSoft();
-	}
 	/**
 	 * 内含子最长多少，默认500000，需根据不同物种进行设置
 	 * 
@@ -508,7 +504,7 @@ public class MapTophat implements MapRNA {
 	public List<String> getCmdExeStr() {
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add("tophat version: " + indexMaker.getVersion());
-		lsCmd.add(indexMaker.getBowtieSoft().toString() + " version: " + indexMaker.getVersionBowtie());
+		lsCmd.add(indexMaker.getBowtieSoft() + " version: " + indexMaker.getVersionBowtie());
 		CmdOperate cmdOperate = new CmdOperate(getLsCmd());
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		if (!lsCmdMapping2nd.isEmpty()) {

@@ -44,17 +44,17 @@ public class SamIndexRefsequence {
 //			}
 			return faidx;
 		}
-		String sequenceLocal = sequence;
-		if (FileHadoop.isHdfs(sequence)) {
-			sequenceLocal = FileHadoop.convertToLocalPath(sequence);
-		}
-		
 		List<String> lsCmd = new ArrayList<>();
 		lsCmd.add(ExePath + "samtools");
 		lsCmd.add("faidx");
-		lsCmd.add(sequenceLocal);			
+		lsCmd.add(sequence);
 		CmdOperate cmdOperate = new CmdOperate(lsCmd);
+		cmdOperate.setRedirectInToTmp(true);
+		cmdOperate.setRedirectOutToTmp(true);
+		cmdOperate.addCmdParamInput(sequence);
+		cmdOperate.addCmdParamOutput(sequence);
 		cmdOperate.run();
+
 		if (!cmdOperate.isFinishedNormal()) {
 			throw new ExceptionCmd("make index error:" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
 		}

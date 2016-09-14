@@ -7,8 +7,8 @@ import org.junit.Test;
 public class TestFastQPE {
 	@Test
 	public void testReadPairend() {
-		String file1 = "src/test/resources/test_file/fastq/PE/Lerror.fq";
-		String file2 = "src/test/resources/test_file/fastq/PE/Rerror.fq";
+		String file1 = "src/test/resources/test_file/fastq/PE/L_error.fq.gz";
+		String file2 = "src/test/resources/test_file/fastq/PE/R_error.fq.gz";
 		FastQ fastQ = new FastQ(file1);
 		FastQ fastQ2 = new FastQ(file2);
 		int i = 0;
@@ -18,6 +18,7 @@ public class TestFastQPE {
 		}
 		fastQ.close();
 		fastQ2.close();
-		Assert.assertEquals(1930, i);
+		Assert.assertEquals(1924, i);
 	}
+
 }

@@ -5,7 +5,6 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.fasta.ChrSeqHash;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexTophat;
@@ -62,9 +61,10 @@ public class TestSpeciesIndexMappingMaker {
 	}
 	
 	private void testIndexChrMake(SpeciesIndexMappingMaker speciesIndexMappingMaker, SoftWare software) {
-		speciesIndexMappingMaker.makeIndexChr(software);
+		speciesIndexMappingMaker.makeIndexChr(software.toString());
 		
-		String chrFile = speciesIndexMappingMaker.getSequenceIndex(EnumSpeciesFile.chromSeqFile, software);
+		String chrFile = speciesIndexMappingMaker.getSequenceIndex(EnumSpeciesFile.chromSeqFile, software.toString());
+		
 		String softwareName = software.toString();
 		if (softwareName.startsWith("bwa_")) {
 			softwareName = "bwa";
@@ -73,8 +73,11 @@ public class TestSpeciesIndexMappingMaker {
 				SpeciesIndexMappingMaker.indexPath + softwareName + "/" + speciesFile.getTaxID() + "/" + speciesFile.getVersion() + "/" +
 				FileOperate.addSep(SpeciesIndexMappingMaker.mapFile2IndexPath.get(EnumSpeciesFile.chromSeqFile)) + 
 				FileOperate.getFileName(speciesFile.getChromSeqFile()));
-		
-		Assert.assertTrue(FileOperate.isFileExistAndBigThan0(chrFile));
+		if (software == SoftWare.mapsplice) {
+			Assert.assertTrue(FileOperate.isFileExistAndBigThan0(IndexMapSplice.modifyChrSeqName(chrFile)));
+		} else {
+			Assert.assertTrue(FileOperate.isFileExistAndBigThan0(chrFile));
+		}
 
 		IndexMappingMaker indexMappingMaker = IndexMappingMaker.createIndexMaker(software);
 		if (software == SoftWare.tophat) {
@@ -92,8 +95,8 @@ public class TestSpeciesIndexMappingMaker {
 	
 	@After
 	public void delete() {
-//		FileOperate.DeleteFileFolder(parentPath + "species");
-//		FileOperate.DeleteFileFolder(parentPath + "index");
+		FileOperate.deleteFileFolder(parentPath + "species");
+		FileOperate.deleteFileFolder(parentPath + "index");
 
 	}
 }

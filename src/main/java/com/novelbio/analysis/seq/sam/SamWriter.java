@@ -18,6 +18,9 @@ public class SamWriter {
 	SAMFileWriter samFileWriter;
 	SAMFileWriterFactory samFileWriterFactory = new SAMFileWriterFactory();
 	
+	int errorReadsNum = 0;
+	int maxErrorReadsNum = 10000;
+	
 	public SamWriter(boolean presorted, SAMFileHeader samFileHeader, String outSamFile) {
 		this.fileName = outSamFile;
 		boolean writeToBam = true;
@@ -53,31 +56,44 @@ public class SamWriter {
 	}
 	
 	public void writeToSamFileln(SamRecord samRecord) {
-		if (samRecord == null || samRecord.samRecord == null) {
-			logger.error("samRecord为null");
-			return;
-		}
+		if (samRecord == null || samRecord.samRecord == null) return;
+		
 		try {
-			samFileWriter.addAlignment(samRecord.samRecord);
+			samFileWriter.addAlignment(samRecord.getSamRecord());
 		} catch (Exception e) {
-			logger.error("samRecord出错" + samRecord.toString(), e);
+			errorReadsNum++;
+			if (errorReadsNum <= 100) {
+				logger.error("write error: " + samRecord.toString() , e);
+			}
+			if (errorReadsNum > 10000 ) {
+				logger.error("to much reads error, more than 10000", e);
+				close();
+				throw new ExceptionSamError(e);
+			}
 		}
 	}
 	
 	public void writeToSamFileln(SAMRecord samRecord) {
-		if (samRecord == null) {
-			logger.error("samRecord为null");
-			return;
-		}
+		if (samRecord == null) return;
+
 		try {
 			samFileWriter.addAlignment(samRecord);
 		} catch (Exception e) {
-			logger.error("samRecord出错" + samRecord.toString(), e);
+			errorReadsNum++;
+			if (errorReadsNum <= 100) {
+				logger.error("write error: " + new SamRecord(samRecord).toString() , e);
+			}
+			if (errorReadsNum > 10000 ) {
+				logger.error("to much reads error, more than 10000", e);
+				close();
+				throw new ExceptionSamError(e);
+			}
 		}
 	}
 	
 	public void close() {
 		try {
+			errorReadsNum = 0;
 			samFileWriter.close();
 		} catch (Throwable e) {
 			e.printStackTrace();
