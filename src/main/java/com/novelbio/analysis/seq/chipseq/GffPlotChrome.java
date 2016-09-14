@@ -294,7 +294,7 @@ public class GffPlotChrome {
 	 * @parm type 取样方法 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return 没有的话就返回null
 	 */
-	private double[] getChrDensity(String chrID, int binNum) {
+	public double[] getChrDensity(String chrID, int binNum) {
 		double[] tmpResult = mapReads.getReadsDensity(chrID, 0, 0, binNum);
 		return tmpResult;
 	}

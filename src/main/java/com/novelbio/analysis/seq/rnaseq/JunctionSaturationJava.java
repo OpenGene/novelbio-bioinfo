@@ -38,16 +38,15 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(JunctionSaturationJava.class);
 	public static void main(String[] args) {
 		JunctionSaturationJava junctionSaturation = new JunctionSaturationJava();
-		Species species = new Species(9606);
-		species.setVersion("hg19_GRCh37");
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		junctionSaturation.setGffHashGene(gffChrAbs.getGffHashGene());
-		AlignSeqReading alignSeqReading = new AlignSeqReading(new SamFile("/media/hdfs/nbCloud/public/test/RNASeqMap/human/RKOkd_accepted_hits.bam"));
+//		Species species = new Species(9606);
+//		species.setVersion("hg19_GRCh37");
+//		GffChrAbs gffChrAbs = new GffChrAbs(species);
+		junctionSaturation.setGffHashGene(new GffHashGene("/run/media/novelbio/A/bianlianle/project/software_test/ref_GRCh37.p13_top_level.gff3.gtf"));
+		AlignSeqReading alignSeqReading = new AlignSeqReading(new SamFile("/run/media/novelbio/A/bianlianle/project/software_test/rseqc/H2-SLEP_mapsplice.bam"));
 		alignSeqReading.addAlignmentRecorder(junctionSaturation);
 		alignSeqReading.run();
-		junctionSaturation.setSavePath("/media/hdfs/nbCloud/public/test/RNASeqMap/human/saturation.png");
+		junctionSaturation.setSavePath("/run/media/novelbio/A/bianlianle/project/software_test/rseqc/saturation.png");
 		junctionSaturation.plot();
-		gffChrAbs.close();
 	}
 	ShuffleReads shuffleReads = new ShuffleReads();
 	StrandSpecific specific = StrandSpecific.UNKNOWN;

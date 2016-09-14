@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.apache.xmlbeans.soap.SOAPArrayType;
+//import org.apache.xmlbeans.soap.SOAPArrayType;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.annotation.blast.BlastNBC;

@@ -37,8 +37,8 @@ public class N50statistics {
 	int allContigsNum;
 	/** 统计所有contigs的长度 */
 	long allContigsLen;
-	/** 统计N50的长度 */
-	int N50Len = 0;
+	/** 统计N50的长度，初始值为-1 */
+	int N50Len = -1;
 	/** 统计Contigs长度的中位数 */
 	int medianLen = 0;
 	/** 长度统计 */
@@ -95,6 +95,7 @@ public class N50statistics {
 		return contigMeanLen;
 	}
 	
+	/** 统计所有contigs的长度 */
 	public long getAllContigsLen() {
 		return allContigsLen;
 	}
@@ -176,14 +177,14 @@ public class N50statistics {
 		for (Integer seqLen : lsSeqLen) {
 			contigNum ++;
 			tmpN = tmpN + seqLen;
-			while (tmpN*100 / allContigsLen >= Nvalue) {
+			while (tmpN*10000 / allContigsLen > Nvalue*100) {
 				Nvalue += NvalueStep;
 			}
 			Nvalue -= NvalueStep;
 			
 			String[] tmpNvalue = new String[3];
 			tmpNvalue[0] = "N" + Nvalue;
-			if (Nvalue <= 50) {
+			if (N50Len < 0 && Nvalue >= 50) {
 				N50Len = seqLen;
 			}
 			tmpNvalue[1] = seqLen + "";

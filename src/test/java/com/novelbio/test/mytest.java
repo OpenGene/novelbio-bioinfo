@@ -1,7 +1,8 @@
 package com.novelbio.test;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -9,8 +10,6 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
-import org.apache.hadoop.util.Shell;
-import org.apache.hadoop.util.Shell.ShellCommandExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,8 +22,6 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -33,9 +30,7 @@ import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.StringOperate;
-import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
@@ -56,14 +51,7 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		String str = "chr_97483430_97561047_chr12_97561047_97483431_-77616_RMST";
-		PatternOperate patternOperate = new PatternOperate("[a-z,A-Z]+_{0,1}\\d*_\\d+_\\d+_-{0,1}\\d+");
-		List<String> lsChrName = patternOperate.getPat(str);
-		for (String chrName : lsChrName) {
-			System.out.println(chrName);
-		}
-		str = str.replaceFirst(lsChrName.get(0), "");
-		System.out.println(str);
+		FileOperate.createFolders(args[0]);
 	}
 	
 	private static List<Integer> getLsIntegers(String colInfo) {

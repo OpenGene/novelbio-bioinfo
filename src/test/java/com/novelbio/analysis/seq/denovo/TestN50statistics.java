@@ -48,6 +48,8 @@ public class TestN50statistics {
 //		Assert.assertEquals(130, n50.getN50Len(40));
 //		Assert.assertEquals(2, n50.);
 //		Assert.assertEquals(3, n50.getN50Num(40));
+		Assert.assertEquals(1705, n50.getAllContigsLen());
+		Assert.assertEquals(266, n50.getN50Len());
 		
 		
 		
