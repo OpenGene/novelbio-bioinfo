@@ -476,7 +476,7 @@ public class SamFile implements AlignSeq {
 			return this;
 		}
     	
-    	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
+    	String outName = FileOperate.changeFileSuffix(getFileName(), ".sorted", "bam");
     	return sort(outName, isFilterUnique);
     }
     
