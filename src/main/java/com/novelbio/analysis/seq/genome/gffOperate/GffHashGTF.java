@@ -103,9 +103,8 @@ public class GffHashGTF extends GffHashGeneAbs{
 				}
 				String tmpTranscriptName = isoName2GeneName[0], tmpGeneName = isoName2GeneName[1];
 				String geneTypeStr = isoName2GeneName[2];
-				if (tmpTranscriptName == null) {
-					System.out.println();
-				}
+				if (geneTypeStr == null) geneTypeStr = "";
+				
 				if (setIsGene.contains(ss[2].toLowerCase())) continue;
 				
 				//出现新转录本有两种可能：
@@ -118,7 +117,9 @@ public class GffHashGTF extends GffHashGeneAbs{
 						) 
 				{
 					GeneType geneType = GeneType.getMapMRNA2GeneType().get(geneTypeStr.toLowerCase());
-					if (geneType == null) geneType = GeneType.ncRNA;
+					if (geneType == null) {
+						geneType = GeneType.mRNA;
+					}
 						
 					boolean cis = getLocCis(ss[6], tmpChrID, exonStart, exonEnd);
 					gffGeneIsoInfo = GffGeneIsoInfo.createGffGeneIso(tmpTranscriptName, tmpGeneName, geneType, cis);
@@ -244,7 +245,13 @@ public class GffHashGTF extends GffHashGeneAbs{
 					try {
 						iso2geneName[2] = name.replace("genetype", "").replace("=", "").replace("\"", "").trim();
 					} catch (Exception e) {
-						iso2geneName[2] = GeneType.miRNA.toString(); 
+						iso2geneName[2] = GeneType.mRNA.toString(); 
+					}
+				} else if (name.toLowerCase().startsWith("gene_biotype")) {
+					try {
+						iso2geneName[2] = name.replace("gene_biotype", "").replace("=", "").replace("\"", "").trim();
+					} catch (Exception e) {
+						iso2geneName[2] = GeneType.mRNA.toString(); 
 					}
 				}
 		}
