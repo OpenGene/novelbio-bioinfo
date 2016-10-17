@@ -113,9 +113,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			for (GffDetailGene gffDetailGene : listGff) {
 				gffDetailGene.setTaxID(taxID);
 				for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-					if (gffGeneIsoInfo.getName().toLowerCase().contains("frem1")) {
-						logger.debug("");
-					}
 					if (mapName2Iso.containsKey(gffGeneIsoInfo.getName().toLowerCase())) {
 						GffGeneIsoInfo gffGeneIsoInfoOld = mapName2Iso.get(gffGeneIsoInfo.getName().toLowerCase());
 						if (gffGeneIsoInfoOld.getRefIDlowcase().startsWith("chr") && !gffGeneIsoInfo.getRefIDlowcase().startsWith("chr")) {

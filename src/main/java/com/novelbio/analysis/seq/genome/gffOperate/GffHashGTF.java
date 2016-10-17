@@ -102,6 +102,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 					throw new ExceptionNbcGFF("line " + line + " error, no isoName exist: " + content);
 				}
 				String tmpTranscriptName = isoName2GeneName[0], tmpGeneName = isoName2GeneName[1];
+				String geneTypeStr = isoName2GeneName[2];
 				if (tmpTranscriptName == null) {
 					System.out.println();
 				}
@@ -116,7 +117,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 							&& !isHaveIso(tmpGeneName, tmpTranscriptName))
 						) 
 				{
-					GeneType geneType = GeneType.getMapMRNA2GeneType().get(ss[2].toLowerCase());
+					GeneType geneType = GeneType.getMapMRNA2GeneType().get(geneTypeStr.toLowerCase());
 					if (geneType == null) geneType = GeneType.ncRNA;
 						
 					boolean cis = getLocCis(ss[6], tmpChrID, exonStart, exonEnd);
@@ -180,7 +181,11 @@ public class GffHashGTF extends GffHashGeneAbs{
 		mapID2Iso = null;
 	}
 
-	
+	/**
+	 * @param ss8
+	 * @param gffGeneNameFlag
+	 * @return 0 IsoName; 1 GeneName; 2 GeneType
+	 */
 	protected static String[] getIsoName2GeneName(String ss8, String gffGeneNameFlag) {
 		ss8 = ss8.replace("\t", " ");
 		String geneNameFlag = "gene_name";
@@ -199,7 +204,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 			geneNameFlag = "Parent";
 		}
 		
-		String[] iso2geneName = new String[2];
+		String[] iso2geneName = new String[3];
 		List<String> lsAnnoInfo = new ArrayList<>();
 		StringBuilder stringBuilder = new StringBuilder();
 		boolean isInQuote = false;
@@ -233,12 +238,20 @@ public class GffHashGTF extends GffHashGeneAbs{
 					iso2geneName[1] = name.replace(geneNameFlag, "").replace("=", "").replace("\"", "").trim();
 				} else if (name.startsWith("ID")) {
 					iso2geneName[0] = name.replace("ID", "").replace("=", "").replace("\"", "").trim();
+				} else if (name.startsWith("ID")) {
+					iso2geneName[0] = name.replace("ID", "").replace("=", "").replace("\"", "").trim();
+				} else if (name.toLowerCase().startsWith("genetype")) {
+					try {
+						iso2geneName[2] = name.replace("genetype", "").replace("=", "").replace("\"", "").trim();
+					} catch (Exception e) {
+						iso2geneName[2] = GeneType.miRNA.toString(); 
+					}
 				}
 		}
 		
 		 return iso2geneName;
 	}
-
+	
 	private void addGffIso(String geneName, GffGeneIsoInfo gffGeneIsoInfo) {
 		mapID2Iso.put(geneName, gffGeneIsoInfo);
 	}

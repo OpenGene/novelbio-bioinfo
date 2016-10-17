@@ -169,6 +169,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return flagTypeGene;
 	}
+	
+	public void setGeneType(GeneType flagTypeGene) {
+		this.flagTypeGene = flagTypeGene;
+	}
+	
 	public int getTaxID() {
 		if (gffDetailGeneParent == null) {
 			return 0;
@@ -1083,7 +1088,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param title 该GTF文件的名称
 	 * @return
 	 */
-	protected String getGTFformat(String chrID, String title) {
+	public String getGTFformat(String chrID, String title) {
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";
@@ -1115,7 +1120,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		
 		List<String> lsSuffixInfo = new ArrayList<>();
 		lsSuffixInfo.add("."); lsSuffixInfo.add(strand); lsSuffixInfo.add(".");
-		lsSuffixInfo.add("gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName()+"\"; ");
+		lsSuffixInfo.add("gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName()+"\"; genetype " + "\"" + getGeneType()+"\"");
 		
 		int[] atg = getATGLoc();
 		int[] uag = getUAGLoc();
