@@ -70,14 +70,15 @@ public class KGexe {
 //			System.exit(1);
 //		}
 //		String keggAbbrStr = cliParser.getOptionValue("keggabbr");
-		String keggAbbrStr = "pop";
+		String keggAbbrStr = "hsa";
+		String path = "/home/novelbio/NBCresource/database/kegg/";
 		try {
 			for (String abbr : keggAbbrStr.split(",")) {
 				abbr = abbr.trim();
-				KGML2DB.readKGML("/home/novelbio/NBCsource/biodb/database20150530/kegg/" + abbr);
-				KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/biodb/database20150530/kegg/genes_ncbi-geneid.list.gz", abbr);
+				KGML2DB.readKGML(path + abbr);
+				KeggIDcvt.upDateGen2Keg(path + "genes_ncbi-geneid.list.gz", abbr);
 				logger.info("finish kegg2geneId");
-				KeggIDcvt.upDateKeg2Ko("/home/novelbio/NBCsource/biodb/database20150530/kegg/genes_ko.list.gz", abbr);
+				KeggIDcvt.upDateKeg2Ko(path + "genes_ko.list.gz", abbr);
 				logger.info("finish kegg2ko");
 			}
 		} catch (Exception e) {

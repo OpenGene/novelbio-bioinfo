@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modkegg.KeggInfo;
 
@@ -52,11 +53,16 @@ public class KEGGPathwayFunTest extends FunctionTest {
 	}
 
 	@Override
-	protected String getItemTerm(String item) {
+	protected String getItemTermDB(String item) {
 		if (item.contains(":")) {
 			item = item.split(":")[1];
 		}
-		return KeggInfo.getKGpathway(item).getTitle();
+		String term = null;
+		KGpathway kGpathway = KeggInfo.getKGpathway(item);
+		if (kGpathway != null) {
+			term = kGpathway.getTitle();
+		}
+		return term;
 	}
 
 	@Override

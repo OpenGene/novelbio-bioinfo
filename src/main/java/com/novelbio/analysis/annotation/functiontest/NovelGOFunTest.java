@@ -150,7 +150,7 @@ public class NovelGOFunTest extends FunctionTest {
 	}
 	
 	@Override
-	protected String getItemTerm(String item) {
+	protected String getItemTermDB(String item) {
 		Go2Term go2Term = servGo2Term.queryGo2Term(item);
 		if (go2Term == null) {
 			return null;

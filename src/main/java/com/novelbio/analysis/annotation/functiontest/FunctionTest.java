@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.FisherTest;
@@ -62,6 +63,8 @@ public abstract class FunctionTest implements Cloneable {
 	ArrayList<StatisticTestResult> lsTestResult = new ArrayList<StatisticTestResult>();
 	
 	StatisticsTest statisticsTest;
+	/** 从第三方的注释文件中读取的goId2Term的信息 */
+	Map<String, String> mapId2TermAnno = new HashMap<>();
 	
 	protected abstract TestType getTestType();
 	
@@ -162,23 +165,39 @@ public abstract class FunctionTest implements Cloneable {
 	}
 	
 	/** 读取gene2Item的文件，用来增加注释
-	 * 第一列是geneName，第二列是goId */
+	 * 第一列是geneName
+	 * 第二列是goId
+	 * 第三列是description 
+	 */
 	public void readGene2ItemAnnoFile(String goAnnoFile) {
 		if (mapBGGeneID2Items == null) mapBGGeneID2Items = new HashMap<>();
 		
 		TxtReadandWrite txtRead = new TxtReadandWrite(goAnnoFile);
 		ArrayListMultimap<String, String> mapGeneName2LsGO = ArrayListMultimap.create();
 		int i = 0;
+		int errorLine = 0;
+		mapId2TermAnno.clear();
 		for (String content : txtRead.readlines()) {
-			i++;
-			
-			if (content.startsWith("#")) continue;
-			String[] ss = content.split("\t");
-			//判断第一行是否为标题
-			if (i == 1 && !ss[1].contains(":")) {
-				continue;
+			try {
+				i++;
+				
+				if (content.startsWith("#") || StringOperate.isRealNull(content)) continue;
+				String[] ss = content.split("\t");
+				//判断第一行是否为标题
+				if (i == 1 && !ss[1].contains(":")) {
+					continue;
+				}
+				mapGeneName2LsGO.put(ss[0], ss[1]);
+				if (ss.length > 2) {
+					mapId2TermAnno.put(ss[1], ss[2]);
+				}
+			} catch (Exception e) {
+				errorLine++;
+				if (errorLine < 10 || errorLine % 100 == 0) {
+					logger.error("cannot read line, error line num " + errorLine + " " + content, e);
+				}
 			}
-			mapGeneName2LsGO.put(ss[0], ss[1]);
+	
 		}
 		txtRead.close();
 		
@@ -503,13 +522,28 @@ public abstract class FunctionTest implements Cloneable {
 		}
 		return lsResult;
 	}
+	
 	/**
 	 * 返回指定的Item的注释
 	 * 譬如GOterm。kegg term等
 	 * @param item
 	 * @return
 	 */
-	protected abstract String getItemTerm(String item);
+	protected String getItemTerm(String item) {
+		String term = mapId2TermAnno.get(item);
+		if (StringOperate.isRealNull(term)) {
+			term = getItemTermDB(item);
+		}
+		return term;
+	}
+	
+	/**
+	 * 返回指定的Item的注释
+	 * 譬如GOterm。kegg term等
+	 * @param item
+	 * @return
+	 */
+	protected abstract String getItemTermDB(String item);
 	/**
 	 * 目前只能设定GO的type
 	 */

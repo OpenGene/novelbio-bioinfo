@@ -177,7 +177,7 @@ public class CogFunTest extends FunctionTest {
 	}
 
 	@Override
-	protected String getItemTerm(String item) {
+	protected String getItemTermDB(String item) {
 		if (item.contains(":")) {
 			item = item.split(":")[1];
 		}
