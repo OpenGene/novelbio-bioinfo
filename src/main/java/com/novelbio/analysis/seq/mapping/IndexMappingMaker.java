@@ -24,6 +24,7 @@ import com.novelbio.base.curator.CuratorNBC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.util.ServiceEnvUtil;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.model.species.SpeciesFileSepChr;
@@ -113,7 +114,7 @@ public abstract class IndexMappingMaker {
 		
 		InterProcessMutex lock = null;
 		try {
-			if (isLock) {
+			if (isLock && ServiceEnvUtil.isHadoopEnvRun() ) {
 				lock = CuratorNBC.getInterProcessMutex(getLockPath());
 				lock.acquire();
 			}
@@ -126,7 +127,7 @@ public abstract class IndexMappingMaker {
 			throw e;
 		} finally {
 			try {
-				if (isLock) {
+				if (isLock && ServiceEnvUtil.isHadoopEnvRun() ) {
 					lock.release();
 				}
 			} catch (Exception e) {

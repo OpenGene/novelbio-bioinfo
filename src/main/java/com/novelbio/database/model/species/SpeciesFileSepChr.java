@@ -12,11 +12,13 @@ import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
+import com.novelbio.base.PathDetail;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.curator.CuratorNBC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.util.ServiceEnvUtil;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.generalConf.PathDetailNBC;
 
@@ -121,7 +123,7 @@ public class SpeciesFileSepChr {
 	public void generateChrSepFiles() {
 		InterProcessMutex lock = null;
 		try {
-			if (isLock) {
+			if (isLock && ServiceEnvUtil.isHadoopEnvRun() ) {
 				lock = CuratorNBC.getInterProcessMutex(getLockPath(chrSeq));
 				lock.acquire();
 			}
@@ -143,7 +145,7 @@ public class SpeciesFileSepChr {
 			throw e;
 		} finally {
 			try {
-				if (isLock) {
+				if (isLock && ServiceEnvUtil.isHadoopEnvRun() ) {
 					lock.release();
 				}
 			} catch (Exception e) {
