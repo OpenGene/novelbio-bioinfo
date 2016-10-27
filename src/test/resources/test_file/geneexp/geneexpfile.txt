@@ -1,0 +1,1 @@
+AccId	Annotation	sampleA1	sampleA2	otherInfo	sampleB1	sampleB2	otherInfo	sampleC1	sampleC2	otherInfo	

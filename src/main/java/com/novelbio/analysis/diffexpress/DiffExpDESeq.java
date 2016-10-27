@@ -127,8 +127,8 @@ public class DiffExpDESeq extends DiffExpAbs {
 	 * 0： geneID
 	 * 1-n：value value都为整数
 	 */
-	protected  ArrayList<String[]> getAnalysisGeneInfo() {
-		ArrayList<String[]> lsResultGeneInfo = new ArrayList<String[]>();
+	protected List<String[]> getAnalysisGeneInfo() {
+		ArrayList<String[]> lsResultGeneInfo = new ArrayList<>();
 		for (int m = 0; m < lsGeneInfo.size(); m++) {
 			String[] strings = lsGeneInfo.get(m);
 
@@ -167,6 +167,22 @@ public class DiffExpDESeq extends DiffExpAbs {
 		}
 		return lsResultGeneInfo;
 	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@Override
 	protected void run() {
