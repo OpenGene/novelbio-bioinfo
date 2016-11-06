@@ -1,1 +1,10 @@
-AccId	Annotation	sampleA1	sampleA2	otherInfo	sampleB1	sampleB2	otherInfo	sampleC1	sampleC2	otherInfo	
+AccId	Annotation	sampleA1	sampleA2	otherInfo	sampleB1	sampleB2	otherInfo	sampleC1	sampleC2	otherInfo
+gene1	gene1anno	10	11	otherInfo1	12	13	otherInfo2	14	15	otherInfo3
+gene2	gene2anno	12	13	otherInfo12	34	15	otherInfo22	65	23	otherInfo32
+gene3	gene3anno	53	24	otherInfo22	63	72	otherInfo23	154	53	otherInfo53
+gene4	gene3anno	86	78	otherInfo22	34	67	otherInfo23	89	2	otherInfo53
+gene5	gene3anno	234	65	otherInfo42	27	19	otherInfo23	12	56	otherInfo53
+gene2	gene3anno	274	43	otherInfo52	57	95	otherInfo23	67	87	otherInfo53
+gene3	gene3anno	86	623	otherInfo62	96	167	otherInfo23	9	62	otherInfo53
+gene6	gene3anno	1	2	otherInfo62	0	5	otherInfo23	9	0	otherInfo53
+gene7	gene3anno	3	4	otherInfo62	4	5	otherInfo23	4	5	otherInfo53

@@ -28,8 +28,10 @@ public class GeneExpModify {
 	List<String[]> lsGeneInfo = new ArrayList<String[]>();
 	/**
 	 * 一系列的表示基因分组的列，输入的时候就按照col进行了排序<br>
-	 * 0: colNum, 实际number，从1开始计数<br>
-	 * 1: SampleGroupName
+	 * 0: colNum, 实际number，从0开始计数<br>
+	 * 1: SampleGroupName<br>
+	 * 譬如第二列是分组A，第三列也是分组A<br>
+	 * 则写为 String[]{"1","A"}	和String[]{"2","A"}
 	 */
 	List<String[]> lsSampleColumn2GroupName;
 	
@@ -68,7 +70,7 @@ public class GeneExpModify {
 	}
 	/** 做差异基因的时候每个样本表达量的值不能都小于该数值
 	 * 意思如果为 2, 3, 2, 1.3, 3
-	 * 则当值设定为3时，上述基因删除
+	 * 则当值设定为4时，上述基因删除
 	 * @param minSampleSepNum 是小于的关系，不包括等于
 	 */
 	public void setMinSampleSepNum(double minSampleSepNum) {
@@ -95,7 +97,7 @@ public class GeneExpModify {
 	 * 0: colNum, 实际number，从1开始计数<br>
 	 * 1: SampleGroupName
 	 */
-	public void setCol2Sample(List<String[]> lsSampleColumn2GroupName) {
+	public void setCol2SampleFrom1(List<String[]> lsSampleColumn2GroupName) {
 		//按列进行排序
 		Collections.sort(lsSampleColumn2GroupName, new Comparator<String[]>() {
 			public int compare(String[] o1, String[] o2) {
@@ -104,15 +106,19 @@ public class GeneExpModify {
 				return col1.compareTo(col2);
 			}
 		});
-		this.lsSampleColumn2GroupName = lsSampleColumn2GroupName;
+		this.lsSampleColumn2GroupName = new ArrayList<>();
+		for (String[] col2Group : lsSampleColumn2GroupName) {
+			this.lsSampleColumn2GroupName.add(new String[]{(Integer.parseInt(col2Group[0])-1) + "", col2Group[1]});
+		}
 	}
 	
 	/**
 	 * 将输入的文件重整理成所需要的txt格式写入文本
+	 * 
 	 */
 	public void writeToGeneFile(String outFileName) {
-		lsGeneInfo = getAnalysisGeneInfo();
 		lsGeneInfo = removeDuplicate();
+		lsGeneInfo = getAnalysisGeneInfo();
 		
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFileName, true);
 		String[] title = lsGeneInfo.get(0);
@@ -144,7 +150,7 @@ public class GeneExpModify {
 	private List<String[]> removeDuplicate() {
 		ArrayList<Integer> lsColID = new ArrayList<Integer>();
 		for (String[] col2Group : lsSampleColumn2GroupName) {
-			lsColID.add(Integer.parseInt(col2Group[0]));
+			lsColID.add(Integer.parseInt(col2Group[0]) + 1);
 		}
 		List<String[]> lsTmpResult = MathComput.getMedian(lsGeneInfo.subList(1, lsGeneInfo.size()), colAccID+1, lsColID);
 		lsTmpResult.add(0, lsGeneInfo.get(0));
@@ -160,16 +166,18 @@ public class GeneExpModify {
 	 */
 	private List<String[]> getAnalysisGeneInfo() {
 		ArrayList<String[]> lsResultGeneInfo = new ArrayList<>();
+		List<String[]> lsSample2GroupNew = new ArrayList<>();
 		for (int m = 0; m < lsGeneInfo.size(); m++) {
 			String[] strings = lsGeneInfo.get(m);
 			
 			String[] tmpResult = new String[lsSampleColumn2GroupName.size() + 1];
 			tmpResult[0] = strings[colAccID];
 			for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
-				int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
+				int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]);
 				//title
 				if (m == 0) {
 					tmpResult[i + 1] = strings[colNum];
+					lsSample2GroupNew.add(new String[]{(i + 1) + "", lsSampleColumn2GroupName.get(i)[1]});
 					continue;
 				}
 				
@@ -190,12 +198,12 @@ public class GeneExpModify {
 		if (isCount) {
 			for (int i = 1; i < lsResultGeneInfo.size(); i++) {
 				String[] strings = lsResultGeneInfo.get(i);
-				for (int j = 1; i < strings.length; i++) {
-					strings[j] = (int)Double.parseDouble(strings[j]) + "";
+				for (int j = 1; j < strings.length; j++) {
+					strings[j] = Math.round(Double.parseDouble(strings[j])) + "";
 				}
 			}
 		}
-		
+		lsSampleColumn2GroupName = lsSample2GroupNew;
 		return lsResultGeneInfo;
 	}
 	
@@ -203,6 +211,10 @@ public class GeneExpModify {
 		return mapGeneID_2_Sample2MeanValue;
 	}
 	
+	/** 获得基因表达量的平均值<br>
+	 * <b>需要先运行 {@link #writeToGeneFile(String)}</b>
+	 * @param outFileName
+	 */
 	public void writeAvgInfo2File(String outFileName) {
 		setMapSample_2_time2value();
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFileName, true);
@@ -224,8 +236,9 @@ public class GeneExpModify {
 	}
 
 	private void setMapSample_2_time2value() {
-		mapGeneID_2_Sample2MeanValue = new HashMap<>();
-		for (String[] geneID2Info : lsGeneInfo) {
+		mapGeneID_2_Sample2MeanValue = new LinkedHashMap<>();
+		for (int i = 1; i < lsGeneInfo.size(); i++) {
+			String[] geneID2Info = lsGeneInfo.get(i);
 			String geneName = geneID2Info[colAccID];
 			try {
 				Map<String, Double> mapTime2value = mapTime2AvgValue(geneID2Info);
@@ -246,7 +259,7 @@ public class GeneExpModify {
 		Map<String, List<Double>> mapTime2LsValue = new LinkedHashMap<>();
 		
 		for (int i = 0; i < lsSampleColumn2GroupName.size(); i++) {
-			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]) - 1;
+			int colNum = Integer.parseInt(lsSampleColumn2GroupName.get(i)[0]);
 			double value = 0;
 			try {
 				value = Double.parseDouble(info[colNum]);
