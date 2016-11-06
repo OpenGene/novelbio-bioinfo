@@ -1,0 +1,6 @@
+AccId	sampleA	sampleB	sampleC
+"gene1"	10.5	12.5	14.5
+"gene2"	85.5	50.5	60.5
+"gene3"	197	100	70
+"gene4"	82	50.5	45.5
+"gene5"	149.5	23	34

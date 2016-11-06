@@ -1,0 +1,6 @@
+AccId	sampleA1	sampleA2	sampleB1	sampleB2	sampleC1	sampleC2
+"gene1"	10	11	12	13	14	15
+"gene2"	143	28	46	55	66	55
+"gene3"	70	324	80	120	82	58
+"gene4"	86	78	34	67	89	2
+"gene5"	234	65	27	19	12	56
