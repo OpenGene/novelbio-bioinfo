@@ -37,10 +37,19 @@ public class RegionBed {
 	 */
 	int lengthNormal = 0;
 	
+	/**
+	 * 给定mapReads，返回里面装载好序列的文件
+	 * @param mapReads
+	 * @return
+	 */
 	public RegionInfo getRegionInfo(MapReads mapReads) {
 		for (Align align : lsAligns) {
-			mapReads.getRangeInfo(align, 0);
+			double[] value = mapReads.getRangeInfo(align, 0);
 		}
+	}
+	
+	private void normalization(double[] value) {
+		
 	}
 	
 	
