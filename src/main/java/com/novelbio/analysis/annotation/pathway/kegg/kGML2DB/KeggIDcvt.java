@@ -20,15 +20,33 @@ import com.novelbio.database.service.servkegg.ServKNIdKeg;
  *
  */
 public class KeggIDcvt {
+	public static void upDateGen2Keg(String gen2KegFile, String abbr) throws Exception {
+		upDateGen2Keg(gen2KegFile, abbr, 0);
+	}
+	
+	public static void updateGene2Id(String gen2KegFile, String abbr, int taxId) {
+		TxtReadandWrite txtgene2Keg=new TxtReadandWrite(gen2KegFile);
+		for (String content : txtgene2Keg.readlines()) {
+			if (!content.startsWith(abbr + ":")) {
+				continue;
+			}
+			String[] ss=content.split("\t");
+			long geneId=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
+			GeneID geneIdGene = new GeneID(GeneID.IDTYPE_GENEID, geneId + "", taxId);
+			geneIdGene.setUpdateAccID(ss[0].replace(abbr + ":", "").trim());
+			geneIdGene.update(true);
+		}
+		txtgene2Keg.close();
+	}
+	
 	/**
 	 * 首先用geneID在NCBIID表中获得taxID，然后导入gen2Keg表
 	 * @param gen2KegFile
 	 * @throws Exception 
 	 */
-	public static void upDateGen2Keg(String gen2KegFile, String abbr) throws Exception {
+	public static void upDateGen2Keg(String gen2KegFile, String abbr, int taxId) throws Exception {
 		ServKIDgen2Keg servKIDgen2Keg = ServKIDgen2Keg.getInstance();
 		TxtReadandWrite txtgene2Keg=new TxtReadandWrite(gen2KegFile);
-		int TaxID=0;
 		////////////////获得taxID////////////////////////////////////////////////////////
 		for (String content : txtgene2Keg.readlines()) {
 			if (!content.startsWith(abbr + ":")) {
@@ -38,22 +56,11 @@ public class KeggIDcvt {
 			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
 			GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID + "", 0);
 			if (copedID.getTaxID() > 0) {
-				TaxID = copedID.getTaxID();
+				taxId = copedID.getTaxID();
 				break;
 			}
 		}
-//		while ((content=reader.readLine())!=null) 
-//		{
-//			String[] ss=content.split("\t"); 
-//			long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").replace("equivalent", "").trim());
-//			String accID = ss[0].split(":")[1].trim();
-//			CopedID copedID = new CopedID(accID, TaxID);
-//			copedID.setUpdateGeneID(geneID+"", CopedID.IDTYPE_GENEID);
-//			copedID.setUpdateDBinfo(NovelBioConst.DBINFO_KEGG, false);
-//			copedID.update(false);
-//		}
-		///////////////////////////////////////////////////////////////////////////////////////
-		if (TaxID==0) {
+		if (taxId == 0) {
 			System.err.println("在NCBIID表中没有找到该物种的taxID");
 			return;
 		}
@@ -65,27 +72,28 @@ public class KeggIDcvt {
 			String[] ss=content2.split("\t");
 			String kegID=ss[0];long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").trim());
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
-			kgiDgen2Keg.setGeneID(geneID);kgiDgen2Keg.setKeggID(kegID);kgiDgen2Keg.setTaxID(TaxID);
+			kgiDgen2Keg.setGeneID(geneID);kgiDgen2Keg.setKeggID(kegID);kgiDgen2Keg.setTaxID(taxId);
 			
-			KGIDgen2Keg ls = servKIDgen2Keg.findByGeneIdAndTaxIdAndKegId(geneID, TaxID, kegID);
+			KGIDgen2Keg ls = servKIDgen2Keg.findByGeneIdAndTaxIdAndKegId(geneID, taxId, kegID);
 			if (ls == null) {
 				servKIDgen2Keg.save(kgiDgen2Keg);
 			}
 		}
 	}
 	
-	
+	public static void upDateKeg2Ko(String keg2KoFile, String abbr) throws Exception {
+		upDateKeg2Ko(keg2KoFile, abbr, 0);
+	}
 	/**
 	 * 首先用kegID在gen2Keg表中找taxID
 	 * 然后倒入keg2Ko表
 	 * @param keg2KoFile
 	 * @throws Exception 
 	 */
-	public static void upDateKeg2Ko(String keg2KoFile, String abbr) throws Exception {
+	public static void upDateKeg2Ko(String keg2KoFile, String abbr, int taxId) throws Exception {
 		ServKIDgen2Keg servKIDgen2Keg = ServKIDgen2Keg.getInstance();
 		ServKIDKeg2Ko servKIDKeg2Ko = ServKIDKeg2Ko.getInstance();
 		TxtReadandWrite txtKeg2Ko=new TxtReadandWrite(keg2KoFile);
-		int TaxID=0;
 		////////////////获得taxID////////////////////////////////////////////////////////
 		for (String content : txtKeg2Ko.readlines()) {
 			if (!content.startsWith(abbr + ":")) {
@@ -99,13 +107,13 @@ public class KeggIDcvt {
 			KGIDgen2Keg kgiDgen2Keg2 = servKIDgen2Keg.findByKegId(kegID);
 			
 			if (kgiDgen2Keg2 != null) {
-				TaxID = kgiDgen2Keg2.getTaxID();
+				taxId = kgiDgen2Keg2.getTaxID();
 				break;
 			}
 		}
 		
 		///////////////////////////////////////////////////////////////////////////////////////
-		if (TaxID == 0) {
+		if (taxId == 0) {
 			System.err.println("在gene2Keg表中没有找到该物种的taxID");
 			return;
 		}
@@ -118,9 +126,9 @@ public class KeggIDcvt {
 			String[] ss=content2.split("\t");
 			String kegID=ss[0];String ko=ss[1].trim();
 			KGIDkeg2Ko kgDkeg2Ko=new KGIDkeg2Ko();
-			kgDkeg2Ko.setKeggID(kegID);kgDkeg2Ko.setKo(ko);kgDkeg2Ko.setTaxID(TaxID);
+			kgDkeg2Ko.setKeggID(kegID);kgDkeg2Ko.setKo(ko);kgDkeg2Ko.setTaxID(taxId);
 			
-			List<KGIDkeg2Ko> ls = servKIDKeg2Ko.findLsByKegIdAndTaxId(kegID, TaxID);
+			List<KGIDkeg2Ko> ls = servKIDKeg2Ko.findLsByKegIdAndTaxId(kegID, taxId);
 			
 			if (ls == null || ls.size() == 0) {
 				servKIDKeg2Ko.save(kgDkeg2Ko);

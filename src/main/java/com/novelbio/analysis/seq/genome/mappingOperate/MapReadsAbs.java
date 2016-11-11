@@ -10,6 +10,7 @@ import java.util.Map;
 import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.log4j.Logger;
 
+import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
@@ -314,6 +315,22 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	public double[] getRangeInfo(String chrID,int startNum,int endNum,int type) {
 		return getRangeInfo(0, chrID, startNum, endNum, type);
 	}
+	
+	/**
+	 * 经过标准化，和equations修正
+	 * 输入坐标区间，默认每个区间的bp数为invNum，返回该段区域内reads的数组
+	 * 如果该染色体在mapping时候不存在，则返回null
+	 * 如果invNum ==1 && thisInvNum == 1，结果会很精确
+	 * @param align align中包含方向，考虑align的方向。也就是说如果align是反向的(3'-5')，则返回的value也是反向的(3'-5')。
+	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
+	 * @return 如果没有找到该染色体位点，则返回null
+	 */
+	public double[] getRangeInfo(Align align, int type) {
+		double[] values = getRangeInfo(0, align.getRefID(), align.getStartAbs(), align.getEndAbs(), type);
+		ArrayOperate.convertArray(values);
+		return values;
+	}
+	
 	/**
 	 * 经过标准化，和equations修正
 	 * 输入坐标区间，和每个区间的bp数，返回该段区域内reads的数组

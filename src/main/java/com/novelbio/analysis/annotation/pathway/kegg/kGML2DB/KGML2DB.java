@@ -35,12 +35,16 @@ import com.novelbio.database.service.servkegg.ServKRelation;
 public class KGML2DB 
 {
 	private static Logger logger = Logger.getLogger(KGML2DB.class);
+	
+	public static void readKGML(String filePath) {
+		readKGML(filePath, 0);
+	}
 	/**
 	 * 将KGML导入数据库
 	 * @param filePath
 	 * @throws Exception
 	 */
-	public static void readKGML(String filePath)
+	public static void readKGML(String filePath, int taxId)
 	{
 		List<Path> lsKGML=FileOperate.getLsFoldPath(filePath, "*", "xml");
 		Serializer serializer = new Persister();
@@ -56,11 +60,11 @@ public class KGML2DB
 			} catch (Exception e) {
 				logger.error("文件出错："+source.getAbsolutePath());
 			}
-			kgml2DB(example);
+			kgml2DB(example, taxId);
         }
 	}
 	
-	public static void kgml2DB(KGML kgml) 
+	public static void kgml2DB(KGML kgml, int taxId) 
 	{
 		ServKEntry servKEntry = new ServKEntry();
 		ServKPathRelation servKPathRelation = new ServKPathRelation();
@@ -71,9 +75,8 @@ public class KGML2DB
 		//获得具体物种
 		String taxAbbr=kgml.getSpecies();
 		TaxInfo taxInfo2= servTaxID.queryAbbr(taxAbbr);
-		int taxID=0;
 		if (taxInfo2 != null) {
-			taxID = taxInfo2.getTaxID();
+			taxId = taxInfo2.getTaxID();
 		}
 		
 		///////////////////装入entry/////////////////////////////////////////////////////////////////
@@ -83,7 +86,7 @@ public class KGML2DB
 		{
 			
 			KGentry kGentry=new KGentry();
-			kGentry.setTaxID(taxID);
+			kGentry.setTaxID(taxId);
 			kGentry.setPathName(kgml.getPathName());
 			kGentry.setEntryId(lsEntry.get(i).getID());
 			kGentry.setType(lsEntry.get(i).getType());
@@ -224,7 +227,7 @@ public class KGML2DB
 		
 		///////////////////装入pathway/////////////////////////////////////////////////////////////////
 		KGpathway kGpathway=new KGpathway();
-		kGpathway.setTaxID(taxID);
+		kGpathway.setTaxID(taxId);
 		kGpathway.setPathName(kgml.getPathName());
 		kGpathway.setSpecies(kgml.getSpecies());
 		kGpathway.setMapNum(kgml.getMapNum());
