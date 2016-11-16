@@ -25,7 +25,7 @@ public class ShuffleReads {
 		shuffleReads.summary();
 		
 		for (Align align : shuffleReads.readlines()) {
-			System.out.println(align.toStringNoCis());
+			System.out.println(align.toStringNoStrand());
 		}
 	}
     Random rnd;    

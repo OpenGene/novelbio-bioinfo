@@ -121,7 +121,7 @@ public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
 	}
 	
 	/** 注释结果 */
-	private String annoSnp(String input) {
+	public String annoSnp(String input) {
 		input = input.trim();
 		if (input.startsWith("#")) {
 			return input;

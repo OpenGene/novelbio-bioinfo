@@ -161,8 +161,15 @@ public class Align implements Alignment {
 	/**
 	 * 不带方向的返回结果string
 	 */
-	public String toStringNoCis() {
+	public String toStringNoStrand() {
 		return chrID + ":" + getStartAbs() + "-" + getEndAbs();
+	}
+	
+	/**
+	 * 带方向的返回结果string
+	 */
+	public String toString() {
+		return chrID + ":" + getStartCis() + "-" + getEndCis();
 	}
 	
 	/** 不考虑方向的合并，将overlap的align合并为一个align */

@@ -333,7 +333,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		if (align == null) {
 			return "";
 		}
-		return align.toStringNoCis();
+		return align.toStringNoStrand();
 	}
 	
 	public Align getSpliceSiteAlignDisplay() {

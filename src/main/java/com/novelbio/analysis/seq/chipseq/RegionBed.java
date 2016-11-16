@@ -1,7 +1,9 @@
 package com.novelbio.analysis.seq.chipseq;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -22,16 +24,12 @@ import com.novelbio.base.dataStructure.MathComput;
 public class RegionBed {
 	/** 区段的名字 */
 	String name;
-	/** 默认区段是首尾相连 */
-	boolean isPileup = false;
-	/** 权重，用于画heatmap排序 */
-	double score;
 	
 	/** 区段，注意里面分方向 */
 	List<Align> lsAligns = new ArrayList<>();
 	
-	/** 把tss合并起来的标准化方式 */
-	EnumTssPileUp normalType;
+	/** 权重，用于画heatmap排序 */
+	double score;
 	/**
 	 * 区段的总长度，
 	 * 如果为0则不标准化。如果指定长度，表示将区段标准化到指定的长度。
@@ -39,6 +37,29 @@ public class RegionBed {
 	 * 这时候我们就可以把genebody都标准化为1000bp
 	 */
 	int lengthNormal = 0;
+	
+	/** 把tss合并起来的标准化方式 */
+	EnumTssPileUp normalType;
+	
+	public RegionBed(String regionBed) {
+		String[] ss = regionBed.split("\t");
+		this.name = ss[0];
+		
+		String[] aligns = ss[1].split(";");
+		for (String alignStr : aligns) {
+			Align align = new Align(alignStr);
+			lsAligns.add(align);
+		}
+		if (ss.length > 2) {
+			score = Double.parseDouble(ss[2]);
+		}
+		if (ss.length > 3) {
+			lengthNormal = Integer.parseInt(ss[3]);
+		}
+		if (ss.length > 4) {
+			normalType = EnumTssPileUp.getPileupType(ss[4]);
+		}
+	}
 	
 	/**
 	 * 给定mapReads，返回里面装载好序列的文件
@@ -59,16 +80,56 @@ public class RegionBed {
 		return regionValue;
 	}
 	
+	public String toString() {
+		List<String> lsResult = new ArrayList<>();
+		lsResult.add(name);
+		for (Align align : lsAligns) {
+			lsResult.add(align.toString());
+		}
+		lsResult.add(score+"");
+		lsResult.add(lengthNormal + "");
+		lsResult.add(normalType.toString());
+		return ArrayOperate.cmbString(lsResult, "\t");
+	}
+	
 	public static enum EnumTssPileUp {
 		/** 直接连起来 */ 
-		connect,
+		connect("c"),
 		/** 堆叠起来，并且把每个align标准化到相同的长度 */
-		pileup_to_same_length,
+		pileup_to_same_length("psl"),
 		/** 堆叠起来，并且把长度长于指定长度的align标准化到相同的长度，短的不管，直接合并 */
-		pileup_long_to_same_length,
+		pileup_long_to_same_length("plsl"),
 		/** 简单堆叠起来，不等长的region就直接堆叠起来，不对长度进行标准化 */
-		pileup;
+		pileup("p");
 		
+		String symbol;
+		
+		private EnumTssPileUp(String symbol) {
+			this.symbol = symbol;
+		}
+		
+		static Map<String, EnumTssPileUp> mapSymbol2TssType = new HashMap<>();
+		static {
+			mapSymbol2TssType.put(connect.toString(), connect);
+			mapSymbol2TssType.put(connect.symbol, connect);
+
+			mapSymbol2TssType.put(pileup_to_same_length.toString(), pileup_to_same_length);
+			mapSymbol2TssType.put(pileup_to_same_length.symbol, pileup_to_same_length);
+			
+			mapSymbol2TssType.put(pileup_long_to_same_length.toString(), pileup_long_to_same_length);
+			mapSymbol2TssType.put(pileup_long_to_same_length.symbol, pileup_long_to_same_length);
+
+			mapSymbol2TssType.put(pileup.toString(), pileup);
+			mapSymbol2TssType.put(pileup.symbol, pileup);
+		}
+		
+		public static EnumTssPileUp getPileupType(String info) {
+			EnumTssPileUp tssPileUp = mapSymbol2TssType.get(info);
+			if (tssPileUp == null) {
+				throw new ExceptionNbcParamError("cannot find pileup type " + info);
+			}
+			return tssPileUp;
+		}
 		
 		public static double[] normalizeValues(EnumTssPileUp normalType, List<double[]> lsValues, int lengthNormal) {
 			double[] result = null;
