@@ -22,14 +22,13 @@ import com.novelbio.base.dataStructure.MathComput;
  * @data 2016年11月9日
  */
 public class RegionBed {
+	private static final String ALIGN_SEP = ";";
 	/** 区段的名字 */
 	String name;
 	
 	/** 区段，注意里面分方向 */
 	List<Align> lsAligns = new ArrayList<>();
-	
-	/** 权重，用于画heatmap排序 */
-	double score;
+
 	/**
 	 * 区段的总长度，
 	 * 如果为0则不标准化。如果指定长度，表示将区段标准化到指定的长度。
@@ -50,14 +49,11 @@ public class RegionBed {
 			Align align = new Align(alignStr);
 			lsAligns.add(align);
 		}
-		if (ss.length > 2) {
-			score = Double.parseDouble(ss[2]);
-		}
 		if (ss.length > 3) {
-			lengthNormal = Integer.parseInt(ss[3]);
+			lengthNormal = Integer.parseInt(ss[2]);
 		}
 		if (ss.length > 4) {
-			normalType = EnumTssPileUp.getPileupType(ss[4]);
+			normalType = EnumTssPileUp.getPileupType(ss[3]);
 		}
 	}
 	
@@ -75,7 +71,6 @@ public class RegionBed {
 		double[] values = EnumTssPileUp.normalizeValues(normalType, lsValues, lengthNormal);
 		RegionValue regionValue = new RegionValue();
 		regionValue.setName(name);
-		regionValue.setScore(score);
 		regionValue.setValues(values);
 		return regionValue;
 	}
@@ -83,10 +78,11 @@ public class RegionBed {
 	public String toString() {
 		List<String> lsResult = new ArrayList<>();
 		lsResult.add(name);
+		List<String> lsAlignStr = new ArrayList<>();
 		for (Align align : lsAligns) {
-			lsResult.add(align.toString());
+			lsAlignStr.add(align.toString());
 		}
-		lsResult.add(score+"");
+		lsResult.add(ArrayOperate.cmbString(lsAlignStr, ALIGN_SEP));
 		lsResult.add(lengthNormal + "");
 		lsResult.add(normalType.toString());
 		return ArrayOperate.cmbString(lsResult, "\t");

@@ -1,12 +1,14 @@
 package com.novelbio.analysis.seq.chipseq;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
+import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUp;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 
 /**
  * 绘制tss、tes等图，要求输入bed文件，然后根据bed文件的结果来画图
@@ -15,37 +17,40 @@ import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
  */
 public class TssPlot {
 	private static final Logger logger = Logger.getLogger(TssPlot.class);
+	/** 0-1000 是1001位 */
+	private static final int LENGTH_XAXIS = 1001;
+
 	
-	/**
-	 * 结果图片分割为1000份
-	 * 小于0表示不进行分割，直接按照长度合并起来
-	 */
-	int splitNum = 1000;
+	/** x轴，长度必须和splitNum对应 */
+	double[] xAxis;
 	
 	MapReads mapReads;
-	EnumMapNormalizeType mapNormType = EnumMapNormalizeType.allreads;
-
+	
+	EnumTssPileUp enumTssPileUp = EnumTssPileUp.pileup_to_same_length;
+	
 	/** 绘制tss的具体信息，主要就是reads堆叠后的信息 */
-	List<RegionInfo> lsRegions;
-	
-	
+	List<RegionBed> lsRegions;
 	
 	String sampleName;
 	
 	public TssPlot() { }
+	
+	public void setxAxis(double[] xAxis) {
+		this.xAxis = xAxis;
+	}
 	
 	/** 样本名 */
 	public void setSampleName(String sampleName) {
 		this.sampleName = sampleName;
 	}
 	
-	/** 设定切割分数，默认为1000 
-	 * 小于0表示不进行分割，直接按照长度合并起来
-	 */
-	public void setSplitNum(int splitNum) {
-		this.splitNum = splitNum;
+	/** 设定读取的region信息 */
+	public void setLsRegions(List<RegionBed> lsRegions) {
+		this.lsRegions = lsRegions;
 	}
+	
 	public void setMapReads(MapReads mapReads) {
+		//TODO 在这里直接生成mapReads
 		this.mapReads = mapReads;
 	}
 	/**
@@ -55,15 +60,61 @@ public class TssPlot {
 	public MapReads getMapReads() {
 		return mapReads;
 	}
-	/** 
-	 * 设定本方法后<b>不需要</b>运行{@link #fillLsMapInfos()}<br>
-	 * 用来做给定区域的图。mapinfo中设定坐标位点和value
-	 * 这个和输入gene，2选1。谁先设定选谁
-	 *  */
-	public void setSiteRegion(List<RegionInfo> lsMapInfos) {
-		this.lsRegions = RegionInfo.getCombLsMapInfoBigScore(lsMapInfos, 1000, true);
-	}
-  
 
+	/** 给定一系列的region区域，获取其覆盖的位点信息 */
+	public List<RegionValue> getSiteRegion() {
+		List<RegionValue> lsRegionValues = new ArrayList<>();
+		for (RegionBed regionBed : lsRegions) {
+			RegionValue regionValue = regionBed.getRegionInfo(mapReads);
+			normRegionValue(regionValue);
+			lsRegionValues.add(regionValue);
+		}
+		return lsRegionValues;
+	}
+	
+	private void normRegionValue(RegionValue regionValue) {
+		int splitNum = xAxis == null ? LENGTH_XAXIS : xAxis.length;
+		
+		if (enumTssPileUp == EnumTssPileUp.pileup 
+				|| (enumTssPileUp == EnumTssPileUp.pileup_long_to_same_length && regionValue.getLen() < splitNum)
+			) {
+			regionValue.setLen(splitNum, false);
+		} else if (enumTssPileUp == EnumTssPileUp.pileup_to_same_length) {
+			regionValue.setLen(splitNum, true);
+		}
+	}
+	
+	/** 依次把所有的bed文件都写出来 */
+	public void writeToFileSep(String outfile) {
+		List<RegionValue> lsRegionValues = getSiteRegion();
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outfile, true);
+		txtWrite.writefileln("#XAXIS\t" + ArrayOperate.cmbString(getXaxis(), RegionValue.SEP_VALUE));
+		for (RegionValue regionValue : lsRegionValues) {
+			txtWrite.writefileln(regionValue.toString());
+		}
+		txtWrite.close();
+	}
+	
+	/** 依次把所有的bed文件都写出来 */
+	public void writeToFileMerge(String outfile) {
+		List<RegionValue> lsRegionValues = getSiteRegion();
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outfile, true);
+		txtWrite.writefileln("#XAXIS\t");
+		txtWrite.writefileln(ArrayOperate.cmbString(getXaxis(), RegionValue.SEP_VALUE));
+		RegionValue regionValue = RegionValue.mergeRegions(lsRegionValues, enumTssPileUp, getXaxis().length);
+		txtWrite.writefileln(regionValue.toString());
+		txtWrite.close();
+	}
+	
+	private double[] getXaxis() {
+		if (xAxis == null) {
+			xAxis = new double[LENGTH_XAXIS];
+			for (int i = 0; i < xAxis.length; i++) {
+				xAxis[i] = i;
+			}
+		}
+		return xAxis;
+	}
+	
 }
 

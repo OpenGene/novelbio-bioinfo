@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUp;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.MathComput;
 
 /**
  * 最终用于tss图的数值，都是y轴的值
@@ -11,16 +13,16 @@ import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUp;
  *
  */
 public class RegionValue {
+	/** 输出的value值中间的分隔符 */
+	public static final String SEP_VALUE = " ";
+	
 	String name;
-	double score;
 	double[] values;
 	
 	protected void setName(String name) {
 		this.name = name;
 	}
-	protected void setScore(double score) {
-		this.score = score;
-	}
+
 	protected void setValues(double[] values) {
 		this.values = values;
 	}
@@ -30,21 +32,33 @@ public class RegionValue {
 	public String getName() {
 		return name;
 	}
-	public double getScore() {
-		return score;
+	
+	/** 返回values的长度 */
+	public int getLen() {
+		return values.length;
+	}
+	
+	/** 把region设定为指定的长度，譬如value为1000位，但是我现在只需要500位。<br>
+	 * @param isZoom 是否缩放。<br>
+	 * true 把value通过加权平均进行缩放<br>
+	 * false 直接把value延长(空位用0填充)，或缩短(减去右侧)<br>
+	 */
+	public void setLen(int length, boolean isZoom) {
+		double[] result = new double[length];
+		if (isZoom) {
+			result = MathComput.mySpline(values, length);
+		} else {
+			for (int i = 0; i < result.length; i++) {
+				result[i] = i < values.length ? values[i] : 0;
+			}
+		}
+		values = result;
 	}
 	
 	public String toString() {
 		StringBuilder sBuilder = new StringBuilder();
 		sBuilder.append(name); sBuilder.append("\t");
-		sBuilder.append(score+"\t");
-		for (int i = 0; i < values.length; i++) {
-			if (i == 0) {
-				sBuilder.append(values[i]);
-			} else {
-				sBuilder.append(";" + values[i]);
-			}
-		}
+		sBuilder.append(ArrayOperate.cmbString(values, SEP_VALUE));
 		return sBuilder.toString();
 	}
 	
@@ -63,7 +77,6 @@ public class RegionValue {
 		double[] mergedValues = EnumTssPileUp.normalizeValues(normalizeType, lsValues, length);
 		RegionValue regionValue = new RegionValue();
 		regionValue.setName("merge");
-		regionValue.setScore(0);
 		regionValue.setValues(mergedValues);
 		return regionValue;
 	}

@@ -345,6 +345,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		cmdOperate.addCmdParamInput(getMappingArf(fastaInput));
 		cmdOperate.addCmdParamInput(getCollapseReadsFa(fastaInput));
 		cmdOperate.run();
+		printLogs();
 		if (!cmdOperate.isFinishedNormal()) {
 			StringBuilder stringBuilder = new StringBuilder("miRNAdeep2 miRDeep2.pl error:\n");
 			stringBuilder.append("cmdline: " + cmdOperate.getCmdExeStrReal()+"\n");
@@ -358,6 +359,15 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		createReportFile = false;
+	}
+	
+	private void printLogs() {
+		logger.error("mirDeep logs:");
+		TxtReadandWrite txtReport = new TxtReadandWrite(getReportFileRandom());
+		for (String string : txtReport.readlines()) {
+			logger.error(string);
+		}
+		txtReport.close();
 	}
 	
 	/**
