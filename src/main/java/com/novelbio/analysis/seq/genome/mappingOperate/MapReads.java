@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.bed.BedSeq;
@@ -776,7 +777,7 @@ class MapReadsAddAlignRecord {
 			return tmpOld;
 		}
 		
-		ArrayList<? extends Alignment> lsadd = null;
+		List<? extends Alignment> lsadd = null;
 		//如果没有可变剪接
 		lsadd = alignRecord.getAlignmentBlocks();
 		lsadd = setStartCod(lsadd, mapReads.startCod, cis5to3This);
@@ -788,13 +789,14 @@ class MapReadsAddAlignRecord {
 	/**
 	 * 根据正反向截取相应的区域，最后返回需要累加的ArrayList<int[]>
 	 * 譬如韩燕的项目，只需要reads开头的前3个bp，那么就截取前三个就好
-	 * @param lsStartEnd
+	 * @param lsStartEnd 注意传入的是reads，reads一定是从小到大排序的
 	 * @param StartCodLen 譬如韩燕的项目，只需要reads开头的前3个bp，那么就设定为3
 	 * @param cis5to3
 	 * @return 如果cis5to3 = True，那么正着截取startCod长度的序列
 	 * 如果cis5to3 = False，那么反着截取startCod长度的序列
 	 */
-	private ArrayList<? extends Alignment> setStartCod(ArrayList<? extends Alignment> lsStartEnd, int StartCodLen, boolean cis5to3) {
+	@VisibleForTesting
+	protected static List<? extends Alignment> setStartCod(List<? extends Alignment> lsStartEnd, int StartCodLen, boolean cis5to3) {
 		if (StartCodLen <= 0) {
 			return lsStartEnd;
 		}
@@ -828,6 +830,7 @@ class MapReadsAddAlignRecord {
 					if (i == 0) {
 						Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - StartCodLen + 1, alignment.getEndAbs());
 						align.setCis5to3(alignment.isCis5to3());
+						lsResult.add(0,align);
 					} else {						
 						Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 						align.setCis5to3(alignment.isCis5to3());
@@ -851,7 +854,7 @@ class MapReadsAddAlignRecord {
 	 * @param chrLoc 坐标位点，0为坐标长度，1开始为具体坐标，所以chrLoc[123] 就是实际123位的坐标
 	 * @param lsAddLoc 间断的坐标区域，为int[2] 的list，譬如 100-250，280-300这样子，注意提供的坐标都是闭区间，所以首位两端都要加上
 	 */
-	private void addChrLoc(int[] chrLoc, ArrayList<? extends Alignment> lsAddLoc, int addNum) {
+	private void addChrLoc(int[] chrLoc, List<? extends Alignment> lsAddLoc, int addNum) {
 		for (Alignment is : lsAddLoc) {
 			for (int i = is.getStartAbs(); i <=is.getEndAbs(); i++) {
 				if (i >= chrLoc.length) {

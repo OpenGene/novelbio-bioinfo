@@ -287,15 +287,20 @@ public class Species implements Cloneable {
 	 * @return
 	 */
 	public String getChromSeqSepOne() {
+		SpeciesFileSepChr sepChr = getChromSeqSep();
+		return sepChr == null? null : getChromSeqSep().getChrSepFileOne();
+	}
+	
+	public SpeciesFileSepChr getChromSeqSep() {
 		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
 			return null;
 		}
-		
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		SpeciesFileSepChr sepChr = new SpeciesFileSepChr();
 		sepChr.setSpeciesFile(speciesFile);
-		return sepChr.getChrSepFileOne();
+		return sepChr;
 	}
+	
 	/** 获得这个species在本version下的全体GffDB */
 	public Map<String, String> getMapGffDBAll() {
 		if (version == null || mapVersion2Species.get(version.toLowerCase()) == null) {
@@ -305,6 +310,7 @@ public class Species implements Cloneable {
 		SpeciesFile speciesFile = mapVersion2Species.get(version.toLowerCase());
 		return speciesFile.getMapGffDB();
 	}
+	
 	/**
 	 * 设定需要获取哪一种gff文件的注释
 	 * @param gffDB 大小写不敏感

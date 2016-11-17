@@ -133,12 +133,12 @@ public class SpeciesFileSepChr {
 		try {
 			logger.info("start splite " + chrSeq);
 
-			if (FileOperate.isFileExistAndBigThan0(getChrSepFinishFlag(chrSeq))) return;
+			if (FileOperate.isFileExistAndBigThan0(getChrSepFinishFlag())) return;
 			
 			String chrSeqFileOne = generateChrFile(chrSeq);
 			seperateChrFile(chrSeqFileOne);
 			
-			TxtReadandWrite txtWrite = new TxtReadandWrite(getChrSepFinishFlag(chrSeq), true);
+			TxtReadandWrite txtWrite = new TxtReadandWrite(getChrSepFinishFlag(), true);
 			txtWrite.writefileln("finish");
 			txtWrite.close();
 		} catch (Exception e) {
@@ -193,8 +193,9 @@ public class SpeciesFileSepChr {
 		ncbIchromFaChangeFormat.writeToSepFile(chrSepFolder);
 	}
 	
-	private String getChrSepFinishFlag(String chrFile) {
-		return getParentPathChrSepPath() + FileOperate.getFileName(chrFile) + chrSepFlag;
+	/** 染色体切分是否结束的flag */
+	public String getChrSepFinishFlag() {
+		return getParentPathChrSepPath() + FileOperate.getFileName(chrSeq) + chrSepFlag;
 	}
 	
 	/**
@@ -222,6 +223,7 @@ public class SpeciesFileSepChr {
 	public String getChrSepFolder() {
 		return getParentPathChrSepPath() + chrSepFolder + FileOperate.getSepPath();
 	}
+	
 	/**
 	 * 返回切分染色体的合并的染色体文件，因为部分染色体数量太多，那么如果直接切分可能会产生几万个染色体文件
 	 * 因此我们需要把染色体文件进行处理，仅提取前2000条序列
