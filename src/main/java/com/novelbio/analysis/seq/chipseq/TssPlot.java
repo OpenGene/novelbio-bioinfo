@@ -7,6 +7,9 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUp;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.sam.AlignSamReading;
+import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
@@ -33,7 +36,15 @@ public class TssPlot {
 	
 	String sampleName;
 	
-	public TssPlot() { }
+	public static void main(String[] args) {
+		String bamFile = null;
+		boolean isUniqueReads = true;
+		int startCod = 150;
+		
+		MapReads mapReads = new MapReads();
+		mapReads.setAlignSeqReader(new SamFile(bamFile));
+		mapReads.setFilter(isUniqueReads, startCod);
+	}
 	
 	public void setxAxis(double[] xAxis) {
 		this.xAxis = xAxis;
