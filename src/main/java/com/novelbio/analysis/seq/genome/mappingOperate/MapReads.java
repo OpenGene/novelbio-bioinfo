@@ -50,7 +50,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 * 因为有可能是pcr造成的线性扩增
 	 */
 	 boolean uniqReads = false;
-	 int startCod = -1;
+	 int extend = -1;
 
 
 	 Species species;
@@ -122,11 +122,11 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 * @param uniqReads 默认false
 	 * 如果有多条reads比对到同一个位置，并且首位相同，是否仅保留其中一条reads
 	 * 因为有可能是pcr造成的线性扩增
-	 * @param startCod 从起点开始读取该reads的几个bp，韩燕用到 小于0表示全部读取 大于reads长度的则延长，默认-1
+	 * @param extend 从起点开始读取该reads的几个bp， 小于等于0表示不延长，小于reads长度则截短，大于reads长度的则延长，默认-1
 	 */
-	public void setFilter(boolean uniqReads, int startCod) {
+	public void setFilter(boolean uniqReads, int extend) {
 		this.uniqReads = uniqReads;
-		this.startCod = startCod;
+		this.extend = extend;
 	}
 	/**
 	 * 从这里得到的实际某条染色体所包含的reads书目
@@ -547,7 +547,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 */
 	public boolean prepareAlignRecord(AlignRecord alignRecordFirst) {
 		mapReadsAddAlignRecord = new MapReadsAddAlignRecord(this);
-		if (startCod > 0 && alignRecordFirst.isCis5to3() == null) {
+		if (extend > 0 && alignRecordFirst.isCis5to3() == null) {
 			logger.error("不能设定startCod，因为没有设定方向列");
 			return false;
 		}
@@ -780,7 +780,7 @@ class MapReadsAddAlignRecord {
 		List<? extends Alignment> lsadd = null;
 		//如果没有可变剪接
 		lsadd = alignRecord.getAlignmentBlocks();
-		lsadd = setStartCod(lsadd, mapReads.startCod, cis5to3This);
+		lsadd = setStartCod(lsadd, mapReads.extend, cis5to3This);
 		int addNum = (int) ((double)1*fold / alignRecord.getMappedReadsWeight());
 		addChrLoc(chrBpReads, lsadd, addNum);
 		chrMapReadsInfo.readsAllNum = chrMapReadsInfo.readsAllNum + 1;
@@ -790,14 +790,14 @@ class MapReadsAddAlignRecord {
 	 * 根据正反向截取相应的区域，最后返回需要累加的ArrayList<int[]>
 	 * 譬如韩燕的项目，只需要reads开头的前3个bp，那么就截取前三个就好
 	 * @param lsStartEnd 注意传入的是reads，reads一定是从小到大排序的
-	 * @param StartCodLen 譬如韩燕的项目，只需要reads开头的前3个bp，那么就设定为3
+	 * @param extendReadsLen 向3'延长reads，小于等于0则不延长。如果长度小于reads，则把reads截短
 	 * @param cis5to3
 	 * @return 如果cis5to3 = True，那么正着截取startCod长度的序列
 	 * 如果cis5to3 = False，那么反着截取startCod长度的序列
 	 */
 	@VisibleForTesting
-	protected static List<? extends Alignment> setStartCod(List<? extends Alignment> lsStartEnd, int StartCodLen, boolean cis5to3) {
-		if (StartCodLen <= 0) {
+	protected static List<? extends Alignment> setStartCod(List<? extends Alignment> lsStartEnd, int extendReadsLen, boolean cis5to3) {
+		if (extendReadsLen <= 0) {
 			return lsStartEnd;
 		}
 		ArrayList<Align> lsResult = new ArrayList<Align>();
@@ -805,19 +805,19 @@ class MapReadsAddAlignRecord {
 		if (cis5to3) {
 			for (int i = 0; i < lsStartEnd.size(); i++) {
 				Alignment alignment = lsStartEnd.get(i);
-				if (StartCodLen - lsStartEnd.get(i).getLength() > 0) {
+				if (extendReadsLen - lsStartEnd.get(i).getLength() > 0) {
 					if (i == lsStartEnd.size() - 1) {
-						Align lastAlign = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getStartAbs() + StartCodLen - 1);
+						Align lastAlign = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getStartAbs() + extendReadsLen - 1);
 						lsResult.add(lastAlign);
 					} else {
 						Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 						align.setCis5to3(alignment.isCis5to3());
 						lsResult.add(align);
-						StartCodLen = StartCodLen - alignment.getLength();
+						extendReadsLen = extendReadsLen - alignment.getLength();
 					}
 				}
 				else {
-					Align lastAlign = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getStartAbs() + StartCodLen - 1);
+					Align lastAlign = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getStartAbs() + extendReadsLen - 1);
 					lsResult.add(lastAlign);
 					break;
 				}
@@ -826,20 +826,20 @@ class MapReadsAddAlignRecord {
 		else {
 			for (int i = lsStartEnd.size() - 1; i >= 0; i--) {
 				Alignment alignment = lsStartEnd.get(i);
-				if (StartCodLen - alignment.getLength() > 0) {
+				if (extendReadsLen - alignment.getLength() > 0) {
 					if (i == 0) {
-						Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - StartCodLen + 1, alignment.getEndAbs());
+						Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - extendReadsLen + 1, alignment.getEndAbs());
 						align.setCis5to3(alignment.isCis5to3());
 						lsResult.add(0,align);
 					} else {						
 						Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 						align.setCis5to3(alignment.isCis5to3());
 						lsResult.add(0,align);
-						StartCodLen = StartCodLen - alignment.getLength();
+						extendReadsLen = extendReadsLen - alignment.getLength();
 					}
 				}
 				else {
-					Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - StartCodLen + 1, alignment.getEndAbs());
+					Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - extendReadsLen + 1, alignment.getEndAbs());
 					align.setCis5to3(alignment.isCis5to3());
 					lsResult.add(0,align);
 					break;

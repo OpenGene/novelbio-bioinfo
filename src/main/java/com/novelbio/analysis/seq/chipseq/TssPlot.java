@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUp;
+import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
@@ -34,25 +35,68 @@ public class TssPlot {
 	/** 绘制tss的具体信息，主要就是reads堆叠后的信息 */
 	List<RegionBed> lsRegions;
 	
-	String sampleName;
 	
 	public static void main(String[] args) {
 		String bamFile = null;
+		int extend = 150;
+		int invNum = 10;
 		boolean isUniqueReads = true;
-		int startCod = 150;
+		boolean isUniqueMapping = true;
+		EnumMapNormalizeType normalType = EnumMapNormalizeType.allreads;
+		String chrFai = "";
+		String regionBedFile = "";
+		
+		String outTssMerge = "";
+		String outTssSep = "";
 		
 		MapReads mapReads = new MapReads();
 		mapReads.setAlignSeqReader(new SamFile(bamFile));
-		mapReads.setFilter(isUniqueReads, startCod);
+		mapReads.setFilter(isUniqueReads, extend);
+		mapReads.setInvNum(invNum);
+		mapReads.setisUniqueMapping(isUniqueMapping);
+		mapReads.setNormalType(normalType);
+		mapReads.setChrFai(chrFai);
+		mapReads.setTagLength(300);
+		mapReads.run();
+		
+		TssPlot tssPlot = new TssPlot();
+		tssPlot.setMapReads(mapReads);
+		tssPlot.setLsRegions(regionBedFile);
+		tssPlot.writeToFileMerge(outTssMerge);
+		tssPlot.writeToFileSep(outTssSep);
 	}
 	
 	public void setxAxis(double[] xAxis) {
 		this.xAxis = xAxis;
 	}
+	/** 设定读取的region信息 */
+	public void setLsRegions(String regionBedFile) {
+		lsRegions = new ArrayList<>();
+		TxtReadandWrite txtRead = new TxtReadandWrite(regionBedFile);
+		boolean isXaxis = false;
+		for (String content : txtRead.readlines()) {
+			if (isXaxis) {
+				setXaxis(content.trim().substring(1));
+				continue;
+			}
+			
+			if (content.trim().startsWith("#")) {
+				if (content.trim().toLowerCase().startsWith("#xaxis")) {
+					isXaxis = true;
+				}
+				continue;
+			}
+			lsRegions.add(new RegionBed(content));
+		}
+		txtRead.close();
+	}
 	
-	/** 样本名 */
-	public void setSampleName(String sampleName) {
-		this.sampleName = sampleName;
+	private void setXaxis(String content) {
+		String[] ss = content.trim().split(" ");
+		xAxis = new double[ss.length];
+		for (int i = 0; i < ss.length; i++) {
+			xAxis[i] = Double.parseDouble(ss[1]);
+		}
 	}
 	
 	/** 设定读取的region信息 */
@@ -61,7 +105,6 @@ public class TssPlot {
 	}
 	
 	public void setMapReads(MapReads mapReads) {
-		//TODO 在这里直接生成mapReads
 		this.mapReads = mapReads;
 	}
 	/**

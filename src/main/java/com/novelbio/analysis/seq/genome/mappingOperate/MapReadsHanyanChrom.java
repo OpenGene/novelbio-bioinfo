@@ -28,7 +28,7 @@ public class MapReadsHanyanChrom extends MapReads{
 	 */
 	public boolean prepareAlignRecord(AlignRecord alignRecordFirst) {
 		mapReadsAddAlignRecord = new MapReadsAddAlignRecordHanyan(this, gffHashGene);
-		if (startCod > 0 && alignRecordFirst.isCis5to3() == null) {
+		if (extend > 0 && alignRecordFirst.isCis5to3() == null) {
 			logger.error("不能设定startCod，因为没有设定方向列");
 			return false;
 		}
@@ -54,7 +54,7 @@ class MapReadsAddAlignRecordHanyan extends MapReadsAddAlignRecord {
 	 * @param tmp 本行分割后的信息
 	 * @param uniqReads 同一位点叠加后是否读取
 	 * @param tmpOld 上一组的起点终点，用于判断是否是在同一位点叠加
-	 * @param startCod 只截取前面一段的长度
+	 * @param extend 只截取前面一段的长度
 	 * @param cis5to3 是否只选取某一个方向的序列，也就是其他方向的序列会被过滤，注意该方向为与gene的方向而不是与refgenome的方向
 	 * @param chrBpReads 具体需要叠加的染色体信息
 	 * @param readsNum 记录总共mapping的reads数量，为了能够传递下去，采用数组方式

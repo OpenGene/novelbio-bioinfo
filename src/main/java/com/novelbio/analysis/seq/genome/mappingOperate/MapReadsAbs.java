@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -11,10 +12,13 @@ import org.apache.commons.math.stat.descriptive.moment.Mean;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.ExceptionNbcParamError;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.listOperate.ListAbs;
@@ -46,7 +50,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 protected boolean booUniqueMapping = true;
 	 /**
 	  * key：chrID必须小写
-	  * value： 染色体过滤信息，马红想要只看tss，只看exon等表达
+	  * value： 染色体过滤信息，主要用于全基因组reads画图。譬如马红想要只看tss，只看exon在基因组上的分布这种
 	  */
 	 Map<String, List<? extends Alignment>> mapChrID2LsAlignmentFilter;
 	 protected double allReadsNum = 0;
@@ -59,6 +63,21 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 public void setSpecies(Species species) {
 		 setMapChrID2Len(species.getMapChromInfo());
 	 }
+	 
+	 public void setChrFai(String chrFai) {
+		 if (!FileOperate.isFileExistAndBigThanSize(chrFai, 0)) {
+			 throw new ExceptionNbcParamError("must need file chrFai, but file " + chrFai + " is not exist");
+		 }
+		 mapChrID2Len = new LinkedHashMap<>();
+		 TxtReadandWrite txtRead = new TxtReadandWrite(chrFai);
+		 for (String content : txtRead.readlines()) {
+			 String[] ss = content.split("\t");
+			 mapChrID2Len.put(ss[0].toLowerCase(), Long.parseLong(ss[1]));
+		 }
+		 txtRead.close();
+	 }
+	 
+	 /** 是否仅考虑unique mapping的reads */
 	 public void setisUniqueMapping(boolean booUniqueMapping) {
 		this.booUniqueMapping = booUniqueMapping;
 	}
@@ -87,9 +106,7 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 			 this.mapChrID2Len.put(chrID.toLowerCase(), mapChrID2Len.get(chrID));
 		}
 	 }
-	 public Map<String, Long> getMapChrID2Len() {
-		return mapChrID2Len;
-	}
+
 	 /**
 	  * 返回所有chrID的list
 	  * @return
