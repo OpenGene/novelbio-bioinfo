@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.chipseq;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUp;
+import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -44,6 +44,8 @@ public class RegionValue {
 	 * false 直接把value延长(空位用0填充)，或缩短(减去右侧)<br>
 	 */
 	public void setLen(int length, boolean isZoom) {
+		if (length <= 0 || length == values.length) return;
+		
 		double[] result = new double[length];
 		if (isZoom) {
 			result = MathComput.mySpline(values, length);
@@ -69,12 +71,12 @@ public class RegionValue {
 	 * @param length 标准化的长度
 	 * @return
 	 */
-	public static RegionValue mergeRegions(List<RegionValue> lsRegionValues, EnumTssPileUp normalizeType, int length) {
+	public static RegionValue mergeRegions(List<RegionValue> lsRegionValues, EnumTssPileUpType normalizeType, int length) {
 		List<double[]> lsValues = new ArrayList<>();
 		for (RegionValue regionValue : lsRegionValues) {
 			lsValues.add(regionValue.getValues());
 		}
-		double[] mergedValues = EnumTssPileUp.normalizeValues(normalizeType, lsValues, length);
+		double[] mergedValues = EnumTssPileUpType.normalizeValues(normalizeType, lsValues, length);
 		RegionValue regionValue = new RegionValue();
 		regionValue.setName("merge");
 		regionValue.setValues(mergedValues);

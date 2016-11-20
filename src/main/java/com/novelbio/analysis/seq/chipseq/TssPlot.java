@@ -5,11 +5,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUp;
+import com.google.common.annotations.VisibleForTesting;
+import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
 import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.sam.AlignSamReading;
-import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -28,10 +28,8 @@ public class TssPlot {
 	/** x轴，长度必须和splitNum对应 */
 	double[] xAxis;
 	
-	MapReads mapReads;
-	
-	EnumTssPileUp enumTssPileUp = EnumTssPileUp.pileup_to_same_length;
-	
+	MapReadsAbs mapReads;
+		
 	/** 绘制tss的具体信息，主要就是reads堆叠后的信息 */
 	List<RegionBed> lsRegions;
 	
@@ -66,17 +64,22 @@ public class TssPlot {
 		tssPlot.writeToFileSep(outTssSep);
 	}
 	
-	public void setxAxis(double[] xAxis) {
+	@VisibleForTesting
+	protected void setxAxis(double[] xAxis) {
 		this.xAxis = xAxis;
 	}
+
 	/** 设定读取的region信息 */
 	public void setLsRegions(String regionBedFile) {
 		lsRegions = new ArrayList<>();
 		TxtReadandWrite txtRead = new TxtReadandWrite(regionBedFile);
 		boolean isXaxis = false;
+		EnumTssPileUpType normalizedType = EnumTssPileUpType.pileup_norm_to_length;
+		initialXaxis();
 		for (String content : txtRead.readlines()) {
 			if (isXaxis) {
 				setXaxis(content.trim().substring(1));
+				isXaxis = false;
 				continue;
 			}
 			
@@ -84,18 +87,33 @@ public class TssPlot {
 				if (content.trim().toLowerCase().startsWith("#xaxis")) {
 					isXaxis = true;
 				}
+				if (content.trim().toLowerCase().startsWith("#normalized_type")) {
+					String normalizedStr = content.replace("#normalized_type", "").trim();
+					normalizedType = EnumTssPileUpType.getPileupType(normalizedStr);
+				}
 				continue;
 			}
-			lsRegions.add(new RegionBed(content));
+			
+			RegionBed regionBed = new RegionBed(content, normalizedType, xAxis.length);
+			lsRegions.add(regionBed);
 		}
 		txtRead.close();
 	}
 	
 	private void setXaxis(String content) {
-		String[] ss = content.trim().split(" ");
+		String[] ss = content.trim().split(" +");
 		xAxis = new double[ss.length];
 		for (int i = 0; i < ss.length; i++) {
 			xAxis[i] = Double.parseDouble(ss[1]);
+		}
+	}
+	
+	private void initialXaxis() {
+		if (xAxis != null) return;//单元测试会首先设定xAxis
+		
+		xAxis = new double[RegionBed.LENGTH_XAXIS];
+		for (int i = 0; i < RegionBed.LENGTH_XAXIS; i++) {
+			xAxis[i] = i;
 		}
 	}
 	
@@ -104,43 +122,35 @@ public class TssPlot {
 		this.lsRegions = lsRegions;
 	}
 	
-	public void setMapReads(MapReads mapReads) {
+	public void setMapReads(MapReadsAbs mapReads) {
 		this.mapReads = mapReads;
 	}
 	/**
 	 * 每隔多少位取样,如果设定为1，则算法会变化，然后会很精确
 	 * @return
 	 */
-	public MapReads getMapReads() {
+	public MapReadsAbs getMapReads() {
 		return mapReads;
 	}
 
 	/** 给定一系列的region区域，获取其覆盖的位点信息 */
-	public List<RegionValue> getSiteRegion() {
+	public List<RegionValue> getLsSiteRegion() {
 		List<RegionValue> lsRegionValues = new ArrayList<>();
 		for (RegionBed regionBed : lsRegions) {
 			RegionValue regionValue = regionBed.getRegionInfo(mapReads);
-			normRegionValue(regionValue);
 			lsRegionValues.add(regionValue);
 		}
 		return lsRegionValues;
 	}
 	
-	private void normRegionValue(RegionValue regionValue) {
-		int splitNum = xAxis == null ? LENGTH_XAXIS : xAxis.length;
-		
-		if (enumTssPileUp == EnumTssPileUp.pileup 
-				|| (enumTssPileUp == EnumTssPileUp.pileup_long_to_same_length && regionValue.getLen() < splitNum)
-			) {
-			regionValue.setLen(splitNum, false);
-		} else if (enumTssPileUp == EnumTssPileUp.pileup_to_same_length) {
-			regionValue.setLen(splitNum, true);
-		}
+	/** 给定一系列的region区域，获取其覆盖的位点信息 */
+	public RegionValue getMergedSiteRegion() {
+		return RegionValue.mergeRegions(getLsSiteRegion(), EnumTssPileUpType.pileup_norm, getXaxis().length);
 	}
-	
+		
 	/** 依次把所有的bed文件都写出来 */
 	public void writeToFileSep(String outfile) {
-		List<RegionValue> lsRegionValues = getSiteRegion();
+		List<RegionValue> lsRegionValues = getLsSiteRegion();
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outfile, true);
 		txtWrite.writefileln("#XAXIS\t" + ArrayOperate.cmbString(getXaxis(), RegionValue.SEP_VALUE));
 		for (RegionValue regionValue : lsRegionValues) {
@@ -151,11 +161,10 @@ public class TssPlot {
 	
 	/** 依次把所有的bed文件都写出来 */
 	public void writeToFileMerge(String outfile) {
-		List<RegionValue> lsRegionValues = getSiteRegion();
+		RegionValue regionValue = getMergedSiteRegion();
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outfile, true);
 		txtWrite.writefileln("#XAXIS\t");
 		txtWrite.writefileln(ArrayOperate.cmbString(getXaxis(), RegionValue.SEP_VALUE));
-		RegionValue regionValue = RegionValue.mergeRegions(lsRegionValues, enumTssPileUp, getXaxis().length);
 		txtWrite.writefileln(regionValue.toString());
 		txtWrite.close();
 	}

@@ -344,7 +344,9 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 */
 	public double[] getRangeInfo(Align align, int type) {
 		double[] values = getRangeInfo(0, align.getRefID(), align.getStartAbs(), align.getEndAbs(), type);
-		ArrayOperate.convertArray(values);
+		if (!align.isCis5to3()) {
+			ArrayOperate.convertArray(values);
+		}
 		return values;
 	}
 	

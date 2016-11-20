@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -23,6 +24,8 @@ import com.novelbio.base.dataStructure.MathComput;
  */
 public class RegionBed {
 	private static final String ALIGN_SEP = ";";
+	/** 0-1000 是1001位 */
+	public static final int LENGTH_XAXIS = 1001;
 	/** 区段的名字 */
 	String name;
 	
@@ -35,12 +38,24 @@ public class RegionBed {
 	 * 譬如我们现在要看全体genebody的reads覆盖情况，因为genebody的长度是不等长的，
 	 * 这时候我们就可以把genebody都标准化为1000bp
 	 */
-	int lengthNormal = 0;
+	int lengthNormal = LENGTH_XAXIS;
 	
 	/** 把tss合并起来的标准化方式 */
-	EnumTssPileUp normalType;
+	EnumTssPileUpType normalType;
 	
-	public RegionBed(String regionBed) {
+	/**
+	 * 
+	 * @param regionBed 
+	 * 提取出来的区域信息，类似：
+	 * tp53\tchr1:2345-3456;chr1:4567-6789\tcc<br>
+	 * 第一列是区段名<br>
+	 * 第二列是需要提取并绘图的染色体坐标区域。<br>
+	 * 其中 chr1:2345-3456 表示正向提取 chr1:3456-2345表示反向提取。<br>
+	 * 因为基因是有方向的，这里主要是为了指定基因的方向。<br><br>
+	 * @param enumTssPileUpType 标准化方法，有cc, cn, pnl, plnl, pc, pn 这6种，具体可参考{@link EnumTssPileUpType}<br><br>
+	 * @param length 设定标准化的长度
+	 */
+	public RegionBed(String regionBed, EnumTssPileUpType enumTssPileUpType, int length) {
 		String[] ss = regionBed.split("\t");
 		this.name = ss[0];
 		
@@ -49,12 +64,8 @@ public class RegionBed {
 			Align align = new Align(alignStr);
 			lsAligns.add(align);
 		}
-		if (ss.length > 3) {
-			lengthNormal = Integer.parseInt(ss[2]);
-		}
-		if (ss.length > 4) {
-			normalType = EnumTssPileUp.getPileupType(ss[3]);
-		}
+		normalType = enumTssPileUpType;
+		lengthNormal = length;
 	}
 	
 	/**
@@ -62,13 +73,13 @@ public class RegionBed {
 	 * @param mapReads
 	 * @return
 	 */
-	public RegionValue getRegionInfo(MapReads mapReads) {
+	public RegionValue getRegionInfo(MapReadsAbs mapReads) {
 		List<double[]> lsValues = new ArrayList<>();
 		for (Align align : lsAligns) {
 			double[] value = mapReads.getRangeInfo(align, 0);
 			lsValues.add(value);
 		}
-		double[] values = EnumTssPileUp.normalizeValues(normalType, lsValues, lengthNormal);
+		double[] values = EnumTssPileUpType.normalizeValues(normalType, lsValues, lengthNormal);
 		RegionValue regionValue = new RegionValue();
 		regionValue.setName(name);
 		regionValue.setValues(values);
@@ -88,64 +99,80 @@ public class RegionBed {
 		return ArrayOperate.cmbString(lsResult, "\t");
 	}
 	
-	public static enum EnumTssPileUp {
-		/** 直接连起来 */ 
-		connect("c"),
+	public static enum EnumTssPileUpType {
+		/** 直接连起来，然后把长的标准化为指定长度 */ 
+		connect_norm("cn"),
+		/** 直接连起来，然后把长的剪掉 */ 
+		connect_cut("cc"),
 		/** 堆叠起来，并且把每个align标准化到相同的长度 */
-		pileup_to_same_length("psl"),
+		pileup_norm_to_length("pnl"),
 		/** 堆叠起来，并且把长度长于指定长度的align标准化到相同的长度，短的不管，直接合并 */
-		pileup_long_to_same_length("plsl"),
-		/** 简单堆叠起来，不等长的region就直接堆叠起来，不对长度进行标准化 */
-		pileup("p");
+		pileup_long_norm_to_length("plnl"),
+		/** 简单堆叠起来，不等长的region就直接堆叠起来，最后截取为指定长度 */
+		pileup_cut("pc"),
+		/** 简单堆叠起来，不等长的region就直接堆叠起来，最后加权平均为指定长度 */
+		pileup_norm("pn");
 		
 		String symbol;
 		
-		private EnumTssPileUp(String symbol) {
+		private EnumTssPileUpType(String symbol) {
 			this.symbol = symbol;
 		}
 		
-		static Map<String, EnumTssPileUp> mapSymbol2TssType = new HashMap<>();
+		static Map<String, EnumTssPileUpType> mapSymbol2TssType = new HashMap<>();
 		static {
-			mapSymbol2TssType.put(connect.toString(), connect);
-			mapSymbol2TssType.put(connect.symbol, connect);
+			mapSymbol2TssType.put(connect_norm.toString(), connect_norm);
+			mapSymbol2TssType.put(connect_norm.symbol, connect_norm);
 
-			mapSymbol2TssType.put(pileup_to_same_length.toString(), pileup_to_same_length);
-			mapSymbol2TssType.put(pileup_to_same_length.symbol, pileup_to_same_length);
+			mapSymbol2TssType.put(connect_cut.toString(), connect_cut);
+			mapSymbol2TssType.put(connect_cut.symbol, connect_cut);
 			
-			mapSymbol2TssType.put(pileup_long_to_same_length.toString(), pileup_long_to_same_length);
-			mapSymbol2TssType.put(pileup_long_to_same_length.symbol, pileup_long_to_same_length);
+			mapSymbol2TssType.put(pileup_norm_to_length.toString(), pileup_norm_to_length);
+			mapSymbol2TssType.put(pileup_norm_to_length.symbol, pileup_norm_to_length);
+			
+			mapSymbol2TssType.put(pileup_long_norm_to_length.toString(), pileup_long_norm_to_length);
+			mapSymbol2TssType.put(pileup_long_norm_to_length.symbol, pileup_long_norm_to_length);
 
-			mapSymbol2TssType.put(pileup.toString(), pileup);
-			mapSymbol2TssType.put(pileup.symbol, pileup);
+			mapSymbol2TssType.put(pileup_cut.toString(), pileup_cut);
+			mapSymbol2TssType.put(pileup_cut.symbol, pileup_cut);
+			
+			mapSymbol2TssType.put(pileup_norm.toString(), pileup_norm);
+			mapSymbol2TssType.put(pileup_norm.symbol, pileup_norm);
 		}
 		
-		public static EnumTssPileUp getPileupType(String info) {
-			EnumTssPileUp tssPileUp = mapSymbol2TssType.get(info);
+		public static EnumTssPileUpType getPileupType(String info) {
+			EnumTssPileUpType tssPileUp = mapSymbol2TssType.get(info);
+
 			if (tssPileUp == null) {
-				throw new ExceptionNbcParamError("cannot find pileup type " + info);
+				List<String> lsTypes = new ArrayList<>();
+				for (EnumTssPileUpType pileUpType : EnumTssPileUpType.values()) {
+					lsTypes.add(pileUpType.symbol);
+				}
+				throw new ExceptionNbcParamError("cannot find pileup type " + info
+						+ "\npileup type can only be " + ArrayOperate.cmbString(lsTypes, ", ")
+						);
 			}
 			return tssPileUp;
 		}
 		
-		public static double[] normalizeValues(EnumTssPileUp normalType, List<double[]> lsValues, int lengthNormal) {
+		public static double[] normalizeValues(EnumTssPileUpType normalType, List<double[]> lsValues, int lengthNormal) {
+			if (lengthNormal < 0) {
+				throw new ExceptionNbcParamError("while use param " + normalType + ", length normal cannot less than 0");
+			}
+			
 			double[] result = null;
-			if (normalType == EnumTssPileUp.connect) {
-				result = connect(lsValues, lengthNormal);
-			} else if (normalType == EnumTssPileUp.pileup) {
-				if (lengthNormal > 0) {
-					throw new ExceptionNbcParamError("while use param " + normalType + ", length normal cannot bigger than 0");
-				}
-				result = pileup(lsValues);
-			} else if (normalType == EnumTssPileUp.pileup_to_same_length) {
-				if (lengthNormal <= 0) {
-					throw new ExceptionNbcParamError("while use param " + normalType + ", length normal cannot less than 0");
-				}
-				result = pileupSameLen(lsValues, lengthNormal);
-			} else if (normalType == EnumTssPileUp.pileup_long_to_same_length) {
-				if (lengthNormal <= 0) {
-					throw new ExceptionNbcParamError("while use param " + normalType + ", length normal cannot less than 0");
-				}
-				result = pileupLongSameLen(lsValues, lengthNormal);
+			if (normalType == EnumTssPileUpType.connect_norm) {
+				result = connectNorm(lsValues, lengthNormal);
+			} else if (normalType == EnumTssPileUpType.connect_cut) {
+				result = connectCut(lsValues, lengthNormal);
+			} else if (normalType == EnumTssPileUpType.pileup_cut) {
+				result = pileupCut(lsValues, lengthNormal);
+			} else if (normalType == EnumTssPileUpType.pileup_norm) {
+				result = pileupNorm(lsValues, lengthNormal);
+			} else if (normalType == EnumTssPileUpType.pileup_norm_to_length) {
+				result = pileupNormLen(lsValues, lengthNormal);
+			} else if (normalType == EnumTssPileUpType.pileup_long_norm_to_length) {
+				result = pileupLongNormLen(lsValues, lengthNormal);
 			} else {
 				throw new ExceptionNbcParamError("cannot find normalType " + normalType);
 			}
@@ -157,26 +184,27 @@ public class RegionBed {
 		 * @param lengthNormal 小于等于0就不标准化长度
 		 * @return
 		 */
-		private static double[] connect(List<double[]> lsValues, int lengthNormal) {
-			int size = 0;
-			for (double[] ds : lsValues) {
-				size += ds.length;
-			}
-			double[] result = new double[size];
-			int i = 0;
-			for (double[] ds : lsValues) {
-				for (double d : ds) {
-					result[i++] = d;
-				}
-			}
-			return lengthNormal > 0? MathComput.mySpline(result, lengthNormal) : result;
+		private static double[] connectNorm(List<double[]> lsValues, int lengthNormal) {
+			double[] valueTmp = connect(lsValues);
+			return lengthNormal > 0? MathComput.mySpline(valueTmp, lengthNormal) : valueTmp;
 		}
+		
+		/** 把所有的value连起来，然后标准化到指定的长度
+		 * @param lsValues
+		 * @param lengthNormal 小于等于0就不标准化长度
+		 * @return
+		 */
+		private static double[] connectCut(List<double[]> lsValues, int lengthNormal) {
+			double[] valueTmp = connect(lsValues);
+			return lengthNormal > 0? cut(valueTmp, lengthNormal): valueTmp;
+		}
+		
 		/** 把每个value标准化到指定的长度，然后堆叠起来
 		 * @param lsValues
 		 * @param lengthNormal 小于等于0就不标准化长度
 		 * @return
 		 */
-		private static double[] pileupSameLen(List<double[]> lsValues, int lengthNormal) {
+		private static double[] pileupNormLen(List<double[]> lsValues, int lengthNormal) {
 			List<double[]> lsNormValues = new ArrayList<>();
 			for (double[] ds : lsValues) {
 				lsNormValues.add(MathComput.mySpline(ds, lengthNormal));
@@ -190,23 +218,58 @@ public class RegionBed {
 		 * @param lengthNormal 必须大于0
 		 * @return
 		 */
-		private static double[] pileupLongSameLen(List<double[]> lsValues, int lengthNormal) {
+		private static double[] pileupLongNormLen(List<double[]> lsValues, int lengthNormal) {
 			List<double[]> lsNormValues = new ArrayList<>();
 			for (double[] ds : lsValues) {
 				double[] valueTmp = ds.length > lengthNormal? MathComput.mySpline(ds, lengthNormal) : ds;
 				lsNormValues.add(valueTmp);
 			}
-			return ArrayOperate.getSumList(lsNormValues);
+			double[] valueTmp = ArrayOperate.getSumList(lsNormValues);
+			return lengthNormal > 0? cut(valueTmp, lengthNormal): valueTmp;
 		}
 		
-		/** 把value堆叠起来
+		/** 把value堆叠起来，并把最后结果标准化(加权平均)为指定长度
 		 * @param lsValues
 		 * @return
 		 */
-		private static double[] pileup(List<double[]> lsValues) {
-			return ArrayOperate.getSumList(lsValues);
+		private static double[] pileupNorm(List<double[]> lsValues, int lengthNormal) {
+			double[] valueTmp = ArrayOperate.getSumList(lsValues);
+			return lengthNormal > 0? MathComput.mySpline(valueTmp, lengthNormal): valueTmp;
+		}
+
+		
+		/** 把value堆叠起来，最后截短为指定长度
+		 * @param lsValues
+		 * @return
+		 */
+		private static double[] pileupCut(List<double[]> lsValues, int lengthNormal) {
+			double[] valueTmp = ArrayOperate.getSumList(lsValues);
+			return lengthNormal > 0? cut(valueTmp, lengthNormal) : valueTmp;
 		}
 		
+		/** 把给定的value连起来 */
+		private static double[] connect(List<double[]> lsValues) {
+			int size = 0;
+			for (double[] ds : lsValues) {
+				size += ds.length;
+			}
+			double[] result = new double[size];
+			int i = 0;
+			for (double[] ds : lsValues) {
+				for (double d : ds) {
+					result[i++] = d;
+				}
+			}
+			return result;
+		}
+		/** 把给定的value弄成等长，多的截断，少的补0 */
+		private static double[] cut(double[] values, int length) {
+			double[] result = new double[length];
+			for (int i = 0; i < result.length; i++) {
+				result[i] = i < values.length ? result[i] = values[i] : 0;
+			}
+			return result;
+		}
 	}
 	
 }

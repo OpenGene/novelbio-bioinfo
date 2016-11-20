@@ -3,7 +3,11 @@ package com.novelbio.analysis.seq.chipseq;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.base.dataStructure.MathComput;
 
-/** 仅用于测试，目前用在 {@link TestGene2Value} 上 */
+/** 仅用于测试，目前用在 {@link TestGene2Value} 上
+ * 里面的值是从1-7000递增
+ * @author zong0jie
+ * @data 2016年11月20日
+ */
 public class MapReadsStub extends MapReadsAbs {
 	double[] value = new double[7000];
 
