@@ -59,7 +59,7 @@ public class TssPlot {
 		
 		TssPlot tssPlot = new TssPlot();
 		tssPlot.setMapReads(mapReads);
-		tssPlot.setLsRegions(regionBedFile);
+		tssPlot.readRegionFile(regionBedFile);
 		tssPlot.writeToFileMerge(outTssMerge);
 		tssPlot.writeToFileSep(outTssSep);
 	}
@@ -70,7 +70,7 @@ public class TssPlot {
 	}
 
 	/** 设定读取的region信息 */
-	public void setLsRegions(String regionBedFile) {
+	public void readRegionFile(String regionBedFile) {
 		lsRegions = new ArrayList<>();
 		TxtReadandWrite txtRead = new TxtReadandWrite(regionBedFile);
 		boolean isXaxis = false;
