@@ -44,7 +44,6 @@ public class RegionBed {
 	EnumTssPileUpType normalType;
 	
 	/**
-	 * 
 	 * @param regionBed 
 	 * 提取出来的区域信息，类似：
 	 * tp53\tchr1:2345-3456;chr1:4567-6789\tcc<br>
@@ -66,6 +65,29 @@ public class RegionBed {
 		}
 		normalType = enumTssPileUpType;
 		lengthNormal = length;
+	}
+	
+	public RegionBed(String name) {
+		this.name = name;
+	}
+	
+	/**
+	 * 这两个参数都不参与toString()方法
+	 * @param enumTssPileUpType 堆叠的方式
+	 * @param length 最后切分的长度
+	 */
+	public RegionBed(EnumTssPileUpType enumTssPileUpType, int length) {
+		normalType = enumTssPileUpType;
+		lengthNormal = length;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public void addAlign(Align align) {
+		lsAligns.add(align);
+	}
+	public void setLsAligns(List<Align> lsAligns) {
+		this.lsAligns = lsAligns;
 	}
 	
 	/**
@@ -94,15 +116,13 @@ public class RegionBed {
 			lsAlignStr.add(align.toString());
 		}
 		lsResult.add(ArrayOperate.cmbString(lsAlignStr, ALIGN_SEP));
-		lsResult.add(lengthNormal + "");
-		lsResult.add(normalType.toString());
 		return ArrayOperate.cmbString(lsResult, "\t");
 	}
 	
 	public static enum EnumTssPileUpType {
 		/** 直接连起来，然后把长的标准化为指定长度 */ 
 		connect_norm("cn"),
-		/** 直接连起来，然后把长的剪掉 */ 
+		/** 直接连起来，然后把比指定长度长的区域剪掉，如果比指定长度短，则补0 */ 
 		connect_cut("cc"),
 		/** 堆叠起来，并且把每个align标准化到相同的长度 */
 		pileup_norm_to_length("pnl"),
@@ -110,7 +130,7 @@ public class RegionBed {
 		pileup_long_norm_to_length("plnl"),
 		/** 简单堆叠起来，不等长的region就直接堆叠起来，最后截取为指定长度 */
 		pileup_cut("pc"),
-		/** 简单堆叠起来，不等长的region就直接堆叠起来，最后加权平均为指定长度 */
+		/** 简单堆叠起来，不等长的region就直接堆叠起来，最后标准化为指定长度 */
 		pileup_norm("pn");
 		
 		String symbol;

@@ -22,6 +22,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.ExceptionSequenceFileNotSorted;
+import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
@@ -105,6 +106,9 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	}
 	 public void setAlignSeqReader(AlignSeq alignSeqReader) {
 		 this.alignSeqReader = alignSeqReader;
+		 if (alignSeqReader instanceof SamFile) {
+			this.mapChrID2Len = ((SamFile)alignSeqReader).getMapChrIDLowcase2Length();
+		}
 	}
 
 	 /** 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。 */

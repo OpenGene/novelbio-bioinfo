@@ -798,14 +798,20 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @return
 	 */
 	public ArrayList<ExonInfo> getUTR3seq() {
-		return getRangeIsoOnExon(UAGsite, getTESsite());
+		if (Math.abs(ATGsite - UAGsite) <= 1) {
+			return new ArrayList<ExonInfo>();
+		}
+		return getRangeIsoOnExon(UAGsite + 1, getTESsite());
 	}
 	/**
 	 * 获得5UTR的信息
 	 * @return
 	 */
 	public ArrayList<ExonInfo> getUTR5seq() {
-		return getRangeIsoOnExon(getTSSsite(), ATGsite);
+		if (Math.abs(ATGsite - UAGsite) <= 1) {
+			return new ArrayList<ExonInfo>();
+		}
+		return getRangeIsoOnExon(getTSSsite(), ATGsite - 1);
 	}
 	/**
 	 * 指定一个起点和一个终点坐标，将这两个坐标间的外显子区域提取出来并返回
@@ -814,43 +820,16 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 如果这两个坐标不在外显子中，则返回空的list
 	 * @return
 	 */
-	public ArrayList<ExonInfo> getRangeIsoOnExon(int startLoc, int EndLoc) {
-		ArrayList<ExonInfo> lsresult = new ArrayList<ExonInfo>();
-		int start = 0, end = 0;
-		
-		if (isCis5to3()) {
-			start = Math.min(startLoc, EndLoc);
-			end = Math.max(startLoc, EndLoc);
-		}
-		else {
-			start = Math.max(startLoc, EndLoc);
-			end = Math.min(startLoc, EndLoc);
-		}
-		int exonNumStart = getNumCodInEle(start) - 1;
-		int exonNumEnd =getNumCodInEle(end) - 1;
+	public ArrayList<ExonInfo> getRangeIsoOnExon(int startLoc, int endLoc) {
+		int exonNumStart = getNumCodInEle(startLoc) - 1;
+		int exonNumEnd =getNumCodInEle(endLoc) - 1;
 		
 		if (exonNumStart < 0 || exonNumEnd < 0) {
-			return lsresult;
+			return new ArrayList<>();
 		}
-		
-		if (exonNumStart == exonNumEnd) {
-			ExonInfo exonInfo = new ExonInfo(isCis5to3(), start, end);
-			exonInfo.setParentListAbs(this);
-			lsresult.add(exonInfo);
-			return lsresult;
-		}
-		ExonInfo exonInfoStart = new ExonInfo(isCis5to3(), start, get(exonNumStart).getEndCis());
-		exonInfoStart.setParentListAbs(this);
-		lsresult.add(exonInfoStart);
-		for (int i = exonNumStart+1; i < exonNumEnd; i++) {
-			lsresult.add(get(i));
-		}
-		ExonInfo exonInfo2 = new ExonInfo(isCis5to3(), get(exonNumEnd).getStartCis(), end);
-		exonInfo2.setParentListAbs(this);
-		lsresult.add(exonInfo2);
-		return lsresult;
+		return subGffGeneIso(startLoc, endLoc).getLsElement();
 	}
-	
+
 	/**
 	 * 文字形式的定位描述, <b>首先在gffDetailGene中设定tss，tes这两项</b><br>
 	 * null: 不在该转录本内
@@ -1239,22 +1218,20 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		gffGeneIsoInfoResult.clearElements();
 		for (ExonInfo exonInfo : this) {
 			ExonInfo exonInfoResult = exonInfo.clone();
-			if (exonInfo.getEndAbs() < startAbs) {
+			if (exonInfo.getEndAbs() < startAbs || exonInfo.getStartAbs() > endAbs) {
 				continue;
-			} else if (exonInfo.getStartAbs() <= startAbs && exonInfo.getEndAbs() >= startAbs) {
-				exonInfoResult.setStartAbs(startAbs);
 			}
 			
-			if (exonInfo.getStartAbs() > endAbs) {
-				continue;
-			} else if (exonInfo.getStartAbs() <= endAbs && exonInfo.getEndAbs() >= endAbs) {
+			if (exonInfo.getStartAbs() <= startAbs && exonInfo.getEndAbs() >= startAbs) {
+				exonInfoResult.setStartAbs(startAbs);
+			}
+			if (exonInfo.getStartAbs() <= endAbs && exonInfo.getEndAbs() >= endAbs) {
 				exonInfoResult.setEndAbs(endAbs);
 			}
 			gffGeneIsoInfoResult.add(exonInfoResult);
 		}
 		return gffGeneIsoInfoResult;
 	}
-	
 	/**
 	 * 获得Intron的list信息，从前到后排序
 	 * 没有结果就返回new list-exonInfo

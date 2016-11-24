@@ -176,7 +176,8 @@ public class TestGffGeneIsoInfo {
 		
 		gffSub = isoRaw.subGffGeneIso(1500, 7800);
 		Assert.assertEquals(gffGeneIsoInfoSubExpected, gffSub);
-		
+		Assert.assertEquals(gffGeneIsoInfoSubExpected.getLsElement(), isoRaw.getRangeIsoOnExon(1500, 7800));
+
 		isoRaw = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, false);
 		isoRaw.add(new ExonInfo(false, 100, 200));
 		isoRaw.add(new ExonInfo(false, 300, 400));
@@ -254,6 +255,9 @@ public class TestGffGeneIsoInfo {
 		gffGeneIsoInfoSubExpected.add(new ExonInfo(false, 3000, 4000));
 		gffGeneIsoInfoSubExpected.add(new ExonInfo(false, 1500, 2000));
 		gffGeneIsoInfoSubExpected.sort();
+		
+		gffSub = isoRaw.subGffGeneIso(1500, 7800);
+		Assert.assertEquals(gffGeneIsoInfoSubExpected, gffSub);
 	}
 
 }

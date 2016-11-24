@@ -13,6 +13,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 绘制tss、tes等图，要求输入bed文件，然后根据bed文件的结果来画图
@@ -23,7 +24,9 @@ public class TssPlot {
 	private static final Logger logger = Logger.getLogger(TssPlot.class);
 	/** 0-1000 是1001位 */
 	private static final int LENGTH_XAXIS = 1001;
-
+	
+	protected static final String XAXIS_LABEL = "#xaxis";
+	protected static final String NORM_TYPE = "#normalized_type";
 	
 	/** x轴，长度必须和splitNum对应 */
 	double[] xAxis;
@@ -34,7 +37,7 @@ public class TssPlot {
 	List<RegionBed> lsRegions;
 	
 	
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		String bamFile = null;
 		int extend = 150;
 		int invNum = 10;
@@ -64,6 +67,61 @@ public class TssPlot {
 		tssPlot.writeToFileSep(outTssSep);
 	}
 	
+	public static void main(String[] args) {
+		String regionBedFile = "/home/novelbio/8gene_tss1k.txt";
+		plot(regionBedFile);
+		
+		regionBedFile = "/home/novelbio/8gene_tes1k.txt";
+		plot(regionBedFile);
+		
+		regionBedFile = "/home/novelbio/8m1vsn1_tss-500.txt";
+		plot(regionBedFile);
+		
+		regionBedFile = "/home/novelbio/m2vsn2_tss-500.txt";
+		plot(regionBedFile);
+	}
+	
+	public static void plot(String regionBedFile) {
+		String fileName = FileOperate.getFileNameSep(regionBedFile)[0];
+		String bamFile = "/hdfs:/nbCloud/public/rawData/2016-05/574bda1e60b2f463a158f376/8m1_sort.bam";
+		String outTssMerge = "/home/novelbio/tss/" + "8m1_"+ fileName + "_Merge.txt";
+		String outTssSep = "/home/novelbio/tss/" + "8m1_"+ fileName + "_Sep.txt";
+		Test(bamFile, regionBedFile, outTssMerge, outTssSep);
+		
+		bamFile = "/hdfs:/nbCloud/public/rawData/2016-05/574bda1e60b2f463a158f376/8m2_sort.bam";
+		outTssMerge = "/home/novelbio/tss/" + "8m2_"+ fileName + "_Merge.txt";
+		outTssSep = "/home/novelbio/tss/" + "8m2_"+ fileName + "_Sep.txt";
+		Test(bamFile, regionBedFile, outTssMerge, outTssSep);
+		
+		bamFile = "/hdfs:/nbCloud/public/rawData/2016-05/574bda1e60b2f463a158f376/8n1_sort.bam";
+		outTssMerge = "/home/novelbio/tss/" + "8n1_"+ fileName + "_Merge.txt";
+		outTssSep = "/home/novelbio/tss/" + "8n1_"+ fileName + "_Sep.txt";
+		Test(bamFile, regionBedFile, outTssMerge, outTssSep);
+		
+		bamFile = "/hdfs:/nbCloud/public/rawData/2016-05/574bda1e60b2f463a158f376/8n2_sort.bam";
+		outTssMerge = "/home/novelbio/tss/" + "8n2_"+ fileName + "_Merge.txt";
+		outTssSep = "/home/novelbio/tss/" + "8n2_"+ fileName + "_Sep.txt";
+		Test(bamFile, regionBedFile, outTssMerge, outTssSep);
+	}
+	
+	public static void Test(String bamFile, String regionBedFile, String outTssMerge, String outTssSep) {
+		MapReads mapReads = new MapReads();
+		mapReads.setAlignSeqReader(new SamFile(bamFile));
+		mapReads.setFilter(true, 250);
+		mapReads.setInvNum(10);
+		mapReads.setisUniqueMapping(true);
+		mapReads.setNormalType(EnumMapNormalizeType.allreads);
+		mapReads.setTagLength(300);
+		mapReads.run();
+		
+		TssPlot tssPlot = new TssPlot();
+		tssPlot.setMapReads(mapReads);
+		tssPlot.readRegionFile(regionBedFile);
+		tssPlot.writeToFileMerge(outTssMerge);
+		tssPlot.writeToFileSep(outTssSep);
+	}
+	
+	
 	@VisibleForTesting
 	protected void setxAxis(double[] xAxis) {
 		this.xAxis = xAxis;
@@ -84,11 +142,11 @@ public class TssPlot {
 			}
 			
 			if (content.trim().startsWith("#")) {
-				if (content.trim().toLowerCase().startsWith("#xaxis")) {
+				if (content.trim().toLowerCase().startsWith(XAXIS_LABEL)) {
 					isXaxis = true;
 				}
-				if (content.trim().toLowerCase().startsWith("#normalized_type")) {
-					String normalizedStr = content.replace("#normalized_type", "").trim();
+				if (content.trim().toLowerCase().startsWith(NORM_TYPE)) {
+					String normalizedStr = content.replace(NORM_TYPE, "").trim();
 					normalizedType = EnumTssPileUpType.getPileupType(normalizedStr);
 				}
 				continue;
@@ -104,7 +162,7 @@ public class TssPlot {
 		String[] ss = content.trim().split(" +");
 		xAxis = new double[ss.length];
 		for (int i = 0; i < ss.length; i++) {
-			xAxis[i] = Double.parseDouble(ss[1]);
+			xAxis[i] = Double.parseDouble(ss[i]);
 		}
 	}
 	

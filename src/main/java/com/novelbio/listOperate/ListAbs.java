@@ -44,7 +44,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		this.listName = listName;
 	}
 	/** 具体的内容 */
-	public List<E> getLsElement() {
+	public ArrayList<E> getLsElement() {
 		return lsElement;
 	}
 	public void trimToSize() {
