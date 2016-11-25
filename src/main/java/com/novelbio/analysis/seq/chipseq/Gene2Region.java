@@ -19,7 +19,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 /** 给定指定基因，返回相应的RegionBed信息，用来绘制Tss图。
  * 需要和TssPlot配合使用
  */
-public class GeneToRegion {
+public class Gene2Region {
 	/** 具体画哪个区域 */
 	GeneStructure geneStructure;
 	/** 待画图的gene list */
