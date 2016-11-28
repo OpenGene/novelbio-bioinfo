@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
-import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
@@ -22,7 +22,6 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.analysis.seq.wig.Contig;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.species.Species;
@@ -91,7 +90,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		this.fileName = fileName;
 	}
 	/** 可以直接输入bed文件 */
-	public void setBedFile(BedSeq bedSeq) {
+	public void setBedFile(BedFile bedSeq) {
 		this.fileName = bedSeq.getFileName();
 	}
 	/** 设定第几列为summit，也就是这列为reads的中点，用这个中点来进行定位
@@ -158,7 +157,7 @@ public class GffChrStatistics extends RunProcess<GffChrStatistics.GffChrStatisct
 		FormatSeq formatSeq = FormatSeq.getFileType(alignFile);
 		AlignSeq seqFile = null;
 		if (formatSeq == FormatSeq.BED) {
-			seqFile = new BedSeq(alignFile);
+			seqFile = new BedFile(alignFile);
 		}
 		else if (formatSeq == FormatSeq.SAM || formatSeq == FormatSeq.BAM) {
 			seqFile = new SamFile(alignFile);

@@ -140,22 +140,6 @@ public class SiteSeqInfo implements Alignment {
 	}
 	
 	/**
-	 * 按照方向进行延长
-	 * 如果序列比设定的长度要长，则跳过
-	 * @param length
-	 */
-	public void extend(int length) {
-		if (getLength() >= length) {
-			return;
-		}
-		if (cis5to3 == null || cis5to3) {
-			endLoc = startLoc + length;
-		}
-		else {
-			startLoc = endLoc - length;
-		}
-	}
-	/**
 	 * 左右两端各延长range bp
 	 * 如果总长度超过range * 2，则返回
 	 * @param length

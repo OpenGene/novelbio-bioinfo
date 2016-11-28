@@ -12,6 +12,8 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
+import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataOperate.TxtReadandWrite.TXTtype;
@@ -29,8 +31,8 @@ import com.novelbio.base.fileOperate.FileOperate;
  * 6: mappingNum. 1 means unique mapping
  * @author zong0jie
  */
-public class BedSeq implements AlignSeq, IntCmdSoft {
-	private static Logger logger = Logger.getLogger(BedSeq.class);  	
+public class BedFile implements AlignSeq, IntCmdSoft {
+	private static Logger logger = Logger.getLogger(BedFile.class);  	
 	CmdOperate cmdOperate;
 	boolean read = true;
 	TxtReadandWrite txtReadandWrite;
@@ -39,7 +41,7 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * 默认为读取bed文件
 	 * @param bedFile
 	 */
-	public BedSeq(String bedFile) {
+	public BedFile(String bedFile) {
 		this(bedFile, false);
 	}
 	/**
@@ -48,7 +50,7 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * @param bedFile
 	 * @param creatBed
 	 */
-	public BedSeq(String bedFile, boolean creatBed) {
+	public BedFile(String bedFile, boolean creatBed) {
 		txtReadandWrite = new TxtReadandWrite(bedFile, creatBed);
 	}
 	
@@ -201,7 +203,7 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * @param sortBedFile 排序后的文件全名<br>
 	 * 返回名字为FileOperate.changeFileSuffix(getFileName(), "_sorted", null);
 	 */
-	public BedSeq sort()  {
+	public BedFile sort()  {
 		String fileName = txtReadandWrite.getFileName();		
 		fileName = FileOperate.changeFileSuffix(fileName, "_sorted", "bed", null);
 		//sort -k1,1 -k2,2n -k3,3n FT5.bed > FT5sort.bed #第一列起第一列终止排序，第二列起第二列终止按数字排序,第三列起第三列终止按数字排序
@@ -212,9 +214,9 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * 指定bed文件，按照chrID和坐标进行排序
 	 * @param sortBedFile 排序后的文件全名
 	 */
-	public BedSeq sort(String sortBedFile)  {
+	public BedFile sort(String sortBedFile)  {
 		String fileName = sortBedFile(1, sortBedFile, 2,3);
-		return new BedSeq(fileName);
+		return new BedFile(fileName);
 	}
 	
 	/**
@@ -263,22 +265,24 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * @throws Exception 
 	 * @throws Exception 
 	 */
-	public BedSeq extend(int extendTo) {
+	public BedFile extend(int extendTo) {
 		String outFile = FileOperate.changeFileSuffix(getFileName(), "_extend", "bed", null);
 		return extend(extendTo, outFile);
 	}
 	/**
+	 * 
 	 * 如果bed文件的坐标太短，根据正负链延长坐标至指定位置<br>
 	 * 标准bed文件格式为：chr1  \t  7345  \t  7370  \t  25  \t  52  \t  - <br>
 	 * 必须有第六列
-	 * @throws Exception 
-	 * @throws Exception 
+	 * @param extendTo 把reads延长或缩短至指定的长度。如果小于等于0则会返回一个没有延长的文件。
+	 * @param outFileName
+	 * @return
 	 */
-	public BedSeq extend(int extendTo, String outFileName) {
-		BedSeq bedSeq = new BedSeq(outFileName, true);
+	public BedFile extend(int extendTo, String outFileName) {
+		BedFile bedSeq = new BedFile(outFileName, true);
 		try {
 			for (BedRecord bedRecord : readLines()) {
-			bedRecord.extend(extendTo);
+			bedRecord.extendTo(extendTo);
 			bedSeq.writeBedRecord(bedRecord);
 		}
 			} catch (Exception e) {
@@ -327,6 +331,35 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 		return fastQ;
 	}
 
+	/**
+	 *  过滤reads
+	 *  @param outBedFile 输出文件名
+	 * @param mappingNumSmall 小于0表示不过滤 smallNum
+	 * @param mappingNumBig 小于0表示不过滤 bigNum
+	 * @param strand null表示不过滤方向
+	 * @return
+	 */
+	public BedFile filterSeq(String outBedFile, int mappingNumSmall, int mappingNumBig, Boolean strand) {
+		boolean isFilterMapNum = false;
+		if (mappingNumSmall > 0 || mappingNumBig > 0) {
+			isFilterMapNum = true;
+		}
+		if (mappingNumBig <= 0) mappingNumBig = Integer.MAX_VALUE;
+		
+		BedFile bedSeqFiltered = new BedFile(outBedFile, true);
+		for (BedRecord bedRecord : readLines()) {
+			if (strand != null && bedRecord.isCis5to3() != null && bedRecord.isCis5to3() != strand) {
+				continue;
+			}
+			if (isFilterMapNum && (bedRecord.getMappingNum() < mappingNumSmall || bedRecord.getMappingNum() > mappingNumBig)) {
+				continue;
+			}
+			bedSeqFiltered.writeBedRecord(bedRecord);
+		}
+		close();
+		bedSeqFiltered.close();
+		return bedSeqFiltered;
+	}
 	
 	/**
 	 *  过滤reads
@@ -335,28 +368,9 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * @param strand null表示不过滤方向
 	 * @return
 	 */
-	public BedSeq filterSeq(int mappingNumSmall, int mappingNumBig, Boolean strand) {
-		boolean isFilterMapNum = false;
-		if (mappingNumSmall > 0 || mappingNumBig > 0) {
-			isFilterMapNum = true;
-		}
-		if (mappingNumBig <= 0) mappingNumBig = Integer.MAX_VALUE;
-		
+	public BedFile filterSeq(int mappingNumSmall, int mappingNumBig, Boolean strand) {
 		String bedFileFiltered = FileOperate.changeFileSuffix(getFileName(), "_filtered", "bed", null);		
-		BedSeq bedSeqFiltered = new BedSeq(bedFileFiltered, true);
-		for (BedRecord bedRecord : readLines()) {
-			if (strand != null && bedRecord.isCis5to3() != strand) {
-				continue;
-			}
-			
-			if (!isFilterMapNum 
-					|| (bedRecord.getMappingNum() >= mappingNumSmall && bedRecord.getMappingNum() <= mappingNumBig)) {
-				bedSeqFiltered.writeBedRecord(bedRecord);
-			}
-		}
-		close();
-		bedSeqFiltered.close();
-		return bedSeqFiltered;
+		return filterSeq(bedFileFiltered, mappingNumSmall, mappingNumBig, strand);
 	}
 
 	/**
@@ -364,7 +378,7 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * 从第一行开始合并
 	 * @return
 	 */
-	public BedSeq combBedOverlap() {
+	public BedFile combBedOverlap() {
 		return combBedOverlap(false);
 	}
 	/**
@@ -372,14 +386,14 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * 从第一行开始合并
 	 * @return
 	 */
-	public BedSeq combBedOverlap(boolean cis5to3) {
+	public BedFile combBedOverlap(boolean cis5to3) {
 		String outFile = FileOperate.changeFileSuffix(getFileName(), "_comb", null);
 		return combBedOverlap(cis5to3, 0, outFile);
 	}
 	/**
 	 * 输入经过排序的peakfile,或者说bedfile，将重叠的peak进行合并 注意，结果中仅保留peak，没有保留其他多的信息
 	*/
-	public BedSeq combBedOverlap(String outFile, boolean cis5to3) {
+	public BedFile combBedOverlap(String outFile, boolean cis5to3) {
 		return combBedOverlap(cis5to3, 0, outFile);
 	}
 
@@ -390,7 +404,7 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * @param peakFile
 	 * @param readLines 从第几行开始读
 	 */
-	public BedSeq combBedOverlap(boolean cis5to3, int readLines, String outFile) {
+	public BedFile combBedOverlap(boolean cis5to3, int readLines, String outFile) {
 		if (cis5to3) {
 			return combBedOverlapCis5to3(readLines, outFile);
 		} else {
@@ -404,8 +418,8 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * @param peakFile
 	 * @param readLines 从第几行开始读
 	 */
-	private BedSeq combBedOverlap(int readLines, String outFile) {
-		BedSeq bedSeqResult = new BedSeq(outFile, true);
+	private BedFile combBedOverlap(int readLines, String outFile) {
+		BedFile bedSeqResult = new BedFile(outFile, true);
 		if (readLines < 1) {
 			readLines = 1;
 		}
@@ -445,8 +459,8 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * @param peakFile
 	 * @param readLines 从第几行开始读
 	 */
-	private BedSeq combBedOverlapCis5to3(int readLines, String outFile) {
-		BedSeq bedSeqResult = new BedSeq(outFile, true);
+	private BedFile combBedOverlapCis5to3(int readLines, String outFile) {
+		BedFile bedSeqResult = new BedFile(outFile, true);
 		if (readLines < 1) {
 			readLines = 1;
 		}
@@ -487,7 +501,7 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * 输入经过排序的bedfile，将重复的bedrecord进行合并，合并的信息取第一条
 	 * @param peakFile 
 	 */
-	public BedSeq removeDuplicat() {
+	public BedFile removeDuplicat() {
 		String out = FileOperate.changeFileSuffix(getFileName(), "_removeDup", null);
 		return removeDuplicat(out);
 	}
@@ -496,8 +510,8 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * 输入经过排序的bedfile，将重复的bedrecord进行合并，合并的信息取第一条
 	 * @param peakFile 
 	 */
-	public BedSeq removeDuplicat(String outFile) {
-		BedSeq bedSeqResult = new BedSeq(outFile, true);
+	public BedFile removeDuplicat(String outFile) {
+		BedFile bedSeqResult = new BedFile(outFile, true);
 		BedRecord bedRecordLast = null;
 		for (BedRecord bedRecord : readLines()) {
 			if (bedRecordLast == null) {
@@ -535,10 +549,10 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * @param outFile 输出文件
 	 * @param bedSeqFile 输入文件
 	 */
-	public static BedSeq combBedFile(String outFile, String... bedSeqFile) {
-		BedSeq bedSeq = new BedSeq(outFile, true);
+	public static BedFile combBedFile(String outFile, String... bedSeqFile) {
+		BedFile bedSeq = new BedFile(outFile, true);
 		for (String string : bedSeqFile) {
-			BedSeq bedSeq2 = new BedSeq(string);
+			BedFile bedSeq2 = new BedFile(string);
 			for (BedRecord bedRecord : bedSeq2.readLines()) {
 				bedSeq.writeBedRecord(bedRecord);
 			}
@@ -552,10 +566,10 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 	 * @param outFile 输出文件
 	 * @param bedSeqFile 输入文件
 	 */
-	public static BedSeq combBedFile(String outFile, ArrayList<String> lsbedSeqFile) {
-		BedSeq bedSeq = new BedSeq(outFile, true);
+	public static BedFile combBedFile(String outFile, ArrayList<String> lsbedSeqFile) {
+		BedFile bedSeq = new BedFile(outFile, true);
 		for (String string : lsbedSeqFile) {
-			BedSeq bedSeq2 = new BedSeq(string);
+			BedFile bedSeq2 = new BedFile(string);
 			for (BedRecord bedRecord : bedSeq2.readLines()) {
 				bedSeq.writeBedRecord(bedRecord);
 			}
@@ -587,5 +601,15 @@ public class BedSeq implements AlignSeq, IntCmdSoft {
 		}
 		return false;
 	}
-
+	
+	/** 把sam文件转换成bed文件，目前只支持单端测序，主要用于ChIP-Seq */
+	public static void convertSamToBed(String sam, String bed) {
+		SamFile samFile = new SamFile(sam);
+		BedFile bedFile = new BedFile(bed, true);
+		for (SamRecord	samRecord : samFile.readLines()) {
+			bedFile.writeBedRecord(samRecord.toBedRecordSE());
+		}
+		samFile.close();
+		bedFile.close();
+	}
 }

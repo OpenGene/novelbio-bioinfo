@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 
 import com.novelbio.analysis.seq.bed.BedRecord;
-import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -62,7 +62,7 @@ public class NovelMiRNAReap extends NovelMiRNApredict {
 	 */
 	private void getNovelMiRNASeq(String mapFile, String seqFile) {
 		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna", "fasta");
-		BedSeq bedSeq = getReadsNotOnCDS(out);
+		BedFile bedSeq = getReadsNotOnCDS(out);
 		bedSeq = bedSeq.sort();
 		writeMireapFormat(bedSeq, mapFile, seqFile);
 	}
@@ -74,7 +74,7 @@ public class NovelMiRNAReap extends NovelMiRNApredict {
 	 * >t0000035 3234<br>
 	 * GAATGGATAAGGATTAGCGATGATACA<br>
 	 */
-	private void writeMireapFormat(BedSeq bedSeq, String mapFile, String seqFile) {
+	private void writeMireapFormat(BedFile bedSeq, String mapFile, String seqFile) {
 		int readsName_TNum = 1;//名字，写成t00001这种类型
 		TxtReadandWrite txtOutMapInfo = new TxtReadandWrite(mapFile, true);
 		TxtReadandWrite txtOutSeq = new TxtReadandWrite(seqFile, true);

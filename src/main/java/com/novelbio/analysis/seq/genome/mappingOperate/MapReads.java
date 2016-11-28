@@ -14,7 +14,7 @@ import org.apache.log4j.Logger;
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
@@ -102,7 +102,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	}
 	 
 	 public void setBedSeq(String bedSeqFile) {
-		 alignSeqReader = new BedSeq(bedSeqFile);
+		 alignSeqReader = new BedFile(bedSeqFile);
 	}
 	 public void setAlignSeqReader(AlignSeq alignSeqReader) {
 		 this.alignSeqReader = alignSeqReader;

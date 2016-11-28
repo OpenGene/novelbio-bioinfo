@@ -7,9 +7,8 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.FormatSeq;
+import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.bed.BedRecord;
-import com.novelbio.analysis.seq.bed.BedSeq;
-import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -39,7 +38,7 @@ public class Macs14control  implements IntCmdSoft {
 		seqHash.close();
 	}
 	public void setPathinput(String pathInput) {
-		BedSeq bedSeq = new BedSeq(pathInput);
+		BedFile bedSeq = new BedFile(pathInput);
 		int i = 1;
 		List<Integer> lsReadsLen = new ArrayList<Integer>();
 		for (BedRecord bedRecord : bedSeq.readLines()) {

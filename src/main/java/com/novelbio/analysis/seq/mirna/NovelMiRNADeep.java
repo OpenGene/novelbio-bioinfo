@@ -9,7 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.bed.BedRecord;
-import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.mapping.MapDNA;
@@ -184,7 +184,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 * 然后转化为fastq文件以便进行后续分析
 	 * @param fastaOut
 	 */
-	private void convertNoCDSbed2Fasta(BedSeq bedSeq, String fastaOut) {
+	private void convertNoCDSbed2Fasta(BedFile bedSeq, String fastaOut) {
 		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Predict_Mirna", "bed");
 		out = outPath + FileOperate.getFileName(out);
 		TxtReadandWrite txtOut = new TxtReadandWrite(fastaOut, true);
@@ -202,10 +202,10 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 		return fastaInput;
 	}
-	private BedSeq getBedFile() {
+	private BedFile getBedFile() {
 		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Predict_Mirna", "bed.gz");
 		out = outPath + FileOperate.getFileName(out);
-		BedSeq bedSeq = getReadsNotOnCDS(out);
+		BedFile bedSeq = getReadsNotOnCDS(out);
 		return bedSeq;
 	}
 	/** 好像是输出的压缩的reads信息 */
@@ -264,7 +264,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		
 		String bedSeqFileName = "";
 		if (!FileOperate.isFileExistAndBigThanSize(fastaInput, 0)) {
-			BedSeq bedSeq = getBedFile();
+			BedFile bedSeq = getBedFile();
 			convertNoCDSbed2Fasta(bedSeq, fastaInput);
 			bedSeqFileName = bedSeq.getFileName();
 		}

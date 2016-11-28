@@ -31,7 +31,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.analysis.seq.FormatSeq;
-import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.fasta.FastaDictMake;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
@@ -739,7 +739,7 @@ public class SamFile implements AlignSeq {
 	 * 返回双端，如果是单端文件，则返回延长的单端
 	 * 将sam文件改为bed文件，根据mapping质量和正反向进行筛选
 	 */
-	public BedSeq sam2bedPairEnd(String bedFileCompType, String bedFile) {
+	public BedFile sam2bedPairEnd(String bedFileCompType, String bedFile) {
 		//TODO
 		return null;
 	}

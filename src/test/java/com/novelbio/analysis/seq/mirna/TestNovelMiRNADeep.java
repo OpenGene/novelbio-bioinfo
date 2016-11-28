@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -20,7 +20,7 @@ public class TestNovelMiRNADeep {
 		novelMiRNADeep.setGffChrAbs(new GffChrAbs(species));
 		novelMiRNADeep.setMiRNASeq(species.getMiRNAmatureFile(), null, species.getMiRNAhairpinFile());
 		novelMiRNADeep.setOutPath("/media/hdfs/nbCloud/public/test/miRNApredict/mirDeep");
-		novelMiRNADeep.setSeqInput(new BedSeq("/media/hdfs/nbCloud/public/test/miRNApredict/sheepAlign.bed.gz"));
+		novelMiRNADeep.setSeqInput(new BedFile("/media/hdfs/nbCloud/public/test/miRNApredict/sheepAlign.bed.gz"));
 		novelMiRNADeep.setSpeciesName(species.getCommonName());
 	}
 	@Test

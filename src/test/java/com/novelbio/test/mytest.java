@@ -1,8 +1,8 @@
 package com.novelbio.test;
 
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -13,15 +13,20 @@ import org.apache.commons.math3.stat.inference.TestUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import smile.math.special.Beta;
-import smile.stat.hypothesis.ChiSqTest;
-
 import com.google.common.collect.Lists;
+import com.novelbio.analysis.seq.chipseq.RegionBed;
+import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
 import com.novelbio.analysis.seq.fasta.ChrDensity;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -29,21 +34,27 @@ import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.model.species.SpeciesFileSepChr;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKPathway;
 import com.novelbio.listOperate.HistBin;
 import com.novelbio.listOperate.HistList;
+
+import smile.math.special.Beta;
+import smile.stat.hypothesis.ChiSqTest;
 
 
 public class mytest {
@@ -51,7 +62,137 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		FileOperate.createFolders(args[0]);
+//		GffHashGene gffHashGene = 
+//				new GffHashGene("/hdfs:/nbCloud/public/nbcplatform/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3");
+//		String parentPath = "/hdfs:/nbCloud/public/AllProject/project_574bda1e60b2f463a158f376/task_5833cf8360b23da1bc0ab677/other_result/";
+//
+////		geneBody(gffHashGene, parentPath);
+////		tss(gffHashGene, parentPath);
+////		tes(gffHashGene, parentPath);
+//		String outPath = "/home/novelbio/";
+//		tss500(gffHashGene, parentPath + "8m1vsn1.txt", outPath + "8m1vsn1_tss-500.txt");
+//		tss500(gffHashGene, parentPath + "m2vsn2.txt", outPath + "m2vsn2_tss-500.txt");
+		
+		System.out.println(FileOperate.isSymbolicLink("/home/novelbio/tmp/mytmpPath/testScript/2.fq.gz"));
+	}
+	
+	public static void geneBody(GffHashGene gffHashGene, String parentPath) throws Exception {
+		int length = 501;
+		List<RegionBed> lsRegionBeds = new ArrayList<>();
+		String geneFile = parentPath + "Symbol_4.txt";
+		TxtReadandWrite txtRead = new TxtReadandWrite(geneFile);
+		for (String content : txtRead.readlines(1)) {
+			String geneName = content.trim();
+			GffGeneIsoInfo iso = gffHashGene.searchISO(geneName);
+			if (iso == null) continue;
+			RegionBed regionBed = new RegionBed(EnumTssPileUpType.pileup_norm_to_length, length);
+			regionBed.setName(geneName);
+			regionBed.addAlign(new Align(iso.getRefID(), iso.getStart(), iso.getEnd()));
+			lsRegionBeds.add(regionBed);
+		}
+		txtRead.close();
+		
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/genebody.txt", true);
+		txtWrite.writefileln("#xaxis");
+		txtWrite.writefileln("#" + ArrayOperate.cmbString(getXaxis(length, 0, 1), " "));
+		for (RegionBed regionBed : lsRegionBeds) {
+			txtWrite.writefileln(regionBed.toString());
+		}
+		txtWrite.close();
+	}
+	
+	public static void tss(GffHashGene gffHashGene, String parentPath) throws Exception {
+		int length = 501;
+		List<RegionBed> lsRegionBeds = new ArrayList<>();
+		String geneFile = parentPath + "Symbol_4.txt";
+		TxtReadandWrite txtRead = new TxtReadandWrite(geneFile);
+		for (String content : txtRead.readlines(1)) {
+			String geneName = content.trim();
+			GffGeneIsoInfo iso = gffHashGene.searchISO(geneName);
+			if (iso == null) continue;
+			RegionBed regionBed = new RegionBed(EnumTssPileUpType.pileup_norm_to_length, length);
+			regionBed.setName(geneName);
+			if (iso.isCis5to3()) {
+				regionBed.addAlign(new Align(iso.getRefID(), iso.getStart() - 1000, iso.getStart() + 1000));
+			} else {
+				regionBed.addAlign(new Align(iso.getRefID(), iso.getStart() + 1000, iso.getStart() - 1000));
+			}
+			lsRegionBeds.add(regionBed);
+		}
+		txtRead.close();
+		
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/tss1k.txt", true);
+		txtWrite.writefileln("#xaxis");
+		txtWrite.writefileln("#" + ArrayOperate.cmbString(getXaxis(length, -1000, 4), " "));
+		for (RegionBed regionBed : lsRegionBeds) {
+			txtWrite.writefileln(regionBed.toString());
+		}
+		txtWrite.close();
+	}
+	
+	public static void tes(GffHashGene gffHashGene, String parentPath) throws Exception {
+		int length = 501;
+		List<RegionBed> lsRegionBeds = new ArrayList<>();
+		String geneFile = parentPath + "Symbol_4.txt";
+		TxtReadandWrite txtRead = new TxtReadandWrite(geneFile);
+		for (String content : txtRead.readlines(1)) {
+			String geneName = content.trim();
+			GffGeneIsoInfo iso = gffHashGene.searchISO(geneName);
+			if (iso == null) continue;
+			RegionBed regionBed = new RegionBed(EnumTssPileUpType.pileup_norm_to_length, length);
+			regionBed.setName(geneName);
+			if (iso.isCis5to3()) {
+				regionBed.addAlign(new Align(iso.getRefID(), iso.getEnd() - 1000, iso.getEnd() + 1000));
+			} else {
+				regionBed.addAlign(new Align(iso.getRefID(), iso.getEnd() + 1000, iso.getEnd() - 1000));
+			}
+			lsRegionBeds.add(regionBed);
+		}
+		txtRead.close();
+		
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/tes1k.txt", true);
+		txtWrite.writefileln("#xaxis");
+		txtWrite.writefileln("#" + ArrayOperate.cmbString(getXaxis(length, -1000, 4), " "));
+		for (RegionBed regionBed : lsRegionBeds) {
+			txtWrite.writefileln(regionBed.toString());
+		}
+		txtWrite.close();
+	}
+	
+	public static void tss500(GffHashGene gffHashGene, String geneFile, String outFile) throws Exception {
+		int length = 501;
+		List<RegionBed> lsRegionBeds = new ArrayList<>();
+		TxtReadandWrite txtRead = new TxtReadandWrite(geneFile);
+		for (String content : txtRead.readlines(1)) {
+			String geneName = content.trim();
+			GffGeneIsoInfo iso = gffHashGene.searchISO(geneName);
+			if (iso == null) continue;
+			RegionBed regionBed = new RegionBed(EnumTssPileUpType.pileup_norm_to_length, length);
+			regionBed.setName(geneName);
+			if (iso.isCis5to3()) {
+				regionBed.addAlign(new Align(iso.getRefID(), iso.getStart() - 500, iso.getStart() + 500));
+			} else {
+				regionBed.addAlign(new Align(iso.getRefID(), iso.getStart() + 500, iso.getStart() - 500));
+			}
+			lsRegionBeds.add(regionBed);
+		}
+		txtRead.close();
+		
+		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
+		txtWrite.writefileln("#xaxis");
+		txtWrite.writefileln("#" + ArrayOperate.cmbString(getXaxis(length, -500, 2), " "));
+		for (RegionBed regionBed : lsRegionBeds) {
+			txtWrite.writefileln(regionBed.toString());
+		}
+		txtWrite.close();
+	}
+	
+	private static double[] getXaxis(int length, int start, int step) {
+		double[] xaxis = new double[length];
+		for (int i = 0; i < length; i++) {
+			xaxis[i] = start + i*step;
+		}
+		return xaxis;
 	}
 	
 	private static List<Integer> getLsIntegers(String colInfo) {

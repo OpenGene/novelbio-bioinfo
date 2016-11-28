@@ -4,12 +4,12 @@ import java.util.ArrayList;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.bed.BedRecord;
-import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamToBed implements AlignmentRecorder {
-	BedSeq bedSeq;
+	BedFile bedSeq;
 	boolean isPairEndConvert = false;
 	/** 是否仅挑选unique mapping的reads */
 	boolean isUniqueMapping = false;
@@ -18,7 +18,7 @@ public class SamToBed implements AlignmentRecorder {
 		
 	int mapQuality = 10;
 	
-	public SamToBed(BedSeq bedSeq) {
+	public SamToBed(BedFile bedSeq) {
 		this.bedSeq = bedSeq;
 	}
 	/**
@@ -26,14 +26,14 @@ public class SamToBed implements AlignmentRecorder {
 	 * @param samFile
 	 */
 	public SamToBed(SamFile samFile) {
-		this.bedSeq = new BedSeq(FileOperate.changeFileSuffix(samFile.getFileName(), "", "bed"), true);
+		this.bedSeq = new BedFile(FileOperate.changeFileSuffix(samFile.getFileName(), "", "bed"), true);
 	}
 	public SamToBed(String bedFile) {
-		this.bedSeq = new BedSeq(bedFile, true);
+		this.bedSeq = new BedFile(bedFile, true);
 	}
 	
 	/** 返回bedSeq，注意没有关闭 */
-	public BedSeq getBedSeq() {
+	public BedFile getBedFile() {
 		return bedSeq;
 	}
 	

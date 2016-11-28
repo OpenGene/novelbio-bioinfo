@@ -7,8 +7,8 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.bed.BedRecord;
-import com.novelbio.analysis.seq.bed.BedSeq;
 import com.novelbio.analysis.seq.chipseq.peakcalling.PeakCallingSicer.PeakCallingSicerType;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -152,7 +152,7 @@ public class SicerControl {
 	 * @param inputBed
 	 */
 	private void setParamFromBedFile(String inputBed) {
-		BedSeq bedSeq = new BedSeq(inputBed);
+		BedFile bedSeq = new BedFile(inputBed);
 		int i = 1;
 		List<Integer> lsReadsLen = new ArrayList<Integer>();
 		for (BedRecord bedRecord : bedSeq.readLines()) {

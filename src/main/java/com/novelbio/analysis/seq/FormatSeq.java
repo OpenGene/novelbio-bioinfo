@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq;
 
-import com.novelbio.analysis.seq.bed.BedSeq;
+import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.sam.SamFile;
 
 /**
@@ -17,7 +17,7 @@ public enum FormatSeq {
 	  * @return
 	  */
 	 public static FormatSeq getFileType(String fileName) {
-		 if (BedSeq.isBedFile(fileName)) {
+		 if (BedFile.isBedFile(fileName)) {
 			return FormatSeq.BED;
 		 }
 		 FormatSeq formatSeq = SamFile.isSamBamFile(fileName);

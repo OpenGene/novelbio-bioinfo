@@ -153,7 +153,24 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	public String getCIGAR() {
 		return CIGAR;
 	}
-
+	
+	/**
+	 * 按照方向进行延长
+	 * 如果序列比设定的长度要长，则跳过
+	 * @param length
+	 */
+	public void extendTo(int length) {
+		if (length <= 0) {
+			return;
+		}
+		if (cis5to3 == null || cis5to3) {
+			endLoc = startLoc + length;
+		}
+		else {
+			startLoc = endLoc - length;
+		}
+	}
+	
 	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去 */
 	public Integer getMappingNum() {
 		if (mappingNum == null) {
@@ -189,13 +206,16 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 			return;
 		}
 		
-		splitLen = lsAlign.get(0).getLength() + "";
-		splitStart = "0";
+		StringBuilder sbSplitLen = new StringBuilder(lsAlign.get(0).getLength());
+		StringBuilder sbSplitStart = new StringBuilder(0);
+
 		for (int i = 1; i < lsAlign.size(); i++) {
 			Alignment alignment = lsAlign.get(i);
-			splitStart = splitStart + "," + (alignment.getStartAbs() - getStartAbs());
-			splitLen = splitLen + "," + alignment.getLength();
+			sbSplitStart.append("," + (alignment.getStartAbs() - getStartAbs()));
+			sbSplitLen.append("," + alignment.getLength());
 		}
+		splitLen = sbSplitLen.toString();
+		splitStart = sbSplitStart.toString();
 	}
 	/** 如果是mapping到junction上去，一条bed文件记录会被切成被切成的几块的样子保存在这里。
 	 * 也就是一段一段的bed，那么返回每一段的信息，
