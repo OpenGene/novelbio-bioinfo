@@ -5,6 +5,9 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
@@ -20,6 +23,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  * 需要和TssPlot配合使用
  */
 public class Gene2Region {
+	private static final Logger logger = LoggerFactory.getLogger(Gene2Region.class);
 	/** 具体画哪个区域 */
 	GeneStructure geneStructure;
 	/** 待画图的gene list */
@@ -87,6 +91,10 @@ public class Gene2Region {
 		lsRegionBed.clear();
 		for (String geneName : setGeneName) {
 			GffGeneIsoInfo iso = gffHashGene.searchISO(geneName);
+			if (iso == null) {
+				logger.error("cannot find gene " + geneName);
+				continue;
+			}
 			List<Align> lsAligns = getLsAligns(geneStructure, iso);
 			if (lsAligns.isEmpty()) continue;
 			
