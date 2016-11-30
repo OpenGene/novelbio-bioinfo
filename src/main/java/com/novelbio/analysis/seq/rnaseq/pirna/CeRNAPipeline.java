@@ -167,7 +167,7 @@ public class CeRNAPipeline {
 				continue;
 			}
 			String[] ss = content.split("\t");
-			ss[colNum] = changeName(ss[colNum]);
+//			ss[colNum] = changeName(ss[colNum]);
 			txtWrite.writefileln(ss);
 		}
 		txtRead.close();

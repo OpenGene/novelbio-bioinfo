@@ -68,16 +68,16 @@ public class TssPlot {
 	}
 	
 	public static void main(String[] args) {
-		String regionBedFile = "/home/novelbio/8gene_tss1k.txt";
+		String regionBedFile = "/home/novelbio/8m1vsn1_Down-500_Sep.txt";
 		plot(regionBedFile);
 		
-		regionBedFile = "/home/novelbio/8gene_tes1k.txt";
+		regionBedFile = "/home/novelbio/m2vsn2_up-500_Sep.txt";
 		plot(regionBedFile);
 		
-		regionBedFile = "/home/novelbio/8m1vsn1_tss-500.txt";
+		regionBedFile = "/home/novelbio/8m1vsn1_UP-500_Sep.txt";
 		plot(regionBedFile);
 		
-		regionBedFile = "/home/novelbio/m2vsn2_tss-500.txt";
+		regionBedFile = "/home/novelbio/m2vsn2_Down-500_Sep.txt";
 		plot(regionBedFile);
 	}
 	
@@ -152,8 +152,13 @@ public class TssPlot {
 				continue;
 			}
 			
-			RegionBed regionBed = new RegionBed(content, normalizedType, xAxis.length);
-			lsRegions.add(regionBed);
+			try {
+				RegionBed regionBed = new RegionBed(content, normalizedType, xAxis.length);
+				lsRegions.add(regionBed);
+
+			} catch (Exception e) {
+				RegionBed regionBed = new RegionBed(content, normalizedType, xAxis.length);
+				lsRegions.add(regionBed);			}
 		}
 		txtRead.close();
 	}

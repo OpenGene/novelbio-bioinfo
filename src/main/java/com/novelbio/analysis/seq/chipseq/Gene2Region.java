@@ -46,7 +46,9 @@ public class Gene2Region {
 	public void setExtend(int startExtend, int endExtend) {
 		startEndRegion = new int[]{startExtend, endExtend};
 	}
-	
+	public void setGeneStructure(GeneStructure geneStructure) {
+		this.geneStructure = geneStructure;
+	}
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}

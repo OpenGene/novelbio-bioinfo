@@ -14,6 +14,7 @@ import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataOperate.TxtReadandWrite.TXTtype;
@@ -66,7 +67,11 @@ public class BedFile implements AlignSeq, IntCmdSoft {
 	 */
 	public void writeBedRecord(BedRecord bedRecord) {
 		if (bedRecord == null) return;
-		txtReadandWrite.writefileln(bedRecord.toString());
+		String bed = bedRecord.toStringSimple();
+		if (StringOperate.isRealNull(bed)) {
+			return;
+		}
+		txtReadandWrite.writefileln(bed);
 	}
 	/**
 	 * 内部关闭
@@ -606,7 +611,11 @@ public class BedFile implements AlignSeq, IntCmdSoft {
 	public static void convertSamToBed(String sam, String bed) {
 		SamFile samFile = new SamFile(sam);
 		BedFile bedFile = new BedFile(bed, true);
+		int i = 0;
 		for (SamRecord	samRecord : samFile.readLines()) {
+			if (i++ % 100000 == 0) {
+				logger.info("convert " + i + " reads");
+			}
 			bedFile.writeBedRecord(samRecord.toBedRecordSE());
 		}
 		samFile.close();

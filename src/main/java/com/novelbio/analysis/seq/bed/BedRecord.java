@@ -10,6 +10,7 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.base.dataStructure.ArrayOperate;
  /**
   * BedSeq每一行的信息<br>
   * 兼容 bamToBed的 12行信息格式
@@ -26,7 +27,7 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	static final int COL_SCORE = 4;
 	static final int COL_STRAND = 5;
 	static final int COL_CIGAR = 6;
-	public static final int COL_MAPNUM = 7;
+	static final int COL_MAPNUM = 7;
 	static final int COL_SEQ = 8;
 	/** 是否为unique mapping的列 */
 	static final int COL_MAPQ = 9;
@@ -302,6 +303,18 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	 */
 	@Override
 	public String toString() {
+		return toString(false);
+	}
+	
+	public String toStringSimple() {
+		return toString(true);
+	}
+	
+	/**
+	 * 返回本bedrecord所对应的line信息
+	 * 如果出错，则返回空字符串""
+	 */
+	private String toString(boolean isSimple) {
 		String[] strings = new String[ALL_COLNUM];
 		strings[COL_CHRID] = refID;
 		//Bed的起点是从0开始计算的，所以实际位点要减去1
@@ -310,18 +323,22 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 		strings[COL_CIGAR] = CIGAR;
 		strings[COL_MAPNUM] = mappingNum + "";
 		
-		if (getSeqFasta() == null || getSeqFasta().toString() == null || getSeqFasta().toString().equals(""))
+		if (isSimple || getSeqFasta() == null || getSeqFasta().toString() == null || getSeqFasta().toString().equals("")) {
 			strings[COL_SEQ] = null;
-		else
+		} else {
 			strings[COL_SEQ] = getSeqFasta().toString();
+		}
 		
-		strings[COL_MAPQ] = mapQuality + "";
-		strings[COL_NAME] = name;
+		if (!isSimple) {
+			strings[COL_NAME] = name;
+			strings[COL_MAPWEIGHT] = mappingWeight + "";
+			strings[COL_MAPQ] = mapQuality + "";
+		}
+		
 		strings[COL_SCORE] = score + "";
 		strings[COL_READSNUM] = readsNum + "";
 		strings[COL_SPLIT_READS_LEN] = splitLen + "";
 		strings[COL_SPLIT_READS_START] = splitStart + "";
-		strings[COL_MAPWEIGHT] = mappingWeight + "";
 		
 		if (cis5to3 != null) {
 			if (cis5to3) {
@@ -344,17 +361,16 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 		if (resultColNum < 3) {
 			return "";
 		}
-		String result  = strings[0];
-		for (int i = 1; i < resultColNum; i++) {
-			if (strings[i] != null && !strings[i].equals("null")) {
-				result = result + "\t" + strings[i];
+		
+		for (int i = 1; i < strings.length; i++) {
+			if (strings[i] == null || strings[i].equals("null")) {
+				strings[i] = "";
 			}
-			else
-				result = result + "\t" + "";
 		}
+		
+		String result  = ArrayOperate.cmbString(strings, "\t").trim();
 		return result;
 	}
-	
 	@Override
 	public BedRecord clone() {
 		BedRecord bedRecord = (BedRecord) super.clone();
