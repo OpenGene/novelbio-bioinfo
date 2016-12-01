@@ -61,6 +61,9 @@ public class RegionBed {
 		String[] aligns = ss[1].split(";");
 		for (String alignStr : aligns) {
 			Align align = new Align(alignStr);
+			if (align.isCis5to3() == null) {
+				throw new ExceptionNBCChIPAlignError("cannot set strand of align " + alignStr + ", on line " + regionBed);
+			}
 			lsAligns.add(align);
 		}
 		normalType = enumTssPileUpType;

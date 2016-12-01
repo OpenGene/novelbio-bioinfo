@@ -76,11 +76,11 @@ public class SamPileupReading extends RunProcess<Integer> {
 	public void extendRegionRead(int numExtend) {
 		if (changeChrome) {
 			snpRegion.setChrID(chrThis);
-			snpRegion.setStart(0);
-			snpRegion.setEnd(numExtend);
+			snpRegion.setStartAbs(0);
+			snpRegion.setEndAbs(numExtend);
 		} else {
-			snpRegion.setStart(snpRegion.getEndAbs() - 1);
-			snpRegion.setEnd(snpRegion.getEndAbs() + numExtend);
+			snpRegion.setStartAbs(snpRegion.getEndAbs() - 1);
+			snpRegion.setEndAbs(snpRegion.getEndAbs() + numExtend);
 		}
 	}
 }

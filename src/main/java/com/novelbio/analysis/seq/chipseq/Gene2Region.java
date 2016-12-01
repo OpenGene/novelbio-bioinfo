@@ -95,7 +95,7 @@ public class Gene2Region {
 				logger.error("cannot find gene " + geneName);
 				continue;
 			}
-			List<Align> lsAligns = getLsAligns(geneStructure, iso);
+			List<Align> lsAligns = getLsAligns(geneStructure, iso, startEndRegion);
 			if (lsAligns.isEmpty()) continue;
 			
 			RegionBed regionBed = new RegionBed(geneName);
@@ -104,28 +104,43 @@ public class Gene2Region {
 		}
 	}
 	
+	/**
+	 * 获得指定区域的一系列align
+	 * @param geneStructure 有tss, tes, cds, exon 等
+	 * @param iso 具体提取某个转录本
+	 * @param startEndRegion 起点和终点的扩展，具体见 {@link #startEndRegion}
+	 * 注意本参数仅在单个位点如  {@link GeneStructure#ATG}, {@link GeneStructure#UAG},
+	 * {@link GeneStructure#TSS}, {@link GeneStructure#TES}以及区段 {@link GeneStructure#ALLLENGTH} 时起作用
+	 * 其他的区段不起作用
+	 * @return
+	 */
 	@VisibleForTesting
-	protected static List<Align> getLsAligns(GeneStructure geneStructure, GffGeneIsoInfo iso) {
+	protected static List<Align> getLsAligns(GeneStructure geneStructure, GffGeneIsoInfo iso, int[] startEndRegion) {
 		List<Align> lsAligns = new ArrayList<>();
 		if (geneStructure == GeneStructure.ALLLENGTH) {
 			Align align = new Align(iso.getRefID(), iso.getStart(), iso.getEnd());
 			align.setCis5to3(iso.isCis5to3());
+			extendAlign(align, startEndRegion);
 			lsAligns.add(align);
 		} else if (geneStructure == GeneStructure.ATG) {
 			Align align = new Align(iso.getRefID(), iso.getATGsite(), iso.getATGsite());
 			align.setCis5to3(iso.isCis5to3());
+			extendAlign(align, startEndRegion);
 			lsAligns.add(align);
 		} else if (geneStructure == GeneStructure.UAG) {
 			Align align = new Align(iso.getRefID(), iso.getUAGsite(), iso.getUAGsite());
 			align.setCis5to3(iso.isCis5to3());
+			extendAlign(align, startEndRegion);
 			lsAligns.add(align);
 		} else if (geneStructure == GeneStructure.TSS) {
 			Align align = new Align(iso.getRefID(), iso.getTSSsite(), iso.getTSSsite());
 			align.setCis5to3(iso.isCis5to3());
+			extendAlign(align, startEndRegion);
 			lsAligns.add(align);
 		} else if (geneStructure == GeneStructure.TES) {
 			Align align = new Align(iso.getRefID(), iso.getTESsite(), iso.getTESsite());
 			align.setCis5to3(iso.isCis5to3());
+			extendAlign(align, startEndRegion);
 			lsAligns.add(align);
 		} else if (geneStructure == GeneStructure.CDS) {
 			lsAligns = getLsAligns(iso.getIsoInfoCDS());
@@ -139,6 +154,16 @@ public class Gene2Region {
 			lsAligns = getLsAligns(iso.getLsIntron());
 		}
 		return lsAligns;
+	}
+	
+	private static void extendAlign(Align align, int[] startEndRegion) {
+		if (align.isCis5to3()) {
+			align.setStartAbs(align.getStartAbs() + startEndRegion[0]);
+			align.setEndAbs(align.getEndAbs() + startEndRegion[1]);
+		} else {
+			align.setStartAbs(align.getStartAbs() - startEndRegion[1]);
+			align.setEndAbs(align.getEndAbs() - startEndRegion[0]);
+		}
 	}
 	
 	private static List<Align> getLsAligns(List<ExonInfo> lsExons) {

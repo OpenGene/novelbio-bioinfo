@@ -93,10 +93,10 @@ public class Align implements Alignment {
 	public void setChrID(String chrID) {
 		this.chrID = chrID;
 	}
-	public void setStart(int start) {
+	public void setStartAbs(int start) {
 		this.start = start;
 	}
-	public void setEnd(int end) {
+	public void setEndAbs(int end) {
 		this.end = end;
 	}
 	@Override

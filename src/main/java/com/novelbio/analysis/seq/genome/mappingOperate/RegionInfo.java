@@ -436,8 +436,8 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 			setChrID(ss[1]);
 		}
 		
-		setStart(Integer.parseInt(ss[2]));
-		setEnd(Integer.parseInt(ss[3]));
+		setStartAbs(Integer.parseInt(ss[2]));
+		setEndAbs(Integer.parseInt(ss[3]));
 		if (ss[4] != null && !"null".equalsIgnoreCase(ss[4])) {
 			setCis5to3(Boolean.parseBoolean(ss[4]));
 		}

@@ -151,14 +151,8 @@ public class TssPlot {
 				}
 				continue;
 			}
-			
-			try {
-				RegionBed regionBed = new RegionBed(content, normalizedType, xAxis.length);
-				lsRegions.add(regionBed);
-
-			} catch (Exception e) {
-				RegionBed regionBed = new RegionBed(content, normalizedType, xAxis.length);
-				lsRegions.add(regionBed);			}
+			RegionBed regionBed = new RegionBed(content, normalizedType, xAxis.length);
+			lsRegions.add(regionBed);
 		}
 		txtRead.close();
 	}
@@ -200,8 +194,13 @@ public class TssPlot {
 	public List<RegionValue> getLsSiteRegion() {
 		List<RegionValue> lsRegionValues = new ArrayList<>();
 		for (RegionBed regionBed : lsRegions) {
-			RegionValue regionValue = regionBed.getRegionInfo(mapReads);
-			lsRegionValues.add(regionValue);
+			try {
+				RegionValue regionValue = regionBed.getRegionInfo(mapReads);
+				lsRegionValues.add(regionValue);
+			} catch (Exception e) {
+				logger.error("cannot find region value of " + regionBed.toString(), e);
+				continue;
+			}
 		}
 		return lsRegionValues;
 	}

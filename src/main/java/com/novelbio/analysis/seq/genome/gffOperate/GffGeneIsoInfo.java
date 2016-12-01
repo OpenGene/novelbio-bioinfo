@@ -801,7 +801,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (Math.abs(ATGsite - UAGsite) <= 1) {
 			return new ArrayList<ExonInfo>();
 		}
-		return getRangeIsoOnExon(UAGsite + 1, getTESsite());
+		int i = isCis5to3()? 1 : -1;
+		return getRangeIsoOnExon(UAGsite + i, getTESsite());
 	}
 	/**
 	 * 获得5UTR的信息
@@ -811,7 +812,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (Math.abs(ATGsite - UAGsite) <= 1) {
 			return new ArrayList<ExonInfo>();
 		}
-		return getRangeIsoOnExon(getTSSsite(), ATGsite - 1);
+		int i = isCis5to3()? 1 : -1;
+		return getRangeIsoOnExon(getTSSsite(), ATGsite - i);
 	}
 	/**
 	 * 指定一个起点和一个终点坐标，将这两个坐标间的外显子区域提取出来并返回
@@ -1213,7 +1215,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	
 	public GffGeneIsoInfo subGffGeneIso(int startLoc, int endLoc) {
 		int startAbs = Math.min(startLoc, endLoc);
-		int endAbs = Math.max(startAbs, endLoc);
+		int endAbs = Math.max(startLoc, endLoc);
 		GffGeneIsoInfo gffGeneIsoInfoResult = this.clone();
 		gffGeneIsoInfoResult.clearElements();
 		for (ExonInfo exonInfo : this) {

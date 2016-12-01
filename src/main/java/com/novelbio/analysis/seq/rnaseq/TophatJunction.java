@@ -103,7 +103,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			} else {
 				Align alignlast = lsAlignNew.get(lsAlignNew.size() - 1);
 				if (align.getStartAbs() - alignlast.getEndAbs() < intronMinLen) {
-					alignlast.setEnd(align.getEndAbs());
+					alignlast.setEndAbs(align.getEndAbs());
 				} else {
 					lsAlignNew.add(align);
 				}
