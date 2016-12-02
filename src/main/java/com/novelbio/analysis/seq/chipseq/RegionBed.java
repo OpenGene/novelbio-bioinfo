@@ -102,6 +102,9 @@ public class RegionBed {
 		List<double[]> lsValues = new ArrayList<>();
 		for (Align align : lsAligns) {
 			double[] value = mapReads.getRangeInfo(align, 0);
+			if (value == null) {
+				throw new ExceptionNBCChIPAlignError("cannot get Region of " + toString());
+			}
 			lsValues.add(value);
 		}
 		double[] values = EnumTssPileUpType.normalizeValues(normalType, lsValues, lengthNormal);

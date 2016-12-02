@@ -154,14 +154,14 @@ public class TssPlot {
 			RegionBed regionBed = null;
 			try {
 				regionBed = new RegionBed(content, normalizedType, xAxis.length);
+				lsRegions.add(regionBed);
 			} catch (ExceptionNBCChIPAlignError e) {
+				txtRead.close();
 				throw new ExceptionNBCChIPAlignError("generate regbed error on line " + content + "\n" + e.getMessage());
 			} catch (Exception e) {
-				throw new ExceptionNBCChIPAlignError("generate regbed error on line " + content, e);
-			} finally {
 				txtRead.close();
+				throw new ExceptionNBCChIPAlignError("generate regbed error on line " + content, e);
 			}
-			lsRegions.add(regionBed);
 		}
 		txtRead.close();
 	}
@@ -206,6 +206,9 @@ public class TssPlot {
 			try {
 				RegionValue regionValue = regionBed.getRegionInfo(mapReads);
 				lsRegionValues.add(regionValue);
+			} catch (ExceptionNBCChIPAlignError e) {
+				logger.error(regionBed.toString() + " error: " + e.getMessage());
+				continue;
 			} catch (Exception e) {
 				logger.error("cannot find region value of " + regionBed.toString(), e);
 				continue;
