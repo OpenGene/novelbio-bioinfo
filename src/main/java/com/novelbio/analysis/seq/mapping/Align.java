@@ -3,8 +3,10 @@ package com.novelbio.analysis.seq.mapping;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.novelbio.analysis.seq.chipseq.ExceptionNBCChIPAlignError;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.base.dataStructure.PatternOperate;
 
 
 /**
@@ -13,6 +15,7 @@ import com.novelbio.base.dataStructure.MathComput;
  * 重写了hashcode和equals方法，为 chrID+start+end
  */
 public class Align implements Alignment {
+	static PatternOperate patternOperate = new PatternOperate("(-{0,1}\\d+)-(-{0,1}\\d+)");
 	int start, end;
 	String chrID;
 	protected Boolean cis5to3;
@@ -55,10 +58,14 @@ public class Align implements Alignment {
 	public Align(String chrInfo) {
 		String[] ss = chrInfo.split(":");
 		this.chrID = ss[0];
-		int start = Integer.parseInt(ss[1].split("-")[0]);
-		int end = Integer.parseInt(ss[1].split("-")[1]);
-		this.start = Math.min(start, end);
-		this.end = Math.max(start, end);
+		try {
+			int start = Integer.parseInt(patternOperate.getPatFirst(ss[1], 1));
+			int end = Integer.parseInt(patternOperate.getPatFirst(ss[1], 2));
+			this.start = Math.min(start, end);
+			this.end = Math.max(start, end);
+		} catch (Exception e) {
+			throw new ExceptionNBCChIPAlignError("cannot parse location " + chrInfo, e);
+		}
 		if (start < end) {
 			cis5to3 = true;
 		} else if (start > end) {

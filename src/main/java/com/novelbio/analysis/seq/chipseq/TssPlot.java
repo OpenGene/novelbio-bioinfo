@@ -151,7 +151,16 @@ public class TssPlot {
 				}
 				continue;
 			}
-			RegionBed regionBed = new RegionBed(content, normalizedType, xAxis.length);
+			RegionBed regionBed = null;
+			try {
+				regionBed = new RegionBed(content, normalizedType, xAxis.length);
+			} catch (ExceptionNBCChIPAlignError e) {
+				throw new ExceptionNBCChIPAlignError("generate regbed error on line " + content + "\n" + e.getMessage());
+			} catch (Exception e) {
+				throw new ExceptionNBCChIPAlignError("generate regbed error on line " + content, e);
+			} finally {
+				txtRead.close();
+			}
 			lsRegions.add(regionBed);
 		}
 		txtRead.close();

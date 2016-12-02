@@ -164,6 +164,12 @@ public class Gene2Region {
 			align.setStartAbs(align.getStartAbs() - startEndRegion[1]);
 			align.setEndAbs(align.getEndAbs() - startEndRegion[0]);
 		}
+		if (align.getStartAbs() <= 0) {
+			align.setStartAbs(1);
+		}
+		if (align.getEndAbs() <= 0) {
+			align.setEndAbs(1);
+		}
 	}
 	
 	private static List<Align> getLsAligns(List<ExonInfo> lsExons) {

@@ -62,7 +62,7 @@ public class RegionBed {
 		for (String alignStr : aligns) {
 			Align align = new Align(alignStr);
 			if (align.isCis5to3() == null) {
-				throw new ExceptionNBCChIPAlignError("cannot set strand of align " + alignStr + ", on line " + regionBed);
+				align.setCis5to3(true);
 			}
 			lsAligns.add(align);
 		}
