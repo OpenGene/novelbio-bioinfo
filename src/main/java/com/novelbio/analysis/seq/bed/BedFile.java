@@ -67,12 +67,27 @@ public class BedFile implements AlignSeq, IntCmdSoft {
 	 */
 	public void writeBedRecord(BedRecord bedRecord) {
 		if (bedRecord == null) return;
+		String bed = bedRecord.toString();
+		if (StringOperate.isRealNull(bed)) {
+			return;
+		}
+		txtReadandWrite.writefileln(bed);
+	}
+	
+	/**
+	 * <b>写完后务必用 {@link #close} 方法关闭</b>
+	 * 创建的时候要设定为creat模式
+	 * @param bedRecord
+	 */
+	public void writeBedRecordSimple(BedRecord bedRecord) {
+		if (bedRecord == null) return;
 		String bed = bedRecord.toStringSimple();
 		if (StringOperate.isRealNull(bed)) {
 			return;
 		}
 		txtReadandWrite.writefileln(bed);
 	}
+	
 	/**
 	 * 内部关闭
 	 * @param lsBedRecord

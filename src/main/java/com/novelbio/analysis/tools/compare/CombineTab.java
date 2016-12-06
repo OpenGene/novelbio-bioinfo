@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -24,6 +25,8 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.ExceptionNbcFile;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.base.plot.VennImage;
@@ -224,7 +227,7 @@ public class CombineTab {
 			String filename = entry.getKey();
 			String conditionAbbr = entry.getValue();
 			ArrayList<String[]> lsInfoCodAllCols = getFileInfoAllCols(filename);
-			
+			checkFileInfo(filename, lsInfoCodAllCols);
 			//添加公共列的title，因为每个文档的公共列都一致，譬如第1，2，3列。所以只要添加一次即可
 			if (lsTitle.isEmpty()) {
 				for (int i = 0; i < colCompareOverlapID.length; i++) {
@@ -250,6 +253,19 @@ public class CombineTab {
 		lsResultUnion.add(0, lsTitle.toArray(new String[0]));
 
 		runningFlag = true;
+	}
+	
+	private void checkFileInfo(String fileName, List<String[]> lsInfoCodAllCols) {
+		int errorNum = 0;
+		for (String[] contents : lsInfoCodAllCols) {
+			String info = ArrayOperate.cmbString(contents, "").trim();
+			if (contents.length > 3 && info.length() <= 2) {
+				errorNum++;
+			}
+		}
+		if (errorNum > 10) {
+			throw new ExceptionNbcFile(fileName + " may error, format error or contains many empty lines");
+		}
 	}
 	
 	/**

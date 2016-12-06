@@ -295,11 +295,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		cmdOperate.setRedirectOutToTmp(true);
 		cmdOperate.addCmdParamOutput(collapseReadsFa);
 		cmdOperate.addCmdParamOutput(arfFile);
-		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("miRNAdeep2 mapper.pl error:\n" + cmdOperate.getCmdExeStrReal() + "\n" + cmdOperate.getErrOut());
-		}
- 
+		cmdOperate.runWithExp();
 		
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		FileOperate.deleteFileFolder(fastaInput);
@@ -342,21 +338,11 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		lsCmdRun.add("2>"); lsCmdRun.add(getReportFileRandom());
 		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
 		cmdOperate.setRedirectInToTmp(true);
+		cmdOperate.setIsStdErrTxt(true);
 		cmdOperate.addCmdParamInput(getMappingArf(fastaInput));
 		cmdOperate.addCmdParamInput(getCollapseReadsFa(fastaInput));
-		cmdOperate.run();
+		cmdOperate.runWithExp();
 		printLogs();
-		if (!cmdOperate.isFinishedNormal()) {
-			StringBuilder stringBuilder = new StringBuilder("miRNAdeep2 miRDeep2.pl error:\n");
-			stringBuilder.append("cmdline: " + cmdOperate.getCmdExeStrReal()+"\n");
-			if (!cmdOperate.getLsErrOut().isEmpty()) {
-				stringBuilder.append("detail: ");
-				for (String string : cmdOperate.getLsErrOut()) {
-					stringBuilder.append(string);
-				}
-			}
-			throw new ExceptionCmd(stringBuilder.toString());
-		}
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		createReportFile = false;
 	}

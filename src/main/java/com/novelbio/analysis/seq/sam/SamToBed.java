@@ -68,12 +68,12 @@ public class SamToBed implements AlignmentRecorder {
 		}
 		if (isUniqueRandomSelect) {
 			BedRecord bedRecord = samRecord.toBedRecordSE();
-			bedSeq.writeBedRecord(bedRecord);
+			bedSeq.writeBedRecordSimple(bedRecord);
 			bedRecord = null;
 		} else {
 			ArrayList<BedRecord> lsBedRecord = samRecord.toBedRecordSELs();
 			for (BedRecord bedRecord : lsBedRecord) {
-				bedSeq.writeBedRecord(bedRecord);
+				bedSeq.writeBedRecordSimple(bedRecord);
 			}
 			lsBedRecord = null;
 		}
