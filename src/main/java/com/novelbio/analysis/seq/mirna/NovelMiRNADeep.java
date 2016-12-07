@@ -49,9 +49,6 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	String hairpinMiRNA = "";
 	String species = "";
 	String chromFaIndexBowtie;
-	/** 输出报告文件，通过生成随机的该文件名，来找到本次mirDeep所在的路径 */
-	String reportFile;
-	boolean createReportFile = true;
 	/** 已经加过/了 */
 	String outPath = null;
 	
@@ -120,13 +117,8 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 * 设定一个随机的report的类型，采用日期时间+随机数的方式
 	 * @return 
 	 */
-	private String getReportFileRandom() {
-		if (createReportFile) {
-			Random random = new Random();
-			int randomInt = (int)(random.nextDouble() * 1000);
-			reportFile = outPath + "report" + DateUtil.getDateDetail() + randomInt + ".log";
-		}
-		return reportFile;
+	private String getMirLogFile() {
+		return outPath + "mirDeep2_report.log";
 	}
 	/**
 	 * 设定序列
@@ -300,7 +292,6 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		lsCmd.add(cmdOperate.getCmdExeStr());
 		FileOperate.deleteFileFolder(fastaInput);
 		FileOperate.deleteFileFolder(bedSeqFileName);
-		createReportFile = true;
 	}
 	
 	
@@ -325,6 +316,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	}
 	
 	private void mirDeep2Pl() {
+		String mirLog = getMirLogFile();
+		FileOperate.deleteFileFolder(mirLog);
+		
 		List<String> lsCmdRun = new ArrayList<>();
 		lsCmdRun.add(mirDeepPath + "miRDeep2.pl");
 		lsCmdRun.add(getCollapseReadsFa(fastaInput));
@@ -335,21 +329,20 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		lsCmdRun.add(getPrecursorsMiRNA());
 		ArrayOperate.addArrayToList(lsCmdRun, getSpecies());
 //		ArrayOperate.addArrayToList(lsCmdRun, getMirBaseMrd());
-		lsCmdRun.add("2>"); lsCmdRun.add(getReportFileRandom());
+		lsCmdRun.add("2>"); lsCmdRun.add(mirLog);
 		CmdOperate cmdOperate = new CmdOperate(lsCmdRun);
 		cmdOperate.setRedirectInToTmp(true);
 		cmdOperate.setIsStdErrTxt(true);
 		cmdOperate.addCmdParamInput(getMappingArf(fastaInput));
 		cmdOperate.addCmdParamInput(getCollapseReadsFa(fastaInput));
 		cmdOperate.runWithExp();
-		printLogs();
+		printLogs(mirLog);
 		lsCmd.add(cmdOperate.getCmdExeStr());
-		createReportFile = false;
 	}
 	
-	private void printLogs() {
+	private void printLogs(String logFile) {
 		logger.error("mirDeep logs:");
-		TxtReadandWrite txtReport = new TxtReadandWrite(getReportFileRandom());
+		TxtReadandWrite txtReport = new TxtReadandWrite(logFile);
 		for (String string : txtReport.readlines()) {
 			logger.error(string);
 		}
@@ -387,9 +380,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		lsFileName.add(expression_analyses_Path);
 		lsFileName.add(mirDeep_runs_Path);
 		lsFileName.add(mirDeep_pdfs_Path);
-		
-		lsFileName.add(getReportFileRandom());
-		
+				
 		for (String string : lsFileName) {
 			String fileName = FileOperate.getFileName(string);
 			FileOperate.moveFile(string, outPath, fileName.replace("_" + suffix, ""), true);
@@ -424,8 +415,9 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	
 	/** 查看reportlog，返回结果的后缀 */
 	private String getResultFileSuffixFromReportLog() {
+		String mirDeepLog = getMirLogFile();
 		String suffix = null;
-		TxtReadandWrite txtReport = new TxtReadandWrite(getReportFileRandom(), false);
+		TxtReadandWrite txtReport = new TxtReadandWrite(mirDeepLog, false);
 		for (String string : txtReport.readlines()) {
 			string = string.trim();
 			if (string.startsWith("mkdir")) {
@@ -435,7 +427,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		}
 		txtReport.close();
 		if (suffix == null) {
-			logger.error("没有找到report里面的文件名:" + getReportFileRandom());
+			logger.error("cannot find file name from mirDeep log file :" +mirDeepLog);
 		}
 		return suffix;
 	}
@@ -506,9 +498,6 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 		hairpinMiRNA = "";
 		species = "";
 		chromFaIndexBowtie = null;
-		/** 输出报告文件，通过生成随机的该文件名，来找到本次mirDeep所在的路径 */
-		reportFile = null;
-		createReportFile = true;
 		/** 已经加过/了 */
 		outPath = null;
 		
