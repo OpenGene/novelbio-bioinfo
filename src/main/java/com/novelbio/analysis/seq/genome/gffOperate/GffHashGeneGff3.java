@@ -170,9 +170,6 @@ public class GffHashGeneGff3 extends GffHashGeneAbs {
 	   setPattern();
 	   TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
 	   
-	   //当前的geneID，主要是给tRNA和miRNA用的，因为别的mRNA都有parent geneID可以通过这个ID回溯geneName
-	   //但是tRNA和miRNA就没有这个parent geneID，所以就记载下来给他们用
-	   Map<String, String> mapChrIdGeneId_2_GeneName = new HashMap<>();
 	   if (isFilterDuplicateName) {
 		  fillDuplicateNameSet();
 	  }
@@ -204,14 +201,14 @@ public class GffHashGeneGff3 extends GffHashGeneAbs {
       	    * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
       	    */
 		   else if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())) {
-			   Align alignRegion = new Align(ss[0], Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
-			  double[] compareRegion = null;
+//			   Align alignRegion = new Align(ss[0], Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+//			  double[] compareRegion = null;
 			  String parentId = patParentID.getPatFirst(ss[8]);
 			  String geneId = ss[0] + parentId;
 			   if (mapGeneID2Region.containsKey(geneId)) {
-				   Align alignGeneRegion = mapGeneID2Region.get(geneId);
-				   compareRegion = ArrayOperate.cmpArray(new double[]{alignRegion.getStartAbs(), alignRegion.getEndAbs()}, 
-						   new double[]{alignGeneRegion.getStartAbs(), alignGeneRegion.getEndAbs()});
+//				   Align alignGeneRegion = mapGeneID2Region.get(geneId);
+//				   compareRegion = ArrayOperate.cmpArray(new double[]{alignRegion.getStartAbs(), alignRegion.getEndAbs()}, 
+//						   new double[]{alignGeneRegion.getStartAbs(), alignGeneRegion.getEndAbs()});
 			   } else {
 				   addNewGene(ss);
 			   }
