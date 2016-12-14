@@ -500,7 +500,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 //		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
 //		
 //		lsResult.add(pvalueCalculate.iSpliceTestExp.getSpliceIndex() + "");
-	
+		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
 		lsResult.add(pvalueCalculate.getPvalueRootAvg() + "");
 		lsResult.add(fdr + "");
 		//TODO
@@ -540,7 +540,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsTitle.add("readsInfoDetailExp");
 //		lsTitle.add("P-Value_Jun");
 //		lsTitle.add("P-Value_Exp");
-//		lsTitle.add("P-Value_Average");
+		lsTitle.add("P-Value_Average");
 		
 //		lsTitle.add("Splicing_Index");
 		

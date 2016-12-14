@@ -546,6 +546,9 @@ public class GeneExpTable {
 			}
 		}
 		double uq = MathComput.median(lsValues, 75);
+		if (uq == 0) {
+			logger.error("sample " + condition + " Upper Quartile value is 0, so cannot do uq normalization");
+		}
 		return uq;
 	}
 	
