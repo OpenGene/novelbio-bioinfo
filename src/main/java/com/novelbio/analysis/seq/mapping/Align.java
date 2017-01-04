@@ -29,13 +29,14 @@ public class Align implements Alignment {
 	 */
 	public Align(String chrID, int start, int end) {
 		this.chrID = chrID;
-		this.start = Math.min(start, end);
-		this.end = Math.max(start, end);
 		if (start < end) {
 			cis5to3 = true;
 		} else if (start > end) {
 			cis5to3 = false;
 		}
+		this.start = Math.min(start, end);
+		this.end = Math.max(start, end);
+
 	}
 	
 	/**
@@ -61,16 +62,17 @@ public class Align implements Alignment {
 		try {
 			int start = Integer.parseInt(patternOperate.getPatFirst(ss[1], 1));
 			int end = Integer.parseInt(patternOperate.getPatFirst(ss[1], 2));
+			if (start < end) {
+				cis5to3 = true;
+			} else if (start > end) {
+				cis5to3 = false;
+			}
 			this.start = Math.min(start, end);
 			this.end = Math.max(start, end);
 		} catch (Exception e) {
 			throw new ExceptionNBCChIPAlignError("cannot parse location " + chrInfo, e);
 		}
-		if (start < end) {
-			cis5to3 = true;
-		} else if (start > end) {
-			cis5to3 = false;
-		}
+
 	}
 	
 	/** 

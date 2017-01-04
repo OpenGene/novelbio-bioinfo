@@ -9,7 +9,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 public class TestRegionBed {
 	
 	@Test
-	public void testGetRegionInfo() {
+	public void testGetRegionInfoCis() {
 		MapReadsStub mapReadsStub = new MapReadsStub();
 		//标准化到相同长度然后堆叠
 		RegionBed regionBed = new RegionBed("tp53\tchr1:1-10;chr1:31-39;ch1:51-60", EnumTssPileUpType.pileup_long_norm_to_length, 10);
@@ -52,6 +52,17 @@ public class TestRegionBed {
 		regionValue = regionBed.getRegionInfo(mapReadsStub);
 		values = new double[]{1.5, 3.5, 5.5, 7.5, 9.5};
 		Assert.assertArrayEquals(values, regionValue.values, 0.01);
+	}
+	
+	@Test
+	public void testGetRegionInfoTrans() {
+		MapReadsStub mapReadsStub = new MapReadsStub();
+		//标准化到相同长度然后堆叠
+		RegionBed regionBed = new RegionBed("tp53\tch1:60-51;chr1:39-31;chr1:10-1", EnumTssPileUpType.pileup_long_norm_to_length, 10);
+		RegionValue regionValue = regionBed.getRegionInfo(mapReadsStub);
+		double[] values = new double[]{109, 106,103, 100, 97, 94, 91, 88, 85, 52};
+		Assert.assertArrayEquals(values, regionValue.values, 0.01);
+		
 	}
 	
 	@Test
