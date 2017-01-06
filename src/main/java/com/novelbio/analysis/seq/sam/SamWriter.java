@@ -27,11 +27,16 @@ public class SamWriter {
 		if (outSamFile.endsWith(".sam")) {
 			writeToBam = false;
 		}
-		File file = FileOperate.getFile(fileName);
+		OutputStream outputStream = null;
+		try {
+			outputStream = FileOperate.getOutputStream(fileName);	
+		} catch (Exception e) {
+			throw new RuntimeException("fileName=" + fileName, e);
+		}
 		if (writeToBam) {
-			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, file, 7);
+			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, outputStream);
 		} else {
-			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, file);
+			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, outputStream);
 		}
 	}
 	

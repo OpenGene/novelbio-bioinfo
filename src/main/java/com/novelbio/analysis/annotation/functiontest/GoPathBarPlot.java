@@ -38,9 +38,28 @@ public class GoPathBarPlot {
 	 */
 	public static BufferedImage drawLog2PvaluePicture(List<StatisticTestResult> lsTestResults, int barNum, String title) throws Exception {
 		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
+		
+		// add by fans.fan 存在无穷大的double.导致死循环
+		double maxPvalue = 0d;
 		for (int i = 0; i < barNum; i++) {
-			if (i < lsTestResults.size())
-				dataset.addValue(lsTestResults.get(i).getLog10Pnegative(), "", lsTestResults.get(i).getItemTerm());
+			if (i < lsTestResults.size()) {
+				double tmpPvalue = lsTestResults.get(i).getLog10Pnegative();
+				if (tmpPvalue != Double.POSITIVE_INFINITY && tmpPvalue > maxPvalue) {
+					maxPvalue = tmpPvalue;
+				}
+			}
+		}
+		maxPvalue = maxPvalue * 1.2;
+		//end by fans.fan
+		
+		for (int i = 0; i < barNum; i++) {
+			if (i < lsTestResults.size()) {
+				double log10Pvalue = lsTestResults.get(i).getLog10Pnegative();
+				if (log10Pvalue == Double.POSITIVE_INFINITY) {
+					log10Pvalue = maxPvalue;
+				}
+				dataset.addValue(log10Pvalue, "", lsTestResults.get(i).getItemTerm());
+			}
 		}
 		JFreeChart chart = ChartFactory.createBarChart(title, null, "-Log10(P-value)", dataset, PlotOrientation.HORIZONTAL, false, false, false);
 		// chart.getRenderingHints().put(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
