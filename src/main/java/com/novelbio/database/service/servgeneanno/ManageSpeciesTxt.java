@@ -234,6 +234,11 @@ public class ManageSpeciesTxt implements IManageSpecies {
 		return null;
 	}
 	
+	@Override
+	public Page<TaxInfo> queryLsTaxInfoByFilter(Pageable pageable, String keyText) {
+		return null;
+	}
+	
 	static class ManageSpeciesTxtHold {
 		protected static ManageSpeciesTxt manageSpecies = new ManageSpeciesTxt();
 	}

@@ -177,6 +177,11 @@ public class SpeciesFile {
 		this.chromSeq = chromSeq;
 	}
 	
+	/** 返回文件名 */
+	public String getChromSeq() {
+		return chromSeq;
+	}
+	
 	/** 返回染色体文件名，包含路径 */
 	public String getChromSeqFile() {
 		if (StringOperate.isRealNull(chromSeq)) {

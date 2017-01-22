@@ -246,6 +246,11 @@ public class ManageSpeciesDB implements IManageSpecies {
 		return repoTaxInfo.findAll(pageable);
 	}
 	
+	@Override
+	public Page<TaxInfo> queryLsTaxInfoByFilter(Pageable pageable, String keyText) {
+		return repoTaxInfo.findByFilter(pageable, keyText);
+	}
+	
 	static class ManageSpeciesDBHold {
 		protected static ManageSpeciesDB manageSpecies = new ManageSpeciesDB();
 	}

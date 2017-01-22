@@ -16,6 +16,9 @@ public interface RepoTaxInfo extends PagingAndSortingRepository<TaxInfo, Integer
 	
 	@Query(value="{ 'abbr' : ?0 }")
 	List<TaxInfo> findByAbbr(String abbr);
+	
+	@Query(value="{ '$or': [{'$or': [{'$where' : 'function(){return (\"\" + this._id).indexOf(?0) > -1;}'}]}, {'$or': [{'abbr': {'$regex': '?0', '$options': 'i'}}]}, {'$or': [{'chnName': {'$regex': '?0', '$options': 'i'}}]}, {'$or': [{'comName': {'$regex': '?0', '$options': 'i'}}]}, {'$or': [{'latin': {'$regex': '?0', '$options': 'i'}}]}] }")
+	Page<TaxInfo> findByFilter(Pageable pageable, String keyText);
 
 	List<TaxInfo> findAll();
 

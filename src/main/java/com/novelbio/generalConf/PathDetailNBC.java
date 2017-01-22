@@ -1,5 +1,7 @@
 package com.novelbio.generalConf;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -8,8 +10,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
+import org.assertj.core.util.VisibleForTesting;
 
 import com.novelbio.analysis.annotation.cog.EnumCogType;
 import com.novelbio.base.PathDetail;
@@ -21,6 +22,29 @@ public class PathDetailNBC {
 	static {
 		initial();
 	}
+	
+	/** 仅用于测试 */
+	@VisibleForTesting
+	public static void setProperties(String pathOfPropertiesFile) throws Exception {
+		File f = new File(pathOfPropertiesFile);
+		InputStream in = new FileInputStream(f);
+		properties = new Properties();
+		try {
+			properties.load(in);
+		} catch (IOException e1) {
+			e1.printStackTrace();
+			throw new RuntimeException(e1);
+		} finally {
+			try {
+				if (in != null) {
+					in.close();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	private static void initial() {
 		String configPath = "Genome.Info";
 		InputStream in = PathDetailNBC.class.getClassLoader().getResourceAsStream(configPath);
@@ -173,4 +197,11 @@ public class PathDetailNBC {
 		return mapQuality2CutoffNum;
 	}
 	
+	/**
+	 * 获取物种索引文件的根路径<br>
+	 * 以"/"结尾
+	 */
+	public static String getIndexPath() {
+		return getGenomePath() + "index/";
+	}
 }

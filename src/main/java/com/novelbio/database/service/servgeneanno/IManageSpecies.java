@@ -6,10 +6,8 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
-import com.novelbio.generalConf.PathDetailNBC;
 
 public interface IManageSpecies {
 	
@@ -65,6 +63,14 @@ public interface IManageSpecies {
 	public List<TaxInfo> getLsAllTaxID();
 
 	public Page<TaxInfo> queryLsTaxInfo(Pageable pageable);
+	
+	/**
+	 * 分页查询物种信息
+	 * @param pageable
+	 * @param keyText 查询关键字
+	 * @return Page<TaxInfo>
+	 */
+	public Page<TaxInfo> queryLsTaxInfoByFilter(Pageable pageable, String keyText);
 	
 	public boolean deleteByTaxId(int taxid);
 	

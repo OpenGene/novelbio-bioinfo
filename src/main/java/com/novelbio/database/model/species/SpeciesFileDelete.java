@@ -119,7 +119,9 @@ public class SpeciesFileDelete {
 	
 	private void deleteRefFile(boolean isAllIso, boolean isProtein) {
 		String refFileAll = speciesFile.getRefSeqFile(isAllIso, isProtein);
-		deleteRef(refFileAll);
+		if(!StringOperate.isRealNull(refFileAll)) {
+			deleteRef(refFileAll);
+		}
 		speciesFile.setRefSeqFileName(null, isAllIso, isProtein);
 		speciesFile.save();
 	}
