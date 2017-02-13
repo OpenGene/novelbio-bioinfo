@@ -254,7 +254,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		
 		if (lsPvalueInfo.isEmpty()) {
-			logger.error("cannot find splicing site: {}", exonCluster.getParentGene().getNameSingle());
+			logger.debug("cannot find splicing site: {}", exonCluster.getParentGene().getNameSingle());
 			PvalueCalculate pvaCalculate = new PvalueCalculate();
 			pvaCalculate.pvalueAvg = 1;
 			pvaCalculate.pvalueAvg = 1;

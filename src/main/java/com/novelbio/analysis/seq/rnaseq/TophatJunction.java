@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.rnaseq;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -291,6 +292,22 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 			lsJuncResult.add(junctionUnit);
 		}
 		return lsJuncResult;
+	}
+	
+	/** 返回全体JunctionUnit */
+	public List<JunctionUnit> getLsJunctionUnitAll(String condition) {
+		List<JunctionUnit> lsJuncUnit = new ArrayList<>(mapJunUnitKey2Unit.values());
+		Collections.sort(lsJuncUnit, (juncUnit1, juncUnit2) -> {
+			int compare = juncUnit1.getRefID().compareTo(juncUnit2.getRefID());
+			if (compare == 0) {
+				compare = juncUnit1.getStartAbs() - juncUnit2.getStartAbs();
+			}
+			if (compare == 0) {
+				compare = juncUnit1.getEndAbs() - juncUnit2.getEndAbs();
+			}
+			return compare;
+		});
+		return lsJuncUnit;
 	}
 	
 	/**

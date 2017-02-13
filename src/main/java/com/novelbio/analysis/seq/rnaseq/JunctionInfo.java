@@ -112,7 +112,7 @@ public class JunctionInfo extends ListDetailAbs {
 		Map<String, Map<String, double[]>> mapCond2group2JunNum = new HashMap<>();
 		
 		/**
-		 * 根据正反向自动设定起点和终点
+		 * 需要后面手动设定起点和终点
 		 * @param chrID
 		 * @param start 从1开始记数
 		 * @param end 从1开始记数
@@ -124,7 +124,6 @@ public class JunctionInfo extends ListDetailAbs {
 		}
 		
 		/**
-		 * 根据正反向自动设定起点和终点
 		 * @param chrID
 		 * @param start 从1开始记数
 		 * @param end 从1开始记数
@@ -340,7 +339,18 @@ public class JunctionInfo extends ListDetailAbs {
 		}
 		
 		public String toString() {
-			return getRefID() + " " + getStartAbs() + " " + getEndAbs();
+			String strand = ".";
+			if (isCis5to3() != null) {
+				strand = isCis5to3() ? "+" : "-";
+			}
+			double all = 0;
+			for ( Map<String,double[]> mapGroup2Value : mapCond2group2JunNum.values()) {
+				for (double[] value : mapGroup2Value.values()) {
+					all += value[0];
+				}
+			}
+			mapCond2group2JunNum.values();
+			return getRefID() + "\t" + getStartAbs() + "\t" + getEndAbs() + "\t" + strand + "\t" + (int)all;
 		}
 	}
 	
