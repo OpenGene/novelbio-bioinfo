@@ -20,6 +20,9 @@ public enum EnumSpeciesFile {
 	refseqAllIsoPro("refprotein_all_iso"),
 	refseqOneIsoPro("refprotein_one_iso"),
 	
+	mature("mature"),
+	hairpin("hairpin"),
+	
 	/** 用来作go，pathway，COG背景的基因 */
 	bgGeneFile("BGgene") {
 		/** 返回具体的文件路径 */
