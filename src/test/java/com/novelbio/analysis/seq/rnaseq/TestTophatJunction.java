@@ -5,14 +5,11 @@ import java.util.List;
 
 import org.junit.Test;
 
-import junit.framework.TestCase;
-
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.rnaseq.TophatJunction;
-import com.novelbio.analysis.seq.rnaseq.TophatJunctionOld;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.base.SepSign;
+
+import junit.framework.TestCase;
 
 //TODO 还没写完
 public class TestTophatJunction extends TestCase {
