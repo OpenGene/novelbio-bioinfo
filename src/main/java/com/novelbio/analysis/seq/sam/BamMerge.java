@@ -57,7 +57,7 @@ public class BamMerge implements BamMergeInt {
 		if (lsBamFile.size() == 0) {
 			return "";
 		} else if (lsBamFile.size() == 1) {
-			FileOperate.moveFile(lsBamFile.get(0), outFileName, true);
+			FileOperate.moveFile(true, lsBamFile.get(0), outFileName);
 		} else {
 			String outFileNameTmp = FileOperate.changeFileSuffix(outFileName, "_tmp", null);
 			CmdOperate cmdOperate = new CmdOperate(getLsCmd(outFileNameTmp));

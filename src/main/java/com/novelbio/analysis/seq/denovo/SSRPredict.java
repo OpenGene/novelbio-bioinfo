@@ -62,7 +62,7 @@ public class SSRPredict implements IntCmdSoft {
 		public void moveResult() {
 			String outSSRFile = inputFile + ".misa";
 			String outSSRStaFile= inputFile + ".statistics";
-			FileOperate.moveFile(outSSRFile, outputDir, true);
-			FileOperate.moveFile(outSSRStaFile, outputDir, true);
+			FileOperate.moveFile(true, outSSRFile, outputDir);
+			FileOperate.moveFile(true, outSSRStaFile, outputDir);
 		}
 }
