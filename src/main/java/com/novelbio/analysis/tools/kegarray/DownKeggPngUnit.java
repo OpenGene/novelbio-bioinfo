@@ -60,27 +60,21 @@ class DownKeggPngUnit {
 		// DownKeggPngUnit instance = new DownKeggPngUnit(URL, downloadPath);
 		// instance.startDownload();
 		String[][] arrUrl = {
-				{
-						"http://www.genome.jp//kegg-bin/color_pathway_object?org_name=mmu&file=17028&reference=gray",
-						"/home/novelbio/yy/GvsD" },
-				{
-						"http://www.genome.jp//kegg-bin/color_pathway_object?org_name=mmu&file=51801&reference=gray",
-						"/home/novelbio/yy/CvsB" },
-				{
-						"http://www.genome.jp//kegg-bin/color_pathway_object?org_name=mmu&file=100449&reference=gray",
-						"/home/novelbio/yy/DvsB" },
-				{
-						"http://www.genome.jp//kegg-bin/color_pathway_object?org_name=mmu&file=122172&reference=gray",
-						"/home/novelbio/yy/GvsC" } };
-		ExecutorService runner = Executors.newFixedThreadPool(4);
-		for (int i = 0; i < arrUrl.length; i++) {
-			int index = i;
-			runner.execute(() -> {
-				DownKeggPngUnit instance = new DownKeggPngUnit(arrUrl[index][0], arrUrl[index][1]);
-				instance.startDownload();
-			});
-		}
-		runner.shutdown();
+				{ "http://www.genome.jp//kegg-bin/color_pathway_object?org_name=hsa&file=131206&reference=gray",
+						"/home/novelbio/yy/20170109-2" }, };
+		new DownKeggPngUnit(
+				"http://www.genome.jp//kegg-bin/color_pathway_object?org_name=hsa&file=131206&reference=gray",
+				"/home/novelbio/yy/20170109-2").startDownload()	;
+		// ExecutorService runner = Executors.newFixedThreadPool(10);
+		// for (int i = 0; i < arrUrl.length; i++) {
+		// int index = i;
+		// runner.execute(() -> {
+		// DownKeggPngUnit instance = new DownKeggPngUnit(arrUrl[index][0],
+		// arrUrl[index][1]);
+		// instance.startDownload();
+		// });
+		// }
+		// runner.shutdown();
 	}
 
 	public DownKeggPngUnit(String url, String downloadPath) {
@@ -257,8 +251,7 @@ class DownKeggPngUnit {
 		});
 	}
 
-	private void fnDownloadImage(String imageUrl, Consumer<String> successCallback,
-			Consumer<String> errorCallback) {
+	private void fnDownloadImage(String imageUrl, Consumer<String> successCallback, Consumer<String> errorCallback) {
 		String filename = imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
 		Path path = Paths.get(downloadPath, filename);
 		downloadExecutor.execute(() -> {
