@@ -328,6 +328,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return getAndCalculatePvalue().compareTo(o.getAndCalculatePvalue());
 	}
 	
+	/** 获得具体的剪接位点区域 */
 	public String getSpliceSite() {
 		Align align = getSpliceSiteAlignDisplay();
 		if (align == null) {
@@ -525,6 +526,46 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return lsResult.toArray(new String[0]);
 	}
 
+	public String[] toStringArray_new() {
+		ArrayList<String> lsResult = new ArrayList<String>();
+		GffDetailGene gffDetailGene = exonCluster.getParentGene();
+		lsResult.add(gffDetailGene.getNameSingle());
+		lsResult.add(getSpliceSite());
+		PvalueCalculate pvalueCalculate = lsPvalueInfo.get(0);
+		lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
+
+		lsResult.add(pvalueCalculate.getStrInfo(false, false));
+		lsResult.add(pvalueCalculate.getStrInfo(false, true));
+		lsResult.add(pvalueCalculate.getStrInfo(true, false));
+		lsResult.add(pvalueCalculate.getStrInfo(true, true));
+		
+//		lsResult.add(pvalueCalculate.getStrNormInfo(false));
+//		lsResult.add(pvalueCalculate.getStrNormInfo(true));
+//		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
+		lsResult.add(pvalueCalculate.getPvalueRootAvg() + "");
+		lsResult.add(fdr + "");
+		//TODO
+		lsResult.add(getSplicingType().toString());
+		return lsResult.toArray(new String[0]);
+	}
+	
+	/** 获得标题 */
+	public static String[] getTitle_new(String condition1, String condition2) {
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.AccID.toString());
+		lsTitle.add(TitleFormatNBC.Location.toString());
+		lsTitle.add("Exon_Number");
+		lsTitle.add(condition1 + "_Skip::Others");
+		lsTitle.add(condition2 + "_Skip::Others");
+		lsTitle.add(condition1 + "Exp");
+		lsTitle.add(condition2 + "Exp");
+		lsTitle.add(TitleFormatNBC.Pvalue.toString());
+		lsTitle.add(TitleFormatNBC.FDR.toString());
+		lsTitle.add("SplicingType");
+
+		return lsTitle.toArray(new String[0]);
+	}
+	
 	/** 获得标题 */
 	public static String[] getTitle(String condition1, String condition2) {
 		ArrayList<String> lsTitle = new ArrayList<String>();

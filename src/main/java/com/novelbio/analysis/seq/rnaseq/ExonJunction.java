@@ -529,11 +529,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			if (FileOperate.isFileDirectory(resultFile)) {
 				outFile = resultFile + outPrefix + ".txt";
 			} else {
-				outFile = FileOperate.changeFileSuffix(resultFile, "_"+outPrefix, ".alldiff.txt");
+				outFile = FileOperate.changeFileSuffix(resultFile, "_"+outPrefix, "txt");
 			}
 			writeToFile(outFile, lsResult);
 		}
-		
 		
 		if (runGetInfo != null) {
 			GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
@@ -712,7 +711,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				continue;
 			}
 			
-			if (i++ % 500 == 0) logger.info("finish {} splice site", i);
+			if (i > 0 && i++ % 500 == 0) logger.info("finish {} splice site", i);
 			
 			gffDetailGene = GenerateNewIso.getGeneWithSameStrand(gffDetailGene);
 			//TODO 设置断点
@@ -882,7 +881,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 				exonClusterSite.addMapCondition2MapReads(condition, group, mapReads);
 			}
-			if (num % 500 == 0) {
+			if (num > 0 && num % 500 == 0) {
 				logger.info("do " + num + " events");
 			}
 			num ++;
