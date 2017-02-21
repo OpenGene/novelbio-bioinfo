@@ -496,6 +496,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 		List<ExonInfo> lsExonInfos = null;
 		if (geneStructure == GeneStructure.ALLLENGTH || geneStructure == GeneStructure.EXON) {
 			lsExonInfos = gffGeneIsoInfo.getLsElement();
+			getIntron = geneStructure == GeneStructure.ALLLENGTH ? true : false;
 		} else if (geneStructure == GeneStructure.CDS) {
 			lsExonInfos = gffGeneIsoInfo.getIsoInfoCDS();
 		} else if (geneStructure == GeneStructure.INTRON) {
