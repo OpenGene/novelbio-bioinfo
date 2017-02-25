@@ -45,7 +45,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  */
 public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	private static final Logger logger = LoggerFactory.getLogger(ExonSplicingTest.class);
-		
+	
 	/** 实验组和对照组的junction reads数量加起来小于这个数，就返回1 */
 	static int junctionReadsMinNum = 10;
 		
@@ -493,9 +493,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsResult.add(pvalueCalculate.getStrInfo(false, true));
 		lsResult.add(pvalueCalculate.getStrInfo(true, false));
 		lsResult.add(pvalueCalculate.getStrInfo(true, true));
-		
-		lsResult.add(pvalueCalculate.getStrNormInfo(false));
-		lsResult.add(pvalueCalculate.getStrNormInfo(true));
 //		lsResult.add(pvalueCalculate.getPvalueJun() + "");
 //		lsResult.add(pvalueCalculate.getPvalueExp() + "");
 //		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
@@ -526,7 +523,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return lsResult.toArray(new String[0]);
 	}
 
-	public String[] toStringArray_new() {
+	public String[] toStringArray_ASD() {
 		ArrayList<String> lsResult = new ArrayList<String>();
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		lsResult.add(gffDetailGene.getNameSingle());
@@ -550,7 +547,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	}
 	
 	/** 获得标题 */
-	public static String[] getTitle_new(String condition1, String condition2) {
+	public static String[] getTitle_ASD(String condition1, String condition2) {
 		ArrayList<String> lsTitle = new ArrayList<String>();
 		lsTitle.add(TitleFormatNBC.AccID.toString());
 		lsTitle.add(TitleFormatNBC.Location.toString());
@@ -577,19 +574,17 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsTitle.add(condition1 + "Exp");
 		lsTitle.add(condition2 + "Exp");
 		
-		lsTitle.add("readsInfoDetailJun");
-		lsTitle.add("readsInfoDetailExp");
+//		lsTitle.add("readsInfoDetailJun");
+//		lsTitle.add("readsInfoDetailExp");
 //		lsTitle.add("P-Value_Jun");
 //		lsTitle.add("P-Value_Exp");
 		lsTitle.add("P-Value_Average");
 		
 //		lsTitle.add("Splicing_Index");
 		
-		lsTitle.add(TitleFormatNBC.Adjusted_PValue.toString());
+		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.FDR.toString());
 		lsTitle.add("SplicingType");
-//		lsTitle.add(TitleFormatNBC.Symbol.toString());
-//		lsTitle.add(TitleFormatNBC.Description.toString());
 		return lsTitle.toArray(new String[0]);
 	}
 	/** 获得标题 */

@@ -59,6 +59,9 @@ import com.novelbio.listOperate.ListAbs;
  * @author zong0jie
  */
 public class ExonJunction extends RunProcess<GuiAnnoInfo> {
+	/** 发布的ASD和自己用的不太一样 */
+	private static final boolean isASD = false;
+	
 	public static void main(String[] args) {
 		long timeEclipse1 = test();
 		System.out.println(timeEclipse1);
@@ -932,7 +935,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			
 			List<ExonSplicingTest> lsIsoExonSplicingResult = doTest(lsIsoExonSplicingTests);
 			if (lsIsoExonSplicingResult.isEmpty()) {
-				logger.info("gene " + lsIsoExonSplicingTests.get(0).getCurrentExonCluster().getParentGene().getNameSingle() + " have only unknown splicing site");
+				logger.debug("gene " +
+						lsIsoExonSplicingTests.get(0).getCurrentExonCluster().getParentGene().getNameSingle() + " has unknown splicing site");
 				continue;
 			}
 			lsIsoExonSplicingResult = combineMXE(lsIsoExonSplicingResult);
@@ -1199,14 +1203,16 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			txtOutSeq = new TxtReadandWrite(FileOperate.changeFileSuffix(fileName, ".Seq", "fasta.gz"), true);
 		}
 		
-		txtOut.writefileln(ExonSplicingTest.getTitle(condition1, condition2));
+		String[] title = isASD? ExonSplicingTest.getTitle_ASD(condition1, condition2) : ExonSplicingTest.getTitle(condition1, condition2);
+		txtOut.writefileln(title);
 		for (ExonSplicingTest chisqTest : lsResult) {
 			//TODO 设定断点
 			if (chisqTest.getExonCluster().getParentGene().getName().contains(stopGeneName)) {
 				logger.debug("stop");
 			}
 			try {
-				txtOut.writefileln(chisqTest.toStringArray());
+				String[] info = isASD? chisqTest.toStringArray_ASD() : chisqTest.toStringArray();
+				txtOut.writefileln(info);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
