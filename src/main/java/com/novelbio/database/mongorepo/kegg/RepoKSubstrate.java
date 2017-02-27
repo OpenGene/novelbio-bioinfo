@@ -13,15 +13,15 @@ import com.novelbio.database.domain.kegg.KGsubstrate;
 @Repository
 public class RepoKSubstrate {
 	@Autowired
-	MongoTemplate mongoTemplateKegg;
+	MongoTemplate mongoTemplate;
 	
 	public List<KGsubstrate> queryLsByReactId(String reactionID) {
 		Query query = new Query( Criteria.where("reactionID").is(reactionID));
-		return mongoTemplateKegg.find(query, KGsubstrate.class);
+		return mongoTemplate.find(query, KGsubstrate.class);
 	}
 
 	public KGsubstrate findOne(String kgId) {
-		return mongoTemplateKegg.findById(kgId, KGsubstrate.class);
+		return mongoTemplate.findById(kgId, KGsubstrate.class);
 	}
 
 }

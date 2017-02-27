@@ -11,28 +11,28 @@ import com.novelbio.database.domain.kegg.KGpathway;
 @Repository
 public class RepoKPathway {
 	@Autowired
-	MongoTemplate mongoTemplateKegg;
+	MongoTemplate mongoTemplate;
 	
 	public List<KGpathway> findAll() {
-		return mongoTemplateKegg.findAll(KGpathway.class, "kgpathway");
+		return mongoTemplate.findAll(KGpathway.class, "kgpathway");
 	}
 
 	public KGpathway findOne(String mapNum) {
-		return mongoTemplateKegg.findById(mapNum, KGpathway.class);
+		return mongoTemplate.findById(mapNum, KGpathway.class);
 	}
 
 	public void save(KGpathway kGpathway) {
-		mongoTemplateKegg.save(kGpathway);
+		mongoTemplate.save(kGpathway);
 	}
 
 	public void delete(String pathName) {
 		KGpathway kGpathway = new KGpathway();
 		kGpathway.setPathName(pathName);
-		mongoTemplateKegg.remove(kGpathway);
+		mongoTemplate.remove(kGpathway);
 		
 	}
 
 	public void deleteAll() {
-		mongoTemplateKegg.dropCollection(KGpathway.class);
+		mongoTemplate.dropCollection(KGpathway.class);
 	}
 }
