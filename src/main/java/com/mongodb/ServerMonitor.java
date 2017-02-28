@@ -87,7 +87,7 @@ class ServerMonitor {
                     Throwable previousException = currentException;
                     currentException = null;
                     try {
-                        if (connection == null) {
+                        if (connection == null || connection.isClosed()) {
                             connection = new DBPort(serverAddress, mongo, getOptions());
                         }
                         try {
@@ -120,6 +120,8 @@ class ServerMonitor {
                     	// ossHost不为空,说明是运行在批量计算的VM中.
                     	if (ossHost != null && !"".equals(ossHost)) {
                 			connection.close();
+                			connection = null;
+                			connectionProvider.invalidate();
                 			try {
 								Thread.sleep(3 * 60 * 1000l);
 							} catch (InterruptedException e) {
