@@ -115,21 +115,6 @@ class ServerMonitor {
                         currentException = t;
                         currentServerDescription = getConnectingServerDescription(t);
                     } 
-                    // add by fans.fan 批量计算每次都关闭掉连接
-                    finally {
-                    	// ossHost不为空,说明是运行在批量计算的VM中.
-                    	if (ossHost != null && !"".equals(ossHost)) {
-                			connection.close();
-                			connection = null;
-                			connectionProvider.invalidate();
-                			try {
-								Thread.sleep(3 * 60 * 1000l);
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-                		} 
-					}
-                    // end by fans.fan
 
                     if (!isClosed) {
                         try {
@@ -139,6 +124,19 @@ class ServerMonitor {
                             LOGGER.log(Level.WARNING, "Exception in monitor thread during notification of server state change", t);
                         }
                     }
+                    // add by fans.fan 批量计算每次都关闭掉连接
+                	if (ossHost != null && !"".equals(ossHost)) {
+                		// ossHost不为空,说明是运行在批量计算的VM中.
+            			connection.close();
+            			connection = null;
+            			connectionProvider.invalidate();
+            			try {
+							Thread.sleep(3 * 60 * 1000l);
+						} catch (InterruptedException e) {
+						}
+            		} 
+                	// end by fans.fan
+                	
                     waitForNext();
                 }
             } finally {
