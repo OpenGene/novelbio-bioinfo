@@ -13,13 +13,13 @@ import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
 @Repository
 public class RepoKNCompInfo {
 	@Autowired
-	MongoTemplate mongoTemplateKegg;
+	MongoTemplate mongoTemplate;
 
 	public KGNCompInfo findOne(String kegId) {
-		return mongoTemplateKegg.findById(kegId, KGNCompInfo.class);
+		return mongoTemplate.findById(kegId, KGNCompInfo.class);
 	}
 
 	public void save(KGNCompInfo kgnCompInfo) {
-		mongoTemplateKegg.save(kgnCompInfo);
+		mongoTemplate.save(kgnCompInfo);
 	}
 }

@@ -13,23 +13,23 @@ import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
 @Repository
 public class RepoKNIdKeg {
 	@Autowired
-	MongoTemplate mongoTemplateKegg;
+	MongoTemplate mongoTemplate;
 	
 	public List<KGNIdKeg> findByKegId(String kegID) {
 		Query query = new Query( Criteria.where("kegID").is(kegID));
-		return mongoTemplateKegg.find(query, KGNIdKeg.class);
+		return mongoTemplate.find(query, KGNIdKeg.class);
 	}
 	
 	public List<KGNIdKeg> findAll() {
-		return mongoTemplateKegg.findAll(KGNIdKeg.class);
+		return mongoTemplate.findAll(KGNIdKeg.class);
 	}
 
 	public KGNIdKeg findOne(String usualName) {
-		return mongoTemplateKegg.findById(usualName, KGNIdKeg.class);
+		return mongoTemplate.findById(usualName, KGNIdKeg.class);
 	}
 
 	public void save(KGNIdKeg kgnIdKeg) {
-		mongoTemplateKegg.save(kgnIdKeg);
+		mongoTemplate.save(kgnIdKeg);
 	}
 
 	
