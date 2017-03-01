@@ -243,43 +243,26 @@ public abstract class AGeneInfo {
 	
 	/** 如果是同一个数据库，则覆盖式的保存 */
 	public boolean addInfo(AGeneInfo geneInfo) {
+	
 		boolean update = false;
 		for (String dbInfoName : geneInfo.mapDescription.keySet()) {
-			//如果不含有该注释，新加入的注释信息更全面，或者两个注释不一样
-			if (!mapDescription.containsKey(dbInfoName)
-					||
-					(geneInfo.mapDescription.get(dbInfoName).toLowerCase().contains(mapDescription.get(dbInfoName).toLowerCase()) 
-							&& geneInfo.mapDescription.get(dbInfoName).length() > mapDescription.get(dbInfoName).length())
-					) {
-				mapDescription.put(dbInfoName, geneInfo.mapDescription.get(dbInfoName));
-				update = true;
-			} else if(!mapDescription.get(dbInfoName).toLowerCase().contains(geneInfo.mapDescription.get(dbInfoName).toLowerCase()) &&
-					mapDescription.get(dbInfoName).length() < geneInfo.mapDescription.get(dbInfoName).length()
-					) {
-				mapDescription.put(dbInfoName, mapDescription.get(dbInfoName) + "//" + geneInfo.mapDescription.get(dbInfoName));
-				update = true;
-			}
+			mapDescription.put(dbInfoName, geneInfo.mapDescription.get(dbInfoName));
+			update = true;
 		}
 		for (String dbInfoName : geneInfo.mapSymbol.keySet()) {
-			if (!mapSymbol.containsKey(dbInfoName)) {
-				mapSymbol.put(dbInfoName, geneInfo.mapSymbol.get(dbInfoName));
-				update = true;
-			} else {
-				String symbolOld = mapSymbol.get(dbInfoName);
-				String symbolThis = geneInfo.mapSymbol.get(dbInfoName);
-				if (symbolThis != null && !symbolThis.equals("")) {
-					if (symbolOld == null || !symbolThis.equals(symbolOld)) {
-						mapSymbol.put(dbInfoName, symbolThis);
-						update = true;
-					}
-				}
-			}
+			mapSymbol.put(dbInfoName, geneInfo.mapSymbol.get(dbInfoName));
+			update = true;
 		}
 		update = addInfo(setDbXrefs, geneInfo.setDbXrefs) || update;
 		update = addInfo(setFullNameNome, geneInfo.setFullNameNome) || update;
 		update = addInfo(setPubmedIDs, geneInfo.setPubmedIDs) || update;
 		update = addInfo(setSymNome, geneInfo.setSymNome) || update;
 		update = addInfo(setSynonyms, geneInfo.setSynonyms) || update;
+		if (geneInfo.getGeneUniID().equals("7917719")) {
+			logger.error("start update gene: " + geneInfo.getSymb() + " is update " + update);
+			logger.error("gene description " + geneInfo.getDescrp());
+
+		}
 		return update;
 	}
 	/** 浅层复制，不复制geneID */

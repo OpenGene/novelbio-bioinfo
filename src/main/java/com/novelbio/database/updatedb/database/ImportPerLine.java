@@ -51,7 +51,7 @@ abstract class ImportPerLine {
 	public boolean updateFile(String gene2AccFile) {
 		setReadFromLine();
 		TxtReadandWrite txtGene2Acc;
-		txtGene2Acc = new TxtReadandWrite(gene2AccFile, false);
+		txtGene2Acc = new TxtReadandWrite(gene2AccFile);
 		
 		
 		//从第二行开始读取

@@ -181,7 +181,7 @@ public class GeneIDabs implements GeneIDInt {
 		}
 		String result = hashDBtype.get(taxID);
 		if (result == null) {
-			return DBAccIDSource.RefSeqRNA.toString();
+			return DBAccIDSource.NCBI.toString();
 		}
 		return result;
 	}

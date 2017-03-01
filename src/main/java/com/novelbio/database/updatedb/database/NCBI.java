@@ -118,12 +118,15 @@ public class NCBI {
 		impFile.updateFile(FileOperate.changeFileSuffix(gene2Pub, "_failed", "txt"));
 		logger.info("finish gene2Pub");
 		
-		impFile = new ImpGene2GO();
-		impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2GO, "_failed", "txt"));
-		impFile.updateFile(gene2GO);
-		impFile = new ImpGene2GO();
-		impFile.updateFile(FileOperate.changeFileSuffix(gene2GO, "_failed", "txt"));
-		logger.info("finish gene2GO");
+		if (FileOperate.isFileExistAndBigThan0(gene2GO)) {
+			impFile = new ImpGene2GO();
+			impFile.setTxtWriteExcep(FileOperate.changeFileSuffix(gene2GO, "_failed", "txt"));
+			impFile.updateFile(gene2GO);
+			impFile = new ImpGene2GO();
+			impFile.updateFile(FileOperate.changeFileSuffix(gene2GO, "_failed", "txt"));
+			logger.info("finish gene2GO");
+		}
+
 	}
 }
 

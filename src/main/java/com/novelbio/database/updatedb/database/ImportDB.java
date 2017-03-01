@@ -34,56 +34,18 @@ public class ImportDB {
 //	String taxIDFile;
 	String GOPath;
 	
-	public static void main0(String[] args) {
-		Options opts = new Options();
-		opts.addOption("taxId", true, "taxId");
-		CommandLine cliParser = null;
-		try {
-			cliParser = new GnuParser().parse(opts, args);
-		} catch (Exception e) {
-			System.exit(1);
-		}
-		String taxId = cliParser.getOptionValue("taxId");
-		for (String string : taxId.split(",")) {
-			if (StringOperate.isRealNull(string)) continue;
-			int taxIdint = Integer.parseInt(string.trim());
-			ImportPerLine.addTaxId(taxIdint);
-		}
-		
-		String downloadPath = "/home/novelbio/NBCsource/biodb/database20150530/";
-		String GOPath = downloadPath + "GO/";
-		ImportDB importDB = new ImportDB();
-		importDB.setDownloadPath(downloadPath);
-		importDB.setGOPath(GOPath);
-
-		
-		importDB.updateNCBIID();
-		importDB.updateUniprotID();
-
-		System.out.println("finish all");
-	}
-	
 	public static void main(String[] args) {
-//		ImportPerLine.addTaxId(9925);
-		ImportPerLine.addTaxId(9940);
-//		ImportPerLine.addTaxId(9606);
-		
-		String downloadPath = "/media/winE/NBCplatform/database/20150928/";
-		String GOPath = downloadPath + "GO/";
-		ImportDB importDB = new ImportDB();
-		importDB.setDownloadPath(downloadPath);
-		importDB.setGOPath(GOPath);
-
-		
-		importDB.updateNCBIID();
-		importDB.updateUniprotID();
-
-		System.out.println("finish all");
-	}
-	
-	public static void main2(String[] args) {
+		for (String string : args) {
+			if (string.toLowerCase().contains("help")) {
+				System.out.println("java -jar xxx.jar --taxId 9606 --importGO true --downloadPath /media/winE/NBCplatform/database/20150928/");
+				System.exit(0);
+			}
+		}
 		Options opts = new Options();
 		opts.addOption("taxId", true, "taxId");
+		opts.addOption("downloadPath", true, "downloadPath");
+		opts.addOption("importGO", true, "importGO");
+
 		CommandLine cliParser = null;
 		try {
 			cliParser = new GnuParser().parse(opts, args);
@@ -97,16 +59,14 @@ public class ImportDB {
 			ImportPerLine.addTaxId(taxIdint);
 		}
 		
-//		List<TaxInfo> lsInfos = ManageSpecies.getInstance().getLsAllTaxID();
-//		for (TaxInfo taxInfo : lsInfos) {
-//			ImportPerLine.addTaxId(taxInfo.getTaxID());
-//		}
-		
-		String downloadPath = "/home/novelbio/NBCsource/biodb/database20150530/";
-		String softToolsFile = "/home/novelbio/NBCsource/SoftwareInfo.txt";
+		String downloadPath = cliParser.getOptionValue("downloadPath");
 //		String taxIDFile = "/home/novelbio/NBCsource/species/常见物种IDKEGGUploadTmp.txt";
 //		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
 		String GOPath = downloadPath + "GO/";
+		
+		boolean importGO = Boolean.parseBoolean(cliParser.getOptionValue("importGO"));
+		
+		
 //		String speciesFile = "";
 //		ImportPerLine.addTaxId(4577);
 		ImportDB importDB = new ImportDB();
@@ -119,8 +79,10 @@ public class ImportDB {
 //		importDB.updateDBinfo(dbInfo);
 //		importDB.updateGODB();
 		
-		importDB.updateNCBIID();
-		importDB.updateUniprotID();
+		importDB.updateNCBIID(importGO);
+		if (importGO) {
+			importDB.updateUniprotID();
+		}
 		
 //		importDB.updateZeaMaize();
 //		importDB.updateRiceID("/home/novelbio/NBCsource/database/species/rice/");//只导了前两个
@@ -183,7 +145,7 @@ public class ImportDB {
 	}
 	
 	/** 升级从NCBI下载的信息 */
-	private void updateNCBIID() {
+	private void updateNCBIID(boolean isImportGO) {
 		String gene2Acc = downloadPath + "gene2accession.gz";
 		String gene2Ref = downloadPath + "gene2refseq.gz";
 		String gene2ensembl = downloadPath + "gene2ensembl.gz";
@@ -199,7 +161,9 @@ public class ImportDB {
 		ncbi.setGene2Info(gene2Info);
 		ncbi.setGene2Pub(gene2Pub);
 		ncbi.setGeneRef2UniID(geneRef2UniID);
-		ncbi.setGene2GO(gene2GO);
+		if (isImportGO) {
+			ncbi.setGene2GO(gene2GO);
+		}
 		ncbi.importFile();
 	}
 	
