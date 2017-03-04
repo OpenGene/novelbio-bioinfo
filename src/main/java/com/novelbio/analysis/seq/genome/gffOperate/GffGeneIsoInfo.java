@@ -282,13 +282,19 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (ATGsite < 0 || UAGsite < 0) {
 			return false;
 		}
-		if ( Math.abs(ATGsite - UAGsite) > 10 || flagTypeGene == GeneType.mRNA) {
-			return true;
-		} else {
+		return Math.abs(ATGsite - UAGsite) > 10 || flagTypeGene == GeneType.mRNA;
+	}
+	/**
+	 * 根据atg和uag的位置来判断是否为mRNA
+	 * @return
+	 */
+	public boolean ismRNAFromCds() {
+		if (ATGsite < 0 || UAGsite < 0) {
 			return false;
 		}
+		return Math.abs(ATGsite - UAGsite) > 10;
+
 	}
-	
 	/**
 	 * 根据输入的gffIso延长两端
 	 * @param gffGeneIsoInfo

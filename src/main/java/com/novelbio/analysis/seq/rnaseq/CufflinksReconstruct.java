@@ -158,7 +158,7 @@ public class CufflinksReconstruct implements IntCmdSoft {
 		gffHashModifyORF.setGffHashGeneRef(gffChrAbs.getGffHashGene());
 		gffHashModifyORF.setRenameGene(true);
 		
-		gffHashModifyORF.setRenameIso(false);//TODO 可以考虑不换iso的名字
+		gffHashModifyORF.setRenameIso(true);//TODO 可以考虑不换iso的名字
 		gffHashModifyORF.modifyGff();
 		GffHashGene gffHashGeneModify = gffHashModifyORF.getGffResult();
 		List<String> lsChrName = (gffChrAbs.getSeqHash() != null)? gffChrAbs.getSeqHash().getLsSeqName() : null;

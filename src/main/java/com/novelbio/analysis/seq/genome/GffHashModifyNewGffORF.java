@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.database.model.modgeneid.GeneType;
 
 /**
  * 给定一个没有ORF的gff
@@ -67,7 +68,7 @@ public class GffHashModifyNewGffORF {
 	GffHashGene gffResult;
 	
 	boolean renameGene = true;
-	boolean renameIso = false;
+	boolean renameIso = true;
 	String prefixGeneName = "NBC";
 	/** 基因名字对照表 */
 	Map<String, String> mapRef2ThisGeneName = new HashMap<>();
@@ -108,9 +109,6 @@ public class GffHashModifyNewGffORF {
 	public void modifyGff() {
 		setIsoNameRemoveRedundant.clear();
 		for (GffDetailGene gffDetailGeneRef : gffHashGeneRef.getLsGffDetailGenes()) {
-			if (gffDetailGeneRef.getNameSingle().equalsIgnoreCase("Traes_5DL_9FC634D23")) {
-				System.out.println();
-			}
 			//因为gff文件可能有错，gffgene的长度可能会大于mRNA的总长度，这时候就要遍历每个iso
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGeneRef.getLsCodSplit()) {
 				int median = (gffGeneIsoInfo.getStart() + gffGeneIsoInfo.getEnd())/2;
@@ -155,11 +153,14 @@ public class GffHashModifyNewGffORF {
 						) {
 					gffDetailGeneNew.addIsoSimple(gffGeneIsoInfo);
 				}
+				if (!gffGeneIsoInfo.ismRNAFromCds()) {
+					gffGeneIsoInfo.setGeneType(GeneType.miscRNA);
+				}
 			}
 			if (gffDetailGeneNew.getLsCodSplit().size() > 0) {
 				gffResult.addGffDetailGene(gffDetailGene);
 			}
-				}
+		}
 		gffResult.initialGffWhileAddGffDetailGene();
 		return gffResult;
 	}
