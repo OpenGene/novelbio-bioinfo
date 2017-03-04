@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.sam;
 
 import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMReadGroupRecord;
 import htsjdk.samtools.SAMSequenceDictionary;
 import htsjdk.samtools.SAMSequenceRecord;
 import htsjdk.samtools.SAMTextHeaderCodec;
@@ -44,8 +45,23 @@ public class SamToBam {
 	/** 将Sam写入此处 */
 	SamToBamOut samWriteTo;
 	
+	/**
+	 * 手工添加RGGroup
+	 * 部分软件，譬如bowtie，没有添加RGGroup的命令，
+	 * 那么我们可以在这里添加，然后直接写入bam文件
+	 */
+	String rgLine;
+	
 	public void setSamWriteTo(SamToBamOut samWriteTo) {
 		this.samWriteTo = samWriteTo;
+	}
+	/**
+	 * 手工添加RGGroup
+	 * 部分软件，譬如bowtie，没有添加RGGroup的命令，
+	 * 那么我们可以在这里添加，然后直接写入bam文件
+	 */
+	public void setRgLine(String rgLine) {
+		this.rgLine = rgLine;
 	}
 	
 	/** 内部关闭流 */
@@ -93,7 +109,10 @@ public class SamToBam {
 	
 	public void readInputStream() {
 		samFileHeader = samFileIn.getHeader();
-
+		SAMReadGroupRecord samReadGroupRecord= SamHeadCreater.getSamReadGroupRecord(rgLine);
+		if (samReadGroupRecord != null) {
+			samFileHeader.addReadGroup(samReadGroupRecord);
+		}
 		if (!isAddMultiFlag) return;
 		
 		Thread thread = new Thread(new Runnable() {

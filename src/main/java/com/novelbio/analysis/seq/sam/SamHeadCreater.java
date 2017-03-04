@@ -15,7 +15,6 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 public class SamHeadCreater {
 	SAMFileHeader samFileHeader = new SAMFileHeader();
 	Set<String> setProgramId = new HashSet<>();
-	Set<String> setRG = new HashSet<>();
 	public void setRefSeq(String refseq) {
 		if (!refseq.endsWith(".fai")) {
 			refseq = refseq + ".fai";
@@ -44,17 +43,22 @@ public class SamHeadCreater {
 		if (!rgLine.startsWith("@RG")) {
 			throw new ExceptionSamError("attrLine error, no @RG flag: " + rgLine);
 		}
-		rgLine = rgLine.trim();
-		if (setRG.contains(rgLine)) {
-			return;
-        }
-		setRG.add(rgLine);
-		String[] ss = rgLine.split("\t");
-		SAMReadGroupRecord samReadGroupRecord = new SAMReadGroupRecord(getId(ss));
-		addAttr(samReadGroupRecord, ss);
+		SAMReadGroupRecord samReadGroupRecord = getSamReadGroupRecord(rgLine);
 		samFileHeader.addReadGroup(samReadGroupRecord);
 	}
 	
+	public static SAMReadGroupRecord getSamReadGroupRecord(String rgLine) {
+		if (rgLine == null) return null;
+		
+		rgLine = rgLine.trim();
+		if (!rgLine.startsWith("@RG")) {
+			throw new ExceptionSamError("attrLine error, no @RG flag: " + rgLine);
+		}
+		String[] ss = rgLine.split("\t");
+		SAMReadGroupRecord samReadGroupRecord = new SAMReadGroupRecord(getId(ss));
+		addAttr(samReadGroupRecord, ss);
+		return samReadGroupRecord;
+	}
 	/**
 	 * 输入这一行 @PG\tID:bwa\tPN:bwa\tVN:0.7.8-r455\tCL:bwa sampe -a 500 -P -n 10 -N 10 chrAll.fa Shill64_1.sai Shill64_2.sai Shill64_filtered_1.fq.gz Shill64_filtered_2.fq.gz
 	 * @param rgLine
