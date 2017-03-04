@@ -16,6 +16,4 @@ SplicingEvent: Types of AS event
 	IR: intron retention
 SignificantNum:	number of significantly differential AS events between samples according to FDR (false discovery rate) < 0.05
 AllNum:	total number of events detected between samples
-sample_Skip::Others:	The numbers in sample_Skip::Others indicate the number of exclusion reads and the number of inclusion reads for sample_1 or for sample_2
-sampleExp:	The numbers in sampleExp indicate the sequencing coverage of the splicing region relative to the whole gene for sample_1 or for sample_2
 ######################################################################
