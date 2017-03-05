@@ -4,16 +4,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.IntCmdSoft;
+import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.PathDetail;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -155,6 +159,7 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 	}
 	/**
 	 * 一系列的表示基因分组的列<br>
+	 * 内部去重复
 	 * 0: colNum, 实际number，从1开始计数<br>
 	 * 1: SampleGroupName
 	 */
@@ -167,7 +172,24 @@ public abstract class DiffExpAbs implements DiffExpInt, IntCmdSoft {
 				return col1.compareTo(col2);
 			}
 		});
-		this.lsSampleColumn2GroupName = lsSampleColumn2GroupName;
+		
+		//去重复
+		Map<String, String> mapCol2Group = new LinkedHashMap<>();
+		for (String[] col2Group : lsSampleColumn2GroupName) {
+			if (mapCol2Group.containsKey(col2Group[0])) {
+				String group = mapCol2Group.get(col2Group[0]);
+				if (!StringOperate.isEqual(group, col2Group[1])) {
+					throw new ExceptionNbcParamError("colname error, have " + col2Group[0] + ":" + group + " and " + col2Group[0] + ":" + col2Group[1] );
+				}
+			} else {
+				mapCol2Group.put(col2Group[0], col2Group[1]);
+			}
+		}
+		
+		this.lsSampleColumn2GroupName = new ArrayList<>();
+		for (String col : mapCol2Group.keySet()) {
+			this.lsSampleColumn2GroupName.add(new String[]{col, mapCol2Group.get(col)});
+		}		
 		calculate = false;
 	}
 	/**
