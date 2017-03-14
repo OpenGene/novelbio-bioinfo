@@ -1,10 +1,57 @@
 package com.novelbio.analysis.seq.fastq;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.blastZJ.BlastSeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 
 public class FQrecordFilterAdaptor extends FQrecordFilter {
 //	Logger logger = Logger.getLogger(FQrecordFilterAdaptor.class); 
+	private static HashMultimap<Character, Character> mapBase2SetValue = HashMultimap.create();
+	static {
+		mapBase2SetValue.put('A', 'A');
+		mapBase2SetValue.put('T', 'T');
+		mapBase2SetValue.put('C', 'C');
+		mapBase2SetValue.put('G', 'G');
+		
+		mapBase2SetValue.put('R', 'A');
+		mapBase2SetValue.put('R', 'G');
+
+		mapBase2SetValue.put('Y', 'C');
+		mapBase2SetValue.put('Y', 'T');
+		
+		mapBase2SetValue.put('M', 'A');
+		mapBase2SetValue.put('M', 'C');
+		
+		mapBase2SetValue.put('K', 'G');
+		mapBase2SetValue.put('K', 'T');
+		
+		mapBase2SetValue.put('S', 'G');
+		mapBase2SetValue.put('S', 'C');
+		
+		mapBase2SetValue.put('W', 'A');
+		mapBase2SetValue.put('W', 'T');
+		
+		mapBase2SetValue.put('H', 'A');
+		mapBase2SetValue.put('H', 'T');
+		mapBase2SetValue.put('H', 'C');
+
+		mapBase2SetValue.put('B', 'G');
+		mapBase2SetValue.put('B', 'T');
+		mapBase2SetValue.put('B', 'C');
+		
+		mapBase2SetValue.put('V', 'G');
+		mapBase2SetValue.put('V', 'A');
+		mapBase2SetValue.put('V', 'C');
+		
+		mapBase2SetValue.put('D', 'G');
+		mapBase2SetValue.put('D', 'A');
+		mapBase2SetValue.put('D', 'T');
+	}
+	
 	String seqAdaptorL;
 	String seqAdaptorR;
 	int mapNumLeft = 1;
@@ -138,11 +185,15 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 			int mm = 0; //mismatch
 			int con = 0;//记录连续的非匹配的字符有几个
 			flagCompareAll = true;
-			
+
 			for (int j = 0; j < lenA; j++) {
 				if (i+j >= lenIn)
 					break;
-				if (chrIn[i+j] == chrAdaptor[j] || chrIn[i+j] == 'N' || chrAdaptor[j] == 'N') {
+				char chrInUnit = chrIn[i+j];
+				char chrAdaptorUnit = chrAdaptor[j];
+				if (chrInUnit == chrAdaptorUnit || chrInUnit== 'N' || chrAdaptorUnit == 'N' ||
+							mapBase2SetValue.get(chrAdaptorUnit).contains(chrInUnit)
+						) {
 					pm++;
 					con = 0;
 				} else {
@@ -208,10 +259,15 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 			for (int j = chrAdaptor.length-1; j >= 0; j--) {
 				if (i+j-lenA+1 < 0)
 					break;
-				if (chrAdaptor[j] == 'N' || chrIn[i+j-lenA+1] == chrAdaptor[j] || chrIn[i+j-lenA+1] == 'N') {
-					pm++; con = 0;
-				}
-				else {
+				
+				char chrInUnit = chrIn[i+j-lenA+1];
+				char chrAdaptorUnit = chrAdaptor[j];
+				if (chrInUnit == chrAdaptorUnit || chrInUnit== 'N' || chrAdaptorUnit == 'N' ||
+						mapBase2SetValue.get(chrAdaptorUnit).contains(chrInUnit)
+						) {
+					pm++;
+					con = 0;
+				} else {
 					con ++ ;
 					mm++;
 					if (mm > numMM || con > conNum) {
@@ -256,10 +312,11 @@ public class FQrecordFilterAdaptor extends FQrecordFilter {
 		BlastSeqFasta blastSeqFasta = new BlastSeqFasta(seqSeq, seqAdaptor);
 		blastSeqFasta.setSpaceScore(-2);
 		blastSeqFasta.blast();
+		int misMatchNum = blastSeqFasta.getGapNumQuery() + blastSeqFasta.getGapNumSubject() + blastSeqFasta.getMisMathchNum() + (seqAdaptor.length() - blastSeqFasta.getAlignmentSubject().length());
 		if ((double)blastSeqFasta.getMatchNum()/seqAdaptor.length() < (double)perPm/200 || blastSeqFasta.getGapNumQuery() + blastSeqFasta.getGapNumSubject() > numMM
 			|| blastSeqFasta.getMisMathchNum() > numMM 
-			|| (float)(blastSeqFasta.getGapNumQuery() + blastSeqFasta.getGapNumSubject() + blastSeqFasta.getMisMathchNum())/seqAdaptor.length() > (double)perMm/100
-				) 
+			|| (float)(misMatchNum)/seqAdaptor.length() > (double)perMm/100
+				)
 		{
 			return -1;
 		}
