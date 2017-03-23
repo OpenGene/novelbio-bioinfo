@@ -4,9 +4,6 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.PathDetailNBC;
-
 /**
  * 有关taxID的表格
  * @author zong0jie

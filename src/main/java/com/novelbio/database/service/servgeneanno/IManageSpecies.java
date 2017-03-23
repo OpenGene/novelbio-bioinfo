@@ -8,8 +8,11 @@ import org.springframework.data.domain.Pageable;
 
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
+import com.novelbio.generalConf.PathDetailNBC;
 
 public interface IManageSpecies {
+	
+	public static final String GenomePath = PathDetailNBC.getGenomePath();
 	
 	/** 返回所有有基因组的物种 */
 	public List<Integer> getLsNameNotInDB();

@@ -10,7 +10,6 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.EnumSpeciesFile;
 import com.novelbio.database.domain.geneanno.SpeciesFile;
 import com.novelbio.database.domain.geneanno.TaxInfo;
-import com.novelbio.database.model.species.Species.EnumSpeciesType;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 
 /**
@@ -107,8 +106,8 @@ public class SpeciesFileUpload {
 			throw new ExceptionNbcSpeciesUpload("保存路径错误，请检查");
 		}
 		
+		fileName = FileOperate.changeFileSuffix(fileName, null, "fa");
 		String newFileName = FileOperate.addSep(savePath) + fileName;
-		newFileName = FileOperate.changeFileSuffix(newFileName, null, "fa");
 		String newFileTmp = FileOperate.changeFileSuffix(newFileName, DateUtil.getDateAndRandom(), null);
 		try {
 			FileOperate.uploadFile(inputStream, newFileTmp, false, fileSize);
@@ -116,10 +115,14 @@ public class SpeciesFileUpload {
 			FileOperate.deleteFileFolder(newFileTmp);
 			throw e;
 		}
-		FileOperate.moveFile(true, newFileTmp, newFileName);
 		TaxInfo taxInfo = ManageSpecies.getInstance().queryTaxInfo(taxId);
-		String oldFile = ManageSpecies.getInstance().getRrnaFileWithPath(taxInfo);
-		FileOperate.deleteFileFolder(oldFile);
+		if(!StringOperate.isRealNull(taxInfo.getRrnaFile())) {
+			// 如果历史文件存在，才进行删除
+			String oldFileName = FileOperate.addSep(savePath) + taxInfo.getRrnaFile();
+			FileOperate.deleteFileFolder(oldFileName);
+		}
+		
+		FileOperate.moveFile(true, newFileTmp, newFileName);
 		taxInfo.setRrnaFile(fileName);
 		ManageSpecies.getInstance().saveTaxInfo(taxInfo);
 	}
