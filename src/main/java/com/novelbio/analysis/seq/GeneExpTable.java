@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -14,9 +15,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.base.ExceptionNullParam;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.TitleFormatNBC;
@@ -47,7 +51,7 @@ public class GeneExpTable {
 	protected Map<String, Map<String, Double>> mapGene_2_Cond2Exp = new LinkedHashMap<>();
 	/** 大致测序量，譬如rna-seq就是百万级别，小RNAseq就是可能就要变成十万级别 */
 	int mapreadsNum = 1000000;
-	/** 单个基因的平均表达量，用于UQ的时候除以uq的数量 */
+	/** 单个基因的大致表达量，用于UQ的时候除以uq的数量 */
 	int geneExp = 100;
 	/** 基因长度 */
 	Map<String, Integer> mapGene2Len;
@@ -771,5 +775,122 @@ public class GeneExpTable {
 				}
 			}
 		}
+	}
+	
+	/**
+	 * 给定组名和样本名的对照表，返回组名对表达值，样本之间取均值
+	 * @return
+	 */
+	public GeneExpTable getConditionAvg(HashMultimap<String, String> mapGroup2Samples) {
+		return getConditionAvgMedia(mapGroup2Samples, EnumStatisticType.average);
+	}
+	/**
+	 * 给定组名和样本名的对照表，返回组名对表达值，样本之间取中位数
+	 * @return
+	 */
+	public GeneExpTable getConditionMedia(HashMultimap<String, String> mapGroup2Samples) {
+		return getConditionAvgMedia(mapGroup2Samples, EnumStatisticType.media);
+	}
+	
+	/**
+	 * 给定组名和样本名的对照表，返回
+	 * @param mapGroup2Samples
+	 * @return
+	 */
+	private GeneExpTable getConditionAvgMedia(HashMultimap<String, String> mapGroup2Samples, EnumStatisticType statisticType) {
+		GeneExpTable geneExpTable = new GeneExpTable();
+		//设定新的geneExpTable的currentCondition，以前是样本，现在变成了分组
+		for (String groupName : mapGroup2Samples.keySet()) {
+			Set<String> setSamples = mapGroup2Samples.get(groupName);
+			if (setSamples.contains(currentCondition)) {
+				geneExpTable.currentCondition = groupName;
+				break;
+			}
+		}
+		
+		geneExpTable.geneExp = geneExp;
+		geneExpTable.geneTitleName = geneTitleName;
+		geneExpTable.mapGene2Anno = mapGene2Anno;
+		geneExpTable.mapGene2Len = mapGene2Len;
+		geneExpTable.mapreadsNum = mapreadsNum;
+		geneExpTable.setGeneAnnoTitle = setGeneAnnoTitle;
+		
+		geneExpTable.mapCond2AllReads = getMapGroup2AllReads(mapCond2AllReads, mapGroup2Samples, statisticType);
+		geneExpTable.mapGene_2_Cond2Exp = getMapGene_2_Group2Exp(mapGene_2_Cond2Exp, mapGroup2Samples, statisticType);
+		geneExpTable.setCondition = getSetGroup(setCondition, mapGroup2Samples);
+		return geneExpTable;
+	}
+	
+	private Set<String> getSetGroup(Set<String> setCondition, HashMultimap<String, String> mapGroup2Samples) {
+		Map<String, String> mapSample2Group = new HashMap<>();
+		for (String groupName : mapGroup2Samples.keys()) {
+			Set<String> setSampleName = mapGroup2Samples.get(groupName);
+			for (String sampleName : setSampleName) {
+				if (mapSample2Group.containsKey(sampleName) && !StringOperate.isEqual(mapSample2Group.get(sampleName), groupName)) {
+					throw new ExceptionNBCgeneExpression("Sample " + sampleName + " belong to different groups: " + mapSample2Group.get(sampleName) + " and " + groupName);
+				}
+				mapSample2Group.put(sampleName, groupName);
+			}
+		}
+		
+		
+		Set<String> setGroup = new LinkedHashSet<>();
+		for (String sample : setCondition) {
+			String group = mapSample2Group.get(sample);
+			if (setGroup.contains(group)) {
+				continue;
+			}
+			setGroup.add(group);
+		}
+		return setGroup;
+	}
+	
+	private static Map<String, Long> getMapGroup2AllReads(Map<String, Long> mapCond2AllReads, 
+			HashMultimap<String, String> mapGroup2Samples, EnumStatisticType statisticType) {
+		Map<String, Double> mapGroup2AllReadsDouble = getMapGroup2Exp(mapCond2AllReads, mapGroup2Samples, statisticType);
+		Map<String, Long> mapGroup2AllReads = new LinkedHashMap<>();
+		for (String groupName : mapGroup2AllReadsDouble.keySet()) {
+			mapGroup2AllReads.put(groupName, mapGroup2AllReadsDouble.get(groupName).longValue());
+		}
+		return mapGroup2AllReads;
+	}
+	
+	private static Map<String, Map<String, Double>> getMapGene_2_Group2Exp(Map<String, Map<String, Double>> mapGene_2_Cond2Exp, 
+			HashMultimap<String, String> mapGroup2Samples, EnumStatisticType statisticType) {
+		Map<String, Map<String, Double>> mapGene_2_Group2Exp = new LinkedHashMap<>();
+		for (String geneName : mapGene_2_Cond2Exp.keySet()) {
+			Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
+			Map<String, Double> mapGroup2Exp = getMapGroup2Exp(mapCond2Exp, mapGroup2Samples, statisticType);
+			mapGene_2_Group2Exp.put(geneName, mapGroup2Exp);
+		}
+		return mapGene_2_Group2Exp;
+	}
+	
+	/**
+	 * 给定一个sample2Exp的表，以及Sample--group的表
+	 * 返回group2exp的表，根据statisticType进行取均值或取中位数
+	 * @param mapCond2Exp
+	 * @param mapGroup2Samples
+	 * @param statisticType
+	 * @return
+	 */
+	private static Map<String, Double> getMapGroup2Exp(Map<String, ? extends Number> mapCond2Exp, 
+			HashMultimap<String, String> mapGroup2Samples, EnumStatisticType statisticType) {
+		Map<String, Double> mapGroup2Exp = new HashMap<>();
+		for (String groupName : mapGroup2Samples.keys()) {
+			Set<String> setSampleName = mapGroup2Samples.get(groupName);
+			List<Number> lsSampleExp = new ArrayList<>();
+			for (String sampleName : setSampleName) {
+				lsSampleExp.add(mapCond2Exp.get(sampleName));
+			}
+			Double sum = statisticType == EnumStatisticType.average ? 
+					MathComput.mean(lsSampleExp) : MathComput.median(lsSampleExp);
+					mapGroup2Exp.put(groupName, sum);
+		}
+		return mapGroup2Exp;
+	}
+	
+	private static enum EnumStatisticType {
+		average, media
 	}
 }

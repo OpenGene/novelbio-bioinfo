@@ -616,13 +616,9 @@ public class Trinity implements IntCmdSoft {
 		}
 		cmdOperate.setRedirectOutToTmp(true);
 		cmdOperate.addCmdParamOutput(getTmpOut());
-		cmdOperate.run();
-		if (!cmdOperate.isFinishedNormal()) {
-			throw new ExceptionCmd("run trinity error:", cmdOperate);
-		}
+		cmdOperate.runWithExp();
 		String outFile = getResultPathRaw();
 		FileOperate.moveFile(true, outFile, getResultPath());
-		
 	}
 	
 	private List<String> getLsCmd() {

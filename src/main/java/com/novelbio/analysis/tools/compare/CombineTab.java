@@ -68,11 +68,12 @@ public class CombineTab {
 	}
 	
 	private static final Logger logger = LoggerFactory.getLogger(CombineTab.class);
+	private static final String Sep_Sample_Name = "_";
 	public static String tempFolder = PathDetail.getRworkspaceTmp();
 	private List<String> tempFiles = new ArrayList<String>();
 	
 	LinkedHashMap<String, String> mapFileName2ConditionAbbr = new LinkedHashMap<>();
-	/** ColCompareComb：将待查找的列合并起来，用"_"连接<br>
+	/** ColCompareComb：将待查找的列合并起来，用 {@link #Sep_Sample_Name} 连接<br>
 	 * ColCompareSep：分开的待查找的列
 	 * */
 	LinkedHashMap<String, List<String>> mapColCompareComb_To_ColCompareSep = new LinkedHashMap<>();
@@ -403,19 +404,13 @@ public class CombineTab {
 	 * @return
 	 */
 	private String getCommonShortName(Map<String,Boolean> mapShortName2isExist) {
-		String newName = "";
-		int i = 0;
+		List<String> lsExistName = new ArrayList<>();
 		for(String shortName : mapShortName2isExist.keySet()){
 			if(mapShortName2isExist.get(shortName)) {
-				if(i == 0) {
-					newName += shortName;
-					i++;
-				}else {
-					newName += "_"+shortName;
-				}
+				lsExistName.add(shortName);
 			}
 		}
-		return newName;
+		return ArrayOperate.cmbString(lsExistName, Sep_Sample_Name);
 	}
 	
 	private boolean writeResult() {
