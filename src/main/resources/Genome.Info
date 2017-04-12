@@ -8,8 +8,6 @@ GenomePath=hdfs:/nbCloud/public/nbcplatform/genome/
 
 COGfasta=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/COG0303/cog0303.fa
 cogId2Anno=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/COG0303/cogs.csv
-#COGfasta=/home/novelbio/software/cog/COG0303/cog0303.fa
-#cogId2Anno=/home/novelbio/software/cog/COG0303/cogs.csv
 pro2cog=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/COG0303/prot2COG.tab
 cogAbbr2Fun=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/COG0303/fun.txt
 
@@ -17,28 +15,3 @@ KOGfasta=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/KOG/kyva
 kogId2Anno=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/KOG/kogs.csv
 pro2kog=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/KOG/prot2KOG.tab
 kogAbbr2Fun=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/KOG/fun.txt
-#================= Fast Quality===============================================================#
-FastQ_Levels=FastQ_QUALITY_Strict;FastQ_QUALITY_Moderate;FastQ_QUALITY_Relax;FastQ_QUALITY_Relax_454;FastQ_QUALITY_Relax_PGM;FastQ_QUALITY_Change_Q_To_Best;FastQ_QUALITY_NotFilter
-
-FastQ_QUALITY_Strict=10,0.07;13,0.07;20,0.15
-FastQ_QUALITY_Moderate=10,0.1;13,0.14;20,0.3
-FastQ_QUALITY_Relax=10,0.1;13,0.15;20,0.35
-FastQ_QUALITY_Relax_454=10,0.15;15,0.3
-FastQ_QUALITY_Relax_PGM=10,0.15;13,0.2
-#do not change values of the two items
-FastQ_QUALITY_Change_Q_To_Best=ChangeToBest
-FastQ_QUALITY_NotFilter=NotFilter
-
-
-#============ Fan Wei ======================
-
-#SpeciesFile=SpeciesFile.txt
-#Software=SoftwareInfo.txt
-#GenomePath=genome
-#
-#FastQ_Levels=FastQ_QUALITY_Strict;FastQ_QUALITY_Moderate;FastQ_QUALITY_Relax;FastQ_QUALITY_NotFilter
-#
-#FastQ_QUALITY_Strict=10,0.07;13,0.07;20,0.15
-#FastQ_QUALITY_Moderate=10,0.1;13,0.14;20,0.2
-#FastQ_QUALITY_Relax=10,0.15;13,0.20
-#FastQ_QUALITY_NotFilter=NotFilter

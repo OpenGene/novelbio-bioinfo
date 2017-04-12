@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.fastq;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -341,7 +342,7 @@ public class FastQ {
 	}
 	
 	public static Map<String, String> getMapReadsQuality() {
-		return PathDetailNBC.getMapReadsQuality();
+		return new HashMap<>();
 	}
 	
 	/**
@@ -353,7 +354,18 @@ public class FastQ {
 	 * 如质量小于10的碱基数量不得超过 reads长度的 10%
 	 */
 	public static Map<Integer, Double> getMapQuality2Num(String QUALITY) {
-		return PathDetailNBC.getMapQuality2Num(QUALITY);
+		Map<Integer, Double> mapQuality2CutoffNum = new HashMap<Integer, Double>();
+
+		if (QUALITY.equalsIgnoreCase("ChangeToBest") || QUALITY.equalsIgnoreCase("NotFilter")) {
+			return mapQuality2CutoffNum;
+		}
+		
+		String[] ss = QUALITY.split(";");
+		for (String quality2property : ss) {
+			String[] quality2propertyArray = quality2property.split(",");
+			mapQuality2CutoffNum.put(Integer.parseInt(quality2propertyArray[0]), Double.parseDouble(quality2propertyArray[1]));
+		}
+		return mapQuality2CutoffNum;
 	}
 	
 	/** 给定一系列fastq文件，判定这些文件的readsquality是否一致并返回，如果不一致则抛出异常 */
