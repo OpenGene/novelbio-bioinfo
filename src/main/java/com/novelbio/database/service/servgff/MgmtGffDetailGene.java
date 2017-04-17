@@ -15,6 +15,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
 import com.novelbio.analysis.seq.genome.gffOperate.GffFileUnit;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.mongorepo.geneanno.RepoGffFile;
 import com.novelbio.database.mongorepo.geneanno.RepoGffFileUnit;
@@ -22,8 +23,8 @@ import com.novelbio.database.mongorepo.geneanno.RepoGffGene;
 import com.novelbio.database.mongorepo.geneanno.RepoGffIso;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
-public class ManageGffDetailGene {
-	private static final Logger logger = Logger.getLogger(ManageGffDetailGene.class);
+public class MgmtGffDetailGene {
+	private static final Logger logger = Logger.getLogger(MgmtGffDetailGene.class);
 	static double[] lock = new double[0];
 	
 	RepoGffFile repoGffFile;
@@ -31,7 +32,7 @@ public class ManageGffDetailGene {
 	RepoGffIso repoGffIso;
 	RepoGffFileUnit repoGffFileUnit;
 	MongoTemplate mongoTemplate;
-	private ManageGffDetailGene() {
+	private MgmtGffDetailGene() {
 		repoGffFile = (RepoGffFile)SpringFactoryBioinfo.getFactory().getBean("repoGffFile");
 		repoGffGene = (RepoGffGene)SpringFactoryBioinfo.getFactory().getBean("repoGffGene");
 		repoGffIso = (RepoGffIso)SpringFactoryBioinfo.getFactory().getBean("repoGffIso");
@@ -39,25 +40,59 @@ public class ManageGffDetailGene {
 		mongoTemplate = (MongoTemplate)SpringFactoryBioinfo.getFactory().getBean("mongoTemplate");
 	}
 	
-	public void saveGffHashGene(GffHashGene gffHashGene) {
-		GffFile gffFile = repoGffFile.findByTaxIdAndVersionAndDbinfo(gffHashGene.getTaxID(), gffHashGene.getVersion(), gffHashGene.getDbinfo());
+	/**
+	 * 给定物种，版本，数据库，以及对应的gff文件，将gff文件导入数据库，这个是给jbrowse用的
+	 * @param taxId
+	 * @param version
+	 * @param dbInfo
+	 * @param gff_File
+	 */
+	public void saveGffFile(int taxId, String version, String dbInfo, String gff_File) {
+		GffFile gffFile = repoGffFile.findByTaxIdAndVersionAndDbinfo(taxId, version, dbInfo);
 		if (gffFile != null) {
 			return;
 		}
-		gffFile = new GffFile();
-		gffFile.setFileName(gffHashGene.getGffFilename());
-		gffFile.setTaxID(gffHashGene.getTaxID());
-		gffFile.setVersion(gffHashGene.getVersion());
-		gffFile.setDbinfo(gffHashGene.getDbinfo());
+		gffFile = generateGffFile(taxId, version, dbInfo, gff_File);
 		repoGffFile.save(gffFile);
-		
+		GffHashGene gffHashGene = new GffHashGene(gff_File, taxId == 7227);
+		saveGffHashGene(gffFile, gffHashGene);
+	}
+	/**
+	 * 给定物种，版本，数据库，以及对应的gff文件，将gff文件导入数据库，这个是给jbrowse用的
+	 * @param taxId
+	 * @param version
+	 * @param dbInfo
+	 * @param gff_File
+	 * @param gffType gff的类型
+	 */
+	public void saveGffFile(int taxId, String version, String dbInfo, String gff_File, GffType gffType) {
+		GffFile gffFile = repoGffFile.findByTaxIdAndVersionAndDbinfo(taxId, version, dbInfo);
+		if (gffFile != null) {
+			return;
+		}
+		gffFile = generateGffFile(taxId, version, dbInfo, gff_File);
+		repoGffFile.save(gffFile);
+		GffHashGene gffHashGene = new GffHashGene(taxId, version, dbInfo, gffType, gff_File, taxId == 7227);
+		saveGffHashGene(gffFile, gffHashGene);
+	}
+	
+	private GffFile generateGffFile(int taxId, String version, String dbInfo, String gff_File) {
+		GffFile gffFile = new GffFile();
+		gffFile.setFileName(gff_File);
+		gffFile.setTaxID(taxId);
+		gffFile.setVersion(version);
+		gffFile.setDbinfo(dbInfo);
+		return gffFile;
+	}
+	
+	private void saveGffHashGene(GffFile gffFile, GffHashGene gffHashGene) {
 		Map<String, List<int[]>> mapChrID2LsInterval = gffHashGene.getMapChrID2LsInterval(10);
 		for (String chrId : mapChrID2LsInterval.keySet()) {
 			List<int[]> lsTrunkNum = mapChrID2LsInterval.get(chrId);
 			for (int i = 0; i < lsTrunkNum.size(); i++) {
 				GffFileUnit gffFileUnit = new GffFileUnit();
 				gffFileUnit.setGffFileId(gffFile.getId());
-				gffFileUnit.setTaxVsDb(gffHashGene.getTaxID(), gffHashGene.getVersion(), gffHashGene.getDbinfo());
+				gffFileUnit.setTaxVsDb(gffFile.getTaxID(), gffFile.getVersion(), gffFile.getDbinfo());
 				gffFileUnit.setChrId(chrId);
 				gffFileUnit.setTrunkNum(i);
 				gffFileUnit.setTrunkDetail(lsTrunkNum.get(i));
@@ -79,12 +114,15 @@ public class ManageGffDetailGene {
 	public void saveGffFile(GffFile gffFile) {
 		repoGffFile.save(gffFile);
 	}
-	public void delete(GffHashGene gffHashGene) {
-		GffFile gffFile = repoGffFile.findByTaxIdAndVersionAndDbinfo(gffHashGene.getTaxID(), gffHashGene.getVersion(), gffHashGene.getDbinfo());
-		delete(gffFile);
+	public void deleteGff(int taxId, String version, String dbInfo) {
+		GffFile gffFile = repoGffFile.findByTaxIdAndVersionAndDbinfo(taxId, version, dbInfo);
+		if (gffFile == null) {
+			return;
+		}
+		deleteGff(gffFile);
 	}
-	public void delete(GffFile gffFile) {
-		Query query = new Query( Criteria.where("gffFileId").is(gffFile.getId()));
+	private void deleteGff(GffFile gffFile) {
+		Query query = new Query(Criteria.where("gffFileId").is(gffFile.getId()));
 		mongoTemplate.remove(query, GffGeneIsoInfo.class);
 		mongoTemplate.remove(query, GffDetailGene.class);
 		mongoTemplate.remove(query, GffFileUnit.class);
@@ -188,10 +226,10 @@ public class ManageGffDetailGene {
 
 	
 	static class ManageGffDetailGeneHolder {
-		static ManageGffDetailGene manageGffDetailGene = new ManageGffDetailGene();
+		static MgmtGffDetailGene manageGffDetailGene = new MgmtGffDetailGene();
 	}
 	
-	public static ManageGffDetailGene getInstance() {
+	public static MgmtGffDetailGene getInstance() {
 		return ManageGffDetailGeneHolder.manageGffDetailGene;
 	}
 	

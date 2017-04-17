@@ -13,7 +13,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.novelbio.base.SepSign;
-import com.novelbio.database.service.servgff.ManageGffDetailGene;
+import com.novelbio.database.service.servgff.MgmtGffDetailGene;
 
 @CompoundIndexes({
 	@CompoundIndex(unique = true, name = "fileid_chr_trunknum_idx", def = "{'gffFileId': 1, 'chrId': 1, 'trunkNum': 1}"),
@@ -77,20 +77,20 @@ public class GffFileUnit {
 	
 	/** 直接查询GffFileUnit */
 	public static GffFileUnit findGffFileSimple(int taxId, String version, String dbinfo, String chrId, int truncNum) {
-		return ManageGffDetailGene.getInstance().findGffFileUnit(taxId, version, dbinfo, chrId, truncNum);
+		return MgmtGffDetailGene.getInstance().findGffFileUnit(taxId, version, dbinfo, chrId, truncNum);
 	}
 	/** 先查寻GffFile，获得GffFileId后再查询GffFileUnit*/
 	public static GffFileUnit findGffFileUnit(int taxId, String version, String dbinfo, String chrId, int truncNum) {
-		ManageGffDetailGene manageGffDetailGene = ManageGffDetailGene.getInstance();
+		MgmtGffDetailGene manageGffDetailGene = MgmtGffDetailGene.getInstance();
 		GffFile gffFile = manageGffDetailGene.findGffFile(taxId, version, dbinfo);
 		return manageGffDetailGene.findGffFileUnit(gffFile.getId(), chrId, truncNum);
 	}
 	public static GffFileUnit findGffFileUnit(String gffFileId, String chrId, int truncNum) {
-		return ManageGffDetailGene.getInstance().findGffFileUnit(gffFileId, chrId, truncNum);
+		return MgmtGffDetailGene.getInstance().findGffFileUnit(gffFileId, chrId, truncNum);
 	}
 	public static Map<String, List<int[]>> findGffFileUnit(String gffFileId) {
 		Map<String, List<int[]>> mapChrId2LsInterval = new HashMap<>();
-		List<GffFileUnit> lsGffFileUnits = ManageGffDetailGene.getInstance().findLsGffFileUnit(gffFileId);
+		List<GffFileUnit> lsGffFileUnits = MgmtGffDetailGene.getInstance().findLsGffFileUnit(gffFileId);
 		for (GffFileUnit gffFileUnit : lsGffFileUnits) {
 			String chrId = gffFileUnit.getChrId();
 			List<int[]> lsInterval = mapChrId2LsInterval.get(chrId);
@@ -111,7 +111,7 @@ public class GffFileUnit {
 	}
 	/** 直接查询GffFileUnit 输出结果按照坐标顺序排列 */
 	public static List<int[]> findGffFileUnit(String gffFileId, String chrId) {
-		List<GffFileUnit> lsGffFileUnits = ManageGffDetailGene.getInstance().findLsGffFileUnit(gffFileId, chrId);
+		List<GffFileUnit> lsGffFileUnits = MgmtGffDetailGene.getInstance().findLsGffFileUnit(gffFileId, chrId);
 		List<int[]> lsInterval = new ArrayList<>();
 		for (GffFileUnit gffFileUnit : lsGffFileUnits) {
 			lsInterval.add(gffFileUnit.getTrunkDetail());
@@ -127,7 +127,7 @@ public class GffFileUnit {
 	}
 	/** 直接查询GffFileUnit 输出结果按照坐标顺序排列 */
 	public static List<int[]> findGffFileUnit(int taxId, String version, String dbinfo, String chrId) {
-		List<GffFileUnit> lsGffFileUnits = ManageGffDetailGene.getInstance().findLsGffFileUnit(taxId, version, dbinfo, chrId);
+		List<GffFileUnit> lsGffFileUnits = MgmtGffDetailGene.getInstance().findLsGffFileUnit(taxId, version, dbinfo, chrId);
 		List<int[]> lsInterval = new ArrayList<>();
 		for (GffFileUnit gffFileUnit : lsGffFileUnits) {
 			lsInterval.add(gffFileUnit.getTrunkDetail());

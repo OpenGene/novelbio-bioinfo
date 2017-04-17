@@ -16,7 +16,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
-import com.novelbio.database.service.servgff.ManageGffDetailGene;
+import com.novelbio.database.service.servgff.MgmtGffDetailGene;
 
 /**
  * 
@@ -88,6 +88,16 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		gffType = readGffTypeFromFileName(gffFile);
 		this.gffFile = gffFile;
 		read(taxID, version, dbinfo, gffType, gffFile, false);
+	}
+	/**
+	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
+	 * @param gffFile 根据文件后缀名判断是GFF还是GTF
+	 * @param isFilterDuplicateGeneName 果蝇中存在重复的基因名
+	 */
+	public GffHashGene(String gffFile, boolean isFilterDuplicateGeneName) {
+		gffType = readGffTypeFromFileName(gffFile);
+		this.gffFile = gffFile;
+		read(taxID, version, dbinfo, gffType, gffFile, isFilterDuplicateGeneName);
 	}
 	
 	private GffType readGffTypeFromFileName(String gffFile) {
@@ -401,12 +411,6 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		return mapChrID2Length;
 	}
 	
-	public void saveToDB() {
-		ManageGffDetailGene.getInstance().saveGffHashGene(this);
-	}
-	public void deleteFromDB() {
-		ManageGffDetailGene.getInstance().delete(this);
-	}
 	/**
 	 * 设定每个基因的区间
 	 * @param geneNum 每个区间的基因数量，可以设定为10

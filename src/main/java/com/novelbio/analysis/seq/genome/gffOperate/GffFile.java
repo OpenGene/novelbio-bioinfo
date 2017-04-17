@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.database.model.species.Species;
-import com.novelbio.database.service.servgff.ManageGffDetailGene;
+import com.novelbio.database.service.servgff.MgmtGffDetailGene;
 
 @Document(collection = "gfffileinfo")
 @CompoundIndexes({
@@ -67,12 +67,8 @@ public class GffFile {
 	public String getFileName() {
 		return fileName;
 	}
-
-	public void save() {
-		ManageGffDetailGene.getInstance().saveGffFile(this);
-	}
 	
 	public static GffFile findGffFile(int taxId, String version, String dbinfo) {
-		return ManageGffDetailGene.getInstance().findGffFile(taxId, version, dbinfo);
+		return MgmtGffDetailGene.getInstance().findGffFile(taxId, version, dbinfo);
 	}
 }

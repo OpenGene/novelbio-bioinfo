@@ -12,19 +12,18 @@ import com.novelbio.database.model.species.Species;
 
 public class TestManageGffDetailGene extends TestCase {
 	public static void main(String[] args) {
-		ManageGffDetailGene manageGffDetailGene = ManageGffDetailGene.getInstance();
+		MgmtGffDetailGene manageGffDetailGene = MgmtGffDetailGene.getInstance();
 		Species species = new Species(9606);
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
 //		manageGffDetailGene.saveGffChrInterval(gffChrAbs.getGffHashGene());
 	}
 	public void testCase() {
-		ManageGffDetailGene manageGffDetailGene = ManageGffDetailGene.getInstance();
+		MgmtGffDetailGene manageGffDetailGene = MgmtGffDetailGene.getInstance();
 //		List<GffDetailGene> ls = manageGffDetailGene.searchRegionOverlap(9606, "hg19_NCBI", "ncbi", "chr1", 10954, 11507);
 //		System.out.println("run");
 //		assertEquals(1, ls.size());
 //		assertEquals("LOC100506145", ls.get(0).getNameSingle());
 		Species species = new Species(9606);
 		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		manageGffDetailGene.saveGffHashGene(gffChrAbs.getGffHashGene());
 	}
 }
