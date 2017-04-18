@@ -62,7 +62,7 @@ public class MgmtGffDetailGene {
 	 * @param taxId
 	 * @param version
 	 * @param dbInfo
-	 * @param gff_File
+	 * @param gff_File gff文件路径
 	 * @param gffType gff的类型
 	 */
 	public void saveGffFile(int taxId, String version, String dbInfo, String gff_File, GffType gffType) {
@@ -121,12 +121,12 @@ public class MgmtGffDetailGene {
 		}
 		deleteGff(gffFile);
 	}
-	private void deleteGff(GffFile gffFile) {
+	public void deleteGff(GffFile gffFile) {
 		Query query = new Query(Criteria.where("gffFileId").is(gffFile.getId()));
 		mongoTemplate.remove(query, GffGeneIsoInfo.class);
 		mongoTemplate.remove(query, GffDetailGene.class);
 		mongoTemplate.remove(query, GffFileUnit.class);
-		mongoTemplate.remove(query, GffFile.class);
+		mongoTemplate.remove(gffFile);
 	}
 	
 	public List<GffFile> getLsGffFileAll() {
@@ -135,6 +135,10 @@ public class MgmtGffDetailGene {
 	
 	public GffFile findGffFile(int taxId, String version, String dbinfo) {
 		return repoGffFile.findByTaxIdAndVersionAndDbinfo(taxId, version, dbinfo);
+	}
+	
+	public GffFile findGffFileById(String gffFileId) {
+		return repoGffFile.findOne(gffFileId);
 	}
 	
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
