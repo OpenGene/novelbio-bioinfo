@@ -137,7 +137,7 @@ public class GffChrAbs implements Closeable {
 		return seqHash;
 	}
 	private void setGffFile(int taxID, String version, String dbinfo, GffType gffType, String gffFile) {
-		if (FileOperate.isFileExist(gffFile)) {
+		if (FileOperate.isFileExistAndNotDir(gffFile)) {
 			gffHashGene = new GffHashGene(taxID, version, dbinfo, gffType, gffFile, taxID == 7227);
 		} else {
 			throw new ExceptionNbcGFF(gffFile + " GffFile is not exist");
@@ -153,7 +153,7 @@ public class GffChrAbs implements Closeable {
 	 */
 	public void setChrFile(String chrFile, String regx) {
 		close();
-		if (FileOperate.isFileExist(chrFile)
+		if (FileOperate.isFileExistAndNotDir(chrFile)
 				|| FileOperate.isFileDirectory(chrFile)) {
 			seqHash = new SeqHash(chrFile, regx);
 		}

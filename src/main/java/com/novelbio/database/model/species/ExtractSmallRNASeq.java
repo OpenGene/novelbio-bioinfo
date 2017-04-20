@@ -104,7 +104,7 @@ public class ExtractSmallRNASeq {
 	
 	/** 提取序列 */
 	public void getSeq() {
-		if (FileOperate.isFileExist(refseqFile)) {
+		if (FileOperate.isFileExistAndNotDir(refseqFile)) {
 			if (outNcRNA == null)
 				outNcRNA = outPathPrefix + "_ncRNA.fa";
 			try {
@@ -115,7 +115,7 @@ public class ExtractSmallRNASeq {
 			}
 		}
 		
-		if (FileOperate.isFileExist(RNAdataFile)) {
+		if (FileOperate.isFileExistAndNotDir(RNAdataFile)) {
 			if (outHairpinRNA == null)
 				outHairpinRNA = outPathPrefix + "_hairpin.fa";
 			if (outMatureRNA == null)
@@ -131,7 +131,7 @@ public class ExtractSmallRNASeq {
 			listMiRNALocation = null;
 		}
 		
-		if (FileOperate.isFileExist(rfamFile)) {
+		if (FileOperate.isFileExistAndNotDir(rfamFile)) {
 			if (outRfamFile == null)
 				outRfamFile = outPathPrefix + "_rfam.fa";
 				

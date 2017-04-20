@@ -96,9 +96,9 @@ public class TestSamReducer {
 		samReducer.setOutFileName(outFile);
 		samReducer.readInStream(refSeq, inputStream);
 		
-		Assert.assertEquals(true, FileOperate.isFileExist(FileOperate.changeFileSuffix(outFile, "_tmp", null)));
+		Assert.assertEquals(true, FileOperate.isFileExistAndNotDir(FileOperate.changeFileSuffix(outFile, "_tmp", null)));
 		samReducer.finish();
-		Assert.assertEquals(false, FileOperate.isFileExist(FileOperate.changeFileSuffix(outFile, "_tmp", null)));
+		Assert.assertEquals(false, FileOperate.isFileExistAndNotDir(FileOperate.changeFileSuffix(outFile, "_tmp", null)));
 		
 		SamFile samFile = new SamFile(outFile);
 		SAMProgramRecord samProgramRecord = samFile.getHeader().getProgramRecords().get(0);

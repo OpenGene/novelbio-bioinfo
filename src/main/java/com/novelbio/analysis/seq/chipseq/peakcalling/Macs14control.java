@@ -62,7 +62,7 @@ public class Macs14control  implements IntCmdSoft {
 		macs14.setPathoutput(pathoutput);
 	}
 	public void setpathinputColl(String pathinputCol) {
-		if (FileOperate.isFileExist(pathinputCol)) {
+		if (FileOperate.isFileExistAndNotDir(pathinputCol)) {
 			macs14.setPathinputCol(pathinputCol);
 		}
 	}

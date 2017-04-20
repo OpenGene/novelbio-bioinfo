@@ -54,7 +54,7 @@ public class Cuffcompare {
 		return new String[]{"-o", outPath};
 	}
 	public String[] getSeqFasta() {
-		if (FileOperate.isFileExist(seqFasta)) {
+		if (FileOperate.isFileExistAndNotDir(seqFasta)) {
 			return new String[]{"-s", seqFasta};
 		}
 		return null;

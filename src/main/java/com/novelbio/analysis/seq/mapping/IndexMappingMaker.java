@@ -192,7 +192,7 @@ public abstract class IndexMappingMaker {
 	}
 	
 	public boolean isIndexFinished() {
-		return FileOperate.isFileExist(getIndexFinishedFlag());
+		return FileOperate.isFileExistAndNotDir(getIndexFinishedFlag());
 	}
 	
 	/** 用这个来标记index是否完成 */
@@ -507,7 +507,7 @@ public static class IndexTophat extends IndexMappingMaker {
 	}
 	
 	private void makeIndexChr() {
-		if (FileOperate.isFileExist(indexBowtie.getIndexFinishedFlag())) {
+		if (FileOperate.isFileExistAndNotDir(indexBowtie.getIndexFinishedFlag())) {
 			return;
 		}
 		indexBowtie.setLock(isLock);
@@ -515,7 +515,7 @@ public static class IndexTophat extends IndexMappingMaker {
 	}
 	
 	private void makeIndexGtf() {
-		if (getIndexFinishedFlagGtf() == null || FileOperate.isFileExist(getIndexFinishedFlagGtf())) {
+		if (getIndexFinishedFlagGtf() == null || FileOperate.isFileExistAndNotDir(getIndexFinishedFlagGtf())) {
 			return;
 		}
 		List<String> lsCmd = getLsCmdIndexGtf();
@@ -548,12 +548,12 @@ public static class IndexTophat extends IndexMappingMaker {
 	}
 	
 	public boolean isIndexFinished() {
-		boolean isBowtieFinish = FileOperate.isFileExist(indexBowtie.getIndexFinishedFlag());
+		boolean isBowtieFinish = FileOperate.isFileExistAndNotDir(indexBowtie.getIndexFinishedFlag());
 		String gtfFlag = getIndexFinishedFlagGtf();
 		if (gtfFlag == null) {
 			return isBowtieFinish;
         }
-		return isBowtieFinish && FileOperate.isFileExist(gtfFlag);
+		return isBowtieFinish && FileOperate.isFileExistAndNotDir(gtfFlag);
 	}
 	
 	private String getIndexFinishedFlagGtf() {

@@ -458,7 +458,7 @@ public class Species implements Cloneable {
 	/** 用数据库查找的方式，遍历refseq文件，然后获得gene2iso的表 */
 	public String getGene2IsoFileFromRefSeq() {
 		String gene2IsoFile = FileOperate.changeFileSuffix(getRefseqFile(true), "_Gene2Iso", "txt");
-		if (!FileOperate.isFileExist(gene2IsoFile)) {
+		if (!FileOperate.isFileExistAndNotDir(gene2IsoFile)) {
 			TxtReadandWrite txtGene2Iso = new TxtReadandWrite(gene2IsoFile, true);
 			SeqFastaHash seqFastaHash = new SeqFastaHash(getRefseqFile(true), null, false);
 			for (String geneIDstr : seqFastaHash.getLsSeqName()) {
@@ -743,7 +743,7 @@ public class Species implements Cloneable {
 //			}
 //			txtRead.close();
 //		} else 
-		if (!isOK && FileOperate.isFileExist("C:/Windows/IME/IMEJP10/DICTS/property")) {
+		if (!isOK && FileOperate.isFileExistAndNotDir("C:/Windows/IME/IMEJP10/DICTS/property")) {
 			TxtReadandWrite txtRead = new TxtReadandWrite("C:/Windows/IME/IMEJP10/DICTS/property");
 			for (String string : txtRead.readlines(3)) {
 				if (string.equals("201301jndsfiudsioold")) {

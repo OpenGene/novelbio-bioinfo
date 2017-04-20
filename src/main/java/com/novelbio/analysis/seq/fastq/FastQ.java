@@ -252,7 +252,7 @@ public class FastQ {
 	
 		if (!read) {
 			try {
-				if ((fastQRead == null || !FileOperate.isFileExist(fastQRead.getFileName()))  && FileOperate.isFileExist(fastQwrite.getFileName())) {
+				if ((fastQRead == null || !FileOperate.isFileExistAndNotDir(fastQRead.getFileName()))  && FileOperate.isFileExistAndNotDir(fastQwrite.getFileName())) {
 					fastQRead = new FastQReader(fastQwrite.getFileName());
 					if (fastQRead.fastQReadMate != null) {
 						fastQRead.fastQReadMate = new FastQReader(fastQwrite.fastQwriteMate.getFileName());

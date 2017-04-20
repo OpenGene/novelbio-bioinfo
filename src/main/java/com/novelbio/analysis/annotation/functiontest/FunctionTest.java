@@ -120,7 +120,7 @@ public abstract class FunctionTest implements Cloneable {
 	public void setLsBGItem(String fileName) {
 		//清空Test
 		lsTestResult = new ArrayList<StatisticTestResult>();
-		if (!FileOperate.isFileExist(fileName)) {
+		if (!FileOperate.isFileExistAndNotDir(fileName)) {
 			logger.error("no FIle exist: "+ fileName);
 		}
 		
@@ -231,7 +231,7 @@ public abstract class FunctionTest implements Cloneable {
 	public void setLsBGAccID(String fileName, int colNum) {
 		lsTestResult = new ArrayList<StatisticTestResult>();
 		mapBGGeneID2Items = new LinkedHashMap<String, GeneID2LsItem>();
-		if (!FileOperate.isFileExist(fileName)) {
+		if (!FileOperate.isFileExistAndNotDir(fileName)) {
 			logger.error("no File exist: "+ fileName);
 		}
 		ArrayList<String[]> accID = null;

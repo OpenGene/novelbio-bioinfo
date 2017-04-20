@@ -63,7 +63,7 @@ public class AlignSamReading extends AlignSeqReading {
 			try {
 				readSelectLines();
 			} catch (Exception e) {
-				// TODO: handle exception
+				e.printStackTrace();
 			}
 		
 		}

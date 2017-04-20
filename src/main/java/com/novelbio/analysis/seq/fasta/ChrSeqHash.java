@@ -77,7 +77,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	 */
 	protected void setChrFile() throws Exception {
 		String indexFile = null;
-		if (FileOperate.isFileExist(getChrIndexFileName()) &&
+		if (FileOperate.isFileExistAndNotDir(getChrIndexFileName()) &&
 				FileOperate.getTimeLastModify(getChrIndexFileName()) > FileOperate.getTimeLastModify(chrFile)) {
 			indexFile = getChrIndexFileName();
 		} else {

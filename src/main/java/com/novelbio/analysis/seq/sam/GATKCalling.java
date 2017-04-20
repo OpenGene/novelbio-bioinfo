@@ -136,7 +136,7 @@ public class GATKCalling implements IntCmdSoft {
 	}
 	
 	private String[] getDBsnpVcf() {
-		if (FileOperate.isFileExist(snpDBVcfFilePath)) {
+		if (FileOperate.isFileExistAndNotDir(snpDBVcfFilePath)) {
 			return new String[]{"--dbsnp", snpDBVcfFilePath};
 		}
 		return null;

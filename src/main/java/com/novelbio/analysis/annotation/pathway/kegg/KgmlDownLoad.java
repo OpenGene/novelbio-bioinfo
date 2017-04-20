@@ -211,7 +211,7 @@ public class KgmlDownLoad {
 		lsKGMLurl = new ArrayList<String>();
 		txtFileName = txtFileName + "/KGML.init";
 		if (update) {
-			if (FileOperate.isFileExist(txtFileName)) {
+			if (FileOperate.isFileExistAndNotDir(txtFileName)) {
 				FileOperate.delFile(txtFileName);
 			}
 		}

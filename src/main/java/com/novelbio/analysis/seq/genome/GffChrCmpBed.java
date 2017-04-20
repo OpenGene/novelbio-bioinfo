@@ -32,7 +32,7 @@ public class GffChrCmpBed extends GffChrAbs {
 	 *            每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
 	 */
 	public void setMapReadsCmp(String readsFile2, int binNum) {
-		if (FileOperate.isFileExist(readsFile2)) {
+		if (FileOperate.isFileExistAndNotDir(readsFile2)) {
 			mapReads2 = new MapReads();
 			mapReads2.setBedSeq(readsFile2);
 			mapReads2.setInvNum(binNum);

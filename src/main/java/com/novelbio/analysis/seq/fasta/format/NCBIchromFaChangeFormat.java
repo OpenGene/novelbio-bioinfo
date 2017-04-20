@@ -4,10 +4,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 import com.novelbio.analysis.ExceptionNBCsoft;
+import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.base.fileOperate.ExceptionNbcFile;
 import com.novelbio.base.fileOperate.FileOperate;
 
 /**
@@ -17,12 +20,20 @@ import com.novelbio.base.fileOperate.FileOperate;
  */
 public class NCBIchromFaChangeFormat {
 	public static void main(String[] args) {
-		String file = "/media/winE/Bioinformatics/genome/rice/tigr7/ChromFa";
-		String out = file + "/all/tigr7chrAll.fa";
-		FileOperate.createFolders(FileOperate.getParentPathNameWithSep(out));
+		String chrFile = null;
+		String outPath = null;
+		Map<String, Long> mapChr2Len = SamIndexRefsequence.generateIndexAndGetMapChrId2Len(chrFile);
+		if (mapChr2Len.size() > 5000) {
+			throw new ExceptionNbcFile("Reference file that need split cannot contains more than 5000 fasta seq. File name: "+ chrFile);
+		}
+		outPath = FileOperate.addSep(outPath);
+		FileOperate.createFolders(outPath);
 		NCBIchromFaChangeFormat ncbIchromFaChangeFormat = new NCBIchromFaChangeFormat();
-		ncbIchromFaChangeFormat.setChromFaPath(file, "");
-		ncbIchromFaChangeFormat.writeToSingleFile(out);
+		ncbIchromFaChangeFormat.setChromFaPath(chrFile, "");
+		ncbIchromFaChangeFormat.writeToSepFile(outPath);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.getParentPathNameWithSep(outPath) + FileOperate.getFileName(chrFile) + ".chrsep.finish", true);
+		txtWrite.writefileln("finish");
+		txtWrite.close();
 	}
 	
 	String chrFile = ""; String regx = "\\bchr\\w*";

@@ -83,7 +83,7 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 	public void runDownload() throws ParserException, IOException {
 		retryNum++;
 		String saveName = savePath + speciesKeggId + mapId;
-		if (FileOperate.isFileExist(saveName + ".xml") && FileOperate.isFileExist(saveName + ".png")) {
+		if (FileOperate.isFileExistAndNotDir(saveName + ".xml") && FileOperate.isFileExistAndNotDir(saveName + ".png")) {
 			return;
 		}
 		
@@ -125,7 +125,7 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 		}
 		String saveName = kgmlUri.split("entry=")[1].split("&")[0];
 		String saveToXml = savePath + saveName + ".xml";
-		if (!FileOperate.isFileExist(saveToXml)) {//存在文件则不下载
+		if (!FileOperate.isFileExistAndNotDir(saveToXml)) {//存在文件则不下载
 			keggFetch.setUriGet(kgmlUri);
 			if (keggFetch.query()) {
 				keggFetch.download(saveToXml);
@@ -138,7 +138,7 @@ public class DownloadKGMLunit implements Callable<DownloadKGMLunit> {
 		}
 		
 		String saveToPic = savePath + saveName + ".png";
-		if (!FileOperate.isFileExist(saveToPic)) { 
+		if (!FileOperate.isFileExistAndNotDir(saveToPic)) { 
 			keggFetch.setUriGet(picUri);
 			if (keggFetch.query()) {
 				keggFetch.download(saveToPic);

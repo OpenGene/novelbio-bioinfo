@@ -198,7 +198,7 @@ public class CufflinksGTF implements IntCmdSoft, IntReconstructIsoUnit {
 	}
 
 	private String[] getCorrectChrFile() {
-		if (FileOperate.isFileExist(chrFile)) {
+		if (FileOperate.isFileExistAndNotDir(chrFile)) {
 			return new String[]{"-b", chrFile};
 		}
 		return null;

@@ -345,14 +345,14 @@ public class BlastNBC implements IntCmdSoft {
 		boolean indexExist = false;
 		int seqType = SeqHash.getSeqType(databaseSeq);
 		if (seqType == SeqFasta.SEQ_DNA || seqType == SeqFasta.SEQ_RNA) {
-			indexExist = FileOperate.isFileExist(databaseSeq + ".nhr") && FileOperate.isFileExist(databaseSeq + ".nin") 
-					&& FileOperate.isFileExist(databaseSeq + ".nog") && FileOperate.isFileExist(databaseSeq + ".nsd")
-					 && FileOperate.isFileExist(databaseSeq + ".nsi") && FileOperate.isFileExist(databaseSeq + ".nsq");
+			indexExist = FileOperate.isFileExistAndNotDir(databaseSeq + ".nhr") && FileOperate.isFileExistAndNotDir(databaseSeq + ".nin") 
+					&& FileOperate.isFileExistAndNotDir(databaseSeq + ".nog") && FileOperate.isFileExistAndNotDir(databaseSeq + ".nsd")
+					 && FileOperate.isFileExistAndNotDir(databaseSeq + ".nsi") && FileOperate.isFileExistAndNotDir(databaseSeq + ".nsq");
 		}
 		else if (seqType == SeqFasta.SEQ_PRO) {
-			indexExist = FileOperate.isFileExist(databaseSeq + ".phr") && FileOperate.isFileExist(databaseSeq + ".pin") 
-					&& FileOperate.isFileExist(databaseSeq + ".pog") && FileOperate.isFileExist(databaseSeq + ".psd")
-					 && FileOperate.isFileExist(databaseSeq + ".psi") && FileOperate.isFileExist(databaseSeq + ".psq");
+			indexExist = FileOperate.isFileExistAndNotDir(databaseSeq + ".phr") && FileOperate.isFileExistAndNotDir(databaseSeq + ".pin") 
+					&& FileOperate.isFileExistAndNotDir(databaseSeq + ".pog") && FileOperate.isFileExistAndNotDir(databaseSeq + ".psd")
+					 && FileOperate.isFileExistAndNotDir(databaseSeq + ".psi") && FileOperate.isFileExistAndNotDir(databaseSeq + ".psq");
 		}
 		else {
 			logger.error("序列出现未知字符");

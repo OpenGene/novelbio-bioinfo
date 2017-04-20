@@ -159,7 +159,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		String fqFile = seqFile;
 		String unMappedFq = "";
 		String unMappedMiRNA = fqFile;
-		if (FileOperate.isFileExist(miRNApreSeq)) {
+		if (FileOperate.isFileExistAndNotDir(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
 			samFileMiRNA = mappingDNA(lsCmd, isUseOldResult, samFileStatisticsMiRNA, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);
@@ -173,7 +173,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			}
 		}
 	
-		if (FileOperate.isFileExist(rfamSeq)) {
+		if (FileOperate.isFileExistAndNotDir(rfamSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2rfam.fq.gz";
 			SamFileStatistics samStatisticsRfam = new SamFileStatistics(FileOperate.getFileNameSep(samFileRfam)[0]);
 			samFileRfam = mappingDNA(lsCmd, isUseOldResult, samStatisticsRfam,
@@ -184,7 +184,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			fqFile = unMappedFq;
 		}
 		
-		if (FileOperate.isFileExist(ncRNAseq)) {
+		if (FileOperate.isFileExistAndNotDir(ncRNAseq)) {
 			unMappedFq = outputTmpFinal + "unMap2ncRna.fq.gz";
 			SamFileStatistics samStatisticsNCRNA = new SamFileStatistics(FileOperate.getFileNameSep(samFileNCRNA)[0]);
 			samFileNCRNA = mappingDNA(lsCmd, isUseOldResult, samStatisticsNCRNA,
@@ -195,7 +195,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			fqFile = unMappedFq;
 		}
 		
-		if (FileOperate.isFileExist(genome)) {
+		if (FileOperate.isFileExistAndNotDir(genome)) {
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
 			SamFileStatistics samStatisticsGenome = new SamFileStatistics(FileOperate.getFileNameSep(samFileGenome)[0]);
 			samFileGenome = mappingDNA(lsCmd, isUseOldResult, samStatisticsGenome,
@@ -205,7 +205,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 			}
 		}
 		
-		if (mappingAll2Genome && FileOperate.isFileExist(genome)) {
+		if (mappingAll2Genome && FileOperate.isFileExistAndNotDir(genome)) {
 			fqFile = seqFile;
 			unMappedFq = outputTmpFinal + "unMapped.fq.gz";
 			SamFileStatistics samStatisticsGenomeAll = new SamFileStatistics(FileOperate.getFileNameSep(samFileGenomeAll)[0]);
@@ -226,7 +226,7 @@ public class MiRNAmapPipline implements IntCmdSoft {
 		String outputTmpFinal = outPathTmpMapping + prefix + ".";
 		String fqFile = seqFile;
 		String unMappedFq = "";
-		if (FileOperate.isFileExist(miRNApreSeq)) {
+		if (FileOperate.isFileExistAndNotDir(miRNApreSeq)) {
 			unMappedFq = outputTmpFinal + "unMap2miRNA.fq.gz";
 			samFileStatisticsMiRNA = new SamFileStatistics(prefix);
 			samFileMiRNA = mappingDNA(lsCmd, isUseOldResult, samFileStatisticsMiRNA, threadNum, fqFile, miRNApreSeq, samFileMiRNA, unMappedFq);

@@ -77,7 +77,7 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 	}
 	private void fillMapRNAID2GeneID(SeqFastaHash seqHashMRNA ) {
 		String fileRNAID2GeneID = FileOperate.changeFileSuffix(seqHashMRNA.getChrFile(), "_RNAID2GeneID", "txt");
-		if (FileOperate.isFileExist(fileRNAID2GeneID)) {
+		if (FileOperate.isFileExistAndNotDir(fileRNAID2GeneID)) {
 			TxtReadandWrite txtReadMapRNAID2GeneID = new TxtReadandWrite(fileRNAID2GeneID, false);
 			for (String string : txtReadMapRNAID2GeneID.readlines()) {
 				String[] tmp = string.split("\t");
@@ -97,7 +97,7 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 	}
 	private void fillMapGeneID2ProteinID(SeqFastaHash seqHashProtein ) {
 		String fileGeneID2ProteinID = FileOperate.changeFileSuffix(seqHashProtein.getChrFile(), "_GeneID2ProteinID", "txt");
-		if (FileOperate.isFileExist(fileGeneID2ProteinID)) {
+		if (FileOperate.isFileExistAndNotDir(fileGeneID2ProteinID)) {
 			TxtReadandWrite txtReadGeneID2ProteinID = new TxtReadandWrite(fileGeneID2ProteinID, false);
 			for (String string : txtReadGeneID2ProteinID.readlines()) {
 				String[] tmp = string.split("\t");

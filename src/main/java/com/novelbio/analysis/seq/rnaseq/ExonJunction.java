@@ -63,12 +63,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private static final boolean isASD = false;
 	
 	public static void main(String[] args) {
-		long timeEclipse1 = test();
+		long timeEclipse1 = wwwSimulation();
 		System.out.println(timeEclipse1);
 	}
 	
 	public static long wwwSimulation() {
-		String parentPath = "/media/winE/NBCsource/otherResource/www/simulation10/";
+		String parentPath = "/media/winE/test/altersplice/bug/";
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		
@@ -76,14 +76,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		lsAligns.add(new Align("1", 2588282, 2588574));
 		
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(new GffHashGene(parentPath + "genes.gtf"));
+		gffChrAbs.setGffHash(new GffHashGene(parentPath + "chr1H.gtf"));
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
 		exonJunction.setgenerateNewIso(true);
-		exonJunction.setLsReadRegion(lsAligns);
+//		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		exonJunction.addBamSorted("Ex", parentPath + "exclusion.bam");
-		exonJunction.addBamSorted("In", parentPath + "inclusion.bam");
+		exonJunction.addBamSorted("Ex", parentPath + "hnc1_1H.sorted.bam");
+		exonJunction.addBamSorted("In", parentPath + "hnw1_1H.sorted.bam");
 		exonJunction.setCompareGroups("Ex", "In", "ExvsIn");
 		exonJunction.setResultFile(parentPath + "result-sep-exon");
 		exonJunction.setJunctionMinAnchorLen(0);
@@ -107,18 +107,18 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 //		Species species = new Species(9606);
 //		species.setVersion("hg19_GRCh37");
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(new GffHashGene("/home/novelbio/NBCresource/www/genes_modify.gtf"));
+		gffChrAbs.setGffHash(new GffHashGene("/media/winE/test/altersplice/bug/1H.gtf"));
 		gffChrAbs.close();
 		ExonJunction exonJunction = new ExonJunction();
 //		exonJunction.setGffHashGene(new GffHashGene(GffType.GTF, "/home/zong0jie/Test/rnaseq/paper/chicken/raw_ensembl_genes/chicken_ensemble_KO-WT-merged.gtf"));
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
 		exonJunction.setgenerateNewIso(true);
 		exonJunction.setNewIsoReadsNum(15);
-		exonJunction.setLsReadRegion(lsAligns);
+//		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		String parentPath = "/home/novelbio/NBCresource/www/";
-		exonJunction.addBamSorted("KD", parentPath + "KD.accepted.bam");
-		exonJunction.addBamSorted("WT", parentPath + "WT.accepted.bam");
+		String parentPath = "/media/winE/test/altersplice/bug/";
+		exonJunction.addBamSorted("KD", parentPath + "1H_c.bam");
+		exonJunction.addBamSorted("WT", parentPath + "1H.bam");
 		exonJunction.setCompareGroups("KD", "WT", "KDvsWT");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.setResultFile(parentPath + "result_20151220-mse");

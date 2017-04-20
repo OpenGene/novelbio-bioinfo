@@ -123,7 +123,7 @@ public class KgmlDownLoad {
 	public void loadPathNameAndSpecies(String txtFileName, boolean update) {
 		lsKGMLurl = new ArrayList<String>();
 		if (update) {
-			if (FileOperate.isFileExist(txtFileName)) {
+			if (FileOperate.isFileExistAndNotDir(txtFileName)) {
 				FileOperate.delFile(txtFileName);
 			}
 		}

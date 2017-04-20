@@ -110,7 +110,7 @@ public class PeakCallingMacs implements IntCmdSoft {
 		return result;
 	}
 	private String[] getControl() {
-		if (FileOperate.isFileExist(pathInputCol)) {
+		if (FileOperate.isFileExistAndNotDir(pathInputCol)) {
 			return new String[]{"-c", pathInputCol};
 		}
 		return null;

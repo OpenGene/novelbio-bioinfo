@@ -268,7 +268,7 @@ public class DifLoc2DifLoc {
 	public void addMapInfo(String prefix, String mapFile1, String mapFile2) {
 		ArrayList<MapReads> lsMapReads = new ArrayList<MapReads>();
 		MapReads mapReads1 = null;
-		if (FileOperate.isFileExist(mapFile1)) {
+		if (FileOperate.isFileExistAndNotDir(mapFile1)) {
 			mapReads1 = new MapReads();
 			mapReads1.setInvNum(binNum);
 			mapReads1.setBedSeq(mapFile1);
@@ -279,7 +279,7 @@ public class DifLoc2DifLoc {
 		}
 		
 		MapReads mapReads2 = null;
-		if (FileOperate.isFileExist(mapFile2)) {
+		if (FileOperate.isFileExistAndNotDir(mapFile2)) {
 			mapReads2 = new MapReads();
 			mapReads2.setInvNum(binNum);
 			mapReads2.setBedSeq(mapFile2);
