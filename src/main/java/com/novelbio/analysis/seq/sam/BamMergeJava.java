@@ -1,17 +1,8 @@
 package com.novelbio.analysis.seq.sam;
 
-import htsjdk.samtools.MergingSamRecordIterator;
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMFileHeader.SortOrder;
-import htsjdk.samtools.SAMFileReader;
-import htsjdk.samtools.SAMFileWriter;
-import htsjdk.samtools.SAMFileWriterFactory;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SAMSequenceDictionary;
-import htsjdk.samtools.SamFileHeaderMerger;
-import htsjdk.samtools.SamReader;
-
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -21,6 +12,16 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+
+import htsjdk.samtools.MergingSamRecordIterator;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
+import htsjdk.samtools.SAMFileWriter;
+import htsjdk.samtools.SAMFileWriterFactory;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SamFileHeaderMerger;
+import htsjdk.samtools.SamReader;
 
 /** java实现的merge
  * 根据 picard.sam.MergeSamFiles改装而来
@@ -77,14 +78,18 @@ public class BamMergeJava implements BamMergeInt {
     
     public SamFile mergeSam() {
     	prepareReader();
-	setSortOrderInfo();
-	String outFileTmp = FileOperate.changeFileSuffix(outFileName, "_tmp", null);
-	String outInfo = FileOperate.changeFileSuffix(outFileName, "_mergeReadsNum", "txt");
-	merge(outFileTmp, outInfo);
-	FileOperate.deleteFileFolder(outInfo);
+    	setSortOrderInfo();
+    	String outFileTmp = FileOperate.changeFileSuffix(outFileName, "_tmp", null);
+    	String outInfo = FileOperate.changeFileSuffix(outFileName, "_mergeReadsNum", "txt");
+    	try {
+    		merge(outFileTmp, outInfo);
+    	} catch (Exception e) {
+    		throw new ExceptionSamError("cannot merge file: " + outFileName, e);
+    	}
+    	FileOperate.deleteFileFolder(outInfo);
     	if (!FileOperate.isFileExistAndBigThanSize(outFileTmp, 0)) {
-			throw new ExceptionSamError("cannot merge file: " + outFileName);
-		}
+    		throw new ExceptionSamError("cannot merge file: " + outFileName);
+    	}
     	FileOperate.moveFile(true, outFileTmp, outFileName);
     	SamFile samFile = new SamFile(outFileName);
     	return samFile;
@@ -131,8 +136,9 @@ public class BamMergeJava implements BamMergeInt {
 	/**
 	 * @param outFileName 合并的最后输出文件
 	 * @param outInfo 合并信息
+	 * @throws IOException 
 	 */
-	private void merge(String outFileName, String outInfo) {
+	private void merge(String outFileName, String outInfo) throws IOException {
 		TxtReadandWrite txtWriteInfo = new TxtReadandWrite(outInfo, true);
 		
 		final SamFileHeaderMerger headerMerger = new SamFileHeaderMerger(sortOrder, lsHeaders, MERGE_SEQUENCE_DICTIONARIES);
@@ -142,9 +148,12 @@ public class BamMergeJava implements BamMergeInt {
 		final SAMFileWriterFactory samFileWriterFactory = new SAMFileWriterFactory();
 		if (USE_THREADING) samFileWriterFactory.setUseAsyncIo(true);
 		
-		File file = FileOperate.getFile(outFileName);
-		final SAMFileWriter out = samFileWriterFactory.makeSAMOrBAMWriter(header, presorted, file);
+		OutputStream outStream = FileOperate.getOutputStream(outFileName);
 		
+		SAMFileWriter samFileWriter = outInfo.toLowerCase().endsWith("bam") ?
+				samFileWriterFactory.makeBAMWriter(header, presorted, outStream)
+				: samFileWriterFactory.makeSAMWriter(header, presorted, outStream);
+				
 		long readsNum = 0;
 	        // Lastly loop through and write out the records
 		while (iterator.hasNext()) {
@@ -153,7 +162,7 @@ public class BamMergeJava implements BamMergeInt {
 				txtWriteInfo.flush();
 			}
 			final SAMRecord record = iterator.next();
-			out.addAlignment(record);
+			samFileWriter.addAlignment(record);
 		}
 
 		logger.info("Finished reading inputs.");
@@ -163,8 +172,8 @@ public class BamMergeJava implements BamMergeInt {
 		} catch (Exception e) {
 			logger.error("close file error: " + outFileName, e);
 		}
-	
-		out.close();
+		samFileWriter.close();
+		outStream.close();
 	}
 	
 	@Override

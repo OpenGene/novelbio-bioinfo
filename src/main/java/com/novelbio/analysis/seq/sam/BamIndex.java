@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.sam;
 import htsjdk.samtools.BAMIndexer;
 import htsjdk.samtools.SAMException;
 import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMRecord;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -89,7 +90,7 @@ public class BamIndex {
     }
     
     private static void makeIndex(SamReader reader, String output) {
-    	String outTmp = FileOperate.changeFileSuffix(output, "_tmp", null);
+    	String outTmp = FileOperate.getFileTmpName(output);
     	OutputStream outStream = null;
     	try {
     		outStream = FileOperate.getOutputStream(outTmp);
@@ -99,23 +100,15 @@ public class BamIndex {
     	}
     	
     	SAMFileHeader samFileHeader = reader.getSamFileHead();
-        BAMIndexer indexer = new BAMIndexer(outStream, samFileHeader);
-        reader.samFileReader.enableFileSource(true);
-        int allRecordsNum = 0;
-
-        for (SamRecord rec : reader.readLines()) {
-        	if (allRecordsNum % 5000000 == 0) {
-        		logger.info(allRecordsNum + " reads processed ...");
-        	}
-//            try {
-//            	
-//			} catch (Exception e) {
-//				logger.error(rec.toString(), e);
-//			}
+    	BAMIndexer indexer = new BAMIndexer(outStream, samFileHeader);
+    	long allRecordsNum = 0;
+    	
+    	for (SamRecord rec : reader.readLines()) {
+    		if (++allRecordsNum % 5000000 == 0) {
+    			logger.info(allRecordsNum + " reads processed ...");
+    		}
             indexer.processAlignment(rec.samRecord);
-            allRecordsNum ++;
         }
-
         indexer.finish();
         try {
 	        outStream.close();

@@ -30,12 +30,11 @@ public class BamSort {
 	SamFile samFile;
 
 	SAMSequenceDictionary samSequenceDictionary;
-	int maxRecordsInRam = 5000000;
+	int maxRecordsInRam = 2500000;
 	String ExePath = "";
 		
 	public void setSamFile(SamFile samFile) {
 		this.samFile = samFile;
-		SAMFileWriterImpl.setDefaultMaxRecordsInRam(maxRecordsInRam);
 		PathDetail.getTmpPathWithSep();
 	}
 
@@ -103,7 +102,7 @@ public class BamSort {
 		}
 
 		FileOperate.createFolders(FileOperate.getPathName(sortBamFile));
-		String tmpFile = FileOperate.changeFileSuffix(sortBamFile, "_tmp", null);
+		String tmpFile = FileOperate.getFileTmpName(sortBamFile);
 		samFileHeader.setSortOrder(SORT_ORDER);
 		boolean isFilterUnique = false;
 		if (filterUniqeMap && !BamFilterUnique.isUniqueMapped(samFile)) {
@@ -118,7 +117,7 @@ public class BamSort {
 			throw new ExceptionSamError("cannot open sam out file " + tmpFile);
 		}
 		
-		SamWriter writer = new SamWriter(false, samFileHeader, os, true);
+		SamWriter writer = new SamWriter(false, samFileHeader, os, true, maxRecordsInRam);
 		int i = 0;
 		
 		try {

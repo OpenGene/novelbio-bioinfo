@@ -103,9 +103,9 @@
 			</exclusions>
 		</dependency>
 		<dependency>
-  			<groupId>org.broadinstitute</groupId>
-  			<artifactId>htsjdk</artifactId>
-  			<version>2.00-SNAPSHOT</version>
+   		 <groupId>com.github.samtools</groupId>
+    		<artifactId>htsjdk</artifactId>
+   		 	<version>2.6.0</version>
 		</dependency>
      <dependency>
 			<groupId>org.powermock</groupId>

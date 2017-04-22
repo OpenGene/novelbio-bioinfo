@@ -3,6 +3,7 @@ package com.novelbio.analysis.annotation.pathway.kegg.kGML2DB;
 import java.io.BufferedReader;
 import java.util.List;
 
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
 import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
@@ -70,13 +71,24 @@ public class KeggIDcvt {
 			}
 			
 			String[] ss=content2.split("\t");
-			String kegID=ss[0];long geneID=Long.parseLong(ss[1].replace("ncbi-geneid:", "").trim());
+			String kegID=ss[0];long geneId=Long.parseLong(ss[1].replace("ncbi-geneid:", "").trim());
 			KGIDgen2Keg kgiDgen2Keg=new KGIDgen2Keg();
-			kgiDgen2Keg.setGeneID(geneID);kgiDgen2Keg.setKeggID(kegID);kgiDgen2Keg.setTaxID(taxId);
+			kgiDgen2Keg.setGeneID(geneId);kgiDgen2Keg.setKeggID(kegID);kgiDgen2Keg.setTaxID(taxId);
 			
-			KGIDgen2Keg ls = servKIDgen2Keg.findByGeneIdAndTaxIdAndKegId(geneID, taxId, kegID);
+			KGIDgen2Keg ls = servKIDgen2Keg.findByGeneIdAndTaxIdAndKegId(geneId, taxId, kegID);
 			if (ls == null) {
 				servKIDgen2Keg.save(kgiDgen2Keg);
+			}
+			GeneID geneID = new GeneID(GeneID.IDTYPE_GENEID, geneId + "", taxId);
+			String accId = null;
+			try {
+				Integer.parseInt(kegID.split(":")[1]);
+			} catch (Exception e) {
+				accId = kegID.split(":")[1];
+			}
+			if (accId != null && geneID.getAccID_With_DefaultDB() == null) {
+				geneID.setUpdateAccID(accId);
+				geneID.update(true);
 			}
 		}
 	}

@@ -59,7 +59,14 @@ public class SamWriter {
 			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, os);
 		}
 	}
-	
+	/** 默认写入bam文件 */
+	public SamWriter(boolean presorted, SAMFileHeader samFileHeader, OutputStream os, boolean writeToBam, int maxRecordsInRam) {
+		if (writeToBam) {
+			samFileWriter = samFileWriterFactory.setMaxRecordsInRam(maxRecordsInRam).makeBAMWriter(samFileHeader, presorted, os);
+		} else {
+			samFileWriter = samFileWriterFactory.setMaxRecordsInRam(maxRecordsInRam).makeSAMWriter(samFileHeader, presorted, os);
+		}
+	}
 	public void writeToSamFileln(SamRecord samRecord) {
 		if (samRecord == null || samRecord.samRecord == null) return;
 		

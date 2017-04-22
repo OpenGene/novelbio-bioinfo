@@ -11,6 +11,7 @@ import org.apache.commons.cli.Options;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -23,23 +24,40 @@ public class KGexe {
 	 * @throws ExecutionException 
 	 * @throws InterruptedException 
 	 */
-	public static void main2(String[] args) throws InterruptedException, ExecutionException {
+	public static void main(String[] args) throws InterruptedException, ExecutionException {
 		Options opts = new Options();
+		opts.addOption("keggpath", true, "keggpath");
+		opts.addOption("taxId", true, "taxId");
+
 		opts.addOption("keggabbr", true, "keggabbr");
+		opts.addOption("geneIdlist", true, "ncbi-geneId");
+		opts.addOption("kolist", true, "ncbi-geneid.list.gz");
+
+		if (args.length == 0) {
+			System.out.println("java -jar keggUpdate.jar --taxId 9606 --keggpath /home/novelbio/kegg/"
+					+ " --keggabbr hsa --geneIdlist /home/novelbio/kegg/genes_ncbi-geneid.list.gz"
+					+ " --kolist /home/novelbio/kegg/genes_ko.list.gz" );
+			return;
+		}
 		CommandLine cliParser = null;
 		try {
 			cliParser = new GnuParser().parse(opts, args);
 		} catch (Exception e) {
 			System.exit(1);
 		}
+		String keggPath = FileOperate.addSep(cliParser.getOptionValue("keggpath"));
 		String keggAbbrStr = cliParser.getOptionValue("keggabbr");
+		String geneIdlist = cliParser.getOptionValue("geneIdlist");
+		String kolist = cliParser.getOptionValue("kolist");
+		int taxId = Integer.parseInt(cliParser.getOptionValue("taxId"));
+
 		try {
 			for (String abbr : keggAbbrStr.split(",")) {
 				abbr = abbr.trim();
-				KGML2DB.readKGML("/home/novelbio/NBCsource/biodb/database20150530/kegg/" + abbr);
-				KeggIDcvt.upDateGen2Keg("/home/novelbio/NBCsource/biodb/database20150530/kegg/genes_ncbi-geneid.list.gz", abbr);
+				KGML2DB.readKGML(keggPath + abbr);
+				KeggIDcvt.upDateGen2Keg(geneIdlist, abbr, taxId);
 				logger.info("finish kegg2geneId");
-				KeggIDcvt.upDateKeg2Ko("/home/novelbio/NBCsource/biodb/database20150530/kegg/genes_ko.list.gz", abbr);
+				KeggIDcvt.upDateKeg2Ko(kolist, abbr, taxId);
 				logger.info("finish kegg2ko");
 			}
 		} catch (Exception e) {
@@ -48,7 +66,7 @@ public class KGexe {
 		}
 	}
 	
-	public static void main(String[] args) throws InterruptedException, ExecutionException {
+	public static void main2(String[] args) throws InterruptedException, ExecutionException {
 //		List<String> lsGenID2 = new ArrayList<>();
 //		lsGenID2.add("XNR_0641");
 //		CtrlBlastPath ctrlPath = new CtrlBlastPath(false, 457425, 0, 1e-10);
@@ -70,15 +88,16 @@ public class KGexe {
 //			System.exit(1);
 //		}
 //		String keggAbbrStr = cliParser.getOptionValue("keggabbr");
-		String keggAbbrStr = "hsa";
-		String path = "/home/novelbio/NBCresource/database/kegg/";
+		String keggAbbrStr = "ahe";
+		int taxId = 28264;
+		String path = "/home/novelbio/NBCsource/biodb/database20150530/kegg/";
 		try {
 			for (String abbr : keggAbbrStr.split(",")) {
 				abbr = abbr.trim();
-				KGML2DB.readKGML(path + abbr);
-				KeggIDcvt.upDateGen2Keg(path + "genes_ncbi-geneid.list.gz", abbr);
+//				KGML2DB.readKGML(path + abbr);
+				KeggIDcvt.upDateGen2Keg(path + "genes_ncbi-geneid.list.gz", abbr, taxId);
 				logger.info("finish kegg2geneId");
-				KeggIDcvt.upDateKeg2Ko(path + "genes_ko.list.gz", abbr);
+				KeggIDcvt.upDateKeg2Ko(path + "genes_ko.list.gz", abbr, taxId);
 				logger.info("finish kegg2ko");
 			}
 		} catch (Exception e) {

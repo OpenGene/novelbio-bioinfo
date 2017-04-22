@@ -1,19 +1,5 @@
 package com.novelbio.analysis.seq.sam;
 
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMFileHeader.SortOrder;
-import htsjdk.samtools.SAMFileReader;
-import htsjdk.samtools.SAMReadGroupRecord;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SAMSequenceDictionary;
-import htsjdk.samtools.SAMSequenceRecord;
-import htsjdk.samtools.SAMTextHeaderCodec;
-import htsjdk.samtools.SamReaderFactory;
-import htsjdk.samtools.ValidationStringency;
-import htsjdk.samtools.util.BlockCompressedInputStream;
-import htsjdk.samtools.util.BlockCompressedStreamConstants;
-import htsjdk.samtools.util.StringLineReader;
-
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -36,9 +22,17 @@ import com.novelbio.analysis.seq.fasta.FastaDictMake;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.base.dataOperate.DateUtil;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFileHeader.SortOrder;
+import htsjdk.samtools.SAMReadGroupRecord;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMSequenceDictionary;
+import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.ValidationStringency;
+import htsjdk.samtools.util.BlockCompressedInputStream;
+import htsjdk.samtools.util.BlockCompressedStreamConstants;
 
 /**
  * 提取为bed文件时，仅仅考虑f-r情况
@@ -50,7 +44,6 @@ public class SamFile implements AlignSeq {
 	private static final Logger logger = Logger.getLogger(SamFile.class);
 	static {
 		SamReaderFactory.setDefaultValidationStringency(ValidationStringency.SILENT);
-		SAMFileReader.setDefaultValidationStringency(ValidationStringency.SILENT);
 	}
 	public static void main(String[] args) {
 		String parentPath = "/hdfs:/nbCloud/public/AllProject/project_55079d2ce4b0b3b73a8e2003/task_55093d79e4b0b3b73a8e2093/MiRNASeqAnalysis_result/TmpMapping/";
@@ -103,9 +96,7 @@ public class SamFile implements AlignSeq {
 		} else {
 			setSamFileNew(samFileHeader, samBamFile, false);
 		}
-//		initialSoftWare();
 	}
-	
 	
 	/**读取已有文件
 	 * 如果有索引会自动读取索引
@@ -135,15 +126,19 @@ public class SamFile implements AlignSeq {
 	 */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader, boolean preSorted) {
 		setSamFileNew(samFileHeader, samBamFile, preSorted);
-//		initialSoftWare();
 	}
 	private void setSamFileRead(String samBamFile) {
 		String bamindex = samBamFile + ".bai";
 		if (!FileOperate.isFileExistAndBigThanSize(bamindex, 0)) {
 			bamindex = null;
 		}
-		setSamFileRead(FormatSeq.UNKNOWN, samBamFile, bamindex);
-//		initialSoftWare();
+		FormatSeq formatSeq = FormatSeq.UNKNOWN;
+		if (samBamFile.toLowerCase().endsWith("bam")) {
+			formatSeq = FormatSeq.BAM;
+		} else if (samBamFile.toLowerCase().endsWith("sam")) {
+			formatSeq = FormatSeq.SAM;
+		}
+		setSamFileRead(formatSeq, samBamFile, bamindex);
 	}
 	
 	public SamReader getSamReader() {
@@ -208,16 +203,7 @@ public class SamFile implements AlignSeq {
 		samWriter = new SamWriter(preSorted, samFileHeader, os, isBam);
 		bamFile = isBam;
 	}
-	
-//	private static void initialSoftWare() {
-//		try {
-//			if (softWareInfoSamtools.getName() == null) {
-//				softWareInfoSamtools.setName(SoftWare.samtools);
-//			}
-//		} catch (Exception e) {}
-//
-//	}
-	
+		
 	/** 比对到的reference的文件名，用于realign等 */
 	public void setReferenceFileName(String referenceFileName) {
 		this.referenceFileName = referenceFileName;
@@ -485,7 +471,7 @@ public class SamFile implements AlignSeq {
 			return this;
 		}
     	
-    	String outName = FileOperate.changeFileSuffix(getFileName(), "_sorted", "bam");
+    	String outName = FileOperate.changeFileSuffix(getFileName(), ".sorted", "bam");
     	return sort(samSequenceDictionary, outName, isFilterUnique);
     }
 	 /**

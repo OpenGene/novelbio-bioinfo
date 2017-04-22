@@ -1,19 +1,10 @@
 package com.novelbio.analysis.seq.sam;
 
-import htsjdk.samtools.FileTruncatedException;
-import htsjdk.samtools.SAMFileHeader;
-import htsjdk.samtools.SAMFileReader;
-import htsjdk.samtools.SAMFormatException;
-import htsjdk.samtools.SAMRecord;
-import htsjdk.samtools.SAMRecordIterator;
-import htsjdk.samtools.SAMSequenceRecord;
-import htsjdk.samtools.seekablestream.SeekableStream;
-import htsjdk.samtools.seekablestream.SeekableStreamFactory;
-import htsjdk.samtools.util.RuntimeEOFException;
-
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -23,6 +14,22 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.fileOperate.SeekablePathInputStream;
+
+import htsjdk.samtools.DefaultSAMRecordFactory;
+import htsjdk.samtools.FileTruncatedException;
+import htsjdk.samtools.SAMFileHeader;
+import htsjdk.samtools.SAMFormatException;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SAMRecordIterator;
+import htsjdk.samtools.SAMSequenceRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader.Type;
+import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.ValidationStringency;
+import htsjdk.samtools.seekablestream.SeekableStream;
+import htsjdk.samtools.seekablestream.SeekableStreamFactory;
+import htsjdk.samtools.util.RuntimeEOFException;
 
 public class SamReader {
 	private static final Logger logger = Logger.getLogger(SamReader.class);
@@ -35,7 +42,7 @@ public class SamReader {
 	/**
 	 * 读取sam文件的类，最好不要直接用，用getSamFileReader()方法代替
 	 */
-	SAMFileReader samFileReader;
+	public htsjdk.samtools.SamReader samReader;
 	SAMFileHeader samFileHeader;
 	SAMRecordIterator samRecordIterator;
 	/** 小写的chrID与samFileHeader中的chrID的对照表 */
@@ -61,7 +68,12 @@ public class SamReader {
 	 * <b>不需要初始化</b>
 	 */
 	public SamReader(InputStream inputStream) {
-		samFileReader = new SAMFileReader(inputStream);
+		samReader =
+                SamReaderFactory.make()
+                .enable(SamReaderFactory.Option.DONT_MEMORY_MAP_INDEX)
+                .validationStringency(ValidationStringency.SILENT)
+                .samRecordFactory(DefaultSAMRecordFactory.getInstance())
+                .open(  SamInputResource.of(inputStream));//(FileOperate.getPath(""));
 		setSamHeader(inputStream);
 		initial = true;
 	}
@@ -115,12 +127,12 @@ public class SamReader {
 	}
 	
 	private void initialSamHeadAndReader(String fileIndex) throws IOException {
-		if (samFileHeader != null && samFileReader != null
+		if (samFileHeader != null && samReader != null
 				&& 
 				(
-						(fileIndex == null && !samFileReader.hasIndex())
+						(fileIndex == null && !samReader.hasIndex())
 						|| 
-						samFileReader.hasIndex()
+						samReader.hasIndex()
 						)
 				) {
 			return;
@@ -134,12 +146,20 @@ public class SamReader {
 		
 		if (fileName != null) initialStream();
 		
+		SamInputResource samInputResource = null;
 		if (isIndexed) {
 			SeekableStream seekableStream = SeekableStreamFactory.getInstance().getStreamFor(fileIndex);
-			samFileReader = new SAMFileReader((SeekableStream)inputStream, seekableStream, false);
+			samInputResource = SamInputResource.of((SeekableStream)inputStream).index(seekableStream);
 		} else {
-			samFileReader = new SAMFileReader(inputStream);
+			samInputResource = SamInputResource.of(inputStream);
 		}
+				
+		samReader = SamReaderFactory.make()
+        .enable(SamReaderFactory.Option.DONT_MEMORY_MAP_INDEX)
+        .enable(SamReaderFactory.Option.INCLUDE_SOURCE_IN_RECORDS)
+        .validationStringency(ValidationStringency.SILENT)
+        .samRecordFactory(DefaultSAMRecordFactory.getInstance())
+        .open(samInputResource);		
 		setSamHeader(inputStream);
 	}
 	
@@ -152,7 +172,7 @@ public class SamReader {
 	}
 	
 	private void setSamHeader(InputStream inputStream) {
-		samFileHeader = samFileReader.getFileHeader();
+		samFileHeader = samReader.getFileHeader();
 		mapChrIDlowCase2ChrID = new LinkedHashMap<String, String>();
 		mapChrIDlowCase2Length = new LinkedHashMap<String, Long>();
 		//获得reference的序列信息
@@ -167,8 +187,8 @@ public class SamReader {
 		return samFileHeader;
 	}
 	
-	protected SAMFileReader getSamFileReader() {
-		return samFileReader;
+	protected htsjdk.samtools.SamReader getSamFileReader() {
+		return samReader;
 	}
 	
 	/**
@@ -309,7 +329,7 @@ public class SamReader {
 			logger.error("出现未知reference");
 			return null;
 		}
-		samRecordIterator = samFileReader.queryContained(mapChrIDlowCase2ChrID.get(chrID), start, end);
+		samRecordIterator = samReader.queryContained(mapChrIDlowCase2ChrID.get(chrID), start, end);
 		return new ReadSamIterable(fileName, samRecordIterator, samFileHeader);
 	}
 	
@@ -329,7 +349,7 @@ public class SamReader {
 			logger.error("出现未知reference");
 			return null;
 		}
-		samRecordIterator = samFileReader.queryOverlapping(mapChrIDlowCase2ChrID.get(chrID), start, end);
+		samRecordIterator = samReader.queryOverlapping(mapChrIDlowCase2ChrID.get(chrID), start, end);
 		return new ReadSamIterable(fileName, samRecordIterator, samFileHeader);
 	}
 	
@@ -339,17 +359,18 @@ public class SamReader {
 		} catch (Exception e) { }
 	}
 	public boolean isBinary() {
-		return samFileReader.isBinary();
+		//TODO 总感觉有点问题
+		return samReader.type() == Type.BAM_TYPE;
 	}
 	
 	public void close() {
 		initial = false;
 		try {
-			samFileReader.close();
-			samFileReader = null;
+			if (samReader != null) samReader.close();
+			samReader = null;
 		} catch (Exception e) {  }
 		try {
-			inputStream.close();
+			if (inputStream != null) inputStream.close();
 			inputStream = null;
 		} catch (Exception e) {
 			// TODO: handle exception

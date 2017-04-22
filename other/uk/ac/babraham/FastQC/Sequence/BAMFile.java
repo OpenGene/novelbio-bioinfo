@@ -19,14 +19,19 @@
  */
 package uk.ac.babraham.FastQC.Sequence;
 
-import htsjdk.samtools.SAMFileReader;
-import htsjdk.samtools.SAMFormatException;
-import htsjdk.samtools.SAMRecord;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Iterator;
+
+import htsjdk.samtools.DefaultSAMRecordFactory;
+import htsjdk.samtools.SAMFormatException;
+import htsjdk.samtools.SAMRecord;
+import htsjdk.samtools.SamInputResource;
+import htsjdk.samtools.SamReader;
+import htsjdk.samtools.SamReader.Type;
+import htsjdk.samtools.SamReaderFactory;
+import htsjdk.samtools.ValidationStringency;
 
 public class BAMFile implements SequenceFile {
 
@@ -40,7 +45,7 @@ public class BAMFile implements SequenceFile {
 	// only way to access the file pointer.
 	private FileInputStream fis;
 
-	private SAMFileReader br;
+	private SamReader br;
 	private String name;
 	private Sequence nextSequence = null;
 	Iterator<SAMRecord> it;
@@ -52,12 +57,12 @@ public class BAMFile implements SequenceFile {
 		name = file.getName();
 		this.onlyMapped = onlyMapped;
 		
-		SAMFileReader.setDefaultValidationStringency(SAMFileReader.getDefaultValidationStringency().SILENT);
-
+		br =
+                SamReaderFactory.make().validationStringency(ValidationStringency.SILENT)
+                .samRecordFactory(DefaultSAMRecordFactory.getInstance())
+                .open(  SamInputResource.of(new FileInputStream(file)));//(FileOperate.getPath(""));
 		fis = new FileInputStream(file);
-		
-		br = new SAMFileReader(fis);
-		
+				
 		it = br.iterator();
 		readNext();
 	}
@@ -120,7 +125,7 @@ public class BAMFile implements SequenceFile {
 		
 		if (recordSize == 0) {
 			recordSize = (record.getReadLength()*2)+150;
-			if (br.isBinary()) {
+			if (br.type() == Type.BAM_TYPE) {
 				recordSize /= 4;
 			}
 		}
