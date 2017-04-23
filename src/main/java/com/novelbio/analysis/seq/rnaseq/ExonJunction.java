@@ -40,6 +40,7 @@ import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.ExonSplicingTest.PvalueCalculate;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.AlignSeqReading;
+import com.novelbio.analysis.seq.sam.ExceptionSamIndexError;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamMapReads;
@@ -53,6 +54,8 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.listOperate.ListAbs;
 
+import htsjdk.samtools.SAMException;
+
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
  * 每次跑之前要清空
@@ -64,7 +67,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	public static void main(String[] args) {
 		long timeEclipse1 = wwwSimulation();
-		System.out.println(timeEclipse1);
+		logger.info("run time: " +timeEclipse1);
 	}
 	
 	public static long wwwSimulation() {
@@ -87,6 +90,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		exonJunction.setCompareGroups("Ex", "In", "ExvsIn");
 		exonJunction.setResultFile(parentPath + "result-sep-exon");
 		exonJunction.setJunctionMinAnchorLen(0);
+		exonJunction.setRunSepChr(true);
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.run();
 		exonJunction = null;
@@ -119,6 +123,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		String parentPath = "/media/winE/test/altersplice/bug/";
 		exonJunction.addBamSorted("KD", parentPath + "1H_c.bam");
 		exonJunction.addBamSorted("WT", parentPath + "1H.bam");
+		exonJunction.setRunSepChr(true);
 		exonJunction.setCompareGroups("KD", "WT", "KDvsWT");
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.setResultFile(parentPath + "result_20151220-mse");
@@ -240,13 +245,15 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 小于6bp的alt5和alt3都可能是假的 */
 	int minDifLen = 6;
 	
+	/**
+	 * 是否分染色体跑。如果分染色体跑的话，会一条一条染色体的运行，这样相对来说省点内存
+	 * 但是有些物种，譬如小麦，第一号染色体特别长，以至于samtools无法对其正常建索引
+	 * 这时候我们就只能全部染色体一起跑
+	 */
+	boolean runSepChr = true;
+	
+	
 	Map<String, Long> mapChrId2Len;
-		
-	public ExonJunction() {
-//		List<Align> lsAligns = new ArrayList<>();
-//		lsAligns.add(new Align("chr1:28517082-28547087"));
-//		setLsReadRegion(lsAligns);
-	}
 	
 	/** 至少有多少条reads支持的junction才会用于重建转录本 */
 	public void setNewIsoReadsNum(int newIsoReadsNum) {
@@ -301,6 +308,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 **/
 	public void setCombine(boolean isCombine) {
 		this.isCombine = isCombine;
+	}
+	/**
+	 * 是否分染色体跑。如果分染色体跑的话，会一条一条染色体的运行，这样相对来说省点内存
+	 * 但是有些物种，譬如小麦，第一号染色体特别长，以至于samtools无法对其正常建索引
+	 * 这时候我们就只能全部染色体一起跑
+	 */
+	public void setRunSepChr(boolean runSepChr) {
+		this.runSepChr = runSepChr;
 	}
 	/**
 	 * 是否采用节省内存模式
@@ -409,8 +424,19 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 			}
 		}
-
-		runByChrome();
+		if (runSepChr) {
+			try {
+				runByChrome();
+			} catch (ExceptionSamIndexError e) {
+				String info =e.getMessage() + "\nSet param \"runSepChr\" to \"False\" may solve this problem.\n";
+				ExceptionSamIndexError exceptionSamIndexError = new ExceptionSamIndexError(info);
+				exceptionSamIndexError.setStackTrace(e.getStackTrace());
+				throw exceptionSamIndexError;
+			}
+		} else {
+			runWithoutChrome();
+		}
+		logger.info("finish running " + condition1 + " vs " + condition2);
 	}
 	
 	private void runWithoutChrome() {
@@ -658,7 +684,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				String group = i+"";
 				tophatJunction.setCondition(condition, group);
 				samFileReading.clearOther();
-				samFileReading.getFirstSamFile().indexMake();
+//				samFileReading.getFirstSamFile().indexMake();
 				if (samFileReadingLast != null) {
 					samFileReading.setReadInfo(0L, samFileReadingLast.getReadByte());
 				}
@@ -679,7 +705,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 					samFileReading.addAlignmentRecorder(mapReads);
 				}
 				samFileReading.setUniqueMapping(isUseUniqueMappedReads);
-				samFileReading.run();
+				samFileReading.running();
 				
 				Map<String, double[]> mapGroup2Num = mapCond_group2ReadsNum.get(condition);
 				if (mapGroup2Num == null) {
@@ -1196,6 +1222,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	/** 写入文本 */
 	public void writeToFile(String fileName, List<ExonSplicingTest> lsResult) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
+		Map<String, String> mapChrIdLowCase2ChrId = new HashMap<>();
+		for (String chrId : mapChrId2Len.keySet()) {
+			mapChrIdLowCase2ChrId.put(chrId.toLowerCase(), chrId);
+		}
 		
 		boolean isGetSeq = seqHash == null ? false : true;
 		TxtReadandWrite txtOutSeq = null;
@@ -1211,19 +1241,19 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				logger.debug("stop");
 			}
 			try {
-				String[] info = isASD? chisqTest.toStringArray_ASD() : chisqTest.toStringArray();
+				String[] info = isASD? chisqTest.toStringArray_ASD(mapChrIdLowCase2ChrId) : chisqTest.toStringArray(mapChrIdLowCase2ChrId);
 				txtOut.writefileln(info);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-		
 		}
+		
 		txtOut.close();
 
 		if (isGetSeq) {
 			for (ExonSplicingTest chisqTest : lsResult) {
 				chisqTest.setGetSeq(seqHash);
-				txtOutSeq.writefileln(chisqTest.toStringSeq());
+				txtOutSeq.writefileln(chisqTest.toStringSeq(mapChrIdLowCase2ChrId));
 			}
 			txtOutSeq.close();
 		}

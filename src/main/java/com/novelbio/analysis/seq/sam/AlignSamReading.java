@@ -11,6 +11,8 @@ import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.base.dataStructure.Alignment;
 
+import htsjdk.samtools.SAMException;
+
 /**
  * 这里面可以设定一系列的监听器，然后完成一次mapping，统计多个信息的目的
  * 读完后内部自动关闭文件
@@ -60,12 +62,7 @@ public class AlignSamReading extends AlignSeqReading {
 		if (lsAlignments == null || lsAlignments.size() == 0) {
 			readAllLines();
 		} else {
-			try {
-				readSelectLines();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		
+			readSelectLines();
 		}
 		summaryRecorder();
 		for (AlignSeq alignSeqFile : lsAlignSeqs) {
@@ -96,18 +93,31 @@ public class AlignSamReading extends AlignSeqReading {
 		for (Alignment alignment : lsAlignments) {
 			for (AlignSeq alignSeq : lsAlignSeqs) {
 				SamFile samFile = (SamFile)alignSeq;
-				//TODO
-				for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
-					num++;
-					if (num % 5000000 == 0) {
-						logger.info("read reads num: " + num);
+				try {
+					//TODO
+					for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
+						num++;
+						if (num % 5000000 == 0) {
+							logger.info("read reads num: " + num);
+						}
+						suspendCheck();
+						if (suspendFlag) {
+							break;
+						}
+						addOneSeq(samRecord, alignSeq);
 					}
-					suspendCheck();
-					if (suspendFlag) {
-						break;
+				} catch (SAMException e) {
+					StackTraceElement[] stackTraceElements = e.getStackTrace();
+					if (e.getMessage().contains("Unexpected number of metadata chunks")
+							&& stackTraceElements[0].getClassName().toLowerCase().contains("bamindex")
+							) {
+						throw new ExceptionSamIndexError("Error when read index file of " + samFile.getFileName() + ", please check.", e);
+					} else {
+						throw new ExceptionSamError(
+								"read file of " + samFile.getFileName() + " error, please check this file", e);
 					}
-					addOneSeq(samRecord, alignSeq);
 				}
+
 			}
 		}
 	}

@@ -336,7 +336,15 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		return align.toStringNoStrand();
 	}
-	
+	/** 获得具体的剪接位点区域 */
+	public String getSpliceSite(Map<String, String> mapChrIdLowcase2ChrId) {
+		Align align = getSpliceSiteAlignDisplay();
+		if (align == null) {
+			return "";
+		}
+		align.setChrID(mapChrIdLowcase2ChrId.get(align.getRefID().toLowerCase()));
+		return align.toStringNoStrand();
+	}
 	public Align getSpliceSiteAlignDisplay() {
 		if (alignDisplay != null) {
 			return alignDisplay;
@@ -362,14 +370,14 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return lsPvalueInfo.get(0).pvalueAvg;
 	}
 	
-	public String[] toStringSeq() {		
+	public String[] toStringSeq(Map<String, String> mapChrIdLowcase2ChrId) {		
 		if (seqHash == null) {
 			return null;
 		}
 		ArrayList<String> lsResult = new ArrayList<String>();
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		lsResult.add(gffDetailGene.getName().get(0));
-		lsResult.add(getSpliceSite());
+		lsResult.add(getSpliceSite(mapChrIdLowcase2ChrId));
 
 		try {
 			ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
@@ -477,11 +485,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 	}
 	
-	public String[] toStringArray() {
+	public String[] toStringArray(Map<String, String> mapChrIdLowcase2ChrId) {
 		ArrayList<String> lsResult = new ArrayList<String>();
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		lsResult.add(gffDetailGene.getNameSingle());
-		lsResult.add(getSpliceSite());
+		lsResult.add(getSpliceSite(mapChrIdLowcase2ChrId));
 		PvalueCalculate pvalueCalculate = lsPvalueInfo.get(0);
 		try {
 			lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
@@ -523,11 +531,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return lsResult.toArray(new String[0]);
 	}
 
-	public String[] toStringArray_ASD() {
+	public String[] toStringArray_ASD(Map<String, String> mapChrIdLowcase2ChrId) {
 		ArrayList<String> lsResult = new ArrayList<String>();
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		lsResult.add(gffDetailGene.getNameSingle());
-		lsResult.add(getSpliceSite());
+		lsResult.add(getSpliceSite(mapChrIdLowcase2ChrId));
 		PvalueCalculate pvalueCalculate = lsPvalueInfo.get(0);
 		lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
 

@@ -355,7 +355,7 @@ public class SamReader {
 	
 	private void closeIterate() {
 		try {
-			samRecordIterator.close();
+			if (samRecordIterator != null) samRecordIterator.close();
 		} catch (Exception e) { }
 	}
 	public boolean isBinary() {
