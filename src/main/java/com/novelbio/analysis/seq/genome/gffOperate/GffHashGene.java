@@ -259,9 +259,17 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		return gffHashGene.searchISO(LOCID);
 	}
 
+	public GffGeneIsoInfo searchISOwithoutDB(String LOCID) {
+		return gffHashGene.searchISOwithoutDB(LOCID);
+	}
 	public GffDetailGene searchLOC(String LOCID) {
 		return gffHashGene.searchLOC(LOCID);
 	}
+	
+	public GffDetailGene searchLOCWithoutDB(String LOCID) {
+		return gffHashGene.searchLOCWithoutDB(LOCID);
+	}
+	
 	@Override
 	public GffDetailGene searchLOC(GeneID copedID) {
 		return gffHashGene.searchLOC(copedID);

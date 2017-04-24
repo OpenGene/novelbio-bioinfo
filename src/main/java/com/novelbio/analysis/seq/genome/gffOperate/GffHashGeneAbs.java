@@ -189,7 +189,40 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		return gffDetailGene;
 	}
-
+	
+	/**
+	 * 输入基因名，返回基因的坐标信息等，不查找数据库
+	 * 可以输入accID
+	 * @param accID
+	 * @return
+	 */
+	public GffDetailGene searchLOCWithoutDB(String accID) {
+		GffDetailGene gffDetailGene = super.searchLOC(accID);
+		return gffDetailGene;
+	}
+	
+	/**
+	 * 输入基因名，返回基因的具体转录本，主要用在UCSC上
+	 * 没找到具体的转录本名字，那么就返回最长转录本
+	 * 可以输入accID
+	 * @param accID
+	 * @return
+	 */
+	public GffGeneIsoInfo searchISOwithoutDB(String accID) {
+		GffGeneIsoInfo gffGeneIsoInfo = mapName2Iso.get(accID.toLowerCase());
+		if (gffGeneIsoInfo != null) {
+			return gffGeneIsoInfo;
+		}
+		GffDetailGene gffdetail = searchLOCWithoutDB(accID);
+		if (gffdetail == null) {
+			return null;
+		}
+		GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(accID);
+		if (gffGeneIsoInfoOut == null) {
+			gffGeneIsoInfoOut = gffdetail.getLongestSplitMrna();
+		}
+		return gffGeneIsoInfoOut;
+	}
 	
 	/**
 	 * 输入基因名，返回基因的具体转录本，主要用在UCSC上
