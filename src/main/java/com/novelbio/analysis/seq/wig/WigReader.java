@@ -164,9 +164,12 @@ public class WigReader extends MapReadsAbs {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-		
-		
 		return null;
+	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+		
 	}
 }

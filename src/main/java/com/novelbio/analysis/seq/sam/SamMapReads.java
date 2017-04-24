@@ -287,4 +287,9 @@ public class SamMapReads extends MapReadsAbs {
 			int binNum) {
 		throw new RuntimeException("cannot do this work with SamFile");
 	}
+
+	@Override
+	public void clear() {
+		// TODO Auto-generated method stub
+	}
 }

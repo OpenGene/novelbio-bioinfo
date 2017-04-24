@@ -523,7 +523,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 					outUnit = gffDetailGene.toGTFformate(chrID, title);
 				} else if (gffType == GffType.BED) {
 					outUnit = gffDetailGene.toBedFormate(chrID, title);
-				} else if (gffType == GffType.NCBI) {
+				} else if (gffType == GffType.GFF3) {
 					List<String> lsTmp = gffDetailGene.toGFFformate(chrID, title);
 					StringBuilder stringBuilder = new StringBuilder();
 					for (String string : lsTmp) {

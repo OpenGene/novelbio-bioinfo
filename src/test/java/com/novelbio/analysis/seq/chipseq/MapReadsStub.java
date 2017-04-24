@@ -65,4 +65,8 @@ public class MapReadsStub extends MapReadsAbs {
 		return valueThis;
 	}
 
+	@Override
+	public void clear() {
+	}
+
 }

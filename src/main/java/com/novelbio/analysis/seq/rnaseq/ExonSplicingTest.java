@@ -205,7 +205,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 */
 	public void addMapCondition2MapReads(String condition, String group, MapReadsAbs mapReads) {
 		SpliceType2Value spliceType2Value = getAndCreatSpliceType2Value(condition);
-		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {			
+		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
 			List<? extends Alignment> lsSiteInfoBG = spliceTypePredict.getBGSite();
 			List<Align> lsSiteInfo = spliceTypePredict.getDifSite();
 			
@@ -215,6 +215,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 
 			spliceType2Value.addExp(group, exonCluster.getParentGene(), spliceTypePredict, BGinfo, info);
 		}
+		mapReads = null;
 	}
 	
 	private SpliceType2Value getAndCreatSpliceType2Value(String condition) {

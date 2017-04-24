@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.apache.poi.ss.formula.ptg.OperandPtg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -442,7 +443,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	private void runWithoutChrome() {
 		MapReads mapReads = null;		
 		if (isReconstructIso) {
-			int invNum = isReconstructRI? 3 : 15;
+			int invNum = isReconstructRI? 10 : 20;
 			mapReads = getMapReads(mapCond2SamReader.values().iterator().next(), invNum);
 		}
 		
@@ -580,9 +581,10 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private List<ExonSplicingTest> runByChrome(String chrId) {
+		logger.info("start calculate chromosome " + chrId);
 		MapReads mapReads = null;		
 		if (isReconstructIso) {
-			int invNum = isReconstructRI? 3 : 15;
+			int invNum = isReconstructRI? 10 : 20;
 			mapReads = getMapReads(mapCond2SamReader.values().iterator().next(), invNum);
 		}
 		if (runGetInfo != null) {
@@ -845,11 +847,19 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				samFileReading.setUniqueMapping(isUseUniqueMappedReads);
 				samFileReading.run();
 				samFileReading.clearRecorder();
-				addMapReadsInfo(chrId, condition, group, mapReadsAbs);
+				String samfileName = null;
+				try {
+					samfileName = mapCond2SamReader.values().iterator().next().getFirstSamFile().getFileName();
+					samfileName = FileOperate.getFileName(samfileName);
+				} catch (Exception e) {
+					// TODO: handle exception
+				}
+				addMapReadsInfo(chrId, condition, group, mapReadsAbs, samfileName);
+				mapReadsAbs.clear();
+				mapReadsAbs = null;
+				System.gc();
 			}
 		}
-		
-		System.gc();
 	}
 	
 	private void add_RetainIntron_Into_SamReading(String chrId, String condition, String group,  AlignSamReading samFileReading) {
@@ -895,7 +905,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 
 	/** 将表达信息加入统计 */
-	private void addMapReadsInfo(String chrId, String condition, String group, MapReadsAbs mapReads) {
+	private void addMapReadsInfo(String chrId, String condition, String group, MapReadsAbs mapReads, String samfileName) {
 		DateUtil dateTime = new DateUtil();
 		dateTime.setStartTime();
 		int num = 0;
@@ -911,10 +921,15 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				exonClusterSite.addMapCondition2MapReads(condition, group, mapReads);
 			}
 			if (num > 0 && num % 500 == 0) {
-				logger.info("do " + num + " events");
+				if (StringOperate.isRealNull(samfileName)) {
+					logger.info("do " + num + " events on condition " + condition + ", file-number " + group);
+				} else {
+					logger.info("do " + num + " events on file " + samfileName);
+				}
 			}
 			num ++;
 		}
+		mapReads = null;
 	}
 	
 	private void setSplicingType(String chrId) {

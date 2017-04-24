@@ -37,7 +37,7 @@ public class IDconvertEnsembl2NCBI {
 	 */
 	public void setEnsemblFile(String ensembleGTF, String ncbiGFF, Integer taxID) {
 		gffHashEnsembl = new GffHashGene(GffType.GTF, ensembleGTF);
-		gffHashNCBI = new GffHashGene(GffType.NCBI, ncbiGFF);
+		gffHashNCBI = new GffHashGene(GffType.GFF3, ncbiGFF);
 		this.taxID = taxID;
 	}
 	public void update() {

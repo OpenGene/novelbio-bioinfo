@@ -45,7 +45,7 @@ public class BlastGetSeq implements IntCmdSoft {
 		try {
 			FileOperate.createFolders(FileOperate.getParentPathNameWithSep(refseqFile));
 			GffChrAbs gffChrAbs = new GffChrAbs();
-			gffChrAbs.setGffHash(new GffHashGene(GffType.NCBI, "/hdfs:/nbCloud/public/nbcplatform/genome/species/7955/Zv10/gff/ref_GRCz10_top_level.gff3", false));
+			gffChrAbs.setGffHash(new GffHashGene(GffType.GFF3, "/hdfs:/nbCloud/public/nbcplatform/genome/species/7955/Zv10/gff/ref_GRCz10_top_level.gff3", false));
 			gffChrAbs.setSeqHash(new SeqHash("/home/novelbio/文档/chr_all.fa", " "));
 			GffChrSeq gffChrSeq = new GffChrSeq(gffChrAbs);
 			if (true) {

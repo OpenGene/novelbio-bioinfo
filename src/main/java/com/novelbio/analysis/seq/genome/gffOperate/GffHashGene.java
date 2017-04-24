@@ -108,7 +108,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		}
 		String suffix = FileOperate.getFileNameSep(gffFileTmp)[1];
 		if (suffix.trim().toLowerCase().equals("gff") || suffix.trim().toLowerCase().equals("gff3")) {
-			gffType = GffType.NCBI;
+			gffType = GffType.GFF3;
 		} else if (suffix.trim().toLowerCase().equals("gtf")) {
 			gffType = GffType.GTF;
 		} else {
@@ -175,7 +175,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		else if (gffType == GffType.GTF) {
 			gffHashGene = new GffHashGTF();
 		}
-		else if (gffType == GffType.NCBI) {
+		else if (gffType == GffType.GFF3) {
 			gffHashGene = new GffHashGeneNCBI();
 			((GffHashGeneNCBI)gffHashGene).setFilterDuplicateName(isFilterDuplicateName);
 		}
@@ -536,7 +536,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	/** 仅修改名字 */
 	public static String convertNameToOtherFile(String gffFileName, GffType gffType) {
 		String suffix = null;
-		if (gffType == GffType.NCBI) {
+		if (gffType == GffType.GFF3) {
 			suffix = "gff3";
 		} else if (gffType == GffType.GTF) {
 			suffix = "gtf";

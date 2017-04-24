@@ -37,7 +37,7 @@ public class TestSpeciesFileExtractSeq {
 		FileOperate.copyFile("src/test/resources/test_file/reference/arabidopsis_sub/TAIR10_Gff3_simple.gff.gz", gffFile, true);
 
 		speciesFile.setChromSeq("aaa.fa");
-		speciesFile.addGffDB2TypeFile("test", GffType.NCBI, FileOperate.getFileName(gffFile));
+		speciesFile.addGffDB2TypeFile("test", GffType.GFF3, FileOperate.getFileName(gffFile));
 		speciesFile.setTaxID(9606);
 		speciesFile.setVersion("GRCh38");
 		

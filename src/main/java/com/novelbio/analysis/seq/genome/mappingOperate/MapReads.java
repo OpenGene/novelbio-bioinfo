@@ -576,6 +576,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 				chrMapReadsInfo.clear();
 			}
 			mapChrID2ReadsInfo.clear();
+			mapChrID2ReadsInfo = null;
 		} catch (Exception e) { }
 		try {
 			mapChrID2LsAlignmentFilter.clear();

@@ -411,6 +411,8 @@ public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcess
 	 /** 总共有多少reads参与了mapping，这个从ReadMapFile才能得到。 */
 	protected abstract long getAllReadsNum();
 	
+	public abstract void clear();
+	
 	/**
 	 * 检查输入的start 和 end是否在指定区间范围内，
 	 * @param mapChrID2Length key为小写

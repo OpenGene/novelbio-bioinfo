@@ -69,6 +69,7 @@ public class ExonClusterSite {
 		for (ExonSplicingTest exonSplicingTest : getLsExonSplicingTests()) {
 			exonSplicingTest.addMapCondition2MapReads(condition, group, mapReads);
 		}
+		mapReads = null;
 	}
 	
 	public void setSpliceType2Value() {
