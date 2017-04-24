@@ -6,10 +6,6 @@ import java.util.Map;
 public enum GffType {
 	/** NCBI动物的GFF文件，需要经过修正才好读取 */
 	GFF3,
-	/** tigr6.1 tigr7, tair, 大豆等 */
-	Plant,
-	/** 水稻TIGR6.0版本专用 */
-	TIGR,
 	/** 常规的GTF文件，包括cufflinks产生的那种 */
 	GTF,
 	/** UCSC的gene list，必须排过序 */
@@ -41,16 +37,16 @@ public enum GffType {
 		mapName2Type.put("GFF_GTF".toLowerCase(), GTF);
 		mapName2Type.put("FASTA".toLowerCase(), Fasta);
 		mapName2Type.put("GFF_UCSC".toLowerCase(), UCSC);
-		mapName2Type.put("GFF_TIGR".toLowerCase(), TIGR);
-		mapName2Type.put("GFF_PLANT".toLowerCase(), Plant);
+		mapName2Type.put("GFF_TIGR".toLowerCase(), GFF3);
+		mapName2Type.put("GFF_PLANT".toLowerCase(), GFF3);
 		mapName2Type.put("GFF_NCBI".toLowerCase(), GFF3);
 		mapName2Type.put("GFF_GFF3".toLowerCase(), GFF3);
 		mapName2Type.put("GFF_FASTA".toLowerCase(), Fasta);
 		mapName2Type.put("CUFFLINK_GTF".toLowerCase(), GTF);
 		mapName2Type.put("GTF".toLowerCase(), GTF);
 		mapName2Type.put("UCSC".toLowerCase(), UCSC);
-		mapName2Type.put("TIGR".toLowerCase(), TIGR);
-		mapName2Type.put("PLANT".toLowerCase(), Plant);
+		mapName2Type.put("TIGR".toLowerCase(), GFF3);
+		mapName2Type.put("PLANT".toLowerCase(), GFF3);
 		mapName2Type.put("NCBI".toLowerCase(), GFF3);
 		mapName2Type.put("GFF3".toLowerCase(), GFF3);
 		mapName2Type.put("FASTA".toLowerCase(), Fasta);
@@ -68,9 +64,7 @@ public enum GffType {
 		}
 		mapName2TypeSimple = new HashMap<String, GffType>();
 		mapName2TypeSimple.put("GTF".toLowerCase(), GTF);
-		mapName2TypeSimple.put("UCSC".toLowerCase(), UCSC);
 		mapName2TypeSimple.put("GFF3".toLowerCase(), GFF3);
-		mapName2TypeSimple.put("FASTA".toLowerCase(), Fasta);
 		return mapName2TypeSimple;
 	}
 }

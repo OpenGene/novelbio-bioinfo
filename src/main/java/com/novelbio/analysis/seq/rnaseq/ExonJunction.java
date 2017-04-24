@@ -549,7 +549,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				runGetInfo.setRunningInfo(guiAnnoInfo);
 				i++;
 			}
-			
 			lsResult.addAll(runByChrome(chrId));
 		}
 		ExonSplicingTest.sortAndFdr(lsResult, fdrCutoff);
