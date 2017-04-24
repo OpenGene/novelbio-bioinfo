@@ -2,7 +2,6 @@ package com.novelbio.database.domain.geneanno;
 
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -217,6 +216,36 @@ public class SpeciesFile {
 		}
 		mapDB2GffTypeAndFile.put(gffDB.toLowerCase(), new String[]{gffType.toString(), gffFileName});
 		mapGffDBLowCase2DBNormal.put(gffDB.toLowerCase(), gffDB);
+	}
+	
+	/** 
+	 * 更新gffDB
+	 * @param gffDB
+	 * @param newGffDB
+	 */
+	public void updGffDB(String gffDB, String newGffDB) {
+		if (StringOperate.isRealNull(gffDB)) {
+			throw new ExceptionNullParam("No Param gffDB");
+		}
+		
+		String[] gff = mapDB2GffTypeAndFile.remove(gffDB.toLowerCase());
+		mapDB2GffTypeAndFile.put(newGffDB.toLowerCase(), gff);
+		mapGffDBLowCase2DBNormal.remove(gffDB.toLowerCase());
+		mapGffDBLowCase2DBNormal.put(newGffDB.toLowerCase(), newGffDB);
+	}
+	
+	/** 
+	 * 更新gffType
+	 * @param gffDB
+	 * @param gffType
+	 */
+	public void updGffType(String gffDB, String gffType) {
+		if (StringOperate.isRealNull(gffDB)) {
+			throw new ExceptionNullParam("No Param gffDB");
+		}
+		
+		String[] gff = mapDB2GffTypeAndFile.get(gffDB.toLowerCase());
+		gff[0] = gffType;
 	}
 	
 	/**
