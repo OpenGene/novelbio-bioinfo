@@ -214,9 +214,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			return gffGeneIsoInfo;
 		}
 		GffDetailGene gffdetail = searchLOCWithoutDB(accID);
-		if (gffdetail == null) {
-			return null;
-		}
+		if (gffdetail == null) return null;
+		
 		GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(accID);
 		if (gffGeneIsoInfoOut == null) {
 			gffGeneIsoInfoOut = gffdetail.getLongestSplitMrna();
@@ -236,29 +235,28 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		if (gffGeneIsoInfo != null) {
 			return gffGeneIsoInfo;
 		}
-		if (gffGeneIsoInfo == null) {
-			GeneID copedID = new GeneID(accID, taxID, false);
-			if (copedID.getIDtype() != GeneID.IDTYPE_ACCID) {
-				String locID = null;
-				try {
-					locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
-					gffGeneIsoInfo = mapName2Iso.get(locID.toLowerCase());
-					if (gffGeneIsoInfo != null) {
-						return gffGeneIsoInfo;
-					} else {
-						GffDetailGene gffdetail = searchLOC(locID);
-						if (gffdetail != null) {
-							GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(locID);
-							if (gffGeneIsoInfoOut != null) {
-								return gffGeneIsoInfoOut;
-							}
+		
+		GeneID copedID = new GeneID(accID, taxID, false);
+		if (copedID.getIDtype() != GeneID.IDTYPE_ACCID) {
+			String locID = null;
+			try {
+				locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
+				gffGeneIsoInfo = mapName2Iso.get(locID.toLowerCase());
+				if (gffGeneIsoInfo != null) {
+					return gffGeneIsoInfo;
+				} else {
+					GffDetailGene gffdetail = searchLOC(locID);
+					if (gffdetail != null) {
+						GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(locID);
+						if (gffGeneIsoInfoOut != null) {
+							return gffGeneIsoInfoOut;
 						}
 					}
-				} catch (Exception e) {
 				}
+			} catch (Exception e) {
 			}
-			
 		}
+		
 		GffDetailGene gffdetail = searchLOC(accID);
 		if (gffdetail == null) {
 			return null;

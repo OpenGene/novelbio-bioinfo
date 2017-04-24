@@ -106,13 +106,13 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		if (gffFile.endsWith(".gz")) {
 			gffFileTmp = gffFile.substring(0, gffFile.length()-3);
 		}
-		String suffix = FileOperate.getFileNameSep(gffFileTmp)[1];
-		if (suffix.trim().toLowerCase().equals("gff") || suffix.trim().toLowerCase().equals("gff3")) {
+		String suffix = FileOperate.getFileNameSep(gffFileTmp)[1].trim().toLowerCase();
+		if (suffix.equals("gff") || suffix.equals("gff3")) {
 			gffType = GffType.GFF3;
-		} else if (suffix.trim().toLowerCase().equals("gtf")) {
+		} else if (suffix.equals("gtf")) {
 			gffType = GffType.GTF;
-		} else {
-			gffType = GffType.UCSC;
+		} else if (suffix.equals("bed")){
+			gffType = GffType.BED;
 		}
 		return gffType;
 	}
@@ -169,9 +169,9 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		if (gffType == GffType.UCSC) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
-		else if (gffType == GffType.TIGR || gffType == GffType.Plant) {
-			gffHashGene = new GffHashGenePlant(gffType);
-		}
+//		else if (gffType == GffType.TIGR || gffType == GffType.Plant) {
+//			gffHashGene = new GffHashGenePlant(gffType);
+//		}
 		else if (gffType == GffType.GTF) {
 			gffHashGene = new GffHashGTF();
 		}

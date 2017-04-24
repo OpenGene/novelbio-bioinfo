@@ -10,6 +10,7 @@ import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 /**
+ * @deprecated 用{@link GffHashGeneNCBI}替换<br><br>
  * 获得Gff的基因数组信息,本类必须实例化才能使用<br/>
  * 输入Gff文件，最后获得两个哈希表和一个list表,
  * 结构如下：<br/>
@@ -23,6 +24,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
  * 
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
+@Deprecated
 public class GffHashGenePlant extends GffHashGeneAbs{
 	private static Logger logger = Logger.getLogger(GffHashGenePlant.class);
 
@@ -42,14 +44,8 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	 * @throws Exception
 	 */
 	public GffHashGenePlant(GffType gffType) {
-		if (gffType == GffType.Plant) {
-			GeneName= "(?<=Name\\=)[\\w\\-%\\:\\.\\{\\}]+";
-			splitmRNA= "(?<=Name\\=)[\\w\\-%\\:\\.\\{\\}]+";
-		}
-		else if (gffType == GffType.TIGR) {
-			GeneName = "(?<=Alias\\=)[\\w\\-%\\:\\.\\{\\}]+";
-			splitmRNA = "(?<=Alias\\=)[\\w\\-%\\:\\.\\{\\}]+";
-		}
+		GeneName= "(?<=Name\\=)[\\w\\-%\\:\\.\\{\\}]+";
+		splitmRNA= "(?<=Name\\=)[\\w\\-%\\:\\.\\{\\}]+";
 	}
 
 	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */
