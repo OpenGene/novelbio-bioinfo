@@ -201,7 +201,7 @@ public class GffChrAbs implements Closeable {
 	 */
 	public void close() {
 		try {
-			seqHash.close();
+			if (seqHash != null) seqHash.close();
 		} catch (Exception e) {
 		}
 	}

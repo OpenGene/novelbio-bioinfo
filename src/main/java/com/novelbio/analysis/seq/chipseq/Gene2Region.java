@@ -90,7 +90,7 @@ public class Gene2Region {
 	public void fillRegionBed() {
 		lsRegionBed.clear();
 		for (String geneName : setGeneName) {
-			GffGeneIsoInfo iso = gffHashGene.searchISO(geneName);
+			GffGeneIsoInfo iso = gffHashGene.searchISOwithoutDB(geneName);
 			if (iso == null) {
 				logger.error("cannot find gene " + geneName);
 				continue;

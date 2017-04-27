@@ -45,8 +45,7 @@ public class ExonClusterSite {
 	}
 	
 	public void generateExonTestUnit(int juncAllReadsNum, int juncSampleReadsNum, Set<String> setIsoName_No_Reconstruct,
-			double pvalueJunctionProp, boolean isCombine, Map<String, Map<String, double[]>> mapCond_group2ReadsNum, Set<String> setCondition,
-			TophatJunction tophatJunction, int minDifLen) {
+			double pvalueJunctionProp, boolean isCombine, Set<String> setCondition, int minDifLen, TophatJunction tophatJunction) {
 		for (ExonCluster exonCluster : lsExonCluster) {
 			if (exonCluster.getLsIsoExon().size() == 1 || exonCluster.isAtEdge() || exonCluster.isNotSameTss_But_SameEnd()) {
 				continue;
@@ -57,10 +56,10 @@ public class ExonClusterSite {
 			exonSplicingTest.setSetIsoName_No_Reconstruct(setIsoName_No_Reconstruct);
 			exonSplicingTest.setPvalueJunctionProp(pvalueJunctionProp);
 			exonSplicingTest.setCombine(isCombine);
-			exonSplicingTest.setMapCond_Group2ReadsNum(mapCond_group2ReadsNum);
+			//在这里设置主要是为了后面的Retain-Intron
+			exonSplicingTest.setJunctionInfo(tophatJunction);
 			//获得junction信息
 			exonSplicingTest.setSetCondition(setCondition);
-			exonSplicingTest.setJunctionInfo(tophatJunction);
 			lsExonSplicingTests.add(exonSplicingTest);
 		}
 	}
@@ -72,8 +71,10 @@ public class ExonClusterSite {
 		mapReads = null;
 	}
 	
-	public void setSpliceType2Value() {
+	public void setSpliceType2Value(TophatJunction tophatJunction, Map<String, Map<String, double[]>> mapCond_group2ReadsNum) {
 		for (ExonSplicingTest exonSplicingTest : lsExonSplicingTests) {
+			exonSplicingTest.setMapCond_Group2ReadsNum(mapCond_group2ReadsNum);
+			exonSplicingTest.setJunctionInfo(tophatJunction);
 			exonSplicingTest.setSpliceType2Value();
 		}
 	}

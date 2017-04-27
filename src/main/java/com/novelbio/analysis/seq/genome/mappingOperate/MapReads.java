@@ -557,6 +557,9 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		}
 		return true;
 	}
+	public void prepare() {
+		mapReadsAddAlignRecord = new MapReadsAddAlignRecord(this);
+	}
 	@Override 
 	public void summary() {
 		mapReadsAddAlignRecord.summary();
@@ -727,7 +730,7 @@ class MapReadsAddAlignRecord {
 			Long chrLength = mapReads.mapChrID2Len.get(lastChr.toLowerCase());
 			flag = true;
 			if (chrLength == null) {
-				logger.error("出现未知chrID "+lastChr);
+				logger.error("find unknown chrId "+lastChr);
 				flag = false; return;
 			}
 
@@ -736,8 +739,8 @@ class MapReadsAddAlignRecord {
 			chrMapReadsInfo = mapReads.mapChrID2ReadsInfo.get(lastChr);
 			if (chrMapReadsInfo == null) {
 				chrMapReadsInfo = new ChrMapReadsInfo(lastChr, mapReads);
+				mapReads.mapChrID2ReadsInfo.put(lastChr, chrMapReadsInfo);
 			}
-			mapReads.mapChrID2ReadsInfo.put(lastChr, chrMapReadsInfo);
 		}
 		//没有该染色体则跳过
 		if (flag == false) return;
