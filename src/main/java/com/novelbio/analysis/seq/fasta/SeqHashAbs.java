@@ -266,7 +266,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	private SeqFasta getSeq(StrandType strandType, String chrID, List<ExonInfo> lsInfo, String sep, boolean getIntron) {
 		String myChrID = chrID.toLowerCase();
 		if (!mapChrID2Length.containsKey(myChrID)) {
-			logger.error("没有该染色体： "+chrID);
+			logger.error("no such chromosome: "+myChrID);
 			return null;
 		}
 		
@@ -294,6 +294,75 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 		} else {
 			for (int i = lsInfo.size() - 1; i >= 0; i--) {
 				ExonInfo exon = lsInfo.get(i);
+				SeqFasta seqfastaTmp = getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
+				if (seqfastaTmp == null) return null;
+//				if (seqfastaTmp == null) continue;
+				addSep(result, sep);
+				result.append(seqfastaTmp.toString().toUpperCase());
+				if (getIntron && i > 0) {
+					SeqFasta seqfastaTmpIntron = getSeq(myChrID, exon.getEndAbs() + 1, lsInfo.get(i-1).getStartAbs() - 1);
+					addSep(result, sep);
+					result.append(seqfastaTmpIntron.toString().toLowerCase());
+				}
+			}
+		}
+		seqFasta.setSeq(result.toString());
+		if (strandType == StrandType.trans || (strandType == StrandType.isoForward && !cis5to3)) {
+			return seqFasta.reservecom();
+		} else {
+			return seqFasta;
+		}
+	}
+	
+	/**
+	 *
+	 * <b>尚未测试</b>
+	 * seqname = chrID_第一个Align_最后一个Align
+	 * 完全兼容gffgeneinfo获得的序列
+	 * 提取序列为闭区间，即如果提取30-40bp那么实际提取的是从30开始到40结束的11个碱基
+	 * @param strandType 提取的方向
+	 * @param lsInfo 给定的转录本，每一对是一个外显子，必须是cis5to3从小到大排序，trans 从大到小排序
+	 * @param sep intron和exon之间的间隔符
+	 * @param getIntron 是否提取内含子区域，True，内含子小写，外显子大写。False，只提取外显子
+	 * @return
+	 */
+	//TODO 待测试
+	private SeqFasta getSeq(StrandType strandType, List<Alignment> lsInfo, String sep, boolean getIntron) {
+		String chrID = lsInfo.get(0).getRefID();
+		String myChrID = chrID.toLowerCase();
+		if (!mapChrID2Length.containsKey(myChrID)) {
+			logger.error("no such chromosome: "+myChrID);
+			return null;
+		}
+		
+		SeqFasta seqFasta = new SeqFasta();
+		if (lsInfo.size() == 1) {
+			seqFasta.setName(lsInfo.get(0).toString());
+		} else {
+			seqFasta.setName(lsInfo.get(0).toString() + "--" + lsInfo.get(lsInfo.size() - 1).toString());
+		}
+
+		StringBuilder result = new StringBuilder();
+		
+		boolean cis5to3 = getStrand(lsInfo);
+		if (cis5to3) {
+			for (int i = 0; i < lsInfo.size(); i++) {
+				Alignment exon = lsInfo.get(i);
+				SeqFasta seqfastaTmp = getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
+				if (seqfastaTmp == null) return null;
+//				if (seqfastaTmp == null) continue;
+				addSep(result, sep);
+				result.append(seqfastaTmp.toString().toUpperCase());
+				
+				if (getIntron && i < lsInfo.size()-1) {
+					SeqFasta seqfastaTmpIntron = getSeq(myChrID, exon.getEndAbs()+1, lsInfo.get(i+1).getStartAbs()-1);
+					addSep(result, sep);
+					result.append(seqfastaTmpIntron.toString().toLowerCase());
+				}
+			}
+		} else {
+			for (int i = lsInfo.size() - 1; i >= 0; i--) {
+				Alignment exon = lsInfo.get(i);
 				SeqFasta seqfastaTmp = getSeq(myChrID, exon.getStartAbs(), exon.getEndAbs());
 				if (seqfastaTmp == null) return null;
 //				if (seqfastaTmp == null) continue;

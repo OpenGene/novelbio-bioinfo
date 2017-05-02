@@ -89,7 +89,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	int minLen;
 	
-	private static final String debug = "ENSG00000163531";
+	private static final String debug = "HORVU1Hr1G000010";
 	
 	public ExonSplicingTest(ExonCluster exonCluster, int minLen) {
 		this.exonCluster = exonCluster;
@@ -237,6 +237,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	/** 计算并获得pvalue */
 	public Double getAndCalculatePvalue() {
+		lsPvalueInfo = new ArrayList<>();
 		if (exonCluster.getParentGene().getName().contains(debug)) {
 			logger.debug("stop");
 		}
@@ -371,86 +372,61 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		return lsPvalueInfo.get(0).pvalueAvg;
 	}
 	
-	public String[] toStringSeq(Map<String, String> mapChrIdLowcase2ChrId) {		
-		if (seqHash == null) {
-			return null;
-		}
-		ArrayList<String> lsResult = new ArrayList<String>();
-		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		lsResult.add(gffDetailGene.getName().get(0));
-		lsResult.add(getSpliceSite(mapChrIdLowcase2ChrId));
-
-		try {
-			ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
-			for (SeqFasta seqFasta : lsSeqFasta) {
-				try {
-					lsResult.add(seqFasta.toString());
-				} catch (Exception e) {
-					lsResult.add("");
-				}
-			}
-		} catch (Exception e) {
-			String[] ss = new String[5];
-			for (int i = 0; i < ss.length; i++) {
-				ss[i] = "";
-			}
-			return ss;
-		}
-		
-		return lsResult.toArray(new String[0]);
-	}
-	
 	/** 
-	 * 获得一系列序列：<br>
-	 * 1. 当前exon<br>
-	 * 2. 当前exon左右扩展300bp<br>
-	 * 3.前一个和后一个exon和intron的序列
+	 * 获得本exon坐标
+	 * @return
 	 */
-	protected ArrayList<SeqFasta> getSeq(SeqHash seqHash) {
-		ArrayList<SeqFasta> lsSeqFastas = new ArrayList<SeqFasta>();
-		
-		SeqFasta seqFasta = seqHash.getSeq(exonCluster.isCis5to3(), exonCluster.getRefID(), 
-				exonCluster.getStartAbs(), exonCluster.getEndAbs());
-		lsSeqFastas.add(seqFasta);
-		
-		seqFasta = seqHash.getSeq(exonCluster.isCis5to3(), exonCluster.getRefID(),
-				exonCluster.getStartAbs() - 300, exonCluster.getEndAbs() + 300);
-		lsSeqFastas.add(seqFasta);
-		
-		ArrayList<ExonInfo> lsGetExon = new ArrayList<ExonInfo>();
+	protected Align getAlignSite() {
+		return new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+	}
+	/** 
+	 * 获得前一个exon的坐标,本exon坐标,后一个exon的坐标
+	 * 根据实际的方向而来的, 所以需要考虑方向
+	 * 如果前后的exon不存在，则为null
+	 * 譬如 ls-0 null ls-1 align ls-2 align 表示本exon前面没有exon了
+	 * @return
+	 */
+	protected List<Align> getLsAlignBeforeThisAfter(Map<String, String> mapChrIdLowcase2ChrId) {
 		//TODO 提取该exon左右两端的exon，写的很丑
 		ExonCluster exonClusterBefore = exonCluster.getExonClusterBefore();
 		boolean flag = true;
+		Align beforeAlign = null, thisAlign = null, afterAlign = null;
 		while (flag && exonClusterBefore != null) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
 				if (exonClusterBefore.getMapIso2LsExon().containsKey(gffGeneIsoInfo) && exonClusterBefore.getMapIso2LsExon().get(gffGeneIsoInfo).size() > 0) {
-					lsGetExon.add(new ExonInfo(exonCluster.isCis5to3(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis()));
+					beforeAlign = new Align(exonCluster.getRefID(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis());
 					flag = false;
 					break;
 				}
-				exonClusterBefore = exonClusterBefore.getExonClusterBefore();
 			}
+			exonClusterBefore = exonClusterBefore.getExonClusterBefore();
 		}
 		
-		lsGetExon.add(new ExonInfo(exonCluster.isCis5to3(), exonCluster.getStartCis(), exonCluster.getEndCis()));
+		thisAlign = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
 		
 		ExonCluster exonClusterAfter = exonCluster.getExonClusterAfter();
 		flag = true;
 		while (flag && exonClusterAfter != null) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
 				if (exonClusterAfter.getMapIso2LsExon().containsKey(gffGeneIsoInfo) && exonClusterAfter.getMapIso2LsExon().get(gffGeneIsoInfo).size() > 0) {
-					lsGetExon.add(new ExonInfo( exonCluster.isCis5to3(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis()));
+					afterAlign = new Align( exonCluster.getRefID(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis());
 					flag = false;
 					break;
 				}
-				exonClusterAfter = exonClusterAfter.getExonClusterAfter();
 			}
+			exonClusterAfter = exonClusterAfter.getExonClusterAfter();
 		}
 		
-		seqFasta = seqHash.getSeq(StrandType.isoForward, exonCluster.getRefID(), lsGetExon, true);
-		lsSeqFastas.add(seqFasta);
-		
-		return lsSeqFastas;
+		List<Align> lsGetExon = new ArrayList<Align>();
+		lsGetExon.add(beforeAlign);
+		lsGetExon.add(thisAlign);
+		lsGetExon.add(afterAlign);
+		for (Align align : lsGetExon) {
+			if (align != null) {
+				align.setChrID(mapChrIdLowcase2ChrId.get(align.getRefID().toLowerCase()));
+			}
+		}
+		return lsGetExon;
 	}
 	
 	/** 输入的信息会自动排序 */
@@ -486,6 +462,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 	}
 	
+	/**
+	 * 该剪接位置在具体哪个地方,譬如1-2表示第一个和第二个之间, 3表示第三个
+	 * @return
+	 */
+	public String getExonNumStr() {
+		return exonCluster.getExonNum(setIsoName_No_Reconstruct);
+	}
 	public String[] toStringArray(Map<String, String> mapChrIdLowcase2ChrId) {
 		ArrayList<String> lsResult = new ArrayList<String>();
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
@@ -512,23 +495,6 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsResult.add(fdr + "");
 		//TODO
 		lsResult.add(getSplicingType().toString());
-//		GeneID geneID = gffDetailGene.getSetGeneID().iterator().next();
-//		lsResult.add(geneID.getSymbol());
-//		lsResult.add(geneID.getDescription());
-		
-//		if (seqHash != null) {
-//			try {
-//				ArrayList<SeqFasta> lsSeqFasta = getSeq(seqHash);
-//				for (SeqFasta seqFasta : lsSeqFasta) {
-//					try {
-//						lsResult.add(seqFasta.toString());
-//					} catch (Exception e) {
-//						lsResult.add("");
-//					}
-//				}
-//			} catch (Exception e) {
-//			}
-//		}
 		return lsResult.toArray(new String[0]);
 	}
 
@@ -682,7 +648,12 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		
 		public double calculatePvalue() {
 			if (pvalueAvg < 0) {
-				pvalueExp = iSpliceTestExp.calculatePvalue();
+				try {
+					pvalueExp = iSpliceTestExp.calculatePvalue();
+
+				} catch (Exception e) {
+					pvalueExp = iSpliceTestExp.calculatePvalue();
+				}
 				pvalueJun = iSpliceTestJun.calculatePvalue();
 			
 				pvalueAvg = getPvalueCombine(pvalueExp, pvalueJun, false);
@@ -769,7 +740,12 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			}
 			return info;
 		}
-
+		
+		/** 目前只考虑覆盖度的index，因为比较好算 */
+		public double getSpliceIndex() {
+			return iSpliceTestExp.getSpliceIndex();
+		}
+		
 		public String getStrNormInfo( boolean isExp) {
 			String info = isExp? iSpliceTestExp.getSiteInfo() : iSpliceTestJun.getSiteInfo();
 			return info;

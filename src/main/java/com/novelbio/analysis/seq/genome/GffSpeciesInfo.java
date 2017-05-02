@@ -16,6 +16,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.species.Species;
 
@@ -97,6 +98,7 @@ public class GffSpeciesInfo {
 		if (outPath.endsWith("/") || outPath.endsWith("\\")) {
 			outPath = outPath +  "_geneBG.txt";
 		}
+		FileOperate.createFolders(FileOperate.getParentPathNameWithSep(outPath));
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(outPath, true);
 		txtReadandWrite.writefileln("#GeneSymbol");
 		for (String string : setGeneID) {

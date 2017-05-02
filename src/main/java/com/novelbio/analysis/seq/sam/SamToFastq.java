@@ -35,7 +35,7 @@ public class SamToFastq implements AlignmentRecorder {
 	FastQ fastQ1;
 	FastQ fastQ2;
 	
-    final Map<String, SamRecord> firstSeenMates = new WeakHashMap<String, SamRecord>(500);
+    final Map<String, SamRecord> firstSeenMates = new WeakHashMap<String, SamRecord>(1000000);
     
 	/** 是否产生临时文件，意思就是如果顺利结束才会将文件名改成正式名字，默认是true */
     public SamToFastq() {}
