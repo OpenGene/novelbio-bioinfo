@@ -152,8 +152,8 @@ public class ExonClusterExtract {
 		List<ExonCluster> lsExonClusters = GffGeneIsoInfo.getExonCluster(cis5to3, lsSameGroupIso);
 		for (ExonCluster exonClusters : lsExonClusters) {
 			if (align != null && 
-					(exonClusters.getStartAbs() < align.getStartAbs() - 100
-					|| exonClusters.getEndAbs() > align.getEndAbs() + 100
+					(exonClusters.getEndAbs() < align.getStartAbs()
+					|| exonClusters.getStartAbs() > align.getEndAbs()
 					|| (exonClusters.getStartAbs() < align.getStartAbs() - 20 && exonClusters.getEndAbs() > align.getEndAbs() + 20)
 					)
 				) {
