@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.AlignRecord;
@@ -45,7 +47,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	public static final int SUM_TYPE_SUM = 4;
 	
 
-	private static Logger logger = Logger.getLogger(MapReads.class);
+	private static Logger logger = LoggerFactory.getLogger(MapReads.class);
 	/**
 	 * 如果有多条reads比对到同一个位置，并且首位相同，是否仅保留其中一条reads
 	 * 因为有可能是pcr造成的线性扩增
@@ -269,6 +271,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		return resultTagDensityNum;
 	}
 	
+	Map<String, int[]> mapChrId2Num = new HashMap<>();
 	/**
 	 * 经过标准化，和equations修正
 	 * 输入坐标区间，和每个区间的bp数，返回该段区域内reads的数组
@@ -286,7 +289,15 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	public double[] getRangeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type) {
 		double[] result = null;
 		if (!mapChrID2ReadsInfo.containsKey(chrID.toLowerCase())) {
-			logger.info("cannot find this chromosome: " + chrID);
+			int[] num = mapChrId2Num.get(chrID.toLowerCase());
+			if (num == null) {
+				num = new int[]{0};
+				mapChrId2Num.put(chrID.toLowerCase(), num);
+			}
+			num[0]++;
+			if (num[0] == 1 || num[0] % 1000 == 0) {
+				logger.error("cannot find chromosome {} for {} times", chrID, num[0]+"");
+			}
 			return result;
 		}
 		////////////////////////不需要分割了////////////////////////////////////////
@@ -705,7 +716,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
  *
  */
 class MapReadsAddAlignRecord {
-	private static final Logger logger = Logger.getLogger(MapReadsAddAlignRecord.class);
+	private static final Logger logger = LoggerFactory.getLogger(MapReadsAddAlignRecord.class);
 	MapReads mapReads;
 	int[] chrBpReads = null;//保存每个bp的reads累计数
 	String lastChr="";

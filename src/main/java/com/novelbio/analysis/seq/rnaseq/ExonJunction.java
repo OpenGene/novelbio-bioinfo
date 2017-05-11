@@ -74,22 +74,21 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	//HES4	chr1:999692-999787	2	40::1436	37::2294	3154::468	2583::220	3.119998921325775E-10	0.0	0.0	Cassette
 	public static long wwwSimulation() {
-		String parentPath = "/media/winE/test/altersplice/bug/";
+		String parentPath = "/home/novelbio/tmp/Shared/";
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		
 		List<Align> lsAligns = new ArrayList<>();
-//		lsAligns.add(new Align("1", 2588282, 2588574));
-		
+//		lsAligns.add(new Align("11", 60379282, 61810711));
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(new GffHashGene(parentPath + "chr1H.gtf"));
+		gffChrAbs.setGffHash(new GffHashGene(parentPath + "gtfsimple11.gtf"));
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
 		exonJunction.setgenerateNewIso(true);
 //		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		exonJunction.addBamSorted("Ex", parentPath + "hnc1_1H.sorted.bam");
-		exonJunction.addBamSorted("In", parentPath + "hnw1_1H.sorted.bam");
+		exonJunction.addBamSorted("Ex", parentPath + "MCF10a_run1_sorted_chr11.bam");
+		exonJunction.addBamSorted("In", parentPath + "MCF10a_run1_sorted_chr11.bam");
 		exonJunction.setCompareGroups("Ex", "In", "ExvsIn");
 		exonJunction.setResultFile(parentPath + "result-sep-exon");
 		exonJunction.setJunctionMinAnchorLen(0);
@@ -181,7 +180,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	private static Logger logger = LoggerFactory.getLogger(ExonJunction.class);
-	private static String stopGeneName = "HORVU1Hr1G000010";
+	private static String stopGeneName = "DDB1";
 		
 	GffHashGene gffHashGene = null;
 	

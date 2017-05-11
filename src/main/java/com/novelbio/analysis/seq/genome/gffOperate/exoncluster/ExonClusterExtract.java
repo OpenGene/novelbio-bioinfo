@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
@@ -20,6 +23,8 @@ import com.novelbio.base.dataStructure.Alignment;
 
 /** 专门用来提取exoncluster的类 */
 public class ExonClusterExtract {
+	private static final Logger logger = LoggerFactory.getLogger(ExonClusterExtract.class);
+	
 	GffDetailGene gene;
 	
 	/**
@@ -146,7 +151,12 @@ public class ExonClusterExtract {
 		}
 		List<ExonCluster> lsExonClusters = GffGeneIsoInfo.getExonCluster(cis5to3, lsSameGroupIso);
 		for (ExonCluster exonClusters : lsExonClusters) {
-			if (align != null && (exonClusters.getStartAbs() > align.getEndAbs() || exonClusters.getEndAbs() < align.getStartAbs() )) {
+			if (align != null && 
+					(exonClusters.getStartAbs() < align.getStartAbs() - 100
+					|| exonClusters.getEndAbs() > align.getEndAbs() + 100
+					|| (exonClusters.getStartAbs() < align.getStartAbs() - 20 && exonClusters.getEndAbs() > align.getEndAbs() + 20)
+					)
+				) {
 				continue;
 			}
 			
