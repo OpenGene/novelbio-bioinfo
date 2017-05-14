@@ -19,6 +19,15 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @data 2017年4月28日
  */
 public class ExonSplicingResultUnit {
+	public static final String PvalueArithmetic = "Pvalue-Arithmetic";
+	public static final String PvalueGeometric = "Pvalue-Geometric";
+	public static final String SpliceIndex = "SpliceIndex";
+	public static final String ExonAround = "AroundExon";
+	public static final String SplicingType = "SplicingType";
+	public static final String ExonNum = "ExonNumber";
+
+	boolean isArithmeticPvalue = true;
+	
 	String accId;
 	Align alignLoc;
 	/** 本剪接位点周边的坐标 */
@@ -28,8 +37,8 @@ public class ExonSplicingResultUnit {
 	String cond2_SkipvsOther;
 	String cond1_Exp;
 	String cond2_Exp;
-	double pvalueAvg;
-	double pvalue;
+	double pvalueArithmetic;
+	double pvalueGeometric;
 	double fdr;
 	double spliceIndex;
 	SplicingAlternativeType splicingType;
@@ -50,8 +59,8 @@ public class ExonSplicingResultUnit {
 		cond2_SkipvsOther = pvalueCalculate.getStrInfo(false, true);
 		cond1_Exp = pvalueCalculate.getStrInfo(true, false);
 		cond2_Exp = pvalueCalculate.getStrInfo(true, true);
-		pvalueAvg = pvalueCalculate.getPvalueAvg();
-		pvalue = pvalueCalculate.getPvalueRootAvg();
+		pvalueArithmetic = pvalueCalculate.getPvalueAvg();
+		pvalueGeometric = pvalueCalculate.getPvalueRootAvg();
 		try {
 			spliceIndex = pvalueCalculate.getSpliceIndex();
 		} catch (Exception e) {
@@ -65,7 +74,7 @@ public class ExonSplicingResultUnit {
 		this.fdr = fdr;
 	}
 	public Double getPvalue() {
-		return pvalue;
+		return isArithmeticPvalue ? pvalueArithmetic : pvalueGeometric;
 	}
 	public double getFdr() {
 		return fdr;
@@ -91,70 +100,87 @@ public class ExonSplicingResultUnit {
 		return sBuilder.toString();
 	}
 	
-	public String[] toStringArray() {
+	//=============================================================
+	private List<String> getLsArrayBasic() {
 		List<String> lsResult = new ArrayList<String>();
 		lsResult.add(accId);
 		lsResult.add(alignLoc.toStringNoStrand());
-		lsResult.add(getLocAround());
 		lsResult.add(exonNumStr);
 		lsResult.add(cond1_SkipvsOther);
 		lsResult.add(cond2_SkipvsOther);
 		lsResult.add(cond1_Exp);
 		lsResult.add(cond2_Exp);
-		lsResult.add(pvalueAvg+"");
-		lsResult.add(pvalue+"");
+		return lsResult;
+	}
+	private static List<String> getLsTitleBasic(String condition1, String condition2) {
+		ArrayList<String> lsTitle = new ArrayList<String>();
+		lsTitle.add(TitleFormatNBC.AccID.toString());
+		lsTitle.add(TitleFormatNBC.Location.toString());
+		lsTitle.add(ExonNum);
+		lsTitle.add(condition1 + "_Skip::Others");
+		lsTitle.add(condition2 + "_Skip::Others");
+		lsTitle.add(condition1 + "Exp");
+		lsTitle.add(condition2 + "Exp");
+		return lsTitle;
+	}
+	//==============================================================
+
+	public String[] toStringArrayTmp() {
+		List<String> lsResult = getLsArrayBasic();
+		lsResult.add(pvalueArithmetic+"");
+		lsResult.add(pvalueGeometric+"");
+		lsResult.add(spliceIndex+"");
+		lsResult.add(splicingType.toString());
+		lsResult.add(getLocAround());
+		return lsResult.toArray(new String[0]);
+	}
+	/** 获得标题,对外软件 */
+	public static String[] getTitleTmp(String condition1, String condition2) {
+		List<String> lsTitle = getLsTitleBasic(condition1, condition2);
+		lsTitle.add(PvalueArithmetic);
+		lsTitle.add(PvalueGeometric);
+		lsTitle.add(SpliceIndex);
+		lsTitle.add(SplicingType);
+		lsTitle.add(ExonAround);
+		return lsTitle.toArray(new String[0]);
+	}
+	
+	public String[] toStringArray() {
+		List<String> lsResult = getLsArrayBasic();
+		lsResult.add(pvalueArithmetic+"");
+		lsResult.add(pvalueGeometric+"");
 		lsResult.add(fdr+"");
 		lsResult.add(spliceIndex+"");
 		lsResult.add(splicingType.toString());
 		return lsResult.toArray(new String[0]);
 	}
-	
-	public String[] toStringArray_ASD() {
-		List<String> lsResult = new ArrayList<String>();
-		lsResult.add(accId);
-		lsResult.add(alignLoc.toStringNoStrand());
-		lsResult.add(exonNumStr);
-		lsResult.add(cond1_SkipvsOther);
-		lsResult.add(cond2_SkipvsOther);
-		lsResult.add(cond1_Exp);
-		lsResult.add(cond2_Exp);
-		lsResult.add(pvalueAvg+"");
-		lsResult.add(pvalue+"");
+	/** 获得标题,我们自己用 */
+	public static String[] getTitle(String condition1, String condition2) {
+		List<String> lsTitle = getLsTitleBasic(condition1, condition2);
+		lsTitle.add(PvalueArithmetic);
+		lsTitle.add(PvalueGeometric);
+		lsTitle.add(TitleFormatNBC.FDR.toString());
+		lsTitle.add(SpliceIndex);
+		lsTitle.add(SplicingType);
+		return lsTitle.toArray(new String[0]);
+	}
+
+	public String[] toStringArray_ASD(boolean isArithmeticPvalue) {
+		List<String> lsResult = getLsArrayBasic();
+//		if (isArithmeticPvalue) {
+//			lsResult.add(PvalueArithmetic+"");
+//		} else {
+//			lsResult.add(PvalueGeometric+"");
+//		}
+		lsResult.add(TitleFormatNBC.Pvalue.toString());
 		lsResult.add(fdr+"");
 		lsResult.add(splicingType.toString());
 		return lsResult.toArray(new String[0]);
 	}
 	
-	/** 获得标题,我们自己用 */
-	public static String[] getTitle(String condition1, String condition2) {
-		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.AccID.toString());
-		lsTitle.add(TitleFormatNBC.Location.toString());
-		lsTitle.add("ExonLocAroundSite");
-		lsTitle.add("Exon_Number");
-		lsTitle.add(condition1 + "_Skip::Others");
-		lsTitle.add(condition2 + "_Skip::Others");
-		lsTitle.add(condition1 + "Exp");
-		lsTitle.add(condition2 + "Exp");
-		lsTitle.add("P-Value_Average");
-		lsTitle.add(TitleFormatNBC.Pvalue.toString());
-		lsTitle.add(TitleFormatNBC.FDR.toString());
-		lsTitle.add("SplicingIndex");
-		lsTitle.add("SplicingType");
-		return lsTitle.toArray(new String[0]);
-	}
-	
 	/** 获得标题,对外软件 */
 	public static String[] getTitle_ASD(String condition1, String condition2) {
-		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.AccID.toString());
-		lsTitle.add(TitleFormatNBC.Location.toString());
-		lsTitle.add("Exon_Number");
-		lsTitle.add(condition1 + "_Skip::Others");
-		lsTitle.add(condition2 + "_Skip::Others");
-		lsTitle.add(condition1 + "Exp");
-		lsTitle.add(condition2 + "Exp");
-		lsTitle.add("P-Value_Average");
+		List<String> lsTitle = getLsTitleBasic(condition1, condition2);
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.FDR.toString());
 		lsTitle.add("SplicingType");
