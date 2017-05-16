@@ -54,6 +54,7 @@ public class SamHeadCreater {
 		if (!rgLine.startsWith("@RG")) {
 			throw new ExceptionSamError("attrLine error, no @RG flag: " + rgLine);
 		}
+		rgLine = rgLine.replace("\\\\", "\\").replace("\\t", "\t");
 		String[] ss = rgLine.split("\t");
 		SAMReadGroupRecord samReadGroupRecord = new SAMReadGroupRecord(getId(ss));
 		addAttr(samReadGroupRecord, ss);

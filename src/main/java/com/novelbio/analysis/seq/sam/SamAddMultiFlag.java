@@ -35,6 +35,9 @@ public class SamAddMultiFlag {
 	
 	public void addSamRecord(SamRecord samRecord) {
 		if (isPairend == null) isPairend = samRecord.isHavePairEnd();
+		Integer attrCC = samRecord.getSamRecord().getIntegerAttribute("HI");
+		if (attrCC != null) return;
+		
 		try {
 			if (!samRecord.isMapped()) {
 				logger.debug("unmapped");

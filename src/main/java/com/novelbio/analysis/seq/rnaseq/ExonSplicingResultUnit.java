@@ -43,7 +43,7 @@ public class ExonSplicingResultUnit {
 	double spliceIndex;
 	SplicingAlternativeType splicingType;
 	
-	public ExonSplicingResultUnit(ExonSplicingTest exonSplicingTest, Map<String, String> mapChrIdLowcase2ChrId) {
+	public ExonSplicingResultUnit(ExonSplicingTest exonSplicingTest, Map<String, String> mapChrIdLowcase2ChrId, boolean isArithmeticPvalue) {
 		GffDetailGene gffDetailGene = exonSplicingTest.exonCluster.getParentGene();
 		PvalueCalculate pvalueCalculate = exonSplicingTest.getSpliceTypePvalue();
 		accId = gffDetailGene.getNameSingle();
@@ -68,6 +68,7 @@ public class ExonSplicingResultUnit {
 		}
 		
 		splicingType = exonSplicingTest.getSplicingType();
+		this.isArithmeticPvalue = isArithmeticPvalue;
 	}
 	
 	public void setFdr(double fdr) {
@@ -165,14 +166,13 @@ public class ExonSplicingResultUnit {
 		return lsTitle.toArray(new String[0]);
 	}
 
-	public String[] toStringArray_ASD(boolean isArithmeticPvalue) {
+	public String[] toStringArray_ASD() {
 		List<String> lsResult = getLsArrayBasic();
-//		if (isArithmeticPvalue) {
-//			lsResult.add(PvalueArithmetic+"");
-//		} else {
-//			lsResult.add(PvalueGeometric+"");
-//		}
-		lsResult.add(TitleFormatNBC.Pvalue.toString());
+		if (isArithmeticPvalue) {
+			lsResult.add(pvalueArithmetic+"");
+		} else {
+			lsResult.add(pvalueGeometric+"");
+		}
 		lsResult.add(fdr+"");
 		lsResult.add(splicingType.toString());
 		return lsResult.toArray(new String[0]);

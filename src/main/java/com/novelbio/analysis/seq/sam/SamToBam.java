@@ -109,6 +109,9 @@ public class SamToBam {
 	
 	public void readInputStream() {
 		samFileHeader = samFileIn.getHeader();
+		if (samFileHeader.getSortOrder() != SortOrder.unsorted) {
+			isAddMultiFlag = false;
+		}
 		SAMReadGroupRecord samReadGroupRecord= SamHeadCreater.getSamReadGroupRecord(rgLine);
 		if (samReadGroupRecord != null) {
 			samFileHeader.addReadGroup(samReadGroupRecord);

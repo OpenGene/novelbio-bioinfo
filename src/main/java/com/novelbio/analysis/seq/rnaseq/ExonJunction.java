@@ -80,20 +80,20 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		dateUtil.setStartTime();
 		
 		List<Align> lsAligns = new ArrayList<>();
-//		lsAligns.add(new Align("11", 60379282, 61810711));
+		lsAligns.add(new Align("chr1", 60379282, 61810711));
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(new GffHashGene(parentPath + "gtfsimple11.gtf"));
+		gffChrAbs.setGffHash(new GffHashGene("/media/nbfs/nbCloud/public/nbcplatform/genome/species/10090/mm10_GRCm38/gff/ref_GRCm38.p2_top_level.gff3.gz"));
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
 		exonJunction.setgenerateNewIso(true);
-//		exonJunction.setLsReadRegion(lsAligns);
+		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
 		exonJunction.addBamSorted("Ex", parentPath + "MCF10a_run1_sorted_chr11.bam");
 		exonJunction.addBamSorted("In", parentPath + "MCF10a_run1_sorted_chr11.bam");
 		exonJunction.setCompareGroups("Ex", "In", "ExvsIn");
 		exonJunction.setResultFile(parentPath + "result-sep-exon");
 		exonJunction.setJunctionMinAnchorLen(0);
-		exonJunction.setRunSepChr(false);
+		exonJunction.setRunSepChr(true);
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.run();
 		exonJunction = null;
@@ -194,7 +194,14 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	public void setNewIsoReadsNum(int newIsoReadsNum) {
 		this.newIsoReadsNum = newIsoReadsNum;
 	}
-	
+	/**
+	 * 对Exon-Pvalue和Junction-Pvalue使用算术平均还是几何平均
+	 * @param isPvalueA
+	 */
+	public void setPvalueA(boolean isPvalueA) {
+		this.isPvalueA = isPvalueA;
+	}
+
 	/** 设定junction数量，小于该数量的不会进行分析
 	 * 
 	 * @param juncAllReadsNum 所有样本的junction数量必须大于该值，否则不进行计算，默认25
@@ -559,7 +566,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		return lsExonSplicingTests;
 	}
 	
-	public void writeToFile(boolean isWriteTmp, boolean isArithmeticPvalue) {
+	public void writeToFile(boolean isWriteTmp) {
 		String outFile = null;
 
 		if (StringOperate.isRealNull(resultFile)) {
@@ -575,7 +582,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		} else {
 			outFile = FileOperate.changeFileSuffix(resultFile, "."+outPrefix, "alldiff.txt");
 		}
-		writeResult(outFile, lsResult, isWriteTmp, isArithmeticPvalue);
+		writeResult(outFile, lsResult, isWriteTmp);
 		if (!isWriteTmp) {
 			String statisticsFile = FileOperate.changeFileSuffix(outFile, ".statistics", "txt");
 			writeStatistics(statisticsFile, lsResult);
@@ -1011,7 +1018,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		Map<String, String> mapChrIdLowcase2Id = getMapChrIdLowcase2Id(setChrIdRaw);
 		List<ExonSplicingResultUnit> lsResultSimple = new ArrayList<>();
 		for (ExonSplicingTest exonSplicingTest : mapKey2SpliceTest.values()) {
-			lsResultSimple.add(new ExonSplicingResultUnit(exonSplicingTest, mapChrIdLowcase2Id));
+			lsResultSimple.add(new ExonSplicingResultUnit(exonSplicingTest, mapChrIdLowcase2Id, isPvalueA));
 		}
 		lsResult = new ArrayList<>(mapKey2SpliceTest.values());
 		
@@ -1233,7 +1240,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 	
 	/** 写入文本 */
-	public void writeResult(String fileName, List<ExonSplicingResultUnit> lsResult, Boolean isTmp, boolean isArithmeticPvalue) {
+	public void writeResult(String fileName, List<ExonSplicingResultUnit> lsResult, Boolean isTmp) {
 		TxtReadandWrite txtOut = new TxtReadandWrite(fileName, true);
 		
 		String[] title = isASD? ExonSplicingResultUnit.getTitle_ASD(condition1, condition2) : ExonSplicingResultUnit.getTitle(condition1, condition2);
@@ -1245,7 +1252,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				if (isTmp) {
 					info = chisqTest.toStringArrayTmp();
 				} else {
-					info = isASD? chisqTest.toStringArray_ASD(isArithmeticPvalue) : chisqTest.toStringArray();
+					info = isASD? chisqTest.toStringArray_ASD() : chisqTest.toStringArray();
 				}
 				txtOut.writefileln(info);
 			} catch (Exception e) {
