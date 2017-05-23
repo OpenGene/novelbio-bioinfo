@@ -36,13 +36,7 @@ public interface GffHashGeneInf  {
 	 * 1:该染色体上该LOC的序号，如1467等
 	 */
 	public String[] getLOCNum(String LOCID);
-	/**
-	 * 输入CopedID，返回基因的坐标信息等
-	 * @param copedID 
-	 * @return
-	 * 没有就返回null
-	 */
-	GffDetailGene searchLOC(GeneID copedID);
+	
 	/**
 	 * 给定LOCID，返回所对应的转录本
 	 * 没有就返回最长转录本

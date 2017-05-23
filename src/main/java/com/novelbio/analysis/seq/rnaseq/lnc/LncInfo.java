@@ -25,13 +25,13 @@ public class LncInfo {
 	/**基因具体的转录本名称，方便提取序列 */
 	String lncIsoName = "";
 	/**基因名称*/
-	String lncName;
+	String lncName = "";
 	Align align;
 	Map<String, GffGeneIsoInfo> mapName2LncIso = new LinkedHashMap<>();
 	/** 本组中最后展示的lnc */
 	GffGeneIsoInfo gffLncIso;
 	/**重叠区域的mRna*/
-	String mRna;
+	String mRna = "";
 	/**前面最长转录本的基因*/
 	String upGene;
 	int upDistance;
@@ -111,7 +111,30 @@ public class LncInfo {
 		if (gffCodGeneDU == null) return;
 		
 		Set<GffDetailGene> setGffDetailGenes = gffCodGeneDU.getCoveredOverlapGffGene();
-		if (setGffDetailGenes.size() == 0) return;
+		if (setGffDetailGenes.size() == 0) {
+			GffDetailGene gffDetailGeneUp = gffCodGeneDU.getGffCod1().getGffDetailUp();
+			if (gffDetailGeneUp != null) {
+				int spaceUp = Math.abs(gffDetailGeneUp.getEndAbs() - align.getStartAbs());
+
+				if (Math.abs(spaceUp) <= upDownExtend) {
+					upGene = gffDetailGeneUp.getLongestSplitMrna().getParentGffDetailGene().getNameSingle();
+					upDistance = spaceUp;
+				}
+				
+			}
+			
+			GffDetailGene gffDetailGeneDown = gffCodGeneDU.getGffCod2().getGffDetailDown();
+			if (gffDetailGeneDown != null) {
+				int spaceDown = Math.abs(align.getEndAbs() - gffDetailGeneDown.getStartAbs());
+				
+				if (Math.abs(spaceDown) <= upDownExtend) {
+					downGene = gffDetailGeneDown.getLongestSplitMrna().getParentGffDetailGene().getNameSingle();
+					downDistance = spaceDown;
+				}
+			}
+
+			return;
+		}
 		
 		mapName2LncIso = new LinkedHashMap<>();
 		for (GffDetailGene gffDetailGene : setGffDetailGenes) {
@@ -275,7 +298,7 @@ public class LncInfo {
 			}
 			int space = Math.abs(detailGeneUp.getEndAbs() - gffLncIso.getStartAbs());
 			if (Math.abs(space) <= upDownExtend) {
-				upGene = detailGeneUp.getLongestSplitMrna().getName();
+				upGene = detailGeneUp.getLongestSplitMrna().getParentGffDetailGene().getNameSingle();
 				upDistance = space;
 			} else {
 				return;
@@ -300,7 +323,7 @@ public class LncInfo {
 		}
 		int space = Math.abs(gffLncIso.getEndAbs() - detailGeneDown.getStartAbs());
 		if (Math.abs(space) <= upDownExtend) {
-			downGene = detailGeneDown.getLongestSplitMrna().getName();
+			downGene = detailGeneDown.getLongestSplitMrna().getParentGffDetailGene().getNameSingle();
 			downDistance = space;
 		} else {
 			return;

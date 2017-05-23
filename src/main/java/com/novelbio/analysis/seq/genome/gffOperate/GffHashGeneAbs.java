@@ -165,13 +165,17 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		return searchLocation(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 	}
 	
+	public GffDetailGene searchLOC(String accID) {
+		return searchLOCWithoutDB(accID);
+	}
 	/**
 	 * 输入基因名，返回基因的坐标信息等
 	 * 可以输入accID
 	 * @param accID
 	 * @return
 	 */
-	public GffDetailGene searchLOC(String accID) {
+	@Deprecated
+	private GffDetailGene searchLOC_Old(String accID) {
 		GffDetailGene gffDetailGene = super.searchLOC(accID);
 		if (gffDetailGene == null) {
 			GeneID copedID = new GeneID(accID, taxID, false);
@@ -223,6 +227,11 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		return gffGeneIsoInfoOut;
 	}
 	
+	@Override
+	public GffGeneIsoInfo searchISO(String accID) {
+		return searchISOwithoutDB(accID);
+	}
+	
 	/**
 	 * 输入基因名，返回基因的具体转录本，主要用在UCSC上
 	 * 没找到具体的转录本名字，那么就返回最长转录本
@@ -230,7 +239,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 * @param accID
 	 * @return
 	 */
-	public GffGeneIsoInfo searchISO(String accID) {
+	@Deprecated
+	private GffGeneIsoInfo searchISO_Old(String accID) {
 		GffGeneIsoInfo gffGeneIsoInfo = mapName2Iso.get(accID.toLowerCase());
 		if (gffGeneIsoInfo != null) {
 			return gffGeneIsoInfo;
@@ -289,26 +299,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		Collections.sort(lsIntronLen);
 		return lsIntronLen;
 	}
-	/**
-	 * 输入CopedID，返回基因的坐标信息等
-	 * @param copedID 
-	 * @return
-	 * 没有就返回null
-	 */
-	public GffDetailGene searchLOC(GeneID copedID) {
-		GffDetailGene gffDetailGene = super.searchLOC(copedID.getAccID());
-		if (gffDetailGene != null) {
-			return gffDetailGene;
-		}
-		
-		GffGeneIsoInfo gffGeneIsoInfo = searchISO(copedID.getAccID());
-		if (gffGeneIsoInfo != null) {
-			return gffGeneIsoInfo.getParentGffDetailGene();
-		}
-		
-		String locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
-		return super.searchLOC(locID);
-	}
 	
 	/**
 	 * 输入
@@ -349,6 +339,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		txtAccID2GeneID.ExcelWrite(getGene2ID());
 		txtAccID2GeneID.close();
 	}
+	
 	/**
 	 * 获得Gene2GeneID在数据库中的信息，并且写入文本，一般不用
 	 */
@@ -365,6 +356,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		}
 		return lsResult;
 	}
+	
 	public List<String> getLsRefID() {
 		List<String> lsRefID = new ArrayList<>();
 		for (ListGff lsGff : mapChrID2ListGff.values()) {
