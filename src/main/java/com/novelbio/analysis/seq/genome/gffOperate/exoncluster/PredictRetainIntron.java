@@ -27,7 +27,6 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 	private static final Logger logger = Logger.getLogger(PredictRetainIntron.class);
 	Align alignRetain;
 	GffGeneIsoInfo gffIsoRetain;
-	ArrayListMultimap<String, SamFile> mapCond2Samfile;
 	
 	String condition;
 	String group;
@@ -48,11 +47,6 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 		this.condition = condition;
 		this.group = group;
 		junCountsTmp = 0;
-	}
-	
-	@Deprecated
-	public void setMapCond2Samfile(ArrayListMultimap<String, SamFile> mapCond2Samfile) {
-		this.mapCond2Samfile = mapCond2Samfile;
 	}
 	
 	@Override
@@ -104,8 +98,8 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 			mapCondition2Counts.put(condition, mapGroup2LsValue);
 		}
 		
-		mapGroup2LsValue.put(group, tophatJunction.getJunctionSite(condition, group, exonCluster.isCis5to3(), exonCluster.getRefID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
 		mapGroup2LsValue.put(group, junCountsTmp);
+		mapGroup2LsValue.put(group, tophatJunction.getJunctionSite(condition, group, exonCluster.isCis5to3(), exonCluster.getRefID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
 	}
 
 	@Override

@@ -59,7 +59,13 @@ public abstract class SpliceTypePredict {
 		}
 		return mapGroup2LsValue;
 	}
-	/** 获得用于检验的junction reads */
+	
+	/** 获得用于检验的junction reads
+	 * @param condition
+	 * @return
+	 * key: GroupId<br>
+	 * value: list 0.连接上junct的reads数，1. skip的reads数
+	 */
 	protected abstract ArrayListMultimap<String, Double> getLsJuncCounts(String condition);
 	/** 是否为该种剪接类型 */
 	public boolean isSpliceType() {
@@ -79,6 +85,7 @@ public abstract class SpliceTypePredict {
 	public abstract SplicingAlternativeType getType();
 	/** 获得差异可变剪接的位点，用于检测表达 */
 	public abstract List<Align> getDifSite();
+
 	/**
 	 * 获得比较的位点
 	 * 如果是cassette则返回全基因长度
@@ -143,9 +150,9 @@ public abstract class SpliceTypePredict {
 	}
 	
 	/**
-	 * 将lsTmpValue的数据加到lsResult上
-	 * @param lsResult
-	 * @param lsTmpValue
+	 * 将mapTmpValue的数据加到lsResult上
+	 * @param mapResult
+	 * @param mapTmpValue
 	 * @return
 	 */
 	protected Map<String, Double> addMapDouble(Map<String, Double> mapResult, Map<String, Double> mapTmpValue) {

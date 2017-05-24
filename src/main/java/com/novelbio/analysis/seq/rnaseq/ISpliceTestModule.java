@@ -72,6 +72,18 @@ public interface ISpliceTestModule {
 	
 	double getSpliceIndex();
 	
+	/**
+	 * 获得差异可变剪接PSI的值<br>
+	 * 公式为<br>
+	 * PSI = IR/(IR+ER)<br>
+	 * 其中IR为该位点包含的reads数，ER为跳过该位点的reads数<br>
+	 * 暂时仅考虑junction reads<br>
+	 * @return
+	 * key: group
+	 * value: psi
+	 */
+	public double getPsi(boolean isCtrl);
+	
 	public static class SpliceTestFactory {
 		/**
 		 * 是否将n次重复的reads合并为一个bam文件，然后进行分析
@@ -226,6 +238,17 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	
 	List<int[]> lsTreatValue = new ArrayList<>();
 	List<int[]> lsCtrlValue = new ArrayList<>();
+	
+	public double getPsi(boolean isCtrl) {
+		ArrayListMultimap<String, Double> mapGroup2LsValue = isCtrl ? mapCtrl2LsValue : mapTreat2LsValue;
+		double IR = 0, ER = 0;
+		for (String group : mapGroup2LsValue.keySet()) {
+			List<Double> lsValues = mapGroup2LsValue.get(group);//第一个是跳过，第二个是连上
+			IR += lsValues.get(0);
+			ER += lsValues.get(1);
+		}
+		return IR/(IR+ER);
+	}
 	
 	@Override
 	public void setMakeSmallValueBigger(boolean makeSmallValueBigger, int numLessNeedBig, double fold) {
@@ -735,7 +758,18 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 		}
 		return lslsValue;
 	}
-
+	
+	public double getPsi(boolean isCtrl) {
+		ArrayListMultimap<String, Double> mapGroup2LsValue = isCtrl ? mapCtrl2LsValue : mapTreat2LsValue;
+		double IR = 0, ER = 0;
+		for (String group : mapGroup2LsValue.keySet()) {
+			List<Double> lsValues = mapGroup2LsValue.get(group);//第一个是跳过，第二个是连上
+			IR += lsValues.get(0);
+			ER += lsValues.get(1);
+		}
+		return IR/(IR+ER);
+	}
+	
 	public double calculatePvalue() {
 		if (isFilter) return 1.0;
 		
@@ -1619,6 +1653,24 @@ class SpliceTestCombine implements ISpliceTestModule {
 	/** 返回整理好的比较结果展示 */
 	public String getCondtionCtrl(boolean isInt) {
 		return isInt? SpliceTestRepeat.getConditionInt(mapCtrl2LsValue) : SpliceTestRepeat.getCondition(mapCtrl2LsValue);
+	}
+	
+	public 	ArrayListMultimap<String, Double> getMapCtrl2LsValue() {
+		return mapCtrl2LsValue;
+	}
+	public ArrayListMultimap<String, Double> getMapTreat2LsValue() {
+		return mapTreat2LsValue;
+	}
+	
+	public double getPsi(boolean isCtrl) {
+		ArrayListMultimap<String, Double> mapGroup2LsValue = isCtrl ? mapCtrl2LsValue : mapTreat2LsValue;
+		double IR = 0, ER = 0;
+		for (String group : mapGroup2LsValue.keySet()) {
+			List<Double> lsValues = mapGroup2LsValue.get(group);//第一个是跳过，第二个是连上
+			IR += lsValues.get(0);
+			ER += lsValues.get(1);
+		}
+		return IR/(IR+ER);
 	}
 	
 	/** 返回该位点的reads情况 */

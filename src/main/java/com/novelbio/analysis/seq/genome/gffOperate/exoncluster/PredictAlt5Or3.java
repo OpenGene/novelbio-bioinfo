@@ -28,7 +28,7 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	public PredictAlt5Or3(ExonCluster exonCluster) {
 		super(exonCluster);
 	}
-
+	
 	@Override
 	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
 		Align align = getDifSite().get(0);
@@ -38,15 +38,15 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		//第二个剪接点
 		List<JunctionUnit> lsJunctionEnd = tophatJunction.getLsJunctionUnit(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
 		
-		Map<String, Double> mapGroup2Value1 = new HashMap<>();
-		Map<String, Double> mapGroup2Value2 = new HashMap<>();
+		Map<String, Double> mapGroup2ValueStartSite = new HashMap<>();
+		Map<String, Double> mapGroup2ValueEndSite = new HashMap<>();
 		for (JunctionUnit junctionUnit : lsJunctionStart) {
 			if (isInsideExonCluster(junctionUnit)) {
 				continue;
 			}
 			Map<String, Double> mapGroup2ValueTmp1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(),
 					exonCluster.getRefID(), junctionUnit.getStartAbs(), junctionUnit.getEndAbs());
-			addMapGroup2Value(mapGroup2Value1, mapGroup2ValueTmp1);
+			addMapGroup2Value(mapGroup2ValueStartSite, mapGroup2ValueTmp1);
 		}
 		for (JunctionUnit junctionUnit : lsJunctionEnd) {
 			if (isInsideExonCluster(junctionUnit)) {
@@ -54,17 +54,35 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 			}
 			Map<String, Double> mapGroup2ValueTmp2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(),
 					exonCluster.getRefID(), junctionUnit.getStartAbs(), junctionUnit.getEndAbs());
-			addMapGroup2Value(mapGroup2Value2, mapGroup2ValueTmp2);
+			addMapGroup2Value(mapGroup2ValueEndSite, mapGroup2ValueTmp2);
 		}
 		
 //		Map<String, Double> mapGroup2Value1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs());
 //		Map<String, Double> mapGroup2Value2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
-		if (mapGroup2Value2.size() == 0) {
-			mapGroup2Value2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
+		if (mapGroup2ValueEndSite.size() == 0) {
+			mapGroup2ValueEndSite = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
 		}
-		addMapGroup2Value(mapGroup2LsValue, mapGroup2Value1);
-		addMapGroup2Value(mapGroup2LsValue, mapGroup2Value2);
+		
+		if (isCis()) {
+			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueEndSite);
+			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueStartSite);
+		} else {
+			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueStartSite);
+			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueEndSite);
+		}
+
 		return mapGroup2LsValue;
+	}
+	
+	/**
+	 * 位点是否为顺式，即从5-->3这种
+	 * 我们认为 5-->3 方向的 alt3 为顺式
+	 * @return
+	 */
+	private boolean isCis() {
+		return (exonCluster.isCis5to3() && getType() == SplicingAlternativeType.alt3)
+				||(!exonCluster.isCis5to3() && getType() == SplicingAlternativeType.alt5)
+				;
 	}
 	
 	private boolean isInsideExonCluster(JunctionUnit junctionUnit) {

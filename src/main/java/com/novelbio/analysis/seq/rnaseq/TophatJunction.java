@@ -188,6 +188,7 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	/**
 	 * 给定坐标和位点，找出全体条件下locsite,以及总共有多少reads支持
 	 * 0表示没有junction
+	 * @param cis5to3
 	 * @param chrID
 	 * @param locSite
 	 * @return
@@ -238,6 +239,8 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	/**
 	 * 给定坐标和位点，找出locsite,以及总共有多少reads支持
 	 * 0表示没有junction
+	 * @param condition
+	 * @param cis5to3
 	 * @param chrID
 	 * @param locSite
 	 * @return

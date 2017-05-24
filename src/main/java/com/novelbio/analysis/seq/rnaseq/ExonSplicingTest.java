@@ -347,6 +347,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		align.setChrID(mapChrIdLowcase2ChrId.get(align.getRefID().toLowerCase()));
 		return align.toStringNoStrand();
 	}
+	
 	public Align getSpliceSiteAlignDisplay() {
 		if (alignDisplay != null) {
 			return alignDisplay;
@@ -469,99 +470,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public String getExonNumStr() {
 		return exonCluster.getExonNum(setIsoName_No_Reconstruct);
 	}
-	public String[] toStringArray(Map<String, String> mapChrIdLowcase2ChrId) {
-		ArrayList<String> lsResult = new ArrayList<String>();
-		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		lsResult.add(gffDetailGene.getNameSingle());
-		lsResult.add(getSpliceSite(mapChrIdLowcase2ChrId));
-		PvalueCalculate pvalueCalculate = lsPvalueInfo.get(0);
-		try {
-			lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
-
-		} catch (Exception e) {
-			lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
-		}
-		lsResult.add(pvalueCalculate.getStrInfo(false, false));
-		lsResult.add(pvalueCalculate.getStrInfo(false, true));
-		lsResult.add(pvalueCalculate.getStrInfo(true, false));
-		lsResult.add(pvalueCalculate.getStrInfo(true, true));
-//		lsResult.add(pvalueCalculate.getPvalueJun() + "");
-//		lsResult.add(pvalueCalculate.getPvalueExp() + "");
-//		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
-//		
-//		lsResult.add(pvalueCalculate.iSpliceTestExp.getSpliceIndex() + "");
-		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
-		lsResult.add(pvalueCalculate.getPvalueRootAvg() + "");
-		lsResult.add(fdr + "");
-		//TODO
-		lsResult.add(getSplicingType().toString());
-		return lsResult.toArray(new String[0]);
-	}
-
-	public String[] toStringArray_ASD(Map<String, String> mapChrIdLowcase2ChrId) {
-		ArrayList<String> lsResult = new ArrayList<String>();
-		GffDetailGene gffDetailGene = exonCluster.getParentGene();
-		lsResult.add(gffDetailGene.getNameSingle());
-		lsResult.add(getSpliceSite(mapChrIdLowcase2ChrId));
-		PvalueCalculate pvalueCalculate = lsPvalueInfo.get(0);
-		lsResult.add(exonCluster.getExonNum(setIsoName_No_Reconstruct));
-
-		lsResult.add(pvalueCalculate.getStrInfo(false, false));
-		lsResult.add(pvalueCalculate.getStrInfo(false, true));
-		lsResult.add(pvalueCalculate.getStrInfo(true, false));
-		lsResult.add(pvalueCalculate.getStrInfo(true, true));
-		
-//		lsResult.add(pvalueCalculate.getStrNormInfo(false));
-//		lsResult.add(pvalueCalculate.getStrNormInfo(true));
-//		lsResult.add(pvalueCalculate.getPvalueAvg() + "");
-		lsResult.add(pvalueCalculate.getPvalueRootAvg() + "");
-		lsResult.add(fdr + "");
-		//TODO
-		lsResult.add(getSplicingType().toString());
-		return lsResult.toArray(new String[0]);
-	}
 	
-	/** 获得标题 */
-	public static String[] getTitle_ASD(String condition1, String condition2) {
-		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.AccID.toString());
-		lsTitle.add(TitleFormatNBC.Location.toString());
-		lsTitle.add("Exon_Number");
-		lsTitle.add(condition1 + "_Skip::Others");
-		lsTitle.add(condition2 + "_Skip::Others");
-		lsTitle.add(condition1 + "Exp");
-		lsTitle.add(condition2 + "Exp");
-		lsTitle.add(TitleFormatNBC.Pvalue.toString());
-		lsTitle.add(TitleFormatNBC.FDR.toString());
-		lsTitle.add("SplicingType");
-
-		return lsTitle.toArray(new String[0]);
-	}
-	
-	/** 获得标题 */
-	public static String[] getTitle(String condition1, String condition2) {
-		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.AccID.toString());
-		lsTitle.add(TitleFormatNBC.Location.toString());
-		lsTitle.add("Exon_Number");
-		lsTitle.add(condition1 + "_Skip::Others");
-		lsTitle.add(condition2 + "_Skip::Others");
-		lsTitle.add(condition1 + "Exp");
-		lsTitle.add(condition2 + "Exp");
-		
-//		lsTitle.add("readsInfoDetailJun");
-//		lsTitle.add("readsInfoDetailExp");
-//		lsTitle.add("P-Value_Jun");
-//		lsTitle.add("P-Value_Exp");
-		lsTitle.add("P-Value_Average");
-		
-//		lsTitle.add("Splicing_Index");
-		
-		lsTitle.add(TitleFormatNBC.Pvalue.toString());
-		lsTitle.add(TitleFormatNBC.FDR.toString());
-		lsTitle.add("SplicingType");
-		return lsTitle.toArray(new String[0]);
-	}
 	/** 获得标题 */
 	public static String[] getSeqTitle() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
@@ -578,9 +487,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		//TODO
 		int normExp = 300;
 		int junction = 300;
+
 		SplicingAlternativeType splicingType;
 		ISpliceTestModule iSpliceTestExp;
 		ISpliceTestModule iSpliceTestJun;
+		
 		double pvalueAvg = -1;
 		double pvalueRootAvg = -1;
 		double pvalueJun = 1;
@@ -594,6 +505,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		 */
 		public void setCombine(boolean isCombine) {
 			this.isCombine = isCombine;
+		}
+		
+		public ISpliceTestModule getSpliceTestExp() {
+			return iSpliceTestExp;
+		}
+		public ISpliceTestModule getSpliceTestJun() {
+			return iSpliceTestJun;
 		}
 		
 		public void setNotSignificant() {
@@ -618,19 +536,19 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			this.splicingType = splicingType;
 			
 			iSpliceTestExp = SpliceTestFactory.createSpliceModule(isCombine);
-			ArrayListMultimap<String, Double> lsExp1 = spliceType2ValueTreat.getLsExp(splicingType);
-			ArrayListMultimap<String, Double> lsExp2= spliceType2ValueCtrl.getLsExp(splicingType);
+			ArrayListMultimap<String, Double> mapTreat2LsValueExp = spliceType2ValueTreat.getLsExp(splicingType);
+			ArrayListMultimap<String, Double> mapCtrl2LsValueExp= spliceType2ValueCtrl.getLsExp(splicingType);
 			iSpliceTestExp.setMakeSmallValueBigger(true, 80, 2);
 			iSpliceTestExp.setJuncReadsNum(juncAllReadsNum, juncSampleReadsNum);
 
-			iSpliceTestExp.setLsRepeat2Value(mapCond_Group2ReadsNum, condTreat, lsExp1, condCtrl, lsExp2);
+			iSpliceTestExp.setLsRepeat2Value(mapCond_Group2ReadsNum, condTreat, mapTreat2LsValueExp, condCtrl, mapCtrl2LsValueExp);
 			
 			iSpliceTestJun = SpliceTestFactory.createSpliceModule(isCombine);
-			ArrayListMultimap<String, Double> lsJunc1 = spliceType2ValueTreat.getLsJun(splicingType);
-			ArrayListMultimap<String, Double> lsJunc2 = spliceType2ValueCtrl.getLsJun(splicingType);
+			ArrayListMultimap<String, Double> mapTreat2LsValueJun = spliceType2ValueTreat.getLsJun(splicingType);
+			ArrayListMultimap<String, Double> mapCtrl2LsValueJun = spliceType2ValueCtrl.getLsJun(splicingType);
 			iSpliceTestJun.setMakeSmallValueBigger(false, 0, 0);
 			iSpliceTestJun.setJuncReadsNum(juncAllReadsNum, juncSampleReadsNum);
-			iSpliceTestJun.setLsRepeat2Value(mapCond_Group2JunNum, condTreat, lsJunc1, condCtrl, lsJunc2);
+			iSpliceTestJun.setLsRepeat2Value(mapCond_Group2JunNum, condTreat, mapTreat2LsValueJun, condCtrl, mapCtrl2LsValueJun);
 			
 			if (this.splicingType == SplicingAlternativeType.mutually_exclusive) {
 				//如果是MXE，则将小与200的reads数都乘以1.5再标准化
@@ -796,7 +714,7 @@ class SpliceType2Value {
 	 * 有些譬如类似alt5和alt3，如果差距太小，就不进行考虑
 	 */
 	boolean isFiltered = true;
-	
+
 	/** 添加表达 */
 	public void addExp(String group, GffDetailGene gffDetailGene, 
 			SpliceTypePredict spliceTypePredict, double[] BGinfo, double[] info) {
@@ -822,6 +740,7 @@ class SpliceType2Value {
 		}
 		return (int)new Mean().evaluate(info);
 	}
+	
 	/** 添加指定时期的JunctionReads
 	 * condition是用来设定spliceTypePredict的时期的
 	 */

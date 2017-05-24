@@ -2,12 +2,15 @@ package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
 
@@ -41,23 +44,26 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		isType();
 		Set<Integer> setEdge = getSetEdge();
 		String chrID = lsSite.get(0).getRefID();
-		addMapGroup2LsValue(mapGroup2LsValue, getSkipReadsNum(condition));
 		TreeMap<Double, Integer> mapValue2Edge = new TreeMap<>(new Comparator<Double>() {
 			public int compare(Double o1, Double o2) {
 				return -o1.compareTo(o2);
 			}
 		});
 		
-		for (Integer integer : setEdge) {
-			mapValue2Edge.put(tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), chrID, integer), integer);
+		for (Integer loc : setEdge) {
+			mapValue2Edge.put(tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), chrID, loc), loc);
 		}
+		//注意这里仅取了其中一个iso的边，那么如果这个区域有多个iso类似(2,3,4,5号iso)
+		//1. 10-20--------------------------------------
+		//2.              30-40--------------------------
+		//3.              30--50-------------------------
+		//4.              30--52-------------------------
+		//5.              30---60------------------------
+		//那么就只会取2,3,4,5号iso其中一个
 		int edge = mapValue2Edge.values().iterator().next();
-		try {
-			addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
-		} catch (Exception e) {
-			addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
-		}
-	
+		addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
+		
+		addMapGroup2LsValue(mapGroup2LsValue, getSkipReadsNum(condition));
 		return mapGroup2LsValue;
 	}
 	

@@ -51,7 +51,7 @@ public class PredictCassette extends SpliceTypePredict {
 	/** 不完全按照转录本信息来 */
 	private ArrayListMultimap<String, Double> getJuncCountsLess(String condition) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
-		addMapGroup2LsValue(mapGroup2LsValue, getSkipReadsNum(condition));
+		
 		Set<Integer> setAlignExist = new HashSet<Integer>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : setExistExonIso) {
 			List<ExonInfo> lsExon = exonCluster.getIsoExon(gffGeneIsoInfo);
@@ -69,6 +69,7 @@ public class PredictCassette extends SpliceTypePredict {
 			mapGroup2JunReads.put(group, value/2);
 		}
 		addMapGroup2LsValue(mapGroup2LsValue, mapGroup2JunReads);
+		addMapGroup2LsValue(mapGroup2LsValue, getSkipReadsNum(condition));
 		return mapGroup2LsValue;
 	}
 	
@@ -118,11 +119,11 @@ public class PredictCassette extends SpliceTypePredict {
 //		}
 		
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
-		addMapGroup2LsValue(mapGroup2LsValue, mapSkip);
 		addMapGroup2LsValue(mapGroup2LsValue, mapExist);
+		addMapGroup2LsValue(mapGroup2LsValue, mapSkip);
 		return mapGroup2LsValue;
 	}
-
+	
 	@Override
 	protected boolean isType() {
 		setExistExonIso = new HashSet<GffGeneIsoInfo>();

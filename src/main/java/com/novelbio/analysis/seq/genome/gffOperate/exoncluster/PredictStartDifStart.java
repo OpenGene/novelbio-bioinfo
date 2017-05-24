@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
@@ -30,7 +31,7 @@ public class PredictStartDifStart extends SpliceTypePredict {
 			if (i++ > 1) break;
 			lsExonInfosFinal.add(exonInfo2Value.exonInfo);
 		}
-		
+		Collections.sort(lsExonInfosFinal,(exon1, exon2)->{return -Integer.valueOf(exon1.getLength()).compareTo(exon2.getLength());});
 		return getlsJunInfoEdge(condition, lsExonInfosFinal);
 	}
 
