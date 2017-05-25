@@ -177,7 +177,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	 * @param fastaOut
 	 */
 	private void convertNoCDSbed2Fasta(BedFile bedSeq, String fastaOut) {
-		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Predict_Mirna", "bed");
+		String out = FileOperate.getParentPathNameWithSep(lsAlignSeqFile.iterator().next().getFileName()) + "Predict_Mirna.bed";
 		out = outPath + FileOperate.getFileName(out);
 		TxtReadandWrite txtOut = new TxtReadandWrite(fastaOut, true);
 		for (BedRecord bedRecord : bedSeq.readLines()) {
@@ -189,13 +189,13 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 	/** 只生成文件名，并不生成实际文件 */
 	private String getFastaMapFileName() {
 		if (fastaInput == null || fastaInput.trim().equals("")) {
-			fastaInput = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Potential_DenoveMirna", "fasta");
+			fastaInput = FileOperate.getParentPathNameWithSep(lsAlignSeqFile.iterator().next().getFileName()) + "Potential_DenoveMirna.fasta";
 			fastaInput = outPath + FileOperate.getFileName(fastaInput);
 		}
 		return fastaInput;
 	}
 	private BedFile getBedFile() {
-		String out = FileOperate.changeFileSuffix(lsAlignSeqFile.iterator().next().getFileName(), "_Predict_Mirna", "bed.gz");
+		String out = FileOperate.getParentPathNameWithSep(lsAlignSeqFile.iterator().next().getFileName()) + "Predict_Mirna.bed.gz";
 		out = outPath + FileOperate.getFileName(out);
 		BedFile bedSeq = getReadsNotOnCDS(out);
 		return bedSeq;
