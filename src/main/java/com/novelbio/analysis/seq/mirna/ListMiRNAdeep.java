@@ -270,9 +270,9 @@ public class ListMiRNAdeep extends MiRNAList {
 		int startS = mirModel.indexOf("S"); int endS = mirModel.lastIndexOf("S");
 		int startM = mirModel.indexOf("M"); int endM = mirModel.lastIndexOf("M");
 		
-		SeqFasta seqFastaMature = new SeqFasta(seqName + "_mature", mirSeq.substring(startM, endM));
+		SeqFasta seqFastaMature = new SeqFasta(seqName + "_mature", mirSeq.substring(startM, endM+1));
 		seqFastaMature.setDNA(true);
-		SeqFasta seqFastaStar = new SeqFasta(seqName + "_star", mirSeq.substring(startS, endS));
+		SeqFasta seqFastaStar = new SeqFasta(seqName + "_star", mirSeq.substring(startS, endS+1));
 		seqFastaStar.setDNA(true);
 		
 		lsResult.add(seqFasta);
