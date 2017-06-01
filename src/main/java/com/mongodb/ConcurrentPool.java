@@ -20,12 +20,14 @@ import java.util.Iterator;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeUnit;
 
+import com.novelbio.base.util.ServiceEnvUtil;
+
 class ConcurrentPool<T> {
 
     private final int maxSize;
     private final ItemFactory<T> itemFactory;
-    // ossHost不为空,说明是运行在批量计算的VM中.
-    private static String ossHost = System.getenv("BATCH_COMPUTE_OSS_HOST");
+//    // ossHost不为空,说明是运行在批量计算的VM中.
+//    private static String ossHost = System.getenv("BATCH_COMPUTE_OSS_HOST");
 
     private final Deque<T> available = new ConcurrentLinkedDeque<T>();
     private final Semaphore permits;
@@ -66,7 +68,7 @@ class ConcurrentPool<T> {
     	 * modify by fans.fan 阿里云批量计算，所有的连接用完都关闭.
     	 * release(t, false);
     	 */
-		if (ossHost != null && !"".equals(ossHost)) {
+		if (ServiceEnvUtil.isBatchCompute()) {
 			// ossHost不为空,说明是运行在批量计算的VM中.
 			release(t, true);
 		} else {
@@ -148,7 +150,7 @@ class ConcurrentPool<T> {
              * modify by fans.fan
             release(cur, itemFactory.shouldPrune(cur));
              */
-            if (ossHost != null && !"".equals(ossHost)) {
+            if (ServiceEnvUtil.isBatchCompute()) {
     			// ossHost不为空,说明是运行在批量计算的VM中.
             	release(cur, true);
     		} else {

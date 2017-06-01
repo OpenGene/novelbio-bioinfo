@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.logging.Logger;
 
+import com.novelbio.base.util.ServiceEnvUtil;
+
 import static java.lang.String.format;
 import static java.lang.Thread.currentThread;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
@@ -30,8 +32,8 @@ import static org.bson.util.Assertions.notNull;
 
 class PooledConnectionProvider  {
     private static final Logger LOGGER = Loggers.getLogger("connection");
-    // ossHost不为空,说明是运行在批量计算的VM中.
-    private static String ossHost = System.getenv("BATCH_COMPUTE_OSS_HOST");
+//    // ossHost不为空,说明是运行在批量计算的VM中.
+//    private static String ossHost = System.getenv("BATCH_COMPUTE_OSS_HOST");
     
     private final ConcurrentPool<Connection> pool;
     private final ConnectionPoolSettings settings;
@@ -96,7 +98,7 @@ class PooledConnectionProvider  {
     	 * modify by fans.fan 阿里云批量计算，所有的连接用完都关闭.
     	 * pool.release(connection, connection.isClosed() || shouldPrune(connection));
     	 */
-    	if (ossHost != null && !"".equals(ossHost)) {
+    	if (ServiceEnvUtil.isBatchCompute()) {
 			// ossHost不为空,说明是运行在批量计算的VM中.
 			pool.release(connection, true);
 		} else {
