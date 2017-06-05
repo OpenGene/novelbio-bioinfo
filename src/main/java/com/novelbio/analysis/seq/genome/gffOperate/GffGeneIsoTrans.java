@@ -1,11 +1,13 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.novelbio.database.model.modgeneid.GeneType;
 public class GffGeneIsoTrans extends GffGeneIsoInfo {
 	private static final long serialVersionUID = -3187469258704218874L;
 	
-	private static final Logger logger = Logger.getLogger(GffGeneIsoTrans.class);
+	private static final Logger logger = LoggerFactory.getLogger(GffGeneIsoTrans.class);
 	
 	public GffGeneIsoTrans() {}
 	

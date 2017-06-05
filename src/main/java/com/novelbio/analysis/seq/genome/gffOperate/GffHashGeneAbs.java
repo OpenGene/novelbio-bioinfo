@@ -11,7 +11,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.base.SepSign;
@@ -22,7 +23,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.listOperate.ListHashSearch;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
-	private static final Logger logger = Logger.getLogger(GffHashGeneAbs.class);
+	private static final Logger logger = LoggerFactory.getLogger(GffHashGeneAbs.class);
 
 
 	int taxID = 0;

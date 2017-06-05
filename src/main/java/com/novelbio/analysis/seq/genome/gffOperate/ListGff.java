@@ -1,15 +1,13 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
-import java.util.List;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.listOperate.ListAbsSearch;
 
 public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGeneDU> {
-	private static Logger logger = Logger.getLogger(ListGff.class);
+	private static Logger logger = LoggerFactory.getLogger(ListGff.class);
 	private static final long serialVersionUID = -1121905415019539320L;
 	@Override
 	protected GffCodGene creatGffCod(String chrID, int Coordinate) {

@@ -2,7 +2,6 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -10,7 +9,8 @@ import java.util.Set;
 
 import javax.persistence.Id;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -45,7 +45,7 @@ import com.novelbio.listOperate.ListCodAbsDu;
     @CompoundIndex(unique = false, name = "fileId_name", def = "{'gffFileId': 1, 'listName': 1}")
 })
 public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<ExonInfo>, ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>>> {
-	private static final Logger logger = Logger.getLogger(GffGeneIsoInfo.class);
+	private static final Logger logger = LoggerFactory.getLogger(GffGeneIsoInfo.class);
 	private static final long serialVersionUID = -6015332335255457620L;
 	/** 标记codInExon处在外显子中 */
 	public static final int COD_LOC_EXON = 100;

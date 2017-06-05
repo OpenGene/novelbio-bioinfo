@@ -5,7 +5,8 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
@@ -26,7 +27,7 @@ import com.novelbio.base.dataStructure.Alignment;
  * @author zong0jie
  */
 public class ListDetailAbs implements Alignment, Cloneable {
-	private static final Logger logger = Logger.getLogger(ListDetailAbs.class);
+	private static final Logger logger = LoggerFactory.getLogger(ListDetailAbs.class);
 
 	/** 父树 */
 	@Transient

@@ -1,9 +1,10 @@
 package com.novelbio.listOperate;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodAbs<E>, K extends ListCodAbsDu<E, T>> extends ListAbs<E>  implements Cloneable{
-	private static Logger logger = Logger.getLogger(ListAbsSearch.class);
+	private static Logger logger = LoggerFactory.getLogger(ListAbsSearch.class);
 	private static final long serialVersionUID = 4583552188474447935L;
 
 	/**

@@ -7,9 +7,11 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -38,7 +40,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
 public class GffHashGeneNCBI extends GffHashGeneAbs {
-	private static final Logger logger = Logger
+	private static final Logger logger = LoggerFactory
 			.getLogger(GffHashGeneNCBI.class);
 
 	/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认 NCBI的ID */

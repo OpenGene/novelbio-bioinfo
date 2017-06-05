@@ -9,7 +9,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
@@ -24,7 +25,7 @@ import com.novelbio.listOperate.ListDetailAbs.ListDetailAbsCompareStrand;
  */
 public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E> {
 	private static final long serialVersionUID = -3356076601369239937L;
-	private static final Logger logger = Logger.getLogger(ListAbs.class);
+	private static final Logger logger = LoggerFactory.getLogger(ListAbs.class);
 	/**保存某个坐标到所在的内含子/外显子起点的距离 */
 	@Transient
 	HashMap<Integer, Integer> hashLocExInStart;

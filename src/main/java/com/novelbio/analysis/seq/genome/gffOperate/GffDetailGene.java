@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -9,13 +8,13 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
 import javax.persistence.Id;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.CompoundIndexes;
@@ -24,13 +23,8 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.google.common.collect.TreeMultimap;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
-import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
-import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -64,7 +58,7 @@ import com.novelbio.listOperate.ListDetailAbs;
     @CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1 , 'parentName': 1, 'numberstart': 1, 'numberend': 1}")
 })
 public class GffDetailGene extends ListDetailAbs {
-	private final static Logger logger = Logger.getLogger(GffDetailGene.class);
+	private final static Logger logger = LoggerFactory.getLogger(GffDetailGene.class);
 	/** 两个转录本的overlap 覆盖 必须大于0.6才算是一个基因 */
 	public final static double OVERLAP_RATIO = 0.6;
 	

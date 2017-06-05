@@ -6,20 +6,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.novelbio.base.dataStructure.ArrayOperate;
+import com.google.common.collect.HashBiMap;
 import com.novelbio.base.dataStructure.PatternOperate;
 
 /** 从gff文件中获取转换过的chrId信息 */
 public class GffGetChrId {
-	private static final Logger logger = Logger.getLogger(GffGetChrId.class);
+	private static final Logger logger = LoggerFactory.getLogger(GffGetChrId.class);
 	
 	/**
 	 * key: 类似NC_XXX，为小写
 	 * value: 类似chr1
 	 */
-	Map<String, String> mapId2ChrId = new HashMap<>();
+	HashBiMap<String, String> mapId2ChrId = HashBiMap.create();
 	
 	Set<String> setChrIdAll = new HashSet<>();
 	
@@ -35,7 +36,18 @@ public class GffGetChrId {
 		}
 		return chrIdNew;
 	}
-	
+	/** 把给定的chrId做一个转换，转化成gff修正前的chrId，如将chr1转化为NC_123
+	 * 注意返回的都为小写
+	 * @param chrId
+	 * @return
+	 */
+	public String getChrIdRaw(String chrId) {
+		String chrIdNew = mapId2ChrId.inverse().get(chrId.toLowerCase());
+		if (chrIdNew == null) {
+			chrIdNew = chrId;
+		}
+		return chrIdNew;
+	}
 	/**
 	 * 逐行输入，然后就可以返回具体的Id
 	 * 输入NC编号，返回染色体ID
