@@ -135,7 +135,15 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			setIsChromosome.add("chromosome");
 		}
 	}
-
+	
+	/**
+	 * 是否把NCBI-Gff中的NC_1234修改为chr1
+	 * @param isChangeChrId 默认为true
+	 */
+	public void setChangeChrId(boolean isChangeChrId) {
+		gffGetChrId.setChangeChrId(isChangeChrId);
+	}
+	
 	private void setPattern() {
 		patGeneName = new PatternOperate(regGeneName, false);
 		patmRNAName = new PatternOperate(regSplitmRNA, false);

@@ -393,6 +393,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				ExceptionSamIndexError exceptionSamIndexError = new ExceptionSamIndexError(info);
 				exceptionSamIndexError.setStackTrace(e.getStackTrace());
 				throw exceptionSamIndexError;
+			} catch (Exception e) {
+				// TODO: handle exception
 			}
 		} else {
 			try {

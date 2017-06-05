@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.Alignment;
 
 import htsjdk.samtools.SAMException;
@@ -116,6 +117,11 @@ public class AlignSamReading extends AlignSeqReading {
 						throw new ExceptionSamError(
 								"read file of " + samFile.getFileName() + " error, please check this file", e);
 					}
+				} catch (UnsupportedOperationException e) {
+					if (StringOperate.isEqual("Cannot query stream-based BAM file", e.getMessage())){
+						throw new ExceptionSamNoIndexError("sam file " + samFile.getFileName() + " must be sorted and indexed", e);
+					}
+					throw e;
 				}
 
 			}

@@ -1,9 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -24,12 +22,24 @@ public class GffGetChrId {
 	
 	Set<String> setChrIdAll = new HashSet<>();
 	
+	boolean isChangeChrId = true;
+	
+	/**
+	 * 是否把NCBI-Gff中的NC_1234修改为chr1
+	 * @param isChangeChrId
+	 */
+	public void setChangeChrId(boolean isChangeChrId) {
+		this.isChangeChrId = isChangeChrId;
+	}
+	
 	public boolean isHaveChrId(String chrId) {
 		return setChrIdAll.contains(chrId.toLowerCase());
 	}
 	
 	/** 把给定的chrId做一个转换，转化成gff修正后的chrId，如将NC_123转化成chr1 */
 	public String getChrId(String chrId) {
+		if (!isChangeChrId) return chrId;
+		
 		String chrIdNew = mapId2ChrId.get(chrId.toLowerCase());
 		if (chrIdNew == null) {
 			chrIdNew = chrId;
@@ -42,6 +52,8 @@ public class GffGetChrId {
 	 * @return
 	 */
 	public String getChrIdRaw(String chrId) {
+		if (!isChangeChrId) return chrId;
+		
 		String chrIdNew = mapId2ChrId.inverse().get(chrId.toLowerCase());
 		if (chrIdNew == null) {
 			chrIdNew = chrId;
@@ -55,6 +67,11 @@ public class GffGetChrId {
 	 * @return
 	 */
 	public String getChrID(String[] ss) {
+		if (!isChangeChrId) {
+			setChrIdAll.add(ss[0].toLowerCase());
+			return ss[0];
+		}
+		
 		String chrID = mapId2ChrId.get(ss[0].toLowerCase());
 		if (chrID != null) return chrID;
 		if (ss[0].toLowerCase().startsWith("chr")) {

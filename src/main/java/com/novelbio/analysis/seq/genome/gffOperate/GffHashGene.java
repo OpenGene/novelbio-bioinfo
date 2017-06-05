@@ -14,9 +14,7 @@ import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.model.modgeneid.GeneType;
-import com.novelbio.database.service.servgff.MgmtGffDetailGene;
 
 /**
  * 
@@ -88,6 +86,17 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		gffType = readGffTypeFromFileName(gffFile);
 		this.gffFile = gffFile;
 		read(taxID, version, dbinfo, gffType, gffFile, false);
+	}
+	/**
+	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
+	 * @param isChangeChrId 是否根据NCBI-Gff中的chrinfo把NC_123修改为chr1
+	 * 默认为true
+	 * @param gffFile 根据文件后缀名判断是GFF还是GTF
+	 */
+	public GffHashGene(boolean isChangeChrId, String gffFile) {
+		gffType = readGffTypeFromFileName(gffFile);
+		this.gffFile = gffFile;
+		read(taxID, version, dbinfo, gffType, gffFile, false, isChangeChrId);
 	}
 	/**
 	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
@@ -165,7 +174,21 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	 * @param isFilterDuplicateName 发现重复的mRNA名字时，就换一个名字，专用于果蝇
 	 * @return
 	 */
-	private boolean read(int taxID, String version, String dbinfo, GffType gffType, String gffFile, boolean isFilterDuplicateName) {
+	private boolean read(int taxID, String version, String dbinfo, GffType gffType, String gffFile,
+			boolean isFilterDuplicateName) {
+		return read(taxID, version, dbinfo, gffType, gffFile, isFilterDuplicateName, null);
+	}
+	/**
+	 * @param taxID
+	 * @param version
+	 * @param dbinfo
+	 * @param gffType
+	 * @param gffFile
+	 * @param isFilterDuplicateName 发现重复的mRNA名字时，就换一个名字，专用于果蝇
+	 * @return
+	 */
+	private boolean read(int taxID, String version, String dbinfo, GffType gffType, String gffFile,
+			boolean isFilterDuplicateName, Boolean isChangeChrId) {
 		if (gffType == GffType.UCSC) {
 			gffHashGene = new GffHashGeneUCSC();
 		}
@@ -178,6 +201,9 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		else if (gffType == GffType.GFF3) {
 			gffHashGene = new GffHashGeneNCBI();
 			((GffHashGeneNCBI)gffHashGene).setFilterDuplicateName(isFilterDuplicateName);
+			if (isChangeChrId != null) {
+				((GffHashGeneNCBI)gffHashGene).setChangeChrId(isChangeChrId);
+			}
 		}
 		if (taxID > 0) {
 			gffHashGene.setTaxID(taxID);
