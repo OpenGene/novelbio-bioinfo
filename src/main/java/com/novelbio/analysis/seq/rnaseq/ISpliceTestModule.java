@@ -765,7 +765,11 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 		for (String group : mapGroup2LsValue.keySet()) {
 			List<Double> lsValues = mapGroup2LsValue.get(group);//第一个是跳过，第二个是连上
 			IR += lsValues.get(0);
-			ER += lsValues.get(1);
+			if (lsValues.size() == 1) {
+				ER += 0;
+			} else {
+				ER += lsValues.get(1);
+			}
 		}
 		return IR/(IR+ER);
 	}
