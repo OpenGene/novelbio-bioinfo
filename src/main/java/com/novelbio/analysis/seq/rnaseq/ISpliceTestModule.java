@@ -84,6 +84,23 @@ public interface ISpliceTestModule {
 	 */
 	public double getPsi(boolean isCtrl);
 	
+	public static double getPsi(ArrayListMultimap<String, Double> mapGroup2LsValue) {
+		double IR = 0, ER = 0;
+		for (String group : mapGroup2LsValue.keySet()) {
+			List<Double> lsValues = mapGroup2LsValue.get(group);//第一个是跳过，第二个是连上
+			IR += lsValues.get(0);
+			if (lsValues.size() == 1) {
+				ER += 0;
+			} else {
+				ER += lsValues.get(1);
+			}
+		}
+		if (IR+ER==0) {
+			return 1;
+		}
+		return IR/(IR+ER);
+	}
+	
 	public static class SpliceTestFactory {
 		/**
 		 * 是否将n次重复的reads合并为一个bam文件，然后进行分析
@@ -241,13 +258,7 @@ class SpliceTestRepeat implements ISpliceTestModule {
 	
 	public double getPsi(boolean isCtrl) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = isCtrl ? mapCtrl2LsValue : mapTreat2LsValue;
-		double IR = 0, ER = 0;
-		for (String group : mapGroup2LsValue.keySet()) {
-			List<Double> lsValues = mapGroup2LsValue.get(group);//第一个是跳过，第二个是连上
-			IR += lsValues.get(0);
-			ER += lsValues.get(1);
-		}
-		return IR/(IR+ER);
+		return ISpliceTestModule.getPsi(mapGroup2LsValue);
 	}
 	
 	@Override
@@ -761,17 +772,7 @@ class SpliceTestRepeatNew implements ISpliceTestModule {
 	
 	public double getPsi(boolean isCtrl) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = isCtrl ? mapCtrl2LsValue : mapTreat2LsValue;
-		double IR = 0, ER = 0;
-		for (String group : mapGroup2LsValue.keySet()) {
-			List<Double> lsValues = mapGroup2LsValue.get(group);//第一个是跳过，第二个是连上
-			IR += lsValues.get(0);
-			if (lsValues.size() == 1) {
-				ER += 0;
-			} else {
-				ER += lsValues.get(1);
-			}
-		}
-		return IR/(IR+ER);
+		return ISpliceTestModule.getPsi(mapGroup2LsValue);
 	}
 	
 	public double calculatePvalue() {
@@ -1668,13 +1669,7 @@ class SpliceTestCombine implements ISpliceTestModule {
 	
 	public double getPsi(boolean isCtrl) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = isCtrl ? mapCtrl2LsValue : mapTreat2LsValue;
-		double IR = 0, ER = 0;
-		for (String group : mapGroup2LsValue.keySet()) {
-			List<Double> lsValues = mapGroup2LsValue.get(group);//第一个是跳过，第二个是连上
-			IR += lsValues.get(0);
-			ER += lsValues.get(1);
-		}
-		return IR/(IR+ER);
+		return ISpliceTestModule.getPsi(mapGroup2LsValue);
 	}
 	
 	/** 返回该位点的reads情况 */

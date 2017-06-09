@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.ExceptionResultFileError;
 import com.novelbio.GuiAnnoInfo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
@@ -1245,6 +1246,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		
 		String[] title = isASD? ExonSplicingResultUnit.getTitle_ASD(condition1, condition2) : ExonSplicingResultUnit.getTitle(condition1, condition2);
 		txtOut.writefileln(title);
+		int errorNum = 0;
 		for (ExonSplicingResultUnit chisqTest : lsResult) {
 			
 			try {
@@ -1256,7 +1258,12 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				}
 				txtOut.writefileln(info);
 			} catch (Exception e) {
+				errorNum++;
 				e.printStackTrace();
+				if (errorNum > 100) {
+					txtOut.close();
+					throw new ExceptionResultFileError("write file error", e);
+				}
 			}
 		}
 		txtOut.close();
