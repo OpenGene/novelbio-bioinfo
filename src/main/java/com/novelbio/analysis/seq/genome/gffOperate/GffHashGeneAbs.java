@@ -488,7 +488,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			if (lsGffDetailGenes == null) continue;
 			
 			for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-				
 				//将每个iso的parentGene名字替换成不重复的名字
 				gffDetailGene = gffDetailGene.cloneDeep();
 				Map<String, String> mapGeneName2GeneNameNew = new HashMap<String, String>();
@@ -562,11 +561,11 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	
 	private String getNoReplicateName(HashSet<String> setGeneName, String thisName) {
 		String geneIDinput = thisName;
-		int num = 1;
-		while (setGeneName.contains(geneIDinput)) {
-			geneIDinput = thisName + "." + num;
-			num ++;
-		}
+//		int num = 1;
+//		while (setGeneName.contains(geneIDinput)) {
+//			geneIDinput = thisName + "." + num;
+//			num ++;
+//		}
 		return geneIDinput;
 	}
 

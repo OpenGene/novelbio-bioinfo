@@ -907,16 +907,16 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		ExonInfo exonLast = get(size() - 1);
 		ExonInfo exonFirst = get(0);
-		if ((isCis5to3() && exonInfo.getStartAbs() >= exonLast.getEndAbs())
-		|| 
-		(!isCis5to3() && exonInfo.getEndAbs() <= exonLast.getStartAbs())
-		) {
+		if (isCis5to3() && exonInfo.getStartAbs() >= exonLast.getEndAbs()) {
 			add(exonInfo);
-		} else if ((isCis5to3() && exonInfo.getEndAbs() <= exonFirst.getStartAbs())
-				|| 
-				(!isCis5to3() && exonInfo.getStartAbs() >= exonFirst.getEndAbs())
-		) {
+		} else if (!isCis5to3() && exonInfo.getStartAbs() >= exonFirst.getEndAbs()) {
 			add(0,exonInfo);
+		} else if (isCis5to3() && exonInfo.getEndAbs() <= exonFirst.getStartAbs()) {
+			add(0, exonInfo);
+		} else if (!isCis5to3() && exonInfo.getEndAbs() <= exonLast.getStartAbs()) {
+			add(exonInfo);
+		}else if (isCis5to3() && exonInfo.equalsLoc(exonLast) || !isCis5to3() && exonInfo.equalsLoc(exonFirst)) {
+			return;
 		} else {
 			logger.info("The Gff file may have error on gene: " + getName() + " and exon: " + getRefID() + " " + locStart + " " + locEnd + "  please check");
 		}

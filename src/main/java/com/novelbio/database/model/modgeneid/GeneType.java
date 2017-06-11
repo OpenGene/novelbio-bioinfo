@@ -1,6 +1,8 @@
 package com.novelbio.database.model.modgeneid;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 来自ensembl
@@ -73,6 +75,8 @@ public enum GeneType {
 	 RNase_MRP_RNA
 	 ;
 	 static HashMap<String, GeneType> mapMRNA2GeneType = new HashMap<String, GeneType>();
+	 static Set<GeneType> setSmallRNA = new HashSet<>();
+
 	/**
 	 * 设定mRNA和gene的类似名，在gff文件里面出现的
 	 * key为小写
@@ -130,6 +134,34 @@ public enum GeneType {
 			mapMRNA2GeneType.put("transposon_fragment".toLowerCase(),mRNA_TE);
 			mapMRNA2GeneType.put("transposable_element_gene".toLowerCase(),mRNA_TE);
 		}
+	}
+	
+	/**
+	 * 设定mRNA和gene的类似名，在gff文件里面出现的
+	 * key为小写
+	 */
+	private static void setSmallRNA() {
+		if (setSmallRNA.isEmpty()) {
+			setSmallRNA.add(antisense_RNA);
+			setSmallRNA.add(miRNA);
+			setSmallRNA.add(mRNA_TE);
+			
+			setSmallRNA.add(Precursor_miRNA);
+			setSmallRNA.add(PSEU);
+			setSmallRNA.add(RNase_MRP_RNA);
+			setSmallRNA.add(RNase_P_RNA);
+			setSmallRNA.add(rRNA);
+			setSmallRNA.add(scRNA);
+			setSmallRNA.add(snoRNA);
+			setSmallRNA.add(snRNA);
+			setSmallRNA.add(telomerase_RNA);
+			setSmallRNA.add(tmRNA);
+			setSmallRNA.add(tRNA);
+		}
+	}
+	
+	public static Set<GeneType> getSetSmallRNA() {
+		return setSmallRNA;
 	}
 	
 	/**

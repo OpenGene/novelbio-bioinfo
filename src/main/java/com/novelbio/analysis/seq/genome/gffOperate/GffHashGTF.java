@@ -113,7 +113,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 				if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())
 					||
 					(!tmpTranscriptName.equals(tmpTranscriptNameLast) 
-							&& !isHaveIso(tmpGeneName, tmpTranscriptName))
+							&& !isHaveIso(tmpGeneName, tmpTranscriptName, Integer.parseInt(ss[3]), Integer.parseInt(ss[4])))
 						) 
 				{
 					GeneType geneType = GeneType.getMapMRNA2GeneType().get(geneTypeStr.toLowerCase());
@@ -131,12 +131,17 @@ public class GffHashGTF extends GffHashGeneAbs{
 						continue;
 					}
 				}
+				if (gffGeneIsoInfo == null || !gffGeneIsoInfo.getName().equalsIgnoreCase(tmpTranscriptName)
+						|| !gffGeneIsoInfo.getParentGeneName().equalsIgnoreCase(tmpGeneName)
+						) {
+					gffGeneIsoInfo = getGffIso(tmpGeneName, tmpTranscriptName, exonStart, exonEnd);
+				}
 
-				gffGeneIsoInfo = getGffIso(tmpGeneName, tmpTranscriptName, exonStart, exonEnd);
 				if (gffGeneIsoInfo == null && !ss[2].toLowerCase().contains("utr")) {
 					logger.error("没找到其对应的转录本：" + content);
 					continue;
 				}
+				
 				if (ss[2].equals("exon")) {
 					if (mapIso2IsHaveExon.get(tmpTranscriptName) == false) {
 						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
@@ -263,19 +268,36 @@ public class GffHashGTF extends GffHashGeneAbs{
 		mapID2Iso.put(geneName, gffGeneIsoInfo);
 	}
 	
-	private boolean isHaveIso(String geneName, String isoName) {
-		List<GffGeneIsoInfo> lsIsos = mapID2Iso.get(geneName);
-		if (lsIsos == null || lsIsos.size() == 0) {
-			return false;
-		}
-		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
-			if (gffGeneIsoInfo.getName().toLowerCase().equals(isoName.toLowerCase())) {
-				return true;
-			}
-		}
-		return false;
-	}
 	
+	/** 如果一个iso的exon之间隔了超过这个数字，并且中间还有别的转录本，那么就认为是一个全新的iso了 */
+	static int isoDistance = 500000;
+	
+	private boolean isHaveIso(String geneName, String isoName, int start, int end) {
+		return false;
+//		List<GffGeneIsoInfo> lsIsos = mapID2Iso.get(geneName);
+//		if (lsIsos == null || lsIsos.size() == 0) {
+//			return false;
+//		}
+//		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
+//			if (gffGeneIsoInfo.getName().toLowerCase().equals(isoName.toLowerCase())) {
+//				if (gffGeneIsoInfo.isEmpty()) {
+//					return true;
+//				}
+//				
+//				if (start <= gffGeneIsoInfo.getEndAbs() && end >= gffGeneIsoInfo.getStartAbs()) {
+//					return true;
+//				}
+//				int distance = Math.min(Math.abs(start - gffGeneIsoInfo.getEndAbs()), Math.abs(gffGeneIsoInfo.getStartAbs() - end));
+//
+//				if (distance < isoDistance) {
+//					return true;
+//				}
+//	
+//			}
+//		}
+//		return false;
+	}
+
 	/**
 	    * 从hashRnaID2RnaName中获得该RNA的GffGeneIsoInfo
 	    * 这里的genID不是我们数据库里面的geneID，而是NCBI gff所特有的ID
@@ -299,8 +321,18 @@ public class GffHashGTF extends GffHashGeneAbs{
 			return null;
 		}
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
-			if (gffGeneIsoInfo.getName().toLowerCase().equals(isoName.toLowerCase())) {
-				return gffGeneIsoInfo;
+			if (gffGeneIsoInfo.getName().equalsIgnoreCase(isoName)) {
+				if (gffGeneIsoInfo.isEmpty()) {
+					return gffGeneIsoInfo;
+				}
+				if (start <= gffGeneIsoInfo.getEndAbs() && end >= gffGeneIsoInfo.getStartAbs()) {
+					return gffGeneIsoInfo;
+				}
+				int distance = Math.min(Math.abs(start - gffGeneIsoInfo.getEndAbs()), Math.abs(gffGeneIsoInfo.getStartAbs() - end));
+
+				if (distance < isoDistance) {
+					return gffGeneIsoInfo;
+				}
 			}
 		}
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
@@ -308,7 +340,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 				return gffGeneIsoInfo;
 			}
 		}
-		int maxDistance = 50000000;
+		int maxDistance = isoDistance;
 		GffGeneIsoInfo gffGeneIsoInfoFinal = null;
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
 			int distance = Math.min(Math.abs(start - gffGeneIsoInfo.getEndAbs()), Math.abs(gffGeneIsoInfo.getStartAbs() - end));

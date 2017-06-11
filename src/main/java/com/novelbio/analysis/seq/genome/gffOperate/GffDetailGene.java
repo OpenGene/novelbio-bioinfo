@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -23,6 +24,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -169,6 +171,32 @@ public class GffDetailGene extends ListDetailAbs {
 		gffDetailGene.setCis5to3(null);
 		gffDetailGene.lsGffGeneIsoInfos = new ArrayList<>();
 		return gffDetailGene;
+	}
+	
+	public GffGeneIsoInfo getIsoByName(String isoName) {
+		for (GffGeneIsoInfo iso : lsGffGeneIsoInfos) {
+			if (iso.getName().equalsIgnoreCase(isoName)) {
+				return iso;
+			}
+		}
+		return null;
+	}
+	
+	public GffGeneIsoInfo pollIsoByName(String isoName) {
+		GffGeneIsoInfo isoResult = null;
+		ArrayList<GffGeneIsoInfo> lsIso = new ArrayList<>();
+		int num = 0;
+		for (GffGeneIsoInfo iso : lsGffGeneIsoInfos) {
+			if (iso.getName().equalsIgnoreCase(isoName)) {
+				if (num++>0) throw new ExceptionNbcGFF("gene " + getNameSingle() + " cannot have two iso with same name " + isoName);
+				
+				isoResult = iso;
+				continue;
+			}
+			lsIso.add(iso);
+		}
+		lsGffGeneIsoInfos = lsIso;
+		return isoResult;
 	}
 	
 	/**

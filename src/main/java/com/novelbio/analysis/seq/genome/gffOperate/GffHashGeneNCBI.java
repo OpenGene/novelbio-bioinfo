@@ -14,9 +14,11 @@ import org.slf4j.LoggerFactory;
 import java.util.Set;
 
 import com.google.common.collect.ArrayListMultimap;
+import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -202,13 +204,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				continue;
 			}
 			ss[8] = StringOperate.decode(ss[8]);
-
-			// if (ss[2].equals("match") ||
-			// ss[2].toLowerCase().equals("chromosome") ||
-			// ss[2].toLowerCase().equals("intron") || ss[0].startsWith("NW_")
-			// || ss[0].startsWith("NT_")) {
-			// continue;
-			// }
+//			if (content.contains("Ifi202b")) {
+//				logger.info("stop");
+//			}
 			ss[0] = gffGetChrId.getChrID(ss);
 			if (ss[2].equals("region"))
 				continue;
@@ -705,6 +703,19 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		}
 		return lsGffGeneIsoInfo.get(0);
 	}
+	
+	private int minDistance(Alignment align1, Alignment align2) {
+		if (align1.getStartAbs() <= align2.getEndAbs() && align1.getEndAbs() >= align2.getStartAbs()) {
+			return 0;
+		}
+		int distance = align1.getStartAbs() < align2.getStartAbs()? 
+				align2.getStartAbs() - align1.getEndAbs() : align1.getStartAbs() - align2.getEndAbs();
+				
+		if (distance < 0) {
+			throw new ExceptionNbcGFF("align site error " + align1.toString() + " " + align2.toString());
+		}
+		return distance;
+	}
 
 	// TODO 考虑将该方法放到超类中
 	/**
@@ -712,9 +723,57 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 */
 	private void setGffList() {
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
+		ArrayListMultimap<String, GffDetailGene> mapName2LsGene = ArrayListMultimap.create();
+		
+		//====================================================
+		//有些基因是很长的转录本，但是gff记录的时候记录成了两个，所以需要把他们合并为一个iso
+		for (GffDetailGene gene : mapGenID2GffDetail.values()) {
+			if (!mapName2LsGene.containsKey(gene.getNameSingle())) {
+				mapName2LsGene.put(gene.getNameSingle(), gene);
+				continue;
+			}
+			if (gene.getNameSingle().equals("Dock2")) {
+				logger.info("stop");
+			}
+			List<GffDetailGene> lsGenes = mapName2LsGene.get(gene.getNameSingle());
+			
+			boolean isFinish = false;
+			for (GffDetailGene gffDetailGene : lsGenes) {
+				if (isFinish) break;
+				
+				if (minDistance(gene, gffDetailGene) > 500_000) {
+					continue;
+				}
+				for (GffGeneIsoInfo isoOld : gffDetailGene.getLsCodSplit()) {
+					if (gene.getLsCodSplit().isEmpty()) {
+						isFinish = true;
+						break;
+					}
+					GffGeneIsoInfo iso = gene.pollIsoByName(isoOld.getName());
+					if (iso == null) continue;
+					
+					if (isoOld.isCis5to3() != iso.isCis5to3() || GeneType.getSetSmallRNA().contains(iso.getGeneType())) {
+						continue;
+					}
+					
+					isoOld.addAll(iso.getLsElement());
+					if (isoOld.isCis5to3()) {
+						isoOld.setATGUAGauto(Math.min(iso.getATGsite(), isoOld.getATGsite()), Math.max(iso.getUAGsite(), isoOld.getUAGsite()));
+					} else {
+						isoOld.setATGUAGauto(Math.max(iso.getATGsite(), isoOld.getATGsite()), Math.min(iso.getUAGsite(), isoOld.getUAGsite()));
+					}
+					isoOld.sort();
+				}
+				gffDetailGene.resetStartEnd();
+			}
+			if (!gene.getLsCodSplit().isEmpty()) {
+				mapName2LsGene.put(gene.getNameSingle(), gene);
+			}
+		}
+		//====================================================
+		
 		ListGff LOCList = null;
-		for (String geneIdkey : mapGenID2GffDetail.keySet()) {
-			GffDetailGene gffDetailGene = mapGenID2GffDetail.get(geneIdkey);
+		for (GffDetailGene gffDetailGene : mapName2LsGene.values()) {
 			String chrID = gffDetailGene.getRefID();
 			// 新的染色体
 			if (!mapChrID2ListGff.containsKey(chrID.toLowerCase())) { // 新的染色体
