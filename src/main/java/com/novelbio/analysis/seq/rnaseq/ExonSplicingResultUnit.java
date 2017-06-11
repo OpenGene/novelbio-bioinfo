@@ -33,8 +33,8 @@ public class ExonSplicingResultUnit {
 	/** 本剪接位点周边的坐标 */
 	List<Align> lsBeforeThisAfterAlign;
 	String exonNumStr;
-	String cond1_IncludevsExclude;
-	String cond2_IncludevsExclude;
+	String cond1_ExcludevsInclude;
+	String cond2_ExcludevsInclude;
 	String cond1_Exp;
 	String cond2_Exp;
 	
@@ -59,8 +59,8 @@ public class ExonSplicingResultUnit {
 			e.printStackTrace();
 		}
 		exonNumStr = exonSplicingTest.getExonNumStr();
-		cond1_IncludevsExclude = pvalueCalculate.getStrInfo(false, false);
-		cond2_IncludevsExclude = pvalueCalculate.getStrInfo(false, true);
+		cond1_ExcludevsInclude = pvalueCalculate.getStrInfo(false, false);
+		cond2_ExcludevsInclude = pvalueCalculate.getStrInfo(false, true);
 		cond1_Exp = pvalueCalculate.getStrInfo(true, false);
 		cond2_Exp = pvalueCalculate.getStrInfo(true, true);
 		
@@ -116,8 +116,8 @@ public class ExonSplicingResultUnit {
 		lsResult.add(accId);
 		lsResult.add(alignLoc.toStringNoStrand());
 		lsResult.add(exonNumStr);
-		lsResult.add(cond1_IncludevsExclude);
-		lsResult.add(cond2_IncludevsExclude);
+		lsResult.add(cond1_ExcludevsInclude);
+		lsResult.add(cond2_ExcludevsInclude);
 		lsResult.add(cond1_Exp);
 		lsResult.add(cond2_Exp);
 		return lsResult;
@@ -127,8 +127,8 @@ public class ExonSplicingResultUnit {
 		lsTitle.add(TitleFormatNBC.AccID.toString());
 		lsTitle.add(TitleFormatNBC.Location.toString());
 		lsTitle.add(ExonNum);
-		lsTitle.add(condition1 + "_Inclusive::Exclusive");
-		lsTitle.add(condition2 + "_Inclusive::Exclusive");
+		lsTitle.add(condition1 + "_Exclusive::Inclusive");
+		lsTitle.add(condition2 + "_Exclusive::Inclusive");
 		lsTitle.add(condition1 + "Exp");
 		lsTitle.add(condition2 + "Exp");
 		return lsTitle;

@@ -1062,7 +1062,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 * @param lsTestResult
 	 * @return
 	 */
-	private 	List<ExonSplicingTest> combineMXE(List<ExonSplicingTest> lsTestResult) {
+	private List<ExonSplicingTest> combineMXE(List<ExonSplicingTest> lsTestResult) {
 		List<ExonSplicingTest> lsFinal = new ArrayList<>();
 		
 		ArrayListMultimap<String, ExonSplicingTest> mapJuncInfo2ExonTest = ArrayListMultimap.create();
@@ -1072,7 +1072,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				PvalueCalculate pvalueCalculate = exonSplicingTest.getSpliceTypePvalue();
 				String[] treat = pvalueCalculate.getStrInfo(false, false).split("::");
 				String[] ctrl = pvalueCalculate.getStrInfo(false, true).split("::");
-				String combine = treat[1] + "::" + treat[0] + SepSign.SEP_ID + ctrl[1] + "::" + ctrl[0];
+				String combine = exonSplicingTest.getExonCluster().getRefID() + treat[1] + "::" + treat[0] + SepSign.SEP_ID + ctrl[1] + "::" + ctrl[0];
 				mapJuncInfo2ExonTest.put(combine, exonSplicingTest);
 			} else {
 				lsFinal.add(exonSplicingTest);
@@ -1092,7 +1092,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			String[] treat = pvalueCalculate.getStrInfo(false, false).split("::");
 			String[] ctrl = pvalueCalculate.getStrInfo(false, true).split("::");
 			//注意跟上面方向相反
-			String combine = treat[0] + "::" + treat[1] + SepSign.SEP_ID + ctrl[0] + "::" + ctrl[1];
+			String combine = exonSplicingTest.getExonCluster().getRefID() + treat[0] + "::" + treat[1] + SepSign.SEP_ID + ctrl[0] + "::" + ctrl[1];
 			
 			List<ExonSplicingTest> lsExonSplicingTests = mapJuncInfo2ExonTest.get(combine);
 			if (lsExonSplicingTests == null) {

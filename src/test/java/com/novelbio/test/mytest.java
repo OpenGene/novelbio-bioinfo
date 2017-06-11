@@ -1,5 +1,7 @@
 package com.novelbio.test;
 
+import java.io.FileReader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -10,6 +12,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
+import org.apache.poi.hssf.util.HSSFColor.AQUA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +39,11 @@ import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.StringOperate;
+import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.dataOperate.BufferedReaderNBC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
@@ -62,18 +68,15 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-//		GffHashGene gffHashGene = 
-//				new GffHashGene("/hdfs:/nbCloud/public/nbcplatform/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3");
-//		String parentPath = "/hdfs:/nbCloud/public/AllProject/project_574bda1e60b2f463a158f376/task_5833cf8360b23da1bc0ab677/other_result/";
-//
-////		geneBody(gffHashGene, parentPath);
-////		tss(gffHashGene, parentPath);
-////		tes(gffHashGene, parentPath);
-//		String outPath = "/home/novelbio/";
-//		tss500(gffHashGene, parentPath + "8m1vsn1.txt", outPath + "8m1vsn1_tss-500.txt");
-//		tss500(gffHashGene, parentPath + "m2vsn2.txt", outPath + "m2vsn2_tss-500.txt");
+		GffHashGene gffHashGene = new GffHashGene("/home/novelbio/tools/ref_GRCm38.p2_top_level.gff3");
+		for (GffDetailGene gene : gffHashGene.getLsGffDetailGenes()) {
+			if (gene.getNameSingle().contains("Ifi202b")) {
+				System.out.println(gene.getNameSingle());
+			}
+		}
+		gffHashGene.writeToGTF("/home/novelbio/tools/ref_GRCm38.p2_top_level.gtf");
 		
-		System.out.println(FileOperate.isSymbolicLink("/home/novelbio/tmp/mytmpPath/testScript/2.fq.gz"));
+		
 	}
 	
 	public static void geneBody(GffHashGene gffHashGene, String parentPath) throws Exception {
@@ -524,7 +527,7 @@ public class mytest {
 				throw new RuntimeException("distance less than 0");
 			} else if (distance < 20) {
 				System.out.println("merge");
-				align.setStart(alignLast.getStartAbs());
+				align.setStartAbs(alignLast.getStartAbs());
 			} else {
 				lsAlignsResult.add(alignLast);
 			}

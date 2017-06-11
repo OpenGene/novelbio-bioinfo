@@ -67,7 +67,7 @@ public class TestISpliceTestModule {
 	@Test
 	public void testGetMeanValue() {
 		List<Number> lsValues = Lists.newArrayList(1,2,3,4,3,45,6,4,2);
-		double result = SpliceTestRepeatNew.getMeanValue(lsValues);
+		double result = SpliceTestRepeat.getMeanValue(lsValues);
 		Assert.assertEquals(3.125, result, 0.0001);
 	}
 	
