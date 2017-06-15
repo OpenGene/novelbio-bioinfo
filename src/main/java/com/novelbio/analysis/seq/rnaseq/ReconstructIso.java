@@ -203,7 +203,7 @@ public class ReconstructIso implements IntCmdSoft {
 	/** 仅含一个exon的iso的数量 */
 	private static int getIsoHaveOneExonNum(GffHashGene gffHashGene) {
 		int isoExon1NumNew = 0;
-		for (GffDetailGene gene : gffHashGene.getGffDetailAll()) {
+		for (GffDetailGene gene : gffHashGene.getLsGffDetailGenes()) {
 			for (GffGeneIsoInfo isoInfo : gene.getLsCodSplit()) {
 				if (isoInfo.size() == 1) {
 					isoExon1NumNew++;

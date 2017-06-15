@@ -341,20 +341,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		this.setIsoName_No_Reconstruct = gffHashGene.getSetIsoID();
 		lsSplicingTests = new ArrayList<>();
 	}
-	
-	protected ArrayList<Align> getLsDifIsoGene() {
-		ArrayList<Align> lsAlignments = new ArrayList<Align>();
-		ArrayList<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
-		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
-			gffDetailGene.removeDupliIso();
-			if (gffDetailGene.getLsCodSplit().size() <= 1 || isOnlyOneIso(gffDetailGene)) {
-				continue;
-			}
-			Align align = new Align(gffDetailGene.getRefID(), gffDetailGene.getStartCis(), gffDetailGene.getEndCis());
-			lsAlignments.add(align);
-		}
-		return lsAlignments;
-	}
 
 	public void setCompareGroups(String condition1, String condition2, String outPrefix) {
 		this.condition1 = condition1;
@@ -415,7 +401,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			List<Double> lsRegion = new ArrayList<>();
 			lsRegion.add(1.0);
 			lsRegion.add(0.0);
-			lsRegion.add((double) gffHashGene.getGffDetailAll().size());
+			lsRegion.add((double) gffHashGene.getLsGffDetailGenes().size());
 			guiAnnoInfo.setLsNumInfo(lsRegion);
 			runGetInfo.setRunningInfo(guiAnnoInfo);
 		}

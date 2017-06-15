@@ -573,14 +573,16 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	}
 	
 	public static String convertToOtherFile(String gffFileName, GffType gffType) {
+		return convertToOtherFile(gffFileName, gffType, null);
+	}
+	public static String convertToOtherFile(String gffFileName, GffType gffType, List<String> lsChrId) {
 		String resultFile = convertNameToOtherFile(gffFileName, gffType);
 		if (FileOperate.isFileExistAndBigThan0(resultFile)) return resultFile;
 		
 		GffHashGene gffHashGene = new GffHashGene(gffFileName);
-		gffHashGene.writeToFile(gffType, null, resultFile);
+		gffHashGene.writeToFile(gffType, lsChrId, resultFile);
 		return resultFile;
 	}
-	
 	/** 检查gtf文件的基因坐标是否都落在chrAll.fa的里面
 	 * 因为葡萄线粒体的gtf坐标落在了线粒体基因组的外面
 	 * 也就是说葡萄线粒体基因nad1 范围 25462--795041
@@ -590,7 +592,7 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 	public static void checkFile(String gffFile, String chrFile) {
 		Map<String, Long> mapChrId2Len = SamIndexRefsequence.generateIndexAndGetMapChrId2Len(chrFile);
 		GffHashGene gffHashGene = new GffHashGene(gffFile);
-		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
+		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
 			Long chrLen = mapChrId2Len.get(gffDetailGene.getRefID().toLowerCase());
 			if (chrLen == null) {
 //				throw new ExceptionGFF("chromosome file error: " + gffDetailGene.getRefID() + " chrFile doesn't contain this chrId");

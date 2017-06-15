@@ -188,7 +188,9 @@ public class GffDetailGene extends ListDetailAbs {
 		int num = 0;
 		for (GffGeneIsoInfo iso : lsGffGeneIsoInfos) {
 			if (iso.getName().equalsIgnoreCase(isoName)) {
-				if (num++>0) throw new ExceptionNbcGFF("gene " + getNameSingle() + " cannot have two iso with same name " + isoName);
+				if (num++>0) {
+					throw new ExceptionNbcGFF("gene " + getNameSingle() + " cannot have two iso with same name " + isoName);
+				}
 				
 				isoResult = iso;
 				continue;

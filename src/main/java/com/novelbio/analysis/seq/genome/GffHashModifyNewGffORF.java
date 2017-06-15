@@ -137,7 +137,7 @@ public class GffHashModifyNewGffORF {
 	
 	private GffHashGene filterGene2() {
 		Set<String> setGffKnownGeneName = new HashSet<String>();
-		for (GffDetailGene gffDetailGene : gffHashGeneRef.getGffDetailAll()) {
+		for (GffDetailGene gffDetailGene : gffHashGeneRef.getLsGffDetailGenes()) {
 			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
 				setGffKnownGeneName.add(iso.getParentGeneName());
 			}

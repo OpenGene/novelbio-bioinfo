@@ -246,12 +246,10 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 			getMapName2DetailNum();
 			getMapName2Detail();
 		} catch (ExceptionNbcGFF e) {
-			throw e;
+			throw new ExceptionNbcGFF("gtffile error " + gfffilename, e);
 		}catch (FileNotFoundException e) {
-			e.printStackTrace();
-			throw new ExceptionNbcGFF("cannot find gtffile " + gfffilename);
+			throw new ExceptionNbcGFF("cannot find gtffile " + gfffilename, e);
 		} catch (Exception e) {
-			e.printStackTrace();
 			throw new ExceptionNbcGFF("GffFile Formate Error:" + gfffilename, e);
 		}
 		return true;

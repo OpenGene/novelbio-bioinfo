@@ -195,13 +195,13 @@ public class CtrlMiRNAfastq implements IntCmdSoft {
 			miRNACount.setExpTable(expMirPre, expMirMature);	
 		}
 		
-		List<String> lsRfamNameRaw = SeqHash.getLsSeqName(species.getRfamFile(rfamSpeciesSpecific));
+		List<String> lsRfamNameRaw = SeqHash.getLsSeqNameFromFasta(species.getRfamFile(rfamSpeciesSpecific));
 		expRfamID.addLsGeneName(rfamStatistic.getLsRfamID(lsRfamNameRaw));
 		expRfamID.addAnnotationArray(rfamStatistic.getMapRfamID2Info());
 		expRfamID.addLsTitle(RfamStatistic.getLsTitleRfamIDAnno());
 		expRfamClass.addLsGeneName(rfamStatistic.getLsRfamClass(lsRfamNameRaw));
 		
-		List<String> lsNCrnaName = SeqHash.getLsSeqName(species.getRefseqNCfile());
+		List<String> lsNCrnaName = SeqHash.getLsSeqNameFromFasta(species.getRefseqNCfile());
 		expNcRNA.addLsGeneName(lsNCrnaName);
 		expNcRNA.addAnnotationArray(readsOnNCrna.getLsMapGene2Anno(lsNCrnaName));
 		expNcRNA.addLsTitle(ReadsOnNCrna.getLsTitleAnno());

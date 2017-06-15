@@ -86,7 +86,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/**
 	 * 这两个是一对，一个是rnaID对应多个iso，常见于TRNA 另一个这个存储ISO对应的坐标
 	 */
-	private ArrayListMultimap<String, GffGeneIsoInfo> mapRnaID2LsIso = ArrayListMultimap.create();
+	private Map<String, GffGeneIsoInfo> mapRnaID2Iso = new HashMap<>();
 	private ArrayListMultimap<String, ExonInfo> mapRnaID2LsIsoLocInfo = ArrayListMultimap.create();
 	private Map<String, Align> mapGeneID2Region = new HashMap<>();
 	private GffGetChrId gffGetChrId = new GffGetChrId();
@@ -192,10 +192,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		for (String content : txtgff.readlines()) {
 			if (content.trim().equals("") || content.charAt(0) == '#')
 				continue;
-
-			if (content.contains("C_gene_segment")) {
-				logger.debug("stop");
-			}
 
 			String[] ss = content.split("\t");// 按照tab分开
 			if (ss[2].equals("match")
@@ -332,10 +328,14 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				lastGeneIDandName, rnaID, ss, mRNAtype);
 		GffDetailGene gffDetailGene = getGffDetailRnaID(rnaID);
 		try {
-			GffGeneIsoInfo gffGeneIsoInfo = gffDetailGene.addsplitlist(rnaName,
-					gffDetailGene.getNameSingle(), mRNAtype, ss[6].equals("+")
-							|| ss[6].equals("."));// 每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
-			mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
+			GffGeneIsoInfo iso= mapRnaID2Iso.get(rnaID);
+			if (iso == null) {
+				iso = gffDetailGene.addsplitlist(rnaName,
+						gffDetailGene.getNameSingle(), mRNAtype, ss[6].equals("+")
+								|| ss[6].equals("."));// 每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+				mapRnaID2Iso.put(rnaID, iso);
+			}
+	
 			ExonInfo exonInfo = new ExonInfo(true, Integer.parseInt(ss[3]),
 					Integer.parseInt(ss[4]));
 			mapRnaID2LsIsoLocInfo.put(rnaID, exonInfo);
@@ -471,7 +471,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			logger.error("没有找到相应的GeneID:" + geneID);
 		}
 		if (!mapGeneName2IsHaveExon.get(geneID)) {
-			gffGeneIsoInfo.addExon(ss[6].equals("+") || ss[6].equals("."),
+			gffGeneIsoInfo.addCDS(ss[6].equals("+") || ss[6].equals("."),
 					Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 		}
 	}
@@ -675,9 +675,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 */
 	private GffGeneIsoInfo getGffIso(String rnaID, int startExon, int endExon,
 			GeneType geneType) {
-		List<GffGeneIsoInfo> lsGffGeneIsoInfo = mapRnaID2LsIso.get(rnaID);
+		GffGeneIsoInfo iso = mapRnaID2Iso.get(rnaID);
 		List<ExonInfo> lsGffLoc = mapRnaID2LsIsoLocInfo.get(rnaID);
-		if (lsGffGeneIsoInfo.size() == 0) {
+		if (iso == null) {
 			mapRnaID2GeneID.put(rnaID, rnaID);
 			GffDetailGene gffDetailGene = getGffDetailGenID(rnaID);
 			if (gffDetailGene == null) {
@@ -688,20 +688,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 					gffDetailGene.getNameSingle(),
 					gffDetailGene.getNameSingle(), geneType);
 
-			mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
-			lsGffGeneIsoInfo = mapRnaID2LsIso.get(rnaID);
+			mapRnaID2Iso.put(rnaID, gffGeneIsoInfo);
+			iso = mapRnaID2Iso.get(rnaID);
 		}
-
-		if (lsGffGeneIsoInfo.size() > 1 && startExon > 0 && endExon > 0) {
-			for (int i = 0; i < lsGffLoc.size(); i++) {
-				ExonInfo exonInfo = lsGffLoc.get(i);
-				if (exonInfo.getStartAbs() <= startExon
-						&& exonInfo.getEndAbs() >= endExon) {
-					return lsGffGeneIsoInfo.get(i);
-				}
-			}
-		}
-		return lsGffGeneIsoInfo.get(0);
+		return iso;
 	}
 	
 	private int minDistance(Alignment align1, Alignment align2) {
@@ -815,7 +805,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		mapRnaID2GeneID.clear();
 		mapGenID2GffDetail.clear();
 
-		mapRnaID2LsIso.clear();
+		mapRnaID2Iso.clear();
 		mapRnaID2LsIsoLocInfo.clear();
 		gffGetChrId.clear();
 		mapGeneName2IsHaveExon.clear();
@@ -828,7 +818,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		mapRnaID2GeneID = null;
 		mapGenID2GffDetail = null;
 
-		mapRnaID2LsIso = null;
+		mapRnaID2Iso = null;
 		mapRnaID2LsIsoLocInfo = null;
 		gffGetChrId = null;
 		mapGeneName2IsHaveExon = null;

@@ -31,7 +31,7 @@ public class TestSamMapReads extends TestCase {
 	
 	public void test() {
 		int i = 0;
-		List<GffDetailGene> lsGffDetailGenes = gffHashGene.getGffDetailAll();
+		List<GffDetailGene> lsGffDetailGenes = gffHashGene.getLsGffDetailGenes();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				if (!samFile.getMapChrIDLowcase2Length().containsKey(gffGeneIsoInfo.getRefIDlowcase().toLowerCase())) {

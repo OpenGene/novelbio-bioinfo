@@ -568,7 +568,7 @@ public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
 	public void writeIsoFasta(String seqFastaTxt) {
 		HashSet<String> setRemoveRedundent = new HashSet<String>();
 		TxtReadandWrite txtFasta = new TxtReadandWrite(seqFastaTxt, true);
-		ArrayList<GffDetailGene> lsGffDetailGenes = gffChrAbs.getGffHashGene().getGffDetailAll();
+		List<GffDetailGene> lsGffDetailGenes = gffChrAbs.getGffHashGene().getLsGffDetailGenes();
 		for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 				if (setRemoveRedundent.contains(gffGeneIsoInfo.getName())) {

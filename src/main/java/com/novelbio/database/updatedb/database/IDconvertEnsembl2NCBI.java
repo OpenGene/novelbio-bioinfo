@@ -41,7 +41,7 @@ public class IDconvertEnsembl2NCBI {
 		this.taxID = taxID;
 	}
 	public void update() {
-		for (GffDetailGene gffDetailGene : gffHashEnsembl.getGffDetailAll()) {
+		for (GffDetailGene gffDetailGene : gffHashEnsembl.getLsGffDetailGenes()) {
 			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
 				if (isExist(iso)) {
 					continue;

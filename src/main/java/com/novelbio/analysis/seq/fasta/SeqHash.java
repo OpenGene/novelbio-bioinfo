@@ -252,7 +252,24 @@ public class SeqHash implements SeqHashInt {
 	public static SAMSequenceDictionary getDictionary(String fasta) {
 		return getDictionaryFromFai(SamIndexRefsequence.getIndexFile(fasta), " ");
 	}
-	
+	/**
+	 * 如果fai存在则读取fai文件，如果fai文件不存在，则遍历fasta文件
+	 * @param seqFile
+	 * @return
+	 */
+	public static List<String> getLsSeqName(String fastaFile) {
+		List<String> lsName = new ArrayList<>();
+		String faiFile = SamIndexRefsequence.getIndexFile(fastaFile);
+		if (FileOperate.isFileExistAndBigThan0(faiFile)) {
+			SAMSequenceDictionary samSequenceDictionary = getDictionaryFromFai(faiFile);
+			for (SAMSequenceRecord chrRecord : samSequenceDictionary.getSequences()) {
+				lsName.add(chrRecord.getSequenceName());
+			}
+		} else {
+			lsName = getLsSeqNameFromFasta(fastaFile);
+		}
+		return lsName;
+	}
 	public static SAMSequenceDictionary getDictionaryFromFai(String seqFai) {
 		return getDictionaryFromFai(seqFai, " ");
 	}
@@ -384,7 +401,7 @@ public class SeqHash implements SeqHashInt {
 	}
 
 	/** 不占内存的读取文件中所有序列名 */
-	public static List<String> getLsSeqName(String fastaFile) {
+	public static List<String> getLsSeqNameFromFasta(String fastaFile) {
 		List<String> lsName = new ArrayList<>();
 		if (!FileOperate.isFileExistAndBigThanSize(fastaFile, 0)) {
 			return lsName;

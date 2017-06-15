@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 import java.util.Set;
 
@@ -105,7 +106,7 @@ public class StatisticsGenome {
 		}
 		//chrID小写
 		HashMultimap<String, ExonInfo> mapChrID2SetExonInfo = HashMultimap.create();
-		ArrayList<GffDetailGene> lsGffDetailGene = gffChrAbs.getGffHashGene().getGffDetailAll();
+		List<GffDetailGene> lsGffDetailGene = gffChrAbs.getGffHashGene().getLsGffDetailGenes();
 		for (GffDetailGene gffDetailGene : lsGffDetailGene) {
 			for (ExonInfo exonInfo : gffDetailGene.getLongestSplitMrna()) {
 				Set<ExonInfo> setExonInfos = mapChrID2SetExonInfo.get(gffDetailGene.getRefID().toLowerCase());

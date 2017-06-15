@@ -451,7 +451,7 @@ public class GffHashGeneGff3 extends GffHashGeneAbs {
 		   logger.error("没有找到相应的GeneID:" + geneID);
 	   }
 	   if (!mapGeneName2IsHaveExon.get(geneID)) {
-		   gffGeneIsoInfo.addExon(ss[6].equals("+") || ss[6].equals("."), Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+		   gffGeneIsoInfo.addCDS(ss[6].equals("+") || ss[6].equals("."), Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 	   }
    }
    

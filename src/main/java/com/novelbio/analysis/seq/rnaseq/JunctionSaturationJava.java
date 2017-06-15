@@ -154,7 +154,7 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 		if (specific == StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND || specific == StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND) {
 			considerStrand = true;
 		}
-		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
+		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
 			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
 				for (int i = 1; i < iso.size(); i++) {
 					String jun = getJunInfo(new Align(iso.getRefID(), iso.get(i-1).getEndCis(), iso.get(i).getStartCis()), considerStrand);

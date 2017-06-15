@@ -887,7 +887,19 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		ExonInfo exonInfo = new ExonInfo(mycis5to3, locStart, locEnd);
 		add(exonInfo);
 	}
-	
+	/**
+	 * 假设是安顺序添加的ID
+	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
+	 * 当gene为反方向时，exon是从大到小排列的<br>
+	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
+	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
+	 * @param cis5to3 exon的方向，null表示选取和iso一样的方向
+	 * @param locStart exon的起点，程序会将其与locEnd中自动选择起点
+	 * @param locEnd exon的终点，程序会将其与locStart中自动选择起点
+	 */
+	protected void addCDS(Boolean cis5to3, int locStart, int locEnd) {
+		addExon(cis5to3, locStart, locEnd, true);
+	}
 	/**
 	 * 假设是安顺序添加的ID
 	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
@@ -899,6 +911,20 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param locEnd exon的终点，程序会将其与locStart中自动选择起点
 	 */
 	protected void addExon(Boolean cis5to3, int locStart, int locEnd) {
+		addExon(cis5to3, locStart, locEnd, false);
+	}
+	
+	/**
+	 * 假设是安顺序添加的ID
+	 * 给转录本添加exon坐标，GFF3的exon的格式是 <br>
+	 * 当gene为反方向时，exon是从大到小排列的<br>
+	 * 只需要注意按照次序装，也就是说如果正向要从小到大的加，反向从大到小的加 <br>
+	 * 然而具体加入这一对坐标的时候，并不需要分别大小，程序会根据gene方向自动判定 <br>
+	 * @param cis5to3 exon的方向，null表示选取和iso一样的方向
+	 * @param locStart exon的起点，程序会将其与locEnd中自动选择起点
+	 * @param locEnd exon的终点，程序会将其与locStart中自动选择起点
+	 */
+	private void addExon(Boolean cis5to3, int locStart, int locEnd, boolean isCds) {
 		boolean mycis5to3 = getExonCis5To3(cis5to3);
 		ExonInfo exonInfo = new ExonInfo(mycis5to3, locStart, locEnd);
 		if (size() == 0) {
@@ -918,9 +944,14 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}else if (isCis5to3() && exonInfo.equalsLoc(exonLast) || !isCis5to3() && exonInfo.equalsLoc(exonFirst)) {
 			return;
 		} else {
+			if (isCds && ( Math.min(locStart, locEnd) > getStartAbs() && Math.max(locStart, locEnd) < getEndAbs())) {
+				return;
+			}
 			logger.info("The Gff file may have error on gene: " + getName() + " and exon: " + getRefID() + " " + locStart + " " + locEnd + "  please check");
+
 		}
 	}
+	
 	/**
 	 * @param cis5to3 exon的方向
 	 * @param locStart

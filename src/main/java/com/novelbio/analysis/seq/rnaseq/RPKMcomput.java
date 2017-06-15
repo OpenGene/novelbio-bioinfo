@@ -98,7 +98,7 @@ public class RPKMcomput implements AlignmentRecorder {
 	}
 	
 	private void initial() {
-		ArrayList<GffDetailGene> lsGffDetailGene = gffHashGene.getGffDetailAll();
+		List<GffDetailGene> lsGffDetailGene = gffHashGene.getLsGffDetailGenes();
 		Map<String, Integer> mapGene2Len = new HashMap<>();
 		mapGene2Type = new HashMap<>();
 		for (GffDetailGene gffDetailGene : lsGffDetailGene) {

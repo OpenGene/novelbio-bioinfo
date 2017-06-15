@@ -34,7 +34,7 @@ public class GffHashModifyOldGffUTR {
 	
 	public void modifyGff() {
 		Set<GffDetailGene> setGffGeneName = new HashSet<>();//用来去重复的
-		for (GffDetailGene gffDetailGeneRef : gffHashGeneRef.getGffDetailAll()) {
+		for (GffDetailGene gffDetailGeneRef : gffHashGeneRef.getLsGffDetailGenes()) {
 			//因为gff文件可能有错，gffgene的长度可能会大于mRNA的总长度，这时候就要遍历每个iso
 			for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGeneRef.getLsCodSplit()) {
 				int median = (gffGeneIsoInfo.getStart() + gffGeneIsoInfo.getEnd())/2;
