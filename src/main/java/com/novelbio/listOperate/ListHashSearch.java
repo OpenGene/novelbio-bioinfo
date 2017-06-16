@@ -1,6 +1,7 @@
 package com.novelbio.listOperate;
 
 import java.io.FileNotFoundException;
+import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
+import com.novelbio.base.fileOperate.ExceptionNbcFile;
 
 
 /**
@@ -247,7 +249,9 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 			getMapName2Detail();
 		} catch (ExceptionNbcGFF e) {
 			throw new ExceptionNbcGFF("gtffile error " + gfffilename, e);
-		}catch (FileNotFoundException e) {
+		} catch (ExceptionNbcFile e) {
+			throw e;
+		}catch (FileNotFoundException | NoSuchFileException e) {
 			throw new ExceptionNbcGFF("cannot find gtffile " + gfffilename, e);
 		} catch (Exception e) {
 			throw new ExceptionNbcGFF("GffFile Formate Error:" + gfffilename, e);

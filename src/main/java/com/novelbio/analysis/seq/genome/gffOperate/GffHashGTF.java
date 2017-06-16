@@ -158,7 +158,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 						logger.error("没有找到相应的GeneID:" + tmpTranscriptName);
 					}
 					if (!mapIso2IsHaveExon.get(tmpTranscriptName)) {
-						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
+						gffGeneIsoInfo.addCDS(cisExon, exonStart, exonEnd);
 					}
 				} else if (ss[2].toLowerCase().equals(startCodeFlag)) {
 					if (cisExon == null || cisExon) {

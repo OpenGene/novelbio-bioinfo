@@ -745,7 +745,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 					if (isoOld.isCis5to3() != iso.isCis5to3() || GeneType.getSetSmallRNA().contains(iso.getGeneType())) {
 						continue;
 					}
-					
+					if (isoOld.getStartAbs() < iso.getEndAbs() && isoOld.getEndAbs() > iso.getStartAbs()) {
+						continue;
+					}
 					isoOld.addAll(iso.getLsElement());
 					if (isoOld.isCis5to3()) {
 						isoOld.setATGUAGauto(Math.min(iso.getATGsite(), isoOld.getATGsite()), Math.max(iso.getUAGsite(), isoOld.getUAGsite()));

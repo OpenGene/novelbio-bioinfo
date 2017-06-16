@@ -613,13 +613,11 @@ public class GffDetailGene extends ListDetailAbs {
 		if (removeDuplicateIso) {
 			return;
 		}
-		if (getNameSingle().equals("ENSG00000163395")) {
-			logger.debug("");
-		}
+
 		removeDuplicateIso = true;
 		HashMap<String, GffGeneIsoInfo> mapIso = new HashMap<String, GffGeneIsoInfo>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			String key = getRefID();
+			String key = getRefID() + gffGeneIsoInfo.isCis5to3();
 			for (ExonInfo exonInfo : gffGeneIsoInfo) {
 				key = key + SepSign.SEP_INFO + exonInfo.getStartAbs() + SepSign.SEP_ID + exonInfo.getEndAbs();
 			}
