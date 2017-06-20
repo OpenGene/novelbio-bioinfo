@@ -33,7 +33,9 @@ public class ListMiRNAdat extends MiRNAList {
 	public void setSpecies(Species species) {
 		speciesLatinName = species.getNameLatin_2Word();
 	}
-	
+	public void setSpeciesLatinName(String speciesLatinName) {
+		this.speciesLatinName = speciesLatinName;
+	}
 	/**
 	 * 读取miRNA.data文件，同时读取和它一起的整理好的taxID2species文件
 	 */
