@@ -531,6 +531,8 @@ public class GeneExpTable {
 		}
 		for (String geneName : getSetGeneName()) {
 			List<String> lsTmpResult = getLsGeneResult2Anno(isGetRatio, geneName, enumExpression, mapCondition2UQ);
+			if (lsTmpResult.isEmpty()) continue;
+			
 			lsResult.add(lsTmpResult.toArray(new String[0]));
 		}
 		return lsResult;
@@ -575,7 +577,11 @@ public class GeneExpTable {
 		if (!mapGene2Anno.isEmpty()) {
 			lsTmpResult.addAll(mapGene2Anno.get(geneName));
 		}
-		lsTmpResult.addAll(getLsValue2Ratio(isGetRatio, geneName, enumExpression, mapCondition2UQ));
+		List<String> lsValues2Ratio = getLsValue2Ratio(isGetRatio, geneName, enumExpression, mapCondition2UQ);
+		if (lsValues2Ratio.isEmpty()) {
+			return new ArrayList<>();
+		}
+		lsTmpResult.addAll(lsValues2Ratio);
 			
 		return lsTmpResult;
 	}
@@ -585,7 +591,8 @@ public class GeneExpTable {
 		List<String> lsValue = new ArrayList<>();
 		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
 		for (String condition : setCondition) {
-			Double value = mapCond2Exp.get(condition);			
+			Double value = mapCond2Exp.get(condition);	
+			if (value == null) continue;
 			double uq = (mapCondition2UQ != null) ? mapCondition2UQ.get(condition) : 0;
 			
 			Long allReadsNum = mapCond2AllReads.get(condition);

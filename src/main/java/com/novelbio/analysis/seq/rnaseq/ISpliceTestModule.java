@@ -405,8 +405,8 @@ class SpliceTestRepeat implements ISpliceTestModule {
 			List<Double> lsDouble = mapTreat2LsValue.get(group);
 			List<Double> lsDoubleNormal = new ArrayList<>();
 			for (Double value : lsDouble) {
-				lsDoubleNormal.add(value * fold * maxReads/mapGroup2Value.get(group)[0]);
-//				lsDoubleNormal.add(value * fold);
+//				lsDoubleNormal.add(value * fold * maxReads/mapGroup2Value.get(group)[0]);
+				lsDoubleNormal.add(value * fold);
 			}
 			lslsValue.add(lsDoubleNormal);
 		}
