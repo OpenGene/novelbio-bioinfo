@@ -376,7 +376,17 @@ public class GeneExpTable {
 		if (this.mapGene2Len == null) {
 			this.mapGene2Len = mapGene2Len;
 		} else {
-			this.mapGene2Len.putAll(mapGene2Len);
+			for (String geneName : mapGene2Len.keySet()) {
+				int lenNew = mapGene2Len.get(geneName);
+				if (!this.mapGene2Len.containsKey(geneName)) {
+					this.mapGene2Len.put(geneName, lenNew);
+				}
+				
+				int lenOld = this.mapGene2Len.get(geneName);
+				if (lenNew != lenOld) {
+					throw new ExceptionNBCgeneExpression("gene length not consisteng " + geneName + " length1 " + lenOld + " length2 " + lenNew);
+				}
+			}
 		}
 	}
 	/**
@@ -424,8 +434,10 @@ public class GeneExpTable {
 			if (!mapGene2Anno.isEmpty()) {
 				lsTmpResult.addAll(mapGene2Anno.get(geneName));
 			}
+			String value = getValueCondition(geneName, enumExpression, uq);
+			if (value == null) continue;
 			
-			lsTmpResult.add(getValueCondition(geneName, enumExpression, uq));
+			lsTmpResult.add(value);
 			lsResult.add(lsTmpResult.toArray(new String[0]));
 		}
 		return lsResult;
@@ -624,7 +636,15 @@ public class GeneExpTable {
 		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
 		Double value = mapCond2Exp.get(currentCondition);
 		Long allReadsNum = mapCond2AllReads.get(currentCondition);
-		Integer geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
+		Integer geneLen = 1;
+		if (value == null) {
+			return null;
+		}
+		try {
+			geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
+		} catch (Exception e) {
+			throw new ExceptionNBCgeneExpression("cannot find gene " + geneName);
+		}
 		String geneValue = getValueStr(enumExpression, value, allReadsNum, uq, geneLen);
 		return geneValue;
 	}

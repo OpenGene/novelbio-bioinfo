@@ -10,6 +10,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.generalConf.PathDetailNBC;
@@ -359,12 +360,16 @@ public class FastQ {
 		if (QUALITY.equalsIgnoreCase("ChangeToBest") || QUALITY.equalsIgnoreCase("NotFilter")) {
 			return mapQuality2CutoffNum;
 		}
-		
-		String[] ss = QUALITY.split(";");
-		for (String quality2property : ss) {
-			String[] quality2propertyArray = quality2property.split(",");
-			mapQuality2CutoffNum.put(Integer.parseInt(quality2propertyArray[0]), Double.parseDouble(quality2propertyArray[1]));
+		try {
+			String[] ss = QUALITY.split(";");
+			for (String quality2property : ss) {
+				String[] quality2propertyArray = quality2property.split(",");
+				mapQuality2CutoffNum.put(Integer.parseInt(quality2propertyArray[0]), Double.parseDouble(quality2propertyArray[1]));
+			}
+		} catch (Exception e) {
+			throw new ExceptionNbcParamError("quality value error: " + QUALITY, e);
 		}
+
 		return mapQuality2CutoffNum;
 	}
 	

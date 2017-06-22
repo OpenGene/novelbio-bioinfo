@@ -28,7 +28,8 @@ import com.novelbio.base.dataStructure.MathComput;
 
 /** 差异可变剪接的pvalue计算模块 */
 public interface ISpliceTestModule {
-	
+	public static final Logger logger = LoggerFactory.getLogger(ISpliceTestModule.class);
+
 	/** 设定输入值
 	 * @param mapCond_Group2ReadsNum 样本--分组--测序量，用来做标准化的
 	 * @param condTreat treat样本的condition名字
@@ -405,6 +406,7 @@ class SpliceTestRepeat implements ISpliceTestModule {
 			List<Double> lsDoubleNormal = new ArrayList<>();
 			for (Double value : lsDouble) {
 				lsDoubleNormal.add(value * fold * maxReads/mapGroup2Value.get(group)[0]);
+//				lsDoubleNormal.add(value * fold);
 			}
 			lslsValue.add(lsDoubleNormal);
 		}

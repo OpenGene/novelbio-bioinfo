@@ -89,7 +89,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	int minLen;
 	
-	private static final String debug = "HORVU1Hr1G000010";
+	private static final String debug = "OSMR";
 	
 	public ExonSplicingTest(ExonCluster exonCluster, int minLen) {
 		this.exonCluster = exonCluster;
@@ -240,6 +240,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsPvalueInfo = new ArrayList<>();
 		if (exonCluster.getParentGene().getName().contains(debug)) {
 			logger.debug("stop");
+			if (exonCluster.getStartAbs() == 38932974) {
+				logger.debug("stop");
+			}
 		}
 		if (!lsPvalueInfo.isEmpty()) {
 			return lsPvalueInfo.get(0).calculatePvalue();

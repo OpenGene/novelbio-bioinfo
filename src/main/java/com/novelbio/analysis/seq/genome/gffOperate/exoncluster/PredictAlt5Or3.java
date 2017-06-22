@@ -62,7 +62,11 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		if (mapGroup2ValueEndSite.size() == 0) {
 			mapGroup2ValueEndSite = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getEndAbs());
 		}
-		
+		if (mapGroup2ValueStartSite.size() == 0) {
+			for (String groupName : mapGroup2ValueEndSite.keySet()) {
+				mapGroup2ValueStartSite.put(groupName, 0.0);
+			}
+		}
 		if (isCis()) {
 			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueEndSite);
 			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueStartSite);

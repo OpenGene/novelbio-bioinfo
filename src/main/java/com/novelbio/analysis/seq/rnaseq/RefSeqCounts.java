@@ -142,6 +142,24 @@ public class RefSeqCounts implements AlignmentRecorder {
 		}
 		geneExpTable.setMapGene2Len(mapGeneName2Len);
 	}
+	
+	/** 设定转录本名和长度，直接从bam文件获得就行 {@link SamFile#getMapChrID2Length()}<br>
+	 * 注意务必先调用{@link #readGene2IsoFile(String)}读取对照表
+	 * @param mapIsoId2Len
+	 */
+	public void addMapIsoId2Len(Map<String, ? extends Number> mapIsoId2Len) {
+		Map<String, Integer> mapGeneName2Len = new HashMap<>();
+		for (String isoName : mapIsoId2Len.keySet()) {
+			int length = mapIsoId2Len.get(isoName).intValue();
+
+			String geneName = mapIso2Gene.get(isoName.toLowerCase());
+			if (!mapGeneName2Len.containsKey(geneName) || mapGeneName2Len.get(geneName) < length) {
+				mapGeneName2Len.put(geneName, length);
+			}
+		}
+		geneExpTable.addMapGene2Len(mapGeneName2Len);
+	}
+	
 	public void setCondition(String currentCondition) {
 		geneExpTable.setCurrentCondition(currentCondition);
 	}

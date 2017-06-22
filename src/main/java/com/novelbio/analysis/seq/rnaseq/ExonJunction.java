@@ -103,7 +103,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	}
 		
 	private static Logger logger = LoggerFactory.getLogger(ExonJunction.class);
-	private static String stopGeneName = "DDB1";
+	private static String stopGeneName = "OSMR";
 		
 	GffHashGene gffHashGene = null;
 	
@@ -141,8 +141,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	double pvalue = 0.05;
 	
 	String resultFile;
-	/** 是否合并文件--也就是不考虑重复，默认为true，也就是合并文件 **/
-	boolean isCombine = true;
+	/** 是否合并文件--也就是不考虑重复，默认为false，也就是考虑重复 **/
+	boolean isCombine = false;
 
 	//TODO 默认设置为false
 	boolean isLessMemory = false;
@@ -158,19 +158,23 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	 */
 	double pvalueJunctionProp = -1;
 	/** 是否仅使用 unique mapped reads 来做分析 */
-	boolean isUseUniqueMappedReads = false;
+	boolean isUseUniqueMappedReads = true;
 	
 	int juncAllReadsNum = 25;
 	int juncSampleReadsNum = 10;
 	/** pvalue超过这个值就不进行fdr计算 */
-	double fdrCutoff = 1;
+	double fdrCutoff = 0.999;
 	
 	/** 至少有15条reads支持的junction才会用于重建转录本 */
-	int newIsoReadsNum = 15;
+//	int newIsoReadsNum = 15;
+	int newIsoReadsNum = 10;
 	
-	int intronMinLen = 12;
-	int junctionMinAnchorLen;
-	
+//	int intronMinLen = 12;
+	int intronMinLen = 25;
+
+//	int junctionMinAnchorLen;
+	int junctionMinAnchorLen = 5;
+
 	/** 小于6bp的alt5和alt3都可能是假的 */
 	int minDifLen = 6;
 	
@@ -189,6 +193,8 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	List<ExonSplicingResultUnit> lsResult;
 	
 	public ExonJunction() {
+		lsReadReagion = new ArrayList<>();
+//		lsReadReagion.add(new Align("chr5:38471964-39408845"));
 	}
 	
 	/** 至少有多少条reads支持的junction才会用于重建转录本 */
@@ -474,7 +480,7 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 	
 	private List<ExonSplicingResultUnit> runByChrome() {
 		//仅读取lsReadReagion中的记录
-		if (lsReadReagion == null || lsReadReagion.isEmpty()) {
+		if (ArrayOperate.isEmpty(lsReadReagion)) {
 			lsReadReagion = new ArrayList<>();
 			for (String chrId : mapChrId2Len.keySet()) {
 				long len = mapChrId2Len.get(chrId);
@@ -916,7 +922,9 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 				if (clusterSite.getCurrentExonCluster().getParentGene().getName().contains(stopGeneName)) {
 					logger.debug("stop");
 				}
-				
+				if (clusterSite.getCurrentExonCluster().getStartAbs() == 38932974) {
+					logger.debug("stop");
+				}
 				logger.debug("Set Splicing Type " + clusterSite.getCurrentExonCluster().getParentGene().getName());
 				clusterSite.setSpliceType2Value(tophatJunction, mapCond_group2ReadsNum);
 			}
