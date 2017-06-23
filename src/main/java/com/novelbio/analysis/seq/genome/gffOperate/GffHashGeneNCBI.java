@@ -200,7 +200,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				continue;
 			}
 			ss[8] = StringOperate.decode(ss[8]);
-//			if (content.contains("Ifi202b")) {
+//			if (content.contains("rna54067")) {
 //				logger.info("stop");
 //			}
 			ss[0] = gffGetChrId.getChrID(ss);
@@ -217,7 +217,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			 * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
 			 */
 			else if (GeneType.getMapMRNA2GeneType().containsKey(
-					ss[2].toLowerCase())) {
+					ss[2].toLowerCase()) || ss[2].toLowerCase().contains("rna")) {
 				Align alignRegion = new Align(ss[0], Integer.parseInt(ss[3]),
 						Integer.parseInt(ss[4]));
 				double[] compareRegion = null;
@@ -676,7 +676,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	private GffGeneIsoInfo getGffIso(String rnaID, int startExon, int endExon,
 			GeneType geneType) {
 		GffGeneIsoInfo iso = mapRnaID2Iso.get(rnaID);
-		List<ExonInfo> lsGffLoc = mapRnaID2LsIsoLocInfo.get(rnaID);
 		if (iso == null) {
 			mapRnaID2GeneID.put(rnaID, rnaID);
 			GffDetailGene gffDetailGene = getGffDetailGenID(rnaID);
@@ -722,9 +721,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				mapName2LsGene.put(gene.getNameSingle(), gene);
 				continue;
 			}
-			if (gene.getNameSingle().equals("Dock2")) {
-				logger.info("stop");
-			}
 			List<GffDetailGene> lsGenes = mapName2LsGene.get(gene.getNameSingle());
 			
 			boolean isFinish = false;
@@ -739,7 +735,13 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 						isFinish = true;
 						break;
 					}
-					GffGeneIsoInfo iso = gene.pollIsoByName(isoOld.getName());
+					GffGeneIsoInfo iso = null;
+					try {
+						iso = gene.pollIsoByName(isoOld.getName());
+					} catch (Exception e) {
+						gene.removeDupliIso();
+						iso = gene.pollIsoByName(isoOld.getName());
+					}
 					if (iso == null) continue;
 					
 					if (isoOld.isCis5to3() != iso.isCis5to3() || GeneType.getSetSmallRNA().contains(iso.getGeneType())) {

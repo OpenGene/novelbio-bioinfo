@@ -68,7 +68,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		sort();
 		setItemDistance();
 		setOther();
-		removeDuplicate();
 		getMapName2DetailNum();
 		getMapName2Detail();
 	}

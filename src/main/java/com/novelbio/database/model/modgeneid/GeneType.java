@@ -31,6 +31,7 @@ For Ensembl release 73, connect to database "ensembl_production_73" eg.
  */
 public enum GeneType {
 	 mRNA,
+	 lncRNA,
 	 PSEU, 
 	 mRNA_TE,
 	 miRNA,  
@@ -97,9 +98,11 @@ public enum GeneType {
 			mapMRNA2GeneType.put("snoRNA".toLowerCase(), snoRNA);
 			mapMRNA2GeneType.put("snRNA".toLowerCase(), snRNA);			
 			mapMRNA2GeneType.put("ncRNA".toLowerCase(), ncRNA);
-			mapMRNA2GeneType.put("lncRNA".toLowerCase(), ncRNA);
+			mapMRNA2GeneType.put("lncRNA".toLowerCase(), lncRNA);
+			mapMRNA2GeneType.put("lnc_RNA".toLowerCase(), lncRNA);
+
 			mapMRNA2GeneType.put("antisense".toLowerCase(), ncRNA);
-			mapMRNA2GeneType.put("lincRNA".toLowerCase(), ncRNA);
+			mapMRNA2GeneType.put("lincRNA".toLowerCase(), lncRNA);
 			mapMRNA2GeneType.put("ncrna_host".toLowerCase(), ncRNA);
 			mapMRNA2GeneType.put("non_coding".toLowerCase(), ncRNA);
 			mapMRNA2GeneType.put("processed_transcript".toLowerCase(), ncRNA);

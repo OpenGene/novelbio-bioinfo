@@ -592,7 +592,14 @@ public class GeneExpTable {
 		Map<String, Double> mapCond2Exp = mapGene_2_Cond2Exp.get(geneName);
 		for (String condition : setCondition) {
 			Double value = mapCond2Exp.get(condition);	
-			if (value == null) continue;
+			if (value == null) {
+				value = 0.0;
+				lsValue.add(value+"");
+				if (isGetRatio) {
+					lsValue.add(value+"");
+				}
+				continue;
+			}
 			double uq = (mapCondition2UQ != null) ? mapCondition2UQ.get(condition) : 0;
 			
 			Long allReadsNum = mapCond2AllReads.get(condition);

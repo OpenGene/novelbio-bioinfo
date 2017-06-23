@@ -246,15 +246,6 @@ public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
 		gff.setGffHashRef(gffHashRef);
 	}
 	
-	public void removeDuplicateIso() {
-		HashMap<String, ListGff> mapChrID2LsGff = getMapChrID2LsGff();
-		for (ListGff listGff : mapChrID2LsGff.values()) {
-			for (GffDetailGene gffDetailGene : listGff) {
-				gffDetailGene.removeDupliIso();
-			}
-		}
-	}
-	
 	public void sort() {
 		gffHashGene.sort();
 	}

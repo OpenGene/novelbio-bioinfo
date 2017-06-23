@@ -106,7 +106,7 @@ public class RefSeqCounts implements AlignmentRecorder {
 	 */
 	public void readGene2IsoFile(String gene2IsoFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(gene2IsoFile);
-		for (String content : txtRead.readlines()) {
+		for (String content : txtRead.readlines(2)) {
 			if (content.startsWith("#") || StringOperate.isRealNull(content)) {
 				continue;
 			}

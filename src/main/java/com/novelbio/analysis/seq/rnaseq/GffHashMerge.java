@@ -37,7 +37,6 @@ public class GffHashMerge {
 		gffHashMerge.setGffHashGeneRef(new GffHashGene(species.getGffType(), species.getGffFile()));
 		gffHashMerge.addGffHashGene(new GffHashGene(GffType.GTF, gffhashGeneCuf));
 		GffHashGene gffHashGene = gffHashMerge.getGffHashGeneModifyResult();
-		gffHashGene.removeDuplicateIso();
 		gffHashGene.writeToGTF(gffFinal, "novelbio");
 
 		gffHashMerge = new GffHashMerge();
