@@ -85,7 +85,7 @@ public class TestMapRNA {
 		FileOperate.deleteFileFolder(outPath);
 	}
 	
-	@Test
+//	@Test
 	public void testMapSplice() {
 		copyFile();
 

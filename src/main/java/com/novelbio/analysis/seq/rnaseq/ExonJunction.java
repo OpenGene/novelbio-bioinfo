@@ -720,7 +720,6 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 		}
 	}
 	
-	
 	private boolean isGeneInRegion(Alignment gene, Align region) {
 		return region == null 
 				||
@@ -899,9 +898,13 @@ public class ExonJunction extends RunProcess<GuiAnnoInfo> {
 			if (!isLsExonClusterInRegion(lsExonTest, align)) continue;
 
 			if (lsExonTest.get(0).getCurrentExonCluster().getParentGene().getName().contains(stopGeneName)) {
+
 				logger.debug("stop");
 			}
 			for (ExonClusterSite exonClusterSite : lsExonTest) {
+				if (exonClusterSite.getCurrentExonCluster().getStartAbs() == 38932974) {
+					logger.debug("stop");
+				}
 				exonClusterSite.addMapCondition2MapReads(condition, group, mapReads);
 			}
 			if (num > 0 && num % 500 == 0) {

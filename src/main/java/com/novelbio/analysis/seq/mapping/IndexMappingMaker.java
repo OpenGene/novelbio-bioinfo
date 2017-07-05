@@ -356,7 +356,6 @@ public static class IndexBowtie extends IndexMappingMaker {
 		lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.setTerminateWriteTo(false);
-		cmdOperate.setGetLsStdOut();
 		cmdOperate.runWithExp("get bowtie version error:");
 		List<String> lsInfo = cmdOperate.getLsStdOut();
 		try {
@@ -398,7 +397,6 @@ public static class IndexBowtie2 extends IndexMappingMaker {
 		lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.setTerminateWriteTo(false);
-		cmdOperate.setGetLsStdOut();
 		cmdOperate.runWithExp("get bowtie2 version error:");
 		List<String> lsInfo = cmdOperate.getLsStdOut();
 		try {
@@ -595,7 +593,6 @@ public static class IndexTophat extends IndexMappingMaker {
 			lsCmdVersion.add("--version");
 			CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 			cmdOperate.setTerminateWriteTo(false);
-			cmdOperate.setGetLsStdOut();
 			cmdOperate.run();
 			List<String> lsInfo = cmdOperate.getLsStdOut();
 			version = lsInfo.get(0).toLowerCase().replace("tophat", "").trim();
@@ -785,7 +782,6 @@ public static class IndexMapSplice extends IndexMappingMaker {
 		lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.setTerminateWriteTo(false);
-		cmdOperate.setGetLsStdOut();
 		cmdOperate.run();
 		List<String> lsInfo = cmdOperate.getLsErrOut();
 		try {
@@ -829,7 +825,6 @@ public static class IndexHisat2 extends IndexMappingMaker {
 		lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.setTerminateWriteTo(false);
-		cmdOperate.setGetLsStdOut();
 		cmdOperate.runWithExp("get hisat2 version error:");
 		List<String> lsInfo = cmdOperate.getLsStdOut();
 		try {

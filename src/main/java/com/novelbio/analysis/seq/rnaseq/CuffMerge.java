@@ -178,7 +178,6 @@ public class CuffMerge implements IntCmdSoft {
 		lsCmdVersion.add(exePath + "cuffmerge"); lsCmdVersion.add("--version");
 		CmdOperate cmdOperate = new CmdOperate(lsCmdVersion);
 		cmdOperate.setTerminateWriteTo(false);
-		cmdOperate.setGetLsStdOut();
 		cmdOperate.run();
 		List<String> lsInfo = cmdOperate.getLsStdOut();
 		String cuffmegeVersion = lsInfo.get(0).toLowerCase().split(" ")[1].trim();

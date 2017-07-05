@@ -184,7 +184,7 @@ public class COGanno {
 			blastType = BlastType.blastx;
 		}
 		String blastFileResult = getBlastFile();
-		if (FileOperate.isFileExistAndNotDir(blastFileResult)) {
+		if (FileOperate.isFileExist(blastFileResult)) {
 			return blastFileResult;
 		}
 		FileOperate.createFolders(FileOperate.getPathName(blastFileResult));
