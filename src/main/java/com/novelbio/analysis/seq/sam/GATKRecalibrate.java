@@ -119,7 +119,7 @@ public class GATKRecalibrate {
 	 * 删除校正过程中的临时文件
 	 */
 	public void delTempFile(){
-		FileOperate.delFile(grpPath);
+		FileOperate.deleteFileFolder(grpPath);
 	}
 	
 	/** 取得输出路径 */

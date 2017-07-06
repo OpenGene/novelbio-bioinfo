@@ -533,7 +533,7 @@ public class CombineTab {
 		for (String fileName : tempFiles) {
 			if (!FileOperate.isFileExistAndNotDir(fileName))
 				continue;
-			FileOperate.delFile(fileName);
+			FileOperate.deleteFileFolder(fileName);
 		}
 	}
 	

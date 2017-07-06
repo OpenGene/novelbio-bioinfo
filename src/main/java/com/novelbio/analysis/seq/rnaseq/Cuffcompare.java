@@ -111,11 +111,11 @@ public class Cuffcompare {
 		String fileStats = outPath + ".stats";
 		String fileTracking = outPath + ".tracking";
 		
-		FileOperate.delFile(fileRefmap);
-		FileOperate.delFile(fileTmap);
-		FileOperate.delFile(fileLoci);
-		FileOperate.delFile(fileStats);
-		FileOperate.delFile(fileTracking);
+		FileOperate.deleteFileFolder(fileRefmap);
+		FileOperate.deleteFileFolder(fileTmap);
+		FileOperate.deleteFileFolder(fileLoci);
+		FileOperate.deleteFileFolder(fileStats);
+		FileOperate.deleteFileFolder(fileTracking);
 	}
 	
 	/**

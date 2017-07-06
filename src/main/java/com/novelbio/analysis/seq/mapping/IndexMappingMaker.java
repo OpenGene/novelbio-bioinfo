@@ -732,7 +732,7 @@ public static class IndexMapSplice extends IndexMappingMaker {
 	/** 生成一个文件夹，其中每条染色体一个文件 */
 	private void generateChrSepFold() {
 		boolean isNeedGenerate = true;
-		if (FileOperate.isFileFolderExist(chrSepFolder)) {
+		if (FileOperate.isFileExist(chrSepFolder)) {
 			List<String> lsFileName = FileOperate.getLsFoldFileName(chrSepFolder);
 			Set<String> setChrId = new HashSet<>();
 			for (String chrName : lsFileName) {

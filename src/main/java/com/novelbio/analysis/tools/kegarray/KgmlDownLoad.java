@@ -124,7 +124,7 @@ public class KgmlDownLoad {
 		lsKGMLurl = new ArrayList<String>();
 		if (update) {
 			if (FileOperate.isFileExistAndNotDir(txtFileName)) {
-				FileOperate.delFile(txtFileName);
+				FileOperate.deleteFileFolder(txtFileName);
 			}
 		}
 		

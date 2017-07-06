@@ -590,7 +590,7 @@ public class SpeciesFile {
 		SpeciesFile speciesFileOld = SpeciesFile.findById(speciesFileId);
 		try {
 			repo().deleteSpeciesFile(speciesFileId);
-			FileOperate.delFolder(speciesFileOld.getSpeciesVersionPath());
+			FileOperate.deleteFileFolder(speciesFileOld.getSpeciesVersionPath());
 		} catch (Exception e) {
 			return false;
 		}

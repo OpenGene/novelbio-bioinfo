@@ -270,7 +270,7 @@ public class NovelMiRNADeep extends NovelMiRNApredict implements IntCmdSoft {
 
  
 		FileOperate.deleteFileFolder(collapseReadsFa);
-		FileOperate.delFile(arfFile);
+		FileOperate.deleteFileFolder(arfFile);
 		
 		lsCmdRun.add(fastaInput);
 		lsCmdRun.add("-c"); 

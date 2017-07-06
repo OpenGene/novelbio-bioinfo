@@ -92,7 +92,7 @@ public class GATKRealign {
 	 * 删除重排过程中的临时文件
 	 */
 	public void delTempFile(){
-		FileOperate.delFile(intervalsPath);
+		FileOperate.deleteFileFolder(intervalsPath);
 	}
 	
 	/** 取得输出路径 */

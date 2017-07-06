@@ -200,7 +200,7 @@ public class MapSplice implements MapRNA {
 	
 	private void clearTmpReads_And_MoveFile() {
 		for (String fastQname : lsTmp) {
-			FileOperate.delFile(fastQname);
+			FileOperate.deleteFileFolder(fastQname);
 		}
 		
 		if (outFile.endsWith("/") || outFile.endsWith("\\")) {

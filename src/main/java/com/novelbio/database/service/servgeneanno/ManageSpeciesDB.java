@@ -221,7 +221,7 @@ public class ManageSpeciesDB implements IManageSpecies {
 		String pathFull = null;
 		for (String subPath : lsSubPaths) {
 			pathFull = GenomePath + subPath + FileOperate.getSepPath() + midPath + FileOperate.getSepPath();
-			if(FileOperate.isFileFolderExist(pathFull)) {
+			if(FileOperate.isFileExist(pathFull)) {
 				FileOperate.deleteFileFolder(pathFull);
 				logger.info("物种文件目录被删除:" + pathFull);
 			}
@@ -233,7 +233,7 @@ public class ManageSpeciesDB implements IManageSpecies {
 		if (null != lsPaths && lsPaths.size() > 0) {
 			for (Path path : lsPaths) {
 				pathFull = path.toString() + FileOperate.getSepPath() + midPath + FileOperate.getSepPath();
-				if(FileOperate.isFileFolderExist(pathFull)) {
+				if(FileOperate.isFileExist(pathFull)) {
 					FileOperate.deleteFileFolder(pathFull);
 					logger.info("物种索引文件目录被删除:" + pathFull);
 				}

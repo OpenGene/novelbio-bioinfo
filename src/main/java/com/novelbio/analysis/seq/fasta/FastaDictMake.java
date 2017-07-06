@@ -82,7 +82,7 @@ public class FastaDictMake {
 		if (FileOperate.isFileExistAndBigThanSize(outDict, 0)) {
 			return true;
 		}
-		FileOperate.delFile(outDict);
+		FileOperate.deleteFileFolder(outDict);
 		REFERENCE = FileOperate.getPath(reference);
 		OUTPUT = FileOperate.getPath(outDict);
 		try {
