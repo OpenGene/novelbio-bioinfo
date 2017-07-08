@@ -27,7 +27,7 @@ import com.novelbio.base.multithread.RunProcess;
  * @author zong0jie
  *
  */
-public class AlignSeqReading extends RunProcess<GuiAnnoInfo>{
+public class AlignSeqReading extends RunProcess {
 	private static final Logger logger = Logger.getLogger(AlignSeqReading.class);
 	
 	List<AlignmentRecorder> lsAlignmentRecorders = new ArrayList<>();

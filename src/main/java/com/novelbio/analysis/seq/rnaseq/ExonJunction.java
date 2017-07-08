@@ -66,7 +66,7 @@ import htsjdk.samtools.SAMException;
  * 每次跑之前要清空
  * @author zong0jie
  */
-public class ExonJunction extends RunProcess<GuiAnnoInfo> {
+public class ExonJunction extends RunProcess {
 	/** 发布的ASD和自己用的不太一样 */
 	public static boolean isASD = false;
 	

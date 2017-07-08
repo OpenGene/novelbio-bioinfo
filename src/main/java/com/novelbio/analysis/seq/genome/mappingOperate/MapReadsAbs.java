@@ -35,7 +35,7 @@ import com.novelbio.listOperate.ListAbs;
  * @author zong0jie
  * 
  */
-public abstract class MapReadsAbs extends RunProcess<MapReadsAbs.MapReadsProcessInfo> {
+public abstract class MapReadsAbs extends RunProcess {
 	/** 标准化数字会很小很小，乘以一个很大的数防止溢出 */
 	private static final int mulNum = 10000000;
 	private static Logger logger = Logger.getLogger(MapReadsAbs.class);

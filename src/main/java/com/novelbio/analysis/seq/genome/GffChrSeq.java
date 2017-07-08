@@ -29,7 +29,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
  * @author zong0jie
  *
  */
-public class GffChrSeq extends RunProcess<GffChrSeq.GffChrSeqProcessInfo>{
+public class GffChrSeq extends RunProcess {
 	private static final Logger logger = Logger.getLogger(GffChrSeq.class);
 	/** 这一类都是ncRNA */
 	static Set<GeneType> setNcRNA = new HashSet<>();

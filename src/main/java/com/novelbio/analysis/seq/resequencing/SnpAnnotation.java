@@ -23,7 +23,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * 待annotation的必须是txt文本
  * @author zong0jie
  */
-public class SnpAnnotation extends RunProcess<SnpFilterDetailInfo>{
+public class SnpAnnotation extends RunProcess {
 	Logger logger = Logger.getLogger(SnpAnnotation.class);
 	
 	GffChrAbs gffChrAbs;

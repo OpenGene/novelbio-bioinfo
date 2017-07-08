@@ -21,7 +21,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
  * 本类加载时不返回信息，只有在结束时才会返回是否成功
  * @author zong0jie
  */
-public class GffHashGene extends RunProcess<Integer> implements GffHashGeneInf {
+public class GffHashGene extends RunProcess implements GffHashGeneInf {
 	public static final String GFFDBNAME = "novelbio";
 	
 	GffHashGeneAbs gffHashGene = null;

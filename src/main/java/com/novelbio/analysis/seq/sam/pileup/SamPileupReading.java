@@ -7,7 +7,7 @@ import com.novelbio.analysis.seq.sam.SamReader;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.multithread.RunProcess;
 
-public class SamPileupReading extends RunProcess<Integer> {
+public class SamPileupReading extends RunProcess {
 	Queue<SamRecord> queueSamRecord;
 	Align readRegion;
 	Align snpRegion;

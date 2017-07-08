@@ -30,7 +30,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  *
  */
-public class MiRNACount extends RunProcess<MiRNACount.MiRNAcountProcess> implements AlignmentRecorder {
+public class MiRNACount extends RunProcess implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(MiRNACount.class);
 	static String flag_MapTo_PreMirna_NotTo_MatureMirna_Suffix = "_pre";
 

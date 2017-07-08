@@ -8,6 +8,7 @@ import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.multithread.RunInfo;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.domain.geneanno.GOtype;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -16,7 +17,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
  * @author zong0jie
  *
  */
-public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
+public class AnnoQuery extends RunProcess {
 //	public static void main(String[] args) {
 //		String geneFile = "/media/winF/NBC/Project/RNA-Seq_CR_20111201/CR.xls";
 //		String txtOut = FileOperate.changeFileSuffix(geneFile, "_annotest", null);
@@ -173,9 +174,11 @@ public class AnnoQuery extends RunProcess<AnnoQuery.AnnoQueryDisplayInfo>{
 		if (lsTmpInfo == null) return;
 		
 		for (String[] tmpInfo : lsTmpInfo) {
-			AnnoQueryDisplayInfo annoQueryDisplayInfo = new AnnoQueryDisplayInfo();
-			annoQueryDisplayInfo.countNum = num;
-			annoQueryDisplayInfo.tmpInfo = tmpInfo;
+			RunInfo annoQueryDisplayInfo = new RunInfo();
+			annoQueryDisplayInfo.setProcess(num);
+			for (String info : tmpInfo) {
+				annoQueryDisplayInfo.addParam2Info("tmpInfo", info);
+			}
 			if (runGetInfo != null) {
 				runGetInfo.setRunningInfo(annoQueryDisplayInfo);
 			}

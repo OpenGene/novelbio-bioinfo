@@ -39,9 +39,6 @@ public class SamAddMultiFlag {
 		if (attrCC != null) return;
 		
 		try {
-			if (!samRecord.isMapped()) {
-				logger.debug("unmapped");
-			}
 			if (i++%1000000 == 0) {
 				logger.info("read lines: " + i);
 				logger.info("mapMateInfo2pairReads.size: " + mapMateInfo2pairReads.size());

@@ -15,7 +15,7 @@ import com.novelbio.GuiAnnoInfo;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 
-public class FastQReadingChannel extends RunProcess<GuiAnnoInfo> {
+public class FastQReadingChannel extends RunProcess {
 	private static final Logger logger = Logger.getLogger(FastQReadingChannel.class);
 	
 	List<FastQ[]> lsFastqReader;

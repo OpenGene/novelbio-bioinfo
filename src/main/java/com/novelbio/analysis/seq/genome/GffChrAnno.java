@@ -27,7 +27,7 @@ import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
  * @author zong0jie
  *
  */
-public class GffChrAnno extends RunProcess<AnnoQueryDisplayInfo> {
+public class GffChrAnno extends RunProcess {
 	private static final Logger logger = LoggerFactory.getLogger(GffChrAnno.class);
 	
 	GffChrAbs gffChrAbs;

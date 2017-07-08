@@ -17,7 +17,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 
 /** 指定一系列的snp位点，以及多个pileup文件，获得这些位点的实际reads数量 */
-public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
+public class SnpDetailGet extends RunProcess {
 	private static Logger logger = Logger.getLogger(SnpDetailGet.class);
 	
 	/** key为小写 */
@@ -91,6 +91,7 @@ public class SnpDetailGet extends RunProcess<SnpFilterDetailInfo> {
 			}
 			lsSnpSiteSimples.add(snpSiteSimple);
 		}
+		txtReadSnp.close();
 	}
 	
 	/** 是否为重复snp */

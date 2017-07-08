@@ -10,7 +10,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
 
-class FastQwriter extends RunProcess<Integer> {
+class FastQwriter extends RunProcess {
 	private static final Logger logger = Logger.getLogger(FastQwriter.class);
 	/** 线程池，里面应该是已经处理好的reads单元 */
 	Queue<Future<FastQrecordCopeUnit>> queue;

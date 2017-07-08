@@ -11,7 +11,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 /** 单个pileup文件的snp calling */
-public class SnpCalling extends RunProcess<SnpFilterDetailInfo>{
+public class SnpCalling extends RunProcess {
 	private static Logger logger = Logger.getLogger(SnpCalling.class);
 	
 	GffChrAbs gffChrAbs;

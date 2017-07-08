@@ -13,7 +13,7 @@ import com.novelbio.base.multithread.RunProcess;
  * @author ywd
  *
  */
-public class DownKeggPng extends RunProcess<Integer> {
+public class DownKeggPng extends RunProcess {
 
 	private DownKeggPngUnit downloadUnit;
 
