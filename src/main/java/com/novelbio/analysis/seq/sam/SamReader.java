@@ -68,6 +68,9 @@ public class SamReader {
 	 * <b>不需要初始化</b>
 	 */
 	public SamReader(InputStream inputStream) {
+		if (inputStream == null) {
+			throw new ExceptionSamError("inputstream is null");
+		}
 		samReader =
                 SamReaderFactory.make()
                 .enable(SamReaderFactory.Option.DONT_MEMORY_MAP_INDEX)
