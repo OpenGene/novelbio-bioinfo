@@ -257,6 +257,7 @@ public class RefSeqCounts implements AlignmentRecorder {
 		}
 		String geneName = mapIso2Gene.get(samRecord.getRefID().toLowerCase());
 		if (geneName == null) {
+			
 			throw new ExceptionSamError("cannot find iso in gene: " + samRecord.getRefID());
 		}
 		return geneName;
@@ -264,6 +265,9 @@ public class RefSeqCounts implements AlignmentRecorder {
 	
 	private void addGeneExp(Set<String> setGeneName) {
 		for (String geneName : setGeneName) {
+			if (StringOperate.isRealNull(geneName)) {
+				continue;
+			}
 			geneExpTable.addGeneExp(geneName, (double)1/setGeneName.size());
 		}
 	}

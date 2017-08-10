@@ -126,7 +126,7 @@ public class RegionBed {
 	}
 	
 	public static enum EnumTssPileUpType {
-		/** 直接连起来，然后把长的标准化为指定长度 */ 
+		/** 直接连起来，然后标准化为指定长度 */ 
 		connect_norm("cn"),
 		/** 直接连起来，然后把比指定长度长的区域剪掉，如果比指定长度短，则补0 */ 
 		connect_cut("cc"),

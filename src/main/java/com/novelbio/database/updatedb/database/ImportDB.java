@@ -35,6 +35,51 @@ public class ImportDB {
 	String GOPath;
 	
 	public static void main(String[] args) {
+		String taxIDFile = "/media/winE/NBCplatform/database/20170727/species.txt";
+		TxtReadandWrite txtRead = new TxtReadandWrite(taxIDFile);
+		for (String taxId : txtRead.readlines()) {
+			ImportPerLine.addTaxId(Integer.parseInt(taxId));
+		}
+		txtRead.close();
+		String downloadPath = "/media/winE/NBCplatform/database/20170727/";
+//		String dbInfo = "/home/novelbio/NBCsource/database/DBinfo.txt";
+		String GOPath = downloadPath;
+		
+		boolean importGO = true;
+		
+//		String speciesFile = "";
+//		ImportPerLine.addTaxId(4577);
+		ImportDB importDB = new ImportDB();
+//		importDB.setDownloadPath(downloadPath);
+//		importDB.setSoftToolsFile(softToolsFile);
+//		importDB.setSpeciesFile(speciesFile);
+//		importDB.setGOPath(GOPath);
+		
+//		importDB.updateDBinfo(dbInfo);
+//		importDB.updateGODB();
+//		
+//		importDB.updateNCBIID(importGO);
+//		if (importGO) {
+//			importDB.updateUniprotID();
+//		}
+		
+//		importDB.updateZeaMaize();
+		importDB.updateRiceID("/media/winE/NBCplatform/database/20170727/rice/");//只导了前两个
+//		importDB.updateTAIR("/media/winE/NBCplatform/database/20170727/arabidopsis/");
+//		importDB.updateZB();
+//		importDB.updateEnsembl();
+//		importDB.updateYeast();
+//		importDB.updateMicroarray();
+
+//		importDB.updateSoyBean();
+//		importDB.updateZeaMaize();
+//		importDB.updateBlast();
+//		importDB.updateAffy();
+		
+		System.out.println("finish all");
+	}
+	
+	public static void main2(String[] args) {
 		for (String string : args) {
 			if (string.toLowerCase().contains("help")) {
 				System.out.println("java -jar xxx.jar --taxId 9606 --importGO true --downloadPath /media/winE/NBCplatform/database/20150928/");
@@ -174,7 +219,7 @@ public class ImportDB {
 		// 下载链接 ftp://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/idmapping/
 		String idmappingSelectedFile = downloadPath + "uniprot/idmapping_selected.tab.gz";
 		//TODO 下载链接：http://geneontology.org/page/download-annotations
-		String gene_association_goa_uniprot = downloadPath + "uniprot/gene_association.goa_uniprot.gz";
+		String gene_association_goa_uniprot = downloadPath + "uniprot/goa_uniprot_all.gaf.gz";
 		String outUniIDFile = downloadPath + "uniprot/idmapping_selected_Out.txt.gz";
 		UniProt uniProt = new UniProt();
 		uniProt.setIdmappingSelectedFile(idmappingSelectedFile);
@@ -458,16 +503,17 @@ public class ImportDB {
 	private void updateTAIR(String parentPath) {
 		Arabidopsis arabidopsis = new Arabidopsis();
 		//ftp://ftp.arabidopsis.org/home/tair/Ontologies/Gene_Ontology/
+		parentPath = FileOperate.addSep(parentPath);
 		String athGO = parentPath + "ATH_GO_GOSLIM.txt.gz";
-		String tAIR_functional_descriptions = parentPath + "TAIR10_functional_descriptions";
+		String tAIR_functional_descriptions = parentPath + "TAIR10_functional_descriptions_20140331.txt";
 		String tAIRNCBIGeneIDmapping = parentPath + "TAIR10_NCBI_GENEID_mapping";
-		String tAIRNCBIRefSeqMappingPROT = parentPath + "TAIR10_NCBI_REFSEQ_mapping_PROT";
-		String tAIRNCBIRefSeqMappingRNA = parentPath + "TAIR10_NCBI_REFSEQ_mapping_RNA";
+//		String tAIRNCBIRefSeqMappingPROT = parentPath + "TAIR10_NCBI_REFSEQ_mapping_PROT";
+//		String tAIRNCBIRefSeqMappingRNA = parentPath + "TAIR10_NCBI_REFSEQ_mapping_RNA";
 		arabidopsis.setAthGO(athGO);
 		arabidopsis.setTAIR_functional_descriptions(tAIR_functional_descriptions);
 		arabidopsis.setTAIRNCBIGeneIDmapping(tAIRNCBIGeneIDmapping);
-		arabidopsis.setTAIRNCBIRefSeqMappingPROT(tAIRNCBIRefSeqMappingPROT);
-		arabidopsis.setTAIRNCBIRefSeqMappingRNA(tAIRNCBIRefSeqMappingRNA);
+//		arabidopsis.setTAIRNCBIRefSeqMappingPROT(tAIRNCBIRefSeqMappingPROT);
+//		arabidopsis.setTAIRNCBIRefSeqMappingRNA(tAIRNCBIRefSeqMappingRNA);
 		arabidopsis.update();
 	}
 	
@@ -542,6 +588,7 @@ public class ImportDB {
 		String parent = "/home/novelbio/NBCsource/biodb/database20150530/species/soybean/";
 		String soyGff = parent + "Glycine_max.V1.0.27.gff3";
 		String soyGOFile = parent + "SoyBase_Annotation_Glyma2.0.csv";
+		//https://soybase.org/correspondence/full.php
 		String soyIdConvertFile = parent + "Glyma_11_to_Glyma_20_Correspondence_Full.csv";
 		
 		SoyBean soyBean = new SoyBean();

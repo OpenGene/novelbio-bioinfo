@@ -533,12 +533,12 @@ Example:O43526-2
 		if (!setTaxID.contains(taxID)) {
 			return true;
 		}
-		GeneID copedID = new GeneID(ss[1], taxID);
+		GeneID copedID = new GeneID(ss[2], taxID);
 		
 		//找到合适的表，NCBI或UniProt，并导入UniID
-		copedID.setUpdateRefAccID(ss[1],ss[2]);
-		copedID.setUpdateDBinfo(DBAccIDSource.Uniprot, false);
-		copedID.update(true);
+//		copedID.setUpdateRefAccID(ss[1],ss[2]);
+//		copedID.setUpdateDBinfo(DBAccIDSource.Uniprot, false);
+		copedID.update(false);
 		//导入symbol和description
 //		copedID.setUpdateAccID(ss[2]);
 //		copedID.setUpdateDBinfo(NovelBioConst.DBINFO_SYMBOL, false);
@@ -553,12 +553,7 @@ Example:O43526-2
 		}
 
 		copedID.addUpdateGO(ss[4], DBAccIDSource.Uniprot, ss[6], lsRef, ss[3]);
-		try {
-			return copedID.update(true);
-		} catch (Exception e) {
-			return copedID.update(true);
-		}
-	
+		return copedID.update(false);
 	}
 	
 

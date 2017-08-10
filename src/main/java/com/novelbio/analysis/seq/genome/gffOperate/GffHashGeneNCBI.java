@@ -503,15 +503,15 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		String ID = patID.getPatFirst(content);
 		if (geneName == null) {
 			geneID = patGeneID.getPatFirst(content);
-			if (database) {
-				try {
-					GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID,
-							taxID);
-					geneName = copedID.getAccID();
-				} catch (Exception e) {
-					database = false;
-				}
-			}
+//			if (StringOperate.isRealNull(geneID) && database) {
+//				try {
+//					GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID,
+//							taxID);
+//					geneName = copedID.getAccID();
+//				} catch (Throwable e) {
+//					database = false;
+//				}
+//			}
 		}
 		if (geneName == null) {
 			geneName = patName.getPatFirst(content);

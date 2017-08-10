@@ -119,7 +119,7 @@ public class AlignSamReading extends AlignSeqReading {
 					}
 				} catch (UnsupportedOperationException e) {
 					if (StringOperate.isEqual("Cannot query stream-based BAM file", e.getMessage())){
-						throw new ExceptionSamNoIndexError("sam file " + samFile.getFileName() + " must be sorted and indexed", e);
+						throw new ExceptionSamNoIndexError("file " + samFile.getFileName() + " must be sorted and indexed", e);
 					}
 					throw e;
 				}

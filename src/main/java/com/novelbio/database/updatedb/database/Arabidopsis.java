@@ -63,26 +63,39 @@ public class Arabidopsis {
 	}
 	
 	public void update() {
-		TAIR_NCBI_GENEID_mapping tair_NCBI_GENEID_mapping = new TAIR_NCBI_GENEID_mapping();
-		tair_NCBI_GENEID_mapping.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIGeneIDmapping, "_out", "txt"));
-		tair_NCBI_GENEID_mapping.updateFile(TAIRNCBIGeneIDmapping);
+		if (FileOperate.isFileExistAndBigThan0(TAIRNCBIGeneIDmapping)) {
+			TAIR_NCBI_GENEID_mapping tair_NCBI_GENEID_mapping = new TAIR_NCBI_GENEID_mapping();
+			tair_NCBI_GENEID_mapping.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIGeneIDmapping, "_out", "txt"));
+			tair_NCBI_GENEID_mapping.updateFile(TAIRNCBIGeneIDmapping);
+		}
 		
-		TAIR_NCBI_REFSEQ_mapping_PROT_RNA tair_NCBI_REFSEQ_mapping_PROT_RNA = new TAIR_NCBI_REFSEQ_mapping_PROT_RNA();
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIRefSeqMappingPROT, "_out", "txt"));
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.setProtein(true);
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingPROT);
+		TAIR_NCBI_REFSEQ_mapping_PROT_RNA tair_NCBI_REFSEQ_mapping_PROT_RNA = null;
+		if (FileOperate.isFileExistAndBigThan0(TAIRNCBIRefSeqMappingPROT)) {
+			tair_NCBI_REFSEQ_mapping_PROT_RNA = new TAIR_NCBI_REFSEQ_mapping_PROT_RNA();
+			tair_NCBI_REFSEQ_mapping_PROT_RNA.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIRefSeqMappingPROT, "_out", "txt"));
+			tair_NCBI_REFSEQ_mapping_PROT_RNA.setProtein(true);
+			tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingPROT);
+		}
 		
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.setProtein(false);
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIRefSeqMappingRNA, "_out", "txt"));
-		tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingRNA);
+		if (FileOperate.isFileExistAndBigThan0(TAIRNCBIRefSeqMappingRNA)) {
+			tair_NCBI_REFSEQ_mapping_PROT_RNA.setProtein(false);
+			tair_NCBI_REFSEQ_mapping_PROT_RNA.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRNCBIRefSeqMappingRNA, "_out", "txt"));
+			tair_NCBI_REFSEQ_mapping_PROT_RNA.updateFile(TAIRNCBIRefSeqMappingRNA);
+		}
 		
-		TAIR_functional_descriptions tair_functional_descriptions = new TAIR_functional_descriptions();
-		tair_functional_descriptions.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRFunctionalDescriptions, "_out", "txt"));
-		tair_functional_descriptions.updateFile(TAIRFunctionalDescriptions);
+		if (FileOperate.isFileExistAndBigThan0(TAIRFunctionalDescriptions)) {
+			TAIR_functional_descriptions tair_functional_descriptions = new TAIR_functional_descriptions();
+			tair_functional_descriptions.setTxtWriteExcep(FileOperate.changeFileSuffix(TAIRFunctionalDescriptions, "_out", "txt"));
+			tair_functional_descriptions.updateFile(TAIRFunctionalDescriptions);
+		}
 		
-		ATH_GO_GOSLIM ath_GO_GOSLIM = new ATH_GO_GOSLIM();
-		ath_GO_GOSLIM.setTxtWriteExcep(FileOperate.changeFileSuffix(AthGO, "_out", "txt"));
-		ath_GO_GOSLIM.updateFile(AthGO);
+		if (FileOperate.isFileExistAndBigThan0(AthGO)) {
+			ATH_GO_GOSLIM ath_GO_GOSLIM = new ATH_GO_GOSLIM();
+			ath_GO_GOSLIM.setTxtWriteExcep(FileOperate.changeFileSuffix(AthGO, "_out", "txt"));
+			ath_GO_GOSLIM.updateFile(AthGO);
+		}
+		
+
 	}
 }
 /**

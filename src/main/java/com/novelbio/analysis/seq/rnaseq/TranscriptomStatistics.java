@@ -93,6 +93,10 @@ public class TranscriptomStatistics {
 					logger.error(e);
 					continue;
 				}
+				if (seqFasta == null) {
+					logger.error("can not find sequence on " + gffGeneIsoInfo.toString());
+					continue;
+				}
 				SeqfastaStatisticsCDS seqfastaStatisticsCDS = seqFasta.statisticsCDS();
 				seqfastaStatisticsCDS.calculateAAseqInfo();
 				if (seqfastaStatisticsCDS.getMstartAAlen() > minAAlen) {

@@ -160,7 +160,7 @@ public class SamToBam {
 		}
 
 		Iterable<SamRecord> itSamRecord = isAddMultiFlag? samAddMultiFlag.readlines() : samFileIn.readLines();
-
+		int  i = 0;
 		try {
 			for (SamRecord samRecord : itSamRecord) {
 				if (isError) throw new ExceptionSamError(error);
@@ -168,6 +168,10 @@ public class SamToBam {
 				if (samReorder != null) samReorder.copeReads(samRecord);
 
 				addRecordToLsRecorders(samRecord);
+				if (i++%1000000 == 0) {
+					logger.info("write records: " + i);
+					System.gc();
+				}
 				samWriteTo.write(samRecord);
 			}
 		} catch (ExceptionSamError e) {
