@@ -98,11 +98,10 @@ class PooledConnectionProvider  {
     	 * modify by fans.fan 阿里云批量计算，所有的连接用完都关闭.
     	 * pool.release(connection, connection.isClosed() || shouldPrune(connection));
     	 */
-    	if (ServiceEnvUtil.isBatchCompute()) {
-			// ossHost不为空,说明是运行在批量计算的VM中.
-			pool.release(connection, true);
+    	if (ServiceEnvUtil.isDbKeepAlive()) {
+    		pool.release(connection, connection.isClosed() || shouldPrune(connection));
 		} else {
-			pool.release(connection, connection.isClosed() || shouldPrune(connection));
+			pool.release(connection, true);
 		}
     	//end by fans.fan
     }

@@ -68,11 +68,10 @@ class ConcurrentPool<T> {
     	 * modify by fans.fan 阿里云批量计算，所有的连接用完都关闭.
     	 * release(t, false);
     	 */
-		if (ServiceEnvUtil.isBatchCompute()) {
-			// ossHost不为空,说明是运行在批量计算的VM中.
-			release(t, true);
-		} else {
+		if (ServiceEnvUtil.isDbKeepAlive()) {
 			release(t, false);
+		} else {
+			release(t, true);
 		}
 		//end by fans.fan
     }
@@ -150,11 +149,10 @@ class ConcurrentPool<T> {
              * modify by fans.fan
             release(cur, itemFactory.shouldPrune(cur));
              */
-            if (ServiceEnvUtil.isBatchCompute()) {
-    			// ossHost不为空,说明是运行在批量计算的VM中.
-            	release(cur, true);
+            if (ServiceEnvUtil.isDbKeepAlive()) {
+            	release(cur, itemFactory.shouldPrune(cur));
     		} else {
-    			release(cur, itemFactory.shouldPrune(cur));
+    			release(cur, true);
     		}
             //end by fans.fan
         }
