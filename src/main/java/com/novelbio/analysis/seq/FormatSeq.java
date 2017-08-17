@@ -2,6 +2,8 @@ package com.novelbio.analysis.seq;
 
 import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.base.StringOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 测序文件的枚举
@@ -17,16 +19,26 @@ public enum FormatSeq {
 	  * @return
 	  */
 	 public static FormatSeq getFileType(String fileName) {
+		 String suffix = FileOperate.getFileSuffix(fileName);
+		 if (StringOperate.isEqualIgnoreCase(suffix, "bam")) {
+			return FormatSeq.BAM;
+		} else if (StringOperate.isEqualIgnoreCase(suffix, "sam")) {
+			return FormatSeq.SAM;
+		}
+		 if (StringOperate.isEqualIgnoreCase(suffix, "gz")) {
+			String fileNameRemoveGz = FileOperate.getFileNameSep(fileName)[0];
+			suffix = FileOperate.getFileSuffix(fileNameRemoveGz);
+		}
+		 
+		 if (StringOperate.isEqualIgnoreCase(suffix, "fastq") || StringOperate.isEqualIgnoreCase(suffix, "fq")) {
+			return FormatSeq.FASTQ;
+		} else if (StringOperate.isEqualIgnoreCase(suffix, "bed")) {
+			return FormatSeq.BED;
+		}
+		 
 		 if (BedFile.isBedFile(fileName)) {
 			return FormatSeq.BED;
 		 }
-		 FormatSeq formatSeq = SamFile.isSamBamFile(fileName);
-		 if (formatSeq != UNKNOWN) {
-			return formatSeq;
-		 }
-		 else {
-			 //TODO 可以加入fastq的判断
-			return formatSeq;
-		}
+		 return FormatSeq.UNKNOWN;
 	 }
 }

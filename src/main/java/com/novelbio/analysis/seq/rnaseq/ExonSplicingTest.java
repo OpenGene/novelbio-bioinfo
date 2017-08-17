@@ -708,7 +708,15 @@ class SpliceType2Value {
 	private static final Logger logger = LoggerFactory.getLogger(SpliceType2Value.class);
 
 	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<SplicingAlternativeType>();
+	/**
+	 * key: splice type
+	 * value: group1: difsite:BG group2: difsite:BG
+	 */
 	Map<SplicingAlternativeType, ArrayListMultimap<String, Double>> mapSplicingType2_MapGroup2LsExpValue = new HashMap<>();
+	/**
+	 * key: splice type
+	 * value: group1: inclusive:exclusive group2: inclusive:exclusive
+	 */
 	Map<SplicingAlternativeType, ArrayListMultimap<String, Double>> mapSplicingType2_MapGroup2LsJunctionReads = new HashMap<>();
 	Map<SplicingAlternativeType, SpliceTypePredict> mapSplicingType2Detail = new HashMap<SplicingAlternativeType, SpliceTypePredict>();
 	
