@@ -11,7 +11,9 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.HashMultimap;
 import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.geneanno.AGene2Go;
 import com.novelbio.database.domain.geneanno.GOtype;
@@ -58,7 +60,7 @@ public abstract class GeneID2LsItem {
 	 * @return
 	 */
 	public boolean isValidate() {
-		if (setItemID.size() == 0 || geneUniID == null || geneUniID.equals("")) {
+		if (setItemID.size() == 0 || StringOperate.isRealNull(geneUniID)) {
 			return false;
 		}
 		return true;
@@ -67,19 +69,11 @@ public abstract class GeneID2LsItem {
 	 * 返回类似 LOCOs01g11110  GO:10001, GO:10002 这种
 	 */
 	public String toString() {
-		if (setItemID.size() == 0 || geneUniID == null || geneUniID.equals("")) {
+		if (setItemID.size() == 0 || StringOperate.isRealNull(geneUniID)) {
 			return "";
 		}
 		String result = geneUniID + "\t";
-		int i = 0;
-		for (String itemID : setItemID) {
-			if (i == 0) {
-				result = result + itemID;
-			} else {
-				result = result + "," + itemID;
-			}
-			i++;
-		}
+		result += ArrayOperate.cmbString(setItemID, ",");
 		return result;
 	}
 

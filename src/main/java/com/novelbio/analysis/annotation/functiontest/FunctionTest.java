@@ -177,16 +177,22 @@ public abstract class FunctionTest implements Cloneable {
 		int i = 0;
 		int errorLine = 0;
 		mapId2TermAnno.clear();
+		boolean isGeneId = false;
 		for (String content : txtRead.readlines()) {
 			try {
 				i++;
 				
-				if (content.startsWith("#") || StringOperate.isRealNull(content)) continue;
 				String[] ss = content.split("\t");
 				//判断第一行是否为标题
 				if (i == 1 && !ss[1].contains(":")) {
+					if (StringOperate.isEqualIgnoreCase(ss[0].replace("#", ""), "geneId")) {
+						isGeneId = true;
+					}
 					continue;
 				}
+				
+				if (content.startsWith("#") || StringOperate.isRealNull(content)) continue;
+				
 				mapGeneName2LsGO.put(ss[0], ss[1]);
 				if (ss.length > 2) {
 					mapId2TermAnno.put(ss[1], ss[2]);
@@ -204,8 +210,13 @@ public abstract class FunctionTest implements Cloneable {
 		for (String geneId : mapGeneName2LsGO.keys()) {
 			List<String> lsItemId = mapGeneName2LsGO.get(geneId);
 			if (lsItemId.isEmpty()) continue;
-			GeneID geneID = new GeneID(geneId, taxID);
-			String geneUniId = geneID.getGeneUniID();
+			
+			String geneUniId = geneId;
+			if (!isGeneId) {
+				GeneID geneID = new GeneID(geneId, taxID);
+				geneUniId = geneID.getGeneUniID();
+			}
+		
 			GeneID2LsItem geneID2LsItem = mapBGGeneID2Items.get(geneUniId.toLowerCase());
 
 			if (geneID2LsItem == null) {
@@ -234,18 +245,21 @@ public abstract class FunctionTest implements Cloneable {
 		if (!FileOperate.isFileExistAndNotDir(fileName)) {
 			logger.error("no File exist: "+ fileName);
 		}
-		ArrayList<String[]> accID = null;
+		List<String[]> lsAccIds = null;
 		try {
-			accID =  ExcelTxtRead.readLsExcelTxt(fileName, new int[]{colNum}, 1, -1);
+			lsAccIds =  ExcelTxtRead.readLsExcelTxt(fileName, new int[]{colNum}, 1, -1);
 		} catch (Exception e) {
 			logger.error("BG accID file is not correct: "+ fileName);
 		}
-		int numAll = accID.size();
+		int numAll = lsAccIds.size();
+		boolean isGeneId = isGeneId(lsAccIds.get(0)[0]);
+		if (isGeneId) {
+			lsAccIds = lsAccIds.subList(1, lsAccIds.size());
+		}
 		int num = 0;
-		for (String[] strings : accID) {
+		for (String[] accId : lsAccIds) {
 			num++;
-			
-			GeneID geneId = new GeneID(strings[0], taxID, false);
+			GeneID geneId = isGeneId ? new GeneID(GeneID.IDTYPE_GENEID, accId[0], taxID) : new GeneID(accId[0], taxID, false);
 			if (isBlast()) {
 				geneId.setBlastInfo(blastEvalue, lsBlastTaxId);
 			}
@@ -261,7 +275,13 @@ public abstract class FunctionTest implements Cloneable {
 		}
 		BGnum = mapBGGeneID2Items.size();
 	}
-
+	
+	private boolean isGeneId(String title) {
+		if (title == null) title = "";
+		title = title.replace("#", "");
+		return StringOperate.isEqualIgnoreCase(title, "geneId");
+	}
+	
 	/**
 	 * 补充BG的基因，因为BG可能没有cover 输入的testGene
 	 * 不过我觉得没必要这样做

@@ -76,27 +76,28 @@ public class ExonJunction extends RunProcess {
 	}
 	//HES4	chr1:999692-999787	2	40::1436	37::2294	3154::468	2583::220	3.119998921325775E-10	0.0	0.0	Cassette
 	public static long wwwSimulation() {
-		String parentPath = "/home/novelbio/tmp/Shared/";
+		String parentPath = "/media/winE/test/altersplice/bug2/";
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("chr1", 60379282, 61810711));
+		lsAligns.add(new Align("chrX", 0, 11111111));
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(new GffHashGene("/media/nbfs/nbCloud/public/nbcplatform/genome/species/10090/mm10_GRCm38/gff/ref_GRCm38.p2_top_level.gff3.gz"));
+		gffChrAbs.setGffHash(new GffHashGene("/media/winE/test/altersplice/bug2/mm10_refGene.gtf"));
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
 		exonJunction.setgenerateNewIso(true);
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		exonJunction.addBamSorted("Ex", parentPath + "MCF10a_run1_sorted_chr11.bam");
-		exonJunction.addBamSorted("In", parentPath + "MCF10a_run1_sorted_chr11.bam");
+		exonJunction.addBamSorted("Ex", parentPath + "A2.AddRG.Reorder.Sort.bam");
+		exonJunction.addBamSorted("In", parentPath + "WT.AddRG.Reorder.Sort.bam");
 		exonJunction.setCompareGroups("Ex", "In", "ExvsIn");
 		exonJunction.setResultFile(parentPath + "result-sep-exon");
 		exonJunction.setJunctionMinAnchorLen(0);
 		exonJunction.setRunSepChr(true);
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
-		exonJunction.run();
+		exonJunction.running();
+		exonJunction.writeResult(parentPath + "result-sep-exon", exonJunction.lsResult, false);
 		exonJunction = null;
 		gffChrAbs.close();
 		return dateUtil.getElapseTime();
