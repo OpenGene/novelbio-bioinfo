@@ -59,7 +59,7 @@ public class GffChrUnionHanYanRefSeq extends GffChrHanYan {
 	public void loadMap(String mapFile, int tagLength, boolean uniqReads, int startCod, boolean uniqMapping) {
 		mapReads = new MapReads();
 		mapReads.setMapChrID2Len(seqFastaHash.getMapChrLength());
-		mapReads.setBedSeq(mapFile);
+		mapReads.setReadsInfoFile(mapFile);
 		mapReads.setInvNum(1);
 		mapReads.setNormalType(EnumMapNormalizeType.per_gene);
 		mapReads.setFilter(uniqReads, startCod);

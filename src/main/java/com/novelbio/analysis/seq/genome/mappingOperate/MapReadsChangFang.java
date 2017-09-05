@@ -2,8 +2,10 @@ package com.novelbio.analysis.seq.genome.mappingOperate;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsChangFang.CGmethyType;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsChangFang.EnumCpGmethyType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -23,14 +25,12 @@ public class MapReadsChangFang extends MapReads {
 	PatternOperate patternOperate = new PatternOperate("EviCode \"(.+?)\"", false);
 	String GTFyanghongxing;
 	
-	 CGmethyType cGmethyType = CGmethyType.ALL;
+	 EnumCpGmethyType cGmethyType = EnumCpGmethyType.ALL;
 	
-	@Deprecated
-	public void setBedSeq(String bedSeqFile) { }
 	@Deprecated
 	public void setAlignSeqReader(AlignSeq alignSeqReader) { }
 	
-	public void setGTFyanghongxing(String gTFyanghongxing) {
+	public void setReadsInfoFile(String gTFyanghongxing) {
 		GTFyanghongxing = gTFyanghongxing;
 	}
 	private void setTagLength() {
@@ -38,7 +38,7 @@ public class MapReadsChangFang extends MapReads {
 	}
 	
 	/** 设定要统计的CG类型 */
-	public void setcGmethyType(CGmethyType cGmethyType) {
+	public void setcGmethyType(EnumCpGmethyType cGmethyType) {
 		this.cGmethyType = cGmethyType;
 	}
 	
@@ -57,7 +57,7 @@ public class MapReadsChangFang extends MapReads {
 				continue;
 			}
 			GtfHongXingMethy gtfHongXingMethy = new GtfHongXingMethy(gtfLines, patternOperate);
-			if (cGmethyType != CGmethyType.ALL && cGmethyType != gtfHongXingMethy.cgGmethyType) {
+			if (cGmethyType != EnumCpGmethyType.ALL && cGmethyType != gtfHongXingMethy.cgGmethyType) {
 				continue;
 			}
 			String tmpChrID = gtfHongXingMethy.getRefID();
@@ -121,8 +121,31 @@ public class MapReadsChangFang extends MapReads {
 		}
 	}
 	
-	public static enum CGmethyType {
-		CHG, CG, CHH, ALL
+	public static enum EnumCpGmethyType {
+		CHG, CG, CHH, ALL;
+		
+		static BiMap<Integer, EnumCpGmethyType> biMapIntFlag2Type = HashBiMap.create();
+		static {
+			/**
+			 * 这个编码里面必须大于0，因为后面还有要覆盖度之类的，
+			 * 9999 9999 0
+			 * 前四位甲基化覆盖度，中间四位非甲基化覆盖度，最后一位编码，正负号表示方向。
+			 * 如果都为0，就无法区分正负号了
+			 */
+			biMapIntFlag2Type.put(1, CHG);
+			biMapIntFlag2Type.put(2, CG);
+			biMapIntFlag2Type.put(3, CHH);
+		}
+		public static EnumCpGmethyType getCGType(int value) {
+			return biMapIntFlag2Type.get(value);
+		}
+		public static int getCGFlag(EnumCpGmethyType type) {
+			return biMapIntFlag2Type.inverse().get(type);
+		}
+		public static int getCGFlag(String type) {
+			EnumCpGmethyType typeCGmethy = EnumCpGmethyType.valueOf(type);
+			return getCGFlag(typeCGmethy);
+		}
 	}
 }
 
@@ -135,7 +158,7 @@ class GtfHongXingMethy implements Alignment{
 	String cpgType = "";
 	int readsNum = 0;
 	int methyScore = 0;
-	CGmethyType cgGmethyType;
+	EnumCpGmethyType cgGmethyType;
 	PatternOperate patternOperate;
 
 	/**
@@ -152,11 +175,11 @@ class GtfHongXingMethy implements Alignment{
 		this.patternOperate = patternOperate;
 		setEvidenceAndReadsNum(ss[8]);
 		if (ss[7].equalsIgnoreCase("CG")) {
-			cgGmethyType = CGmethyType.CG;
+			cgGmethyType = EnumCpGmethyType.CG;
 		} else if (ss[7].equalsIgnoreCase("CHG")) {
-			cgGmethyType = CGmethyType.CHG;
+			cgGmethyType = EnumCpGmethyType.CHG;
 		} else if (ss[7].equalsIgnoreCase("CHH")) {
-			cgGmethyType = CGmethyType.CHH;
+			cgGmethyType = EnumCpGmethyType.CHH;
 		} else {
 			logger.error("出现未知CG类型：" + ss[7]);
 		}

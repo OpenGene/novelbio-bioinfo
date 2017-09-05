@@ -533,7 +533,7 @@ public class SamRecord implements AlignRecord {
 	public FastQRecord toFastQRecord() {
 		FastQRecord fastQRecord = new FastQRecord();
 		fastQRecord.setName(getName());
-		if (isMapped() && !isCis5to3()) {
+		if (!isCis5to3()) {
 			fastQRecord.setSeq(SeqFasta.reverseComplement(samRecord.getReadString()));
 			fastQRecord.setFastaQuality(SeqFasta.reverse(samRecord.getBaseQualityString()));
 		} else {

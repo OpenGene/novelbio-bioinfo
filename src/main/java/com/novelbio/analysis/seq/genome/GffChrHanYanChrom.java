@@ -29,7 +29,7 @@ public class GffChrHanYanChrom extends GffChrHanYan{
 	
 	/**
 	 * 读取Mapping文件，生成相应的一维坐标数组，最后保存在一个哈希表中。
-	 * @param mapFile mapping的结果文件，一般为bed格式
+	 * @param mapFile mapping的结果文件，为bed格式
 	 * @param invNum 每隔多少位计数
 	 * @param tagLength 设定双端readsTag拼起来后长度的估算值，大于20才会进行设置。目前solexa双端送样长度大概是200-400bp，不用太精确 ,默认是400
 	 * @param uniqReads 同一位点的重复是否仅保留一个
@@ -38,7 +38,7 @@ public class GffChrHanYanChrom extends GffChrHanYan{
 	 */
 	public void loadMap(String mapFile,int tagLength, boolean uniqReads, int startCod, boolean uniqMapping) {
 		mapReads=new MapReadsHanyanChrom();
-		mapReads.setBedSeq(mapFile);
+		mapReads.setReadsInfoFile(mapFile);
 		mapReads.setInvNum(1);
 		mapReads.setMapChrID2Len(gffChrAbs.getSpecies().getMapChromInfo());
 		mapReads.setFilter(uniqReads, startCod);

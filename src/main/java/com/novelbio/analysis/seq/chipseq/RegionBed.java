@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -296,6 +297,50 @@ public class RegionBed {
 			}
 			return result;
 		}
+	}
+	
+}
+
+class ReadsCovnerageHandle {
+	/**
+	 * 将若干个位点合并为1个
+	 * 主要是给BSP测序使用的，因为BSP测序在分析时首先获得的是单碱基精度的数据
+	 * 然后部分就需要合并
+	 */
+	int binNum = 0;
+	
+	double[] values;
+	
+	public void setBinNum(int binNum) {
+		this.binNum = binNum;
+	}
+	public void setValue(double[] values) {
+		this.values = values;
+	}
+	
+	/** 把若干位点合并成一个位点 */ 
+	@VisibleForTesting
+	protected double[] combineInputValues() {
+		List<Double> lsTmpResult = new ArrayList<>();
+		int i = 0;
+		double sumTmp = 0;
+		for (double tmpValue : values) {
+ 			if (i > 0 && i %binNum == 0) {
+				lsTmpResult.add(sumTmp/binNum);
+				sumTmp = 0;
+			}
+			sumTmp += tmpValue;
+			i++;
+		}
+		if (i%binNum > binNum/2) {
+			lsTmpResult.add(sumTmp/(i%binNum));
+		}
+		double[] result = new double[lsTmpResult.size()];
+		int m = 0;
+		for (double d : lsTmpResult) {
+			result[m++] = d;
+		}
+		return result;
 	}
 	
 }

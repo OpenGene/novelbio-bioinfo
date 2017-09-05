@@ -271,7 +271,7 @@ public class DifLoc2DifLoc {
 		if (FileOperate.isFileExistAndNotDir(mapFile1)) {
 			mapReads1 = new MapReads();
 			mapReads1.setInvNum(binNum);
-			mapReads1.setBedSeq(mapFile1);
+			mapReads1.setReadsInfoFile(mapFile1);
 			mapReads1.setMapChrID2Len(species.getMapChromInfo());
 			
 			mapReads1.running();
@@ -282,7 +282,7 @@ public class DifLoc2DifLoc {
 		if (FileOperate.isFileExistAndNotDir(mapFile2)) {
 			mapReads2 = new MapReads();
 			mapReads2.setInvNum(binNum);
-			mapReads2.setBedSeq(mapFile2);
+			mapReads2.setReadsInfoFile(mapFile2);
 			mapReads2.setMapChrID2Len(species.getMapChromInfo());
 			
 			mapReads2.running();

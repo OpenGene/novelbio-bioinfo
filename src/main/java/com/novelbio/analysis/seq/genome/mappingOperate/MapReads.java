@@ -103,7 +103,8 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		this.invNum = invNum;
 	}
 	 
-	 public void setBedSeq(String bedSeqFile) {
+	 /** 设定reads比对的信息，这里必须为排序后的bed文件 */
+	 public void setReadsInfoFile(String bedSeqFile) {
 		 alignSeqReader = new BedFile(bedSeqFile);
 	}
 	 public void setAlignSeqReader(AlignSeq alignSeqReader) {
@@ -610,7 +611,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	public static class ChrMapReadsInfo {
 		String chrID;
 		int invNum = 10;
-		int type;
+		int type = MapReads.SUM_TYPE_MEAN;
 		long chrLength;
 		
 		/** 直接从0开始记录，1代表第二个invNum,也和实际相同 */
@@ -633,7 +634,15 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 			this.type = mapReads.summeryType;
 			this.FormulatToCorrectReads = mapReads.FormulatToCorrectReads;
 		}
-		
+		/**
+		 * @param chrID
+		 * @param mapReadsAbs
+		 */
+		public ChrMapReadsInfo(String chrID, long chrLen, int invNum) {
+			this.chrID = chrID;
+			this.chrLength = chrLen;
+			this.invNum = invNum;
+		}
 		public String getChrID() {
 			return chrID;
 		}

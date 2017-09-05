@@ -27,14 +27,14 @@ public class GffChrCmpBed extends GffChrAbs {
 
 	/**
 	 * @param readsFile
-	 *            mapping的结果文件，必须排过序，一般为bed格式
+	 *            mapping的结果文件，必须排过序，为bed格式
 	 * @param binNum
 	 *            每隔多少位计数，如果设定为1，则算法会变化，然后会很精确
 	 */
 	public void setMapReadsCmp(String readsFile2, int binNum) {
 		if (FileOperate.isFileExistAndNotDir(readsFile2)) {
 			mapReads2 = new MapReads();
-			mapReads2.setBedSeq(readsFile2);
+			mapReads2.setReadsInfoFile(readsFile2);
 			mapReads2.setInvNum(binNum);
 			mapReads2.setMapChrID2Len(super.species.getMapChromInfo());
 //			mapReads2.setNormalType(mapNormType);
