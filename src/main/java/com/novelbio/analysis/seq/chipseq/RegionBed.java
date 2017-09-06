@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumBspCpGCalculateType;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumCpGmethyType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -43,7 +46,6 @@ public class RegionBed {
 	
 	/** 把tss合并起来的标准化方式 */
 	EnumTssPileUpType normalType;
-	
 	/**
 	 * @param regionBed 
 	 * 提取出来的区域信息，类似：
@@ -99,7 +101,7 @@ public class RegionBed {
 	 * @param mapReads
 	 * @return
 	 */
-	public RegionValue getRegionInfo(MapReadsAbs mapReads) {
+	public RegionValue getRegionInfo(MapReadsAbs mapReads, ReadsCoverageHandleFactory readsCoverageHandleFactory) {
 		List<double[]> lsValues = new ArrayList<>();
 		for (Align align : lsAligns) {
 			double[] value = mapReads.getRangeInfo(align, 0);
@@ -108,7 +110,8 @@ public class RegionBed {
 			}
 			lsValues.add(value);
 		}
-		double[] values = EnumTssPileUpType.normalizeValues(normalType, lsValues, lengthNormal);
+		ReadsCoverageHandle readsCovnerageHandle = readsCoverageHandleFactory.generateReadsCoverageHandle(lsValues, lengthNormal, normalType);
+		double[] values = readsCovnerageHandle.normalizeToValues();
 		RegionValue regionValue = new RegionValue();
 		regionValue.setName(name);
 		regionValue.setValues(values);
@@ -181,166 +184,211 @@ public class RegionBed {
 			}
 			return tssPileUp;
 		}
-		
-		public static double[] normalizeValues(EnumTssPileUpType normalType, List<double[]> lsValues, int lengthNormal) {
-			if (lengthNormal < 0) {
-				throw new ExceptionNbcParamError("while use param " + normalType + ", length normal cannot less than 0");
-			}
-			
-			double[] result = null;
-			if (normalType == EnumTssPileUpType.connect_norm) {
-				result = connectNorm(lsValues, lengthNormal);
-			} else if (normalType == EnumTssPileUpType.connect_cut) {
-				result = connectCut(lsValues, lengthNormal);
-			} else if (normalType == EnumTssPileUpType.pileup_cut) {
-				result = pileupCut(lsValues, lengthNormal);
-			} else if (normalType == EnumTssPileUpType.pileup_norm) {
-				result = pileupNorm(lsValues, lengthNormal);
-			} else if (normalType == EnumTssPileUpType.pileup_norm_to_length) {
-				result = pileupNormLen(lsValues, lengthNormal);
-			} else if (normalType == EnumTssPileUpType.pileup_long_norm_to_length) {
-				result = pileupLongNormLen(lsValues, lengthNormal);
-			} else {
-				throw new ExceptionNbcParamError("cannot find normalType " + normalType);
-			}
-			return result;
-		}
-		
-		/** 把所有的value连起来，然后标准化到指定的长度
-		 * @param lsValues
-		 * @param lengthNormal 小于等于0就不标准化长度
-		 * @return
-		 */
-		private static double[] connectNorm(List<double[]> lsValues, int lengthNormal) {
-			double[] valueTmp = connect(lsValues);
-			return lengthNormal > 0? MathComput.mySpline(valueTmp, lengthNormal) : valueTmp;
-		}
-		
-		/** 把所有的value连起来，然后标准化到指定的长度
-		 * @param lsValues
-		 * @param lengthNormal 小于等于0就不标准化长度
-		 * @return
-		 */
-		private static double[] connectCut(List<double[]> lsValues, int lengthNormal) {
-			double[] valueTmp = connect(lsValues);
-			return lengthNormal > 0? cut(valueTmp, lengthNormal): valueTmp;
-		}
-		
-		/** 把每个value标准化到指定的长度，然后堆叠起来
-		 * @param lsValues
-		 * @param lengthNormal 小于等于0就不标准化长度
-		 * @return
-		 */
-		private static double[] pileupNormLen(List<double[]> lsValues, int lengthNormal) {
-			List<double[]> lsNormValues = new ArrayList<>();
-			for (double[] ds : lsValues) {
-				lsNormValues.add(MathComput.mySpline(ds, lengthNormal));
-			}
-			return ArrayOperate.getSumList(lsNormValues);
-		}
-		
-		/** 把长度大于{@link #lengthNormal}的value标准化到指定的长度，小于该长度的value不标准化。
-		 * 然后把所有value堆叠起来
-		 * @param lsValues
-		 * @param lengthNormal 必须大于0
-		 * @return
-		 */
-		private static double[] pileupLongNormLen(List<double[]> lsValues, int lengthNormal) {
-			List<double[]> lsNormValues = new ArrayList<>();
-			for (double[] ds : lsValues) {
-				double[] valueTmp = ds.length > lengthNormal? MathComput.mySpline(ds, lengthNormal) : ds;
-				lsNormValues.add(valueTmp);
-			}
-			double[] valueTmp = ArrayOperate.getSumList(lsNormValues);
-			return lengthNormal > 0? cut(valueTmp, lengthNormal): valueTmp;
-		}
-		
-		/** 把value堆叠起来，并把最后结果标准化(加权平均)为指定长度
-		 * @param lsValues
-		 * @return
-		 */
-		private static double[] pileupNorm(List<double[]> lsValues, int lengthNormal) {
-			double[] valueTmp = ArrayOperate.getSumList(lsValues);
-			return lengthNormal > 0? MathComput.mySpline(valueTmp, lengthNormal): valueTmp;
-		}
 
+	}
+	
+	public static class ReadsCoverageHandleFactory {
+		/** CpG的计算方式 */
+		EnumBspCpGCalculateType cpGCalculateType;
+		/** CpG甲基化的类型 */
+		EnumCpGmethyType cpGmethyType;
 		
-		/** 把value堆叠起来，最后截短为指定长度
-		 * @param lsValues
-		 * @return
-		 */
-		private static double[] pileupCut(List<double[]> lsValues, int lengthNormal) {
-			double[] valueTmp = ArrayOperate.getSumList(lsValues);
-			return lengthNormal > 0? cut(valueTmp, lengthNormal) : valueTmp;
+		public void setCpGCalculateType(EnumBspCpGCalculateType cpGCalculateType) {
+			this.cpGCalculateType = cpGCalculateType;
+		}
+		public void setCpGmethyType(EnumCpGmethyType cpGmethyType) {
+			this.cpGmethyType = cpGmethyType;
 		}
 		
-		/** 把给定的value连起来 */
-		private static double[] connect(List<double[]> lsValues) {
-			int size = 0;
-			for (double[] ds : lsValues) {
-				size += ds.length;
+		public ReadsCoverageHandle generateReadsCoverageHandle(List<double[]> lsValues, int normalizedLength, EnumTssPileUpType pileUpType) {
+			ReadsCoverageHandle readsCoverageHandle = null;
+			if (cpGCalculateType == null) {
+				readsCoverageHandle = new ReadsCoverageHandle(lsValues, normalizedLength, pileUpType);
+			} else {
+				ReadsCoverageHandleBsp readsCoverageHandleBsp = new ReadsCoverageHandleBsp(lsValues, normalizedLength, pileUpType);
+				readsCoverageHandleBsp.setCpGCalculateType(cpGCalculateType);
+				readsCoverageHandleBsp.setCpGmethyType(cpGmethyType);
+				readsCoverageHandle = readsCoverageHandleBsp;
 			}
-			double[] result = new double[size];
-			int i = 0;
-			for (double[] ds : lsValues) {
-				for (double d : ds) {
-					result[i++] = d;
-				}
-			}
-			return result;
+			return readsCoverageHandle;
 		}
-		/** 把给定的value弄成等长，多的截断，少的补0 */
-		private static double[] cut(double[] values, int length) {
-			double[] result = new double[length];
-			for (int i = 0; i < result.length; i++) {
-				result[i] = i < values.length ? result[i] = values[i] : 0;
-			}
-			return result;
-		}
+		
 	}
 	
 }
 
-class ReadsCovnerageHandle {
-	/**
-	 * 将若干个位点合并为1个
-	 * 主要是给BSP测序使用的，因为BSP测序在分析时首先获得的是单碱基精度的数据
-	 * 然后部分就需要合并
-	 */
-	int binNum = 0;
+
+class ReadsCoverageHandle {
+
+	List<double[]> lsValues;
 	
-	double[] values;
+	int normalizedLength = 0;
+	EnumTssPileUpType normalType;
 	
-	public void setBinNum(int binNum) {
-		this.binNum = binNum;
-	}
-	public void setValue(double[] values) {
-		this.values = values;
+	public ReadsCoverageHandle(List<double[]> lsValues, int normalizedLength, EnumTssPileUpType pileUpType) {
+		this.lsValues = lsValues;
+		this.normalizedLength = normalizedLength;
+		this.normalType = pileUpType;
 	}
 	
-	/** 把若干位点合并成一个位点 */ 
-	@VisibleForTesting
-	protected double[] combineInputValues() {
-		List<Double> lsTmpResult = new ArrayList<>();
-		int i = 0;
-		double sumTmp = 0;
-		for (double tmpValue : values) {
- 			if (i > 0 && i %binNum == 0) {
-				lsTmpResult.add(sumTmp/binNum);
-				sumTmp = 0;
-			}
-			sumTmp += tmpValue;
-			i++;
+	protected double[] combineInputValues(double[] values) {
+		return values;
+	}
+	
+	protected double[] normalizeToValue(double[] values) {
+		if (normalizedLength <= 0 || normalizedLength == values.length) {
+			return values;
 		}
-		if (i%binNum > binNum/2) {
-			lsTmpResult.add(sumTmp/(i%binNum));
+		return MathComput.mySpline(values, normalizedLength);
+	}
+	/** 把给定的value弄成等长，多的截断，少的补0 */
+	protected double[] cutToValue(double[] values) {
+		if (normalizedLength <= 0 || normalizedLength == values.length) {
+			return values;
 		}
-		double[] result = new double[lsTmpResult.size()];
-		int m = 0;
-		for (double d : lsTmpResult) {
-			result[m++] = d;
+		double[] result = new double[normalizedLength];
+		for (int i = 0; i < result.length; i++) {
+			result[i] = i < values.length ? result[i] = values[i] : 0;
 		}
 		return result;
+	}
+	
+	public double[] normalizeToValues() {
+		if (normalizedLength < 0) {
+			throw new ExceptionNbcParamError("while use param " + normalType + ", length normal cannot less than 0");
+		}
+		
+		double[] result = null;
+		if (normalType == EnumTssPileUpType.connect_norm) {
+			result = connectNorm(lsValues);
+		} else if (normalType == EnumTssPileUpType.connect_cut) {
+			result = connectCut(lsValues);
+		} else if (normalType == EnumTssPileUpType.pileup_cut) {
+			result = pileupCut(lsValues);
+		} else if (normalType == EnumTssPileUpType.pileup_norm) {
+			result = pileupNorm(lsValues);
+		} else if (normalType == EnumTssPileUpType.pileup_norm_to_length) {
+			result = pileupNormLen(lsValues);
+		} else if (normalType == EnumTssPileUpType.pileup_long_norm_to_length) {
+			result = pileupLongNormLen(lsValues);
+		} else {
+			throw new ExceptionNbcParamError("cannot find normalType " + normalType);
+		}
+		return result;
+	}
+	
+	/** 把所有的value连起来，然后标准化到指定的长度
+	 * @param lsValues
+	 * @param lengthNormal 小于等于0就不标准化长度
+	 * @return
+	 */
+	private double[] connectNorm(List<double[]> lsValues) {
+		double[] valueTmp = connect(lsValues);
+		valueTmp = combineInputValues(valueTmp);
+		return normalizeToValue(valueTmp);
+	}
+	
+	/** 把所有的value连起来，然后cut到指定的长度
+	 * @param lsValues
+	 * @param lengthNormal 小于等于0就不标准化长度
+	 * @return
+	 */
+	private double[] connectCut(List<double[]> lsValues) {
+		double[] valueTmp = connect(lsValues);
+		valueTmp = combineInputValues(valueTmp);
+		return cutToValue(valueTmp);
+	}
+	
+	/** 把每个value标准化到指定的长度，然后堆叠起来
+	 * @param lsValues
+	 * @param lengthNormal 小于等于0就不标准化长度
+	 * @return
+	 */
+	private double[] pileupNormLen(List<double[]> lsValues) {
+		List<double[]> lsNormValues = new ArrayList<>();
+		for (double[] ds : lsValues) {
+			ds = combineInputValues(ds);
+			lsNormValues.add(normalizeToValue(ds));
+		}
+		return ArrayOperate.getSumList(lsNormValues);
+	}
+	
+	/** 把长度大于{@link #lengthNormal}的value标准化到指定的长度，小于该长度的value不标准化。
+	 * 然后把所有value堆叠起来
+	 * @param lsValues
+	 * @param lengthNormal 必须大于0
+	 * @return
+	 */
+	private double[] pileupLongNormLen(List<double[]> lsValues) {
+		List<double[]> lsNormValues = new ArrayList<>();
+		for (double[] ds : lsValues) {
+			ds = combineInputValues(ds);
+			double[] valueTmp = ds.length > normalizedLength? normalizeToValue(ds) : ds;
+			lsNormValues.add(valueTmp);
+		}
+		double[] valueTmp = ArrayOperate.getSumList(lsNormValues);
+		return cutToValue(valueTmp);
+	}
+	
+	/** 把value堆叠起来，并把最后结果标准化(加权平均)为指定长度
+	 * @param lsValues
+	 * @return
+	 */
+	private double[] pileupNorm(List<double[]> lsValues) {
+		double[] valueTmp = ArrayOperate.getSumList(lsValues);
+		valueTmp = combineInputValues(valueTmp);
+		return normalizeToValue(valueTmp);
+	}
+
+	
+	/** 把value堆叠起来，最后截短为指定长度
+	 * @param lsValues
+	 * @return
+	 */
+	private double[] pileupCut(List<double[]> lsValues) {
+		double[] valueTmp = ArrayOperate.getSumList(lsValues);
+		return cutToValue(valueTmp);
+	}
+
+	
+	/** 把给定的value连起来 */
+	private static double[] connect(List<double[]> lsValues) {
+		int size = 0;
+		for (double[] ds : lsValues) {
+			size += ds.length;
+		}
+		double[] result = new double[size];
+		int i = 0;
+		for (double[] ds : lsValues) {
+			for (double d : ds) {
+				result[i++] = d;
+			}
+		}
+		return result;
+	}
+
+}
+
+class ReadsCoverageHandleBsp extends ReadsCoverageHandle {
+	/** CpG的计算方式 */
+	EnumBspCpGCalculateType cpGCalculateType;
+	/** CpG甲基化的类型 */
+	EnumCpGmethyType cpGmethyType = EnumCpGmethyType.ALL;
+	
+	public void setCpGCalculateType(EnumBspCpGCalculateType cpGCalculateType) {
+		this.cpGCalculateType = cpGCalculateType;
+	}
+	public void setCpGmethyType(EnumCpGmethyType cpGmethyType) {
+		this.cpGmethyType = cpGmethyType;
+	}
+	
+	public ReadsCoverageHandleBsp(List<double[]> lsValues, int normalizedLength, EnumTssPileUpType pileUpType) {
+		super(lsValues, normalizedLength, pileUpType);
+	}
+	
+	protected double[] normalizeToValue(double[] values) {
+		if (normalizedLength <= 0) normalizedLength = values.length;
+		return MapReadsBSP.calculateCpGInfo(values, normalizedLength, cpGCalculateType, cpGmethyType); 
 	}
 	
 }

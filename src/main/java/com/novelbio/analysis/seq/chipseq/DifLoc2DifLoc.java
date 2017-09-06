@@ -30,6 +30,7 @@ import com.novelbio.listOperate.ListCodAbsDu;
  * @author zong0jie
  *
  */
+@Deprecated
 public class DifLoc2DifLoc {
 	Logger logger = Logger.getLogger(DifLoc2DifLoc.class);
 

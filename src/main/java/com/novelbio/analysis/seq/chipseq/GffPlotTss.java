@@ -37,6 +37,7 @@ import com.novelbio.base.plot.heatmap.PlotHeatMap;
  * @author zong0jie
  *
  */
+@Deprecated
 public class GffPlotTss {
 	private static final Logger logger = Logger.getLogger(GffPlotTss.class);
 

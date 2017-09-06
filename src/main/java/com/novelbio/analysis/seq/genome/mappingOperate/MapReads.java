@@ -258,6 +258,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 * @param binNum
 	 * @return
 	 */
+	@Deprecated
 	//TODO 还没做好
 	public  double[] getReadsDensity(ListAbs<ExonInfo> lsExonInfos, String chrID, int startLoc, int endLoc, int binNum ) {
 		//首先将reads标准化为一个400-500bp宽的大块，每一块里面应该是该区域里面tags的总数，所以求该区域里面的最大值
@@ -272,7 +273,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 		return resultTagDensityNum;
 	}
 	
-	Map<String, int[]> mapChrId2Num = new HashMap<>();
+	Map<String, int[]> mapChrId2NumCannotFind = new HashMap<>();
 	/**
 	 * 经过标准化，和equations修正
 	 * 输入坐标区间，和每个区间的bp数，返回该段区域内reads的数组
@@ -290,10 +291,10 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	public double[] getRangeInfo(int thisInvNum,String chrID,int startNum,int endNum,int type) {
 		double[] result = null;
 		if (!mapChrID2ReadsInfo.containsKey(chrID.toLowerCase())) {
-			int[] num = mapChrId2Num.get(chrID.toLowerCase());
+			int[] num = mapChrId2NumCannotFind.get(chrID.toLowerCase());
 			if (num == null) {
 				num = new int[]{0};
-				mapChrId2Num.put(chrID.toLowerCase(), num);
+				mapChrId2NumCannotFind.put(chrID.toLowerCase(), num);
 			}
 			num[0]++;
 			if (num[0] == 1 || num[0] % 1000 == 0) {
@@ -421,7 +422,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 * @param binNum
 	 * @return
 	 */
-	private static int[] cleanInfoNotInAlignment(List<? extends Alignment> lsAlignments, int[] invNumReads, int invNum) {
+	protected static int[] cleanInfoNotInAlignment(List<? extends Alignment> lsAlignments, int[] invNumReads, int invNum) {
 		Queue<Alignment> lsAlignmentThis = new LinkedList<Alignment>();
 		for (Alignment alignment : lsAlignments) {
 			lsAlignmentThis.add(alignment);

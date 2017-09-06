@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
+import com.novelbio.analysis.seq.chipseq.RegionBed.ReadsCoverageHandleFactory;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 
@@ -76,7 +77,8 @@ public class RegionValue {
 		for (RegionValue regionValue : lsRegionValues) {
 			lsValues.add(regionValue.getValues());
 		}
-		double[] mergedValues = EnumTssPileUpType.normalizeValues(normalizeType, lsValues, length);
+		ReadsCoverageHandle readsCoverageHandle = new ReadsCoverageHandle(lsValues, length, normalizeType);
+		double[] mergedValues = readsCoverageHandle.normalizeToValues();
 		RegionValue regionValue = new RegionValue();
 		regionValue.setName("merge");
 		regionValue.setValues(mergedValues);

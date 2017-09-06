@@ -7,9 +7,13 @@ import org.apache.log4j.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
+import com.novelbio.analysis.seq.chipseq.RegionBed.ReadsCoverageHandleFactory;
 import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumBspCpGCalculateType;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumCpGmethyType;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
@@ -36,6 +40,7 @@ public class TssPlot {
 	/** 绘制tss的具体信息，主要就是reads堆叠后的信息 */
 	List<RegionBed> lsRegions;
 	
+	ReadsCoverageHandleFactory readsCoverageHandleFactory = new ReadsCoverageHandleFactory();
 	
 	public static void main2(String[] args) {
 		String bamFile = null;
@@ -121,6 +126,24 @@ public class TssPlot {
 		tssPlot.writeToFileSep(outTssSep);
 	}
 	
+	public static void TestMethy(String bspFile, String regionBedFile, String outTssMerge, String outTssSep) {
+		MapReadsBSP mapReads = new MapReadsBSP();
+		mapReads.setReadsInfoFile(bspFile);
+		mapReads.run();
+		
+		TssPlot tssPlot = new TssPlot();
+		tssPlot.setCpGinfo(cpGCalculateType, EnumCpGmethyType.ALL);
+		tssPlot.setMapReads(mapReads);
+		tssPlot.readRegionFile(regionBedFile);
+		tssPlot.writeToFileMerge(outTssMerge);
+		tssPlot.writeToFileSep(outTssSep);
+	}
+	
+	public void setCpGinfo(EnumBspCpGCalculateType cpGCalculateType, EnumCpGmethyType cpGmethyType) {
+		this.readsCoverageHandleFactory.setCpGCalculateType(cpGCalculateType);
+		this.readsCoverageHandleFactory.setCpGmethyType(cpGmethyType);
+	}
+	
 	
 	@VisibleForTesting
 	protected void setxAxis(double[] xAxis) {
@@ -204,7 +227,7 @@ public class TssPlot {
 		List<RegionValue> lsRegionValues = new ArrayList<>();
 		for (RegionBed regionBed : lsRegions) {
 			try {
-				RegionValue regionValue = regionBed.getRegionInfo(mapReads);
+				RegionValue regionValue = regionBed.getRegionInfo(mapReads, readsCoverageHandleFactory);
 				lsRegionValues.add(regionValue);
 			} catch (ExceptionNBCChIPAlignError e) {
 				logger.error(regionBed.toString() + " error: " + e.getMessage());

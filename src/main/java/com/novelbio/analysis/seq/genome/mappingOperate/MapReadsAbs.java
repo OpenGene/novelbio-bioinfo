@@ -148,6 +148,7 @@ public abstract class MapReadsAbs extends RunProcess {
 	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
+	@Deprecated
 	public void getRange(RegionInfo mapInfo, int thisInvNum, int type) {
 		double[] Info = getRangeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
 		mapInfo.setDouble(Info);
@@ -160,6 +161,7 @@ public abstract class MapReadsAbs extends RunProcess {
 	 * @param lsmapInfo
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
+	@Deprecated
 	public void getRange(int binNum, RegionInfo mapInfo, int type) {
 		double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 		if (Info == null) {
@@ -167,19 +169,7 @@ public abstract class MapReadsAbs extends RunProcess {
 		}
 		mapInfo.setDouble(Info);
 	}
-	/**
-	 * 填充每个MapInfo，直接设定，不考虑方向
-	 * 经过标准化，和equations修正
-	 * @param lsmapInfo
-	 * @param thisInvNum  每个区域内所含的bp数，大于等于invNum，最好是invNum的倍数 如果invNum ==1 && thisInvNum == 1，结果会很精确
-	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
-	 */
-	public void getRangeLs(List<RegionInfo> lsmapInfo, int thisInvNum, int type) {
-		for (RegionInfo mapInfo : lsmapInfo) {
-			double[] Info = getRangeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
-			mapInfo.setDouble(Info);
-		}
-	}
+	
 	/**
 	 * 经过标准化
 	 * 将MapInfo中的double填充上相应的reads信息，直接设定，不考虑方向
@@ -187,6 +177,7 @@ public abstract class MapReadsAbs extends RunProcess {
 	 * @param lsmapInfo
 	 * @param type 0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 */
+	@Deprecated
 	public void getRangeLs(int binNum, List<RegionInfo> lsmapInfo, int type) {
 		for (int i = 0; i < lsmapInfo.size(); i++) {
 			RegionInfo mapInfo = lsmapInfo.get(i);
@@ -207,7 +198,7 @@ public abstract class MapReadsAbs extends RunProcess {
 	 * @return null表示出错
 	 */
 	public double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc) {
-		return getRangeInfo(chrID, lsLoc, -1 , 0);
+		return getRangeInfo(chrID, lsLoc , 0);
 	}
 	/**
 	 * 经过标准化，和equations修正，注意返回的值一直都是<b>按照坐标从小到大</b>，不会根据方向而改变方向<br><br>
@@ -217,7 +208,7 @@ public abstract class MapReadsAbs extends RunProcess {
 	 * @return null表示出错
 	 */
 	public double[] getRangeInfo(String chrID, ListAbs<? extends Alignment> lsLoc) {
-		return getRangeInfo(chrID, lsLoc.getLsElement(), -1 , 0);
+		return getRangeInfo(chrID, lsLoc.getLsElement() , 0);
 	}
 	/**
 	 * 经过标准化，和equations修正，注意返回的值一直都是<b>按照坐标从小到大</b>，不会根据方向而改变方向<br><br>
@@ -240,7 +231,7 @@ public abstract class MapReadsAbs extends RunProcess {
 	 * @param type  0：加权平均 1：取最高值，2：加权但不平均--也就是加和
 	 * @return
 	 */
-	protected double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc, int binNum, int type) {
+	protected double[] getRangeInfo(String chrID, List<? extends Alignment> lsLoc, int type) {
 		List<double[]> lstmp = getRangeInfoLs(chrID, lsLoc, type);
 		if (lstmp == null) {
 			return null;
@@ -257,9 +248,6 @@ public abstract class MapReadsAbs extends RunProcess {
 				finalReads[index] = d;
 				index ++ ;
 			}
-		}
-		if (binNum > 0) {
-			finalReads =MathComput.mySpline(finalReads, binNum, 0, 0, 0);
 		}
 		return finalReads;
 	}
@@ -378,7 +366,9 @@ public abstract class MapReadsAbs extends RunProcess {
 	 * @return 如果没有找到该染色体位点，则返回null
 	 * @return
 	 */
-	protected abstract double[] getRangeInfo(String chrID, int startNum, int endNum, int binNum, int type);
+	protected double[] getRangeInfo(String chrID, int startNum, int endNum, int binNum, int type) {
+		return null;
+	}
 	
 	/**
 	 * 用输入的公式进行修正

@@ -2,10 +2,8 @@ package com.novelbio.analysis.seq.genome.mappingOperate;
 
 import org.apache.log4j.Logger;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.novelbio.analysis.seq.AlignSeq;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsChangFang.EnumCpGmethyType;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumCpGmethyType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -120,33 +118,7 @@ public class MapReadsChangFang extends MapReads {
 			m++;
 		}
 	}
-	
-	public static enum EnumCpGmethyType {
-		CHG, CG, CHH, ALL;
-		
-		static BiMap<Integer, EnumCpGmethyType> biMapIntFlag2Type = HashBiMap.create();
-		static {
-			/**
-			 * 这个编码里面必须大于0，因为后面还有要覆盖度之类的，
-			 * 9999 9999 0
-			 * 前四位甲基化覆盖度，中间四位非甲基化覆盖度，最后一位编码，正负号表示方向。
-			 * 如果都为0，就无法区分正负号了
-			 */
-			biMapIntFlag2Type.put(1, CHG);
-			biMapIntFlag2Type.put(2, CG);
-			biMapIntFlag2Type.put(3, CHH);
-		}
-		public static EnumCpGmethyType getCGType(int value) {
-			return biMapIntFlag2Type.get(value);
-		}
-		public static int getCGFlag(EnumCpGmethyType type) {
-			return biMapIntFlag2Type.inverse().get(type);
-		}
-		public static int getCGFlag(String type) {
-			EnumCpGmethyType typeCGmethy = EnumCpGmethyType.valueOf(type);
-			return getCGFlag(typeCGmethy);
-		}
-	}
+
 }
 
 class GtfHongXingMethy implements Alignment{

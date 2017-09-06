@@ -23,6 +23,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 
 /** 基因与结构提取，主要用于画tss图等 */
+@Deprecated
 public class Gene2Value {
 	private static final Logger logger = Logger.getLogger(Gene2Value.class);
 		

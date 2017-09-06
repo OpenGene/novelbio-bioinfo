@@ -23,6 +23,12 @@ public class TestRegionBed {
 		values = new double[]{92.5, 94.5, 96.5, 98.5, 100.5, 102.5, 104.5, 106.5, 108.5, 110.5};
 		Assert.assertArrayEquals(values, regionValue.values, 0.01);
 		
+		//标准化到相同长度然后堆叠
+		regionBed = new RegionBed("tp53\tchr1:1-20;chr1:40-36;ch1:51-60", EnumTssPileUpType.pileup_norm_to_length, 10);
+		regionValue = regionBed.getRegionInfo(mapReadsStub);
+		values = new double[]{92.5, 95.5, 97.5, 100.5, 102.5, 105.5, 107.5, 110.5, 112.5, 115.5};
+		Assert.assertArrayEquals(values, regionValue.values, 0.01);
+		
 		//直接堆叠并截短
 		regionBed = new RegionBed("tp53\tchr1:1-15;chr1:40-31;ch1:51-60", EnumTssPileUpType.pileup_cut, 12);
 		regionValue = regionBed.getRegionInfo(mapReadsStub);
