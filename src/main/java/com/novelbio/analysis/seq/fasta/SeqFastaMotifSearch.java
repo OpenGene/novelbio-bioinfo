@@ -1,13 +1,29 @@
 package com.novelbio.analysis.seq.fasta;
 
 import java.util.ArrayList;
+import java.util.List;
 
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 
 public class SeqFastaMotifSearch {
 	SeqFasta seqFasta;
 	String regx;
 	int site;
+	
+	public static void main(String[] args) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/下载/motif-CCAAT.txt", true);
+		SeqFastaReader seqFastaReader = new SeqFastaReader("/home/novelbio/下载/Sequence.fa");
+		for (SeqFasta seqFasta : seqFastaReader.readlines()) {
+			SeqFastaMotifSearch seqFastaMotifSearch = new SeqFastaMotifSearch(seqFasta);
+			List<String[]> lsResult = seqFastaMotifSearch.getMotifScanResult("CCAAT", -500);
+			for (String[] strings : lsResult) {
+				txtWrite.writefileln(strings);
+			}
+		}
+		txtWrite.close();
+	}
+	
 	protected SeqFastaMotifSearch(SeqFasta seqFasta) {
 		this.seqFasta = seqFasta;
 	}
@@ -37,7 +53,7 @@ public class SeqFastaMotifSearch {
 	 * 2: 具体的motif序列<br>
 	 * 3: motif最后一个碱基与本序列site点的距离
 	 * @param regex
-	 * @param site 距离该序列终点的位置，上游为负数，下游为正数。譬如该位点为tss，并且tss距离seq终点500bp，则site为-500。
+	 * @param site 距离该序列终点的位置，上游为负数，下游为正数。譬如该位点为tss，并且tss在seq终点上游500bp，则site为-500。
 	 * 也就是序列取到tss下游500bp。
 	 * 最后返回motif到site点，那么<b>负数</b>表示motif在site的上游，<b>正数</b>表示motif在site的下游
 	 * @return
@@ -57,7 +73,7 @@ public class SeqFastaMotifSearch {
 	 * @param strand 序列方向
 	 * @param lsTmpResult 找到的motif信息，来自PatternOperate.getPatLoc()方法
 	 * 最后返回motif到site点，那么<b>负数</b>表示motif在site的上游，<b>正数</b>表示motif在site的下游
-	 * @param site 距离该序列终点的位置，上游为负数，下游为正数。譬如tss距离seq终点500bp，则site为-500。
+	 * @param site 距离该序列终点的位置，上游为负数，下游为正数。譬如tss在seq终点上游500bp，则site为-500。
 	 * 也就是序列取到tss下游500bp。
 	 * @param lsResult 返回的list
 	 */
