@@ -12,6 +12,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.CpGCalculator;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumBspCpGCalculateType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumCpGmethyType;
 import com.novelbio.analysis.seq.sam.SamFile;
@@ -127,21 +128,27 @@ public class TssPlot {
 	}
 	
 	public static void TestMethy(String bspFile, String regionBedFile, String outTssMerge, String outTssSep) {
+		CpGCalculator cpGCalculator = new CpGCalculator();
+		cpGCalculator.setCoverageFilter(coverageFilter);
+		cpGCalculator.setCpGCalculateType(cpGCalculateType);
+		cpGCalculator.setCpGmethyType(cpGmethyType);
+		cpGCalculator.setIsCis5To3(isCis5To3);
+		
 		MapReadsBSP mapReads = new MapReadsBSP();
+		mapReads.setChrFai(chrFai);
 		mapReads.setReadsInfoFile(bspFile);
 		mapReads.run();
-		
+		mapReads.setCpGCalculator(cpGCalculator);
 		TssPlot tssPlot = new TssPlot();
-		tssPlot.setCpGinfo(cpGCalculateType, EnumCpGmethyType.ALL);
+		tssPlot.setCpGCalculator(cpGCalculator);
 		tssPlot.setMapReads(mapReads);
 		tssPlot.readRegionFile(regionBedFile);
 		tssPlot.writeToFileMerge(outTssMerge);
 		tssPlot.writeToFileSep(outTssSep);
 	}
 	
-	public void setCpGinfo(EnumBspCpGCalculateType cpGCalculateType, EnumCpGmethyType cpGmethyType) {
-		this.readsCoverageHandleFactory.setCpGCalculateType(cpGCalculateType);
-		this.readsCoverageHandleFactory.setCpGmethyType(cpGmethyType);
+	public void setCpGCalculator(CpGCalculator cpGCalculator) {
+		this.readsCoverageHandleFactory.setCpGCalculator(cpGCalculator);
 	}
 	
 	

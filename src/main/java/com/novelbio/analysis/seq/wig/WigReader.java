@@ -20,11 +20,11 @@ public class WigReader extends MapReadsAbs {
 	Map<String, String> mapChrIdLowcase2ChrId = new HashMap<>();
 	public static void main(String[] args) throws IOException {
 		WigReader wigReader = new WigReader();
-		wigReader.setBigWigFile("/media/winE/NBC/Project/Project_MaHong/huangqiyue/out3.bw");
+		wigReader.setReadsInfoFile("/media/winE/NBC/Project/Project_MaHong/huangqiyue/out3.bw");
 //		wigReader.setBigWigFile("/media/hdfs/nbCloud/public/customerData/Projects/DN14001/bam/IonXpress_013.bam.bw");
 	}
 	
-	public void setBigWigFile(String bigwigFile) {
+	public void setReadsInfoFile(String bigwigFile) {
 		try {
 			bbFileReader = new BBFileReader(bigwigFile);
 			for (String chrId : bbFileReader.getChromosomeNames()) {
@@ -172,4 +172,5 @@ public class WigReader extends MapReadsAbs {
 		// TODO Auto-generated method stub
 		
 	}
+
 }

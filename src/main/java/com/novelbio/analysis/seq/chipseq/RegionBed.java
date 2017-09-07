@@ -9,6 +9,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.CpGCalculator;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumBspCpGCalculateType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumCpGmethyType;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -189,25 +190,19 @@ public class RegionBed {
 	
 	public static class ReadsCoverageHandleFactory {
 		/** CpG的计算方式 */
-		EnumBspCpGCalculateType cpGCalculateType;
-		/** CpG甲基化的类型 */
-		EnumCpGmethyType cpGmethyType;
+		CpGCalculator cpGCalculator;
 		
-		public void setCpGCalculateType(EnumBspCpGCalculateType cpGCalculateType) {
-			this.cpGCalculateType = cpGCalculateType;
-		}
-		public void setCpGmethyType(EnumCpGmethyType cpGmethyType) {
-			this.cpGmethyType = cpGmethyType;
+		public void setCpGCalculator(CpGCalculator cpGCalculator) {
+			this.cpGCalculator = cpGCalculator;
 		}
 		
 		public ReadsCoverageHandle generateReadsCoverageHandle(List<double[]> lsValues, int normalizedLength, EnumTssPileUpType pileUpType) {
 			ReadsCoverageHandle readsCoverageHandle = null;
-			if (cpGCalculateType == null) {
+			if (cpGCalculator == null) {
 				readsCoverageHandle = new ReadsCoverageHandle(lsValues, normalizedLength, pileUpType);
 			} else {
 				ReadsCoverageHandleBsp readsCoverageHandleBsp = new ReadsCoverageHandleBsp(lsValues, normalizedLength, pileUpType);
-				readsCoverageHandleBsp.setCpGCalculateType(cpGCalculateType);
-				readsCoverageHandleBsp.setCpGmethyType(cpGmethyType);
+				readsCoverageHandleBsp.setCpGCalculator(cpGCalculator);
 				readsCoverageHandle = readsCoverageHandleBsp;
 			}
 			return readsCoverageHandle;
@@ -231,15 +226,15 @@ class ReadsCoverageHandle {
 		this.normalType = pileUpType;
 	}
 	
-	protected double[] combineInputValues(double[] values) {
-		return values;
-	}
-	
-	protected double[] normalizeToValue(double[] values) {
+	protected double[] normalizeAndHandleValue(double[] values) {
 		if (normalizedLength <= 0 || normalizedLength == values.length) {
 			return values;
 		}
 		return MathComput.mySpline(values, normalizedLength);
+	}
+	/** 仅仅对数据进行简单处理，在这里就是直接返回 */
+	protected double[] handleValue(double[] values) {
+		return values;
 	}
 	/** 把给定的value弄成等长，多的截断，少的补0 */
 	protected double[] cutToValue(double[] values) {
@@ -251,6 +246,10 @@ class ReadsCoverageHandle {
 			result[i] = i < values.length ? result[i] = values[i] : 0;
 		}
 		return result;
+	}
+	
+	protected boolean isLongerThanLength(double[] values) {
+		return values.length > normalizedLength;
 	}
 	
 	public double[] normalizeToValues() {
@@ -279,36 +278,31 @@ class ReadsCoverageHandle {
 	
 	/** 把所有的value连起来，然后标准化到指定的长度
 	 * @param lsValues
-	 * @param lengthNormal 小于等于0就不标准化长度
 	 * @return
 	 */
 	private double[] connectNorm(List<double[]> lsValues) {
 		double[] valueTmp = connect(lsValues);
-		valueTmp = combineInputValues(valueTmp);
-		return normalizeToValue(valueTmp);
+		return normalizeAndHandleValue(valueTmp);
 	}
 	
 	/** 把所有的value连起来，然后cut到指定的长度
 	 * @param lsValues
-	 * @param lengthNormal 小于等于0就不标准化长度
 	 * @return
 	 */
 	private double[] connectCut(List<double[]> lsValues) {
 		double[] valueTmp = connect(lsValues);
-		valueTmp = combineInputValues(valueTmp);
+		valueTmp = handleValue(valueTmp);
 		return cutToValue(valueTmp);
 	}
 	
 	/** 把每个value标准化到指定的长度，然后堆叠起来
 	 * @param lsValues
-	 * @param lengthNormal 小于等于0就不标准化长度
 	 * @return
 	 */
 	private double[] pileupNormLen(List<double[]> lsValues) {
 		List<double[]> lsNormValues = new ArrayList<>();
 		for (double[] ds : lsValues) {
-			ds = combineInputValues(ds);
-			lsNormValues.add(normalizeToValue(ds));
+			lsNormValues.add(normalizeAndHandleValue(ds));
 		}
 		return ArrayOperate.getSumList(lsNormValues);
 	}
@@ -322,8 +316,7 @@ class ReadsCoverageHandle {
 	private double[] pileupLongNormLen(List<double[]> lsValues) {
 		List<double[]> lsNormValues = new ArrayList<>();
 		for (double[] ds : lsValues) {
-			ds = combineInputValues(ds);
-			double[] valueTmp = ds.length > normalizedLength? normalizeToValue(ds) : ds;
+			double[] valueTmp = isLongerThanLength(ds)? normalizeAndHandleValue(ds) : handleValue(ds);
 			lsNormValues.add(valueTmp);
 		}
 		double[] valueTmp = ArrayOperate.getSumList(lsNormValues);
@@ -335,9 +328,16 @@ class ReadsCoverageHandle {
 	 * @return
 	 */
 	private double[] pileupNorm(List<double[]> lsValues) {
-		double[] valueTmp = ArrayOperate.getSumList(lsValues);
-		valueTmp = combineInputValues(valueTmp);
-		return normalizeToValue(valueTmp);
+		List<double[]> lsValuesNew = new ArrayList<>();
+		for (double[] ds : lsValues) {
+			lsValuesNew.add(handleValue(ds));
+		}
+		double[] valueTmp = ArrayOperate.getSumList(lsValuesNew);
+		
+		if (normalizedLength <= 0 || normalizedLength == valueTmp.length) {
+			return valueTmp;
+		}
+		return MathComput.mySpline(valueTmp, normalizedLength);		
 	}
 
 	
@@ -346,7 +346,11 @@ class ReadsCoverageHandle {
 	 * @return
 	 */
 	private double[] pileupCut(List<double[]> lsValues) {
-		double[] valueTmp = ArrayOperate.getSumList(lsValues);
+		List<double[]> lsValuesNew = new ArrayList<>();
+		for (double[] ds : lsValues) {
+			lsValuesNew.add(handleValue(ds));
+		}
+		double[] valueTmp = ArrayOperate.getSumList(lsValuesNew);
 		return cutToValue(valueTmp);
 	}
 
@@ -370,25 +374,26 @@ class ReadsCoverageHandle {
 }
 
 class ReadsCoverageHandleBsp extends ReadsCoverageHandle {
-	/** CpG的计算方式 */
-	EnumBspCpGCalculateType cpGCalculateType;
-	/** CpG甲基化的类型 */
-	EnumCpGmethyType cpGmethyType = EnumCpGmethyType.ALL;
+	CpGCalculator cpGCalculator;
 	
-	public void setCpGCalculateType(EnumBspCpGCalculateType cpGCalculateType) {
-		this.cpGCalculateType = cpGCalculateType;
+	public void setCpGCalculator(CpGCalculator cpGCalculator) {
+		this.cpGCalculator = cpGCalculator;
 	}
-	public void setCpGmethyType(EnumCpGmethyType cpGmethyType) {
-		this.cpGmethyType = cpGmethyType;
+	
+	protected boolean isLongerThanLength(double[] values) {
+		return Math.round((double)values.length/cpGCalculator.getMinWindow()) > normalizedLength;
 	}
 	
 	public ReadsCoverageHandleBsp(List<double[]> lsValues, int normalizedLength, EnumTssPileUpType pileUpType) {
 		super(lsValues, normalizedLength, pileUpType);
 	}
 	
-	protected double[] normalizeToValue(double[] values) {
+	protected double[] normalizeAndHandleValue(double[] values) {
 		if (normalizedLength <= 0) normalizedLength = values.length;
-		return MapReadsBSP.calculateCpGInfo(values, normalizedLength, cpGCalculateType, cpGmethyType); 
+		return cpGCalculator.calculateCpGInfo(values, normalizedLength); 
 	}
-	
+	/** 不改变长度，仅仅将甲基化的比值等计算出来 */
+	protected double[] handleValue(double[] values) {
+		return cpGCalculator.calculateCpGInfoLength(values); 
+	}
 }

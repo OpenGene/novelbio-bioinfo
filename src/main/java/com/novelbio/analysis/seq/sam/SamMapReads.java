@@ -36,7 +36,13 @@ public class SamMapReads extends MapReadsAbs {
 		mapChrIDlowcase2Length = samFile.getMapChrIDLowcase2Length();
 		cacheValue = new double[cacheNum];
 	}
-	
+
+	@Override
+	public void setReadsInfoFile(String mapFile) {
+		this.samFile = new SamFile(mapFile);
+		mapChrIDlowcase2Length = samFile.getMapChrIDLowcase2Length();
+		cacheValue = new double[cacheNum];
+	}
 	/** catchNum不能大于5000000 */
 	public void setCacheNum(int cacheNum) {
 		if (cacheNum > 5000000) return;
@@ -292,4 +298,5 @@ public class SamMapReads extends MapReadsAbs {
 	public void clear() {
 		// TODO Auto-generated method stub
 	}
+
 }

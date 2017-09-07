@@ -32,10 +32,8 @@ public class MapReadsBSP extends MapReadsAbs {
 	private static final Logger logger = LoggerFactory.getLogger(MapReadsBSP.class);
 	
 	public static enum EnumBspCpGCalculateType {
-		CpGDensity,
-		CpGLevel,
-		CpGAll;
-
+		CpGCoverage,
+		CpGRatio,
 	}
 	
 	public static enum EnumCpGmethyType {
@@ -49,8 +47,8 @@ public class MapReadsBSP extends MapReadsAbs {
 			 * 前四位甲基化覆盖度，中间四位非甲基化覆盖度，最后一位编码，正负号表示方向。
 			 * 如果都为0，就无法区分正负号了
 			 */
-			biMapIntFlag2Type.put(1, CHG);
-			biMapIntFlag2Type.put(2, CG);
+			biMapIntFlag2Type.put(1, CG);
+			biMapIntFlag2Type.put(2, CHG);
 			biMapIntFlag2Type.put(3, CHH);
 
 		}
@@ -66,29 +64,27 @@ public class MapReadsBSP extends MapReadsAbs {
 		}
 	}
 	
-	EnumCpGmethyType  cpGmethyType = EnumCpGmethyType.ALL;
-	EnumBspCpGCalculateType cpGCalculateType = null;
+	CpGCalculator cpGCalculator;
 	
 	Map<String, ChrMapReadsInfo> mapChrID2ReadsInfo = new HashMap<>();
 	String bedFileBSP;
-	
-	 /** 序列信息,名字都为小写 */
-	 protected Map<String, Long> mapChrID2Len = new HashMap<String, Long>();
+
 	 
 	 /**
 	  * 仅对方法{@link #getReadsDensity(String, int, int, int)}起作用<br>
 	  * 只需要在调用该方法之前设置好本参数即可
-	  * @param cpGmethyType
-	  * @param cpGCalculateType
+	  * @param cpGCalculator
 	  */
-	 public void setCpGInfo(EnumCpGmethyType cpGmethyType, EnumBspCpGCalculateType cpGCalculateType) {
-		this.cpGmethyType = cpGmethyType;
-		this.cpGCalculateType = cpGCalculateType;
+	 public void setCpGCalculator(CpGCalculator cpGCalculator) {
+		this.cpGCalculator = cpGCalculator;
 	}
+	
+	 @Deprecated
+	 public void setAllReadsNum(long allReadsNum) {}
 	 /** 是否仅考虑unique mapping的reads */
 	 @Deprecated
-	 public void setisUniqueMapping(boolean booUniqueMapping) {
-	}
+	 public void setisUniqueMapping(boolean booUniqueMapping) {}
+	 
 	/** 这里是bsp专门软件出来的格式
 	 * chr7	3000254	-	0	0	CHH	CTC
 	 */
@@ -100,19 +96,7 @@ public class MapReadsBSP extends MapReadsAbs {
 	 public void setNormalType(EnumMapNormalizeType normalType) {
 		NormalType = normalType;
 	}
-	 public void setChrFai(String chrFai) {
-		 if (!FileOperate.isFileExistAndBigThanSize(chrFai, 0)) {
-			 throw new ExceptionNbcParamError("must need file chrFai, but file " + chrFai + " is not exist");
-		 }
-		 mapChrID2Len = new LinkedHashMap<>();
-		 TxtReadandWrite txtRead = new TxtReadandWrite(chrFai);
-		 for (String content : txtRead.readlines()) {
-			 String[] ss = content.split("\t");
-			 mapChrID2Len.put(ss[0].toLowerCase(), Long.parseLong(ss[1]));
-		 }
-		 txtRead.close();
-	 }
-	 
+
 	@Override
 	protected void ReadMapFileExp() throws Exception {
 		int[] chrBpReads = null;//保存每个bp的reads累计数
@@ -164,51 +148,7 @@ public class MapReadsBSP extends MapReadsAbs {
 	@Override
 	public double[] getReadsDensity(String chrID, int startLoc, int endLoc, int binNum) {
 		double[] tmpResult = getRangeInfo(1, chrID, startLoc, endLoc, 0);
-		return calculateCpGInfo(tmpResult, binNum, cpGCalculateType, cpGmethyType);
-	}
-	
-	/**
-	 * 给定输入的CpG编码信息--就是通过 {@link CpGInfo#encodeCpg2Int()} 编码后的信息
-	 * 指定计算公式，具体需要计算的CpG类型，分块长度，最后获得甲基化的结果数组，可用于画图
-	 * @param tmpResult
-	 * @param binNum 小于等于0表示不切分
-	 * @param cpGCalculateType
-	 * @param cpGmethyType
-	 * @return
-	 */
-	@VisibleForTesting
-	public static double[] calculateCpGInfo(double[] tmpResult, int binNum, 
-			EnumBspCpGCalculateType cpGCalculateType, EnumCpGmethyType cpGmethyType) {
-		if (binNum <= 0) {
-			binNum = tmpResult.length;
-		}
-		int binLength = tmpResult.length/binNum;
-		int binNumReal = binNum;
-		if (binLength < 1) {
-			binLength = 1;
-			binNumReal = tmpResult.length;
-		}
-		
-		double[] result = new double[binNumReal];
-		int[] tmpValue = new int[binLength];
-		
-		int i = 0, j = 0, resultIndex = 0;
-		for (; i < tmpResult.length; i++) {
-			if (i > 0 && i%binLength == 0) {
-				resultIndex = i/binLength - 1;
-				result[resultIndex] = CpGInfo.calculateCpG(tmpValue, cpGCalculateType, cpGmethyType);
-				tmpValue = new int[binLength]; j = 0;
-			}
-			tmpValue[j++] = (int) tmpResult[i];
-		}
-		if (resultIndex < result.length - 1) {
-			result[i/binLength - 1] = CpGInfo.calculateCpG(tmpValue, cpGCalculateType, cpGmethyType);
-		}
-		
-		if (result.length < binNum) {
-			result = MathComput.mySpline(result, binNum);
-		}
-		return result;
+		return cpGCalculator.calculateCpGInfo(tmpResult, binNum);
 	}
 	
 	/**
@@ -288,6 +228,185 @@ public class MapReadsBSP extends MapReadsAbs {
 		
 	}
 
+	public static class CpGCalculator {
+		/** CpG的计算方式 */
+		EnumBspCpGCalculateType cpGCalculateType;
+		/** CpG甲基化的类型 */
+		EnumCpGmethyType cpGmethyType = EnumCpGmethyType.ALL;
+		
+		int coverageFilter=10;
+		
+		/** 最少也要计算10bp window中的 甲基化情况 */
+		int minWindow = 1;
+		//MC比例超过这个的才算甲基化的C
+		double thresholdProp = 0.2;
+		
+		Boolean isCis5To3 = null;
+		
+		public void setCpGCalculateType(EnumBspCpGCalculateType cpGCalculateType) {
+			this.cpGCalculateType = cpGCalculateType;
+		}
+		public void setCpGmethyType(EnumCpGmethyType cpGmethyType) {
+			this.cpGmethyType = cpGmethyType;
+		}
+		public void setCoverageFilter(int coverageFilter) {
+			this.coverageFilter = coverageFilter;
+		}
+		/** 是否需要过滤方向
+		 * null 表示不过滤方向
+		 * @param isCis5To3
+		 */
+		public void setIsCis5To3(Boolean isCis5To3) {
+			this.isCis5To3 = isCis5To3;
+		}
+		/** 默认为10
+		 * 最少也要计算10bpwindow中的甲基化情况。
+		 * 譬如一个位置有80bp，那么就最最少每10bp采一个点，然后做扩展之类的工作
+ 		 * @param minWindow
+		 */
+		public void setMinWindow(int minWindow) {
+			if (minWindow <= 0) return;
+			this.minWindow = minWindow;
+		}
+		public int getMinWindow() {
+			return minWindow;
+		}
+		public double calculateCpG(int[] cpGValues) {
+			if (cpGCalculateType == null && cpGmethyType == null) {
+				return MathComput.mean(cpGValues);
+			}
+			cpGValues = filterCpGType(cpGValues);
+			
+			return calculateHsMetrics(cpGValues);
+		}
+		
+		/**
+		 * 给定输入的CpG编码信息--就是通过 {@link CpGInfo#encodeCpg2Int()} 编码后的信息
+		 * 指定计算公式，具体需要计算的CpG类型，分块长度，最后获得甲基化的结果数组，可用于画图
+		 * @param tmpResult
+		 * @param binNum 小于等于0表示不切分
+		 * @return
+		 */
+		@VisibleForTesting
+		public double[] calculateCpGInfo(double[] tmpResult, int binNum) {
+			if (binNum <= 0) {
+				binNum = tmpResult.length;
+			}
+			int binLength = tmpResult.length/binNum;
+			int binNumReal = binNum;
+			if (binLength < 1) {
+				binLength = 1;
+				binNumReal = tmpResult.length;
+			}
+			
+			double[] result = calculateCpGInfo(tmpResult, binNumReal, binLength);
+			
+			if (result.length < binNum) {
+				result = MathComput.mySpline(result, binNum);
+			}
+			return result;
+		}
+		
+		/**
+		 * 给定输入的CpG编码信息--就是通过 {@link CpGInfo#encodeCpg2Int()} 编码后的信息
+		 * 指定计算公式，具体需要计算的CpG类型，分块长度，最后获得甲基化的结果数组，可用于画图
+		 * @param tmpResult
+		 * @return
+		 */
+		@VisibleForTesting
+		public double[] calculateCpGInfoLength(double[] tmpResult) {
+			int binNumReal = Math.round(tmpResult.length/minWindow);
+			return calculateCpGInfo(tmpResult, binNumReal, minWindow);
+		}
+		
+		private double[] calculateCpGInfo(double[] tmpResult, int binNumReal, int binLength) {
+			double[] result = new double[binNumReal];
+			int[] tmpValue = new int[binLength];
+			
+			int i = 0, j = 0, resultIndex = 0;
+			for (; i < tmpResult.length; i++) {
+				if (i > 0 && i%binLength == 0) {
+					resultIndex = i/binLength - 1;
+					result[resultIndex] = calculateCpG(tmpValue);
+					tmpValue = new int[binLength]; j = 0;
+				}
+				tmpValue[j++] = (int) tmpResult[i];
+			}
+			if (resultIndex < result.length - 1) {
+				result[i/binLength - 1] = calculateCpG(tmpValue);
+			}
+			return result;
+		}
+		
+		private double calculateHsMetrics(int[] cpGValues) {
+	
+			//全体MC的覆盖度
+			int coverageC = 0;
+			//全体非MC的覆盖度
+			int coverageT = 0;
+			//甲基化的C
+			int numMC = 0;
+			//甲基化C的百分比之和
+			double CPropertyAll = 0;
+			//全部的C
+			int numC = 0;
+			//全部的碱基数
+			int numAll = cpGValues.length;
+			//全体甲基化c的比值加和
+			double percentageAllC = 0;
+			for (int i : cpGValues) {
+				if (i == 0) continue;
+				CpGInfo cpGInfo = CpGInfo.decodeInt2Cpg(i);
+				coverageC += cpGInfo.getDepthMethy();
+				coverageT += cpGInfo.getDepthNonMethy();
+				if (coverageC+coverageT > 0) {
+					CPropertyAll += (double)coverageC/(coverageC+coverageT);
+				}
+				if (coverageC+coverageT > 0 && (double)coverageC/(coverageC+coverageT) >= thresholdProp) {
+					numMC++;
+				}
+				numC++;
+			}
+			
+			if (coverageC+coverageT == 0) {
+				return 0;
+			}
+			
+			if (cpGCalculateType == EnumBspCpGCalculateType.CpGCoverage) {
+				return (double)coverageC/(coverageC+coverageT);
+			} else if (cpGCalculateType == EnumBspCpGCalculateType.CpGRatio) {
+				return CPropertyAll/numC;
+			}
+			throw new RuntimeException("does not support Calculate Type "+ cpGCalculateType);
+		}
+		
+		/** 根据CpG类型进行过滤 */
+		@VisibleForTesting
+		protected int[] filterCpGType(int[] cpGValues) {
+			//过滤非选中甲基化的位点
+			if (cpGmethyType == EnumCpGmethyType.ALL && coverageFilter <= 0 && isCis5To3 == null) {
+				return cpGValues;
+			}
+
+			int[] cpGValuesNew = new int[cpGValues.length];
+			for (int i = 0; i < cpGValues.length; i++) {
+				cpGValuesNew[i] = 0;
+				int cpGUnit = cpGValues[i];
+				if (cpGUnit == 0) {
+					continue;
+				}
+				CpGInfo cpGInfo = CpGInfo.decodeInt2Cpg(cpGUnit);
+				if (cpGInfo.getEnumCpGmethyType() == cpGmethyType || cpGmethyType == EnumCpGmethyType.ALL) {
+					if (cpGInfo.getCoverage() >= coverageFilter
+							&& (isCis5To3 == null || cpGInfo.isCis5to3() == isCis5To3)
+							) {
+						cpGValuesNew[i] = cpGUnit;
+					}
+				}
+			}
+			return cpGValuesNew;
+		}
+	}
 }
 /**
  * 最后输出可以这么来
@@ -363,6 +482,9 @@ class CpGInfo implements Alignment {
 	public int getDepthNonMethy() {
 		return depthNonMethy;
 	}
+	public int getCoverage() {
+		return depthMethy + depthNonMethy;
+	}
 	@Override
 	public int getStartAbs() {
 		return startEnd;
@@ -428,82 +550,5 @@ class CpGInfo implements Alignment {
 		return cpGInfo;
 	}
 	
-	public static double calculateCpG(int[] cpGValues, EnumBspCpGCalculateType cpGCalculateType, EnumCpGmethyType cpGmethyType) {
-		if (cpGCalculateType == null && cpGmethyType == null) {
-			return MathComput.mean(cpGValues);
-		}
-		cpGValues = filterCpGType(cpGValues, cpGmethyType);
-		
-		
-		return 0;
-	}
-	
-	private double CalculateHsMetrics(int[] cpGValues, EnumBspCpGCalculateType cpGCalculateType) {
-		//MC比例超过这个的才算甲基化的C
-		double threshold = 0.2;
-		//全体MC的覆盖度
-		int coverageC = 0;
-		//全体非MC的覆盖度
-		int coverageT = 0;
-		//甲基化的C
-		int numMC = 0;
-		//甲基化C的百分比之和
-		double CPropertyAll = 0;
-		//全部的C
-		int numC = 0;
-		//全部的碱基数
-		int numAll = cpGValues.length;
-		//全体甲基化c的比值加和
-		double percentageAllC = 0;
-		for (int i : cpGValues) {
-			if (i == 0) continue;
-			CpGInfo cpGInfo = CpGInfo.decodeInt2Cpg(i);
-			coverageC += cpGInfo.getDepthMethy();
-			coverageT += cpGInfo.getDepthNonMethy();
-			if (coverageC+coverageT > 0) {
-				CPropertyAll += (double)coverageC/(coverageC+coverageT);
-			}
-			if (coverageC+coverageT > 0 && (double)coverageC/(coverageC+coverageT) > threshold) {
-				numMC++;
-			}
-			numC++;
-		}
-		
-		if (cpGCalculateType == EnumBspCpGCalculateType.CpGDensity) {
-			return (double)numMC/numAll;
-		} else if (cpGCalculateType == EnumBspCpGCalculateType.CpGLevel) {
-			return (double)
-		}
-		
-		
-		return 0;
-	}
-	
-	
-	/** 根据CpG类型进行过滤 */
-	@VisibleForTesting
-	protected static int[] filterCpGType(int[] cpGValues, EnumCpGmethyType cpGmethyType) {
-		//过滤非选中甲基化的位点
-		if (cpGmethyType == EnumCpGmethyType.ALL) {
-			return cpGValues;
-		}
-
-		int[] cpGValuesNew = new int[cpGValues.length];
-		for (int i = 0; i < cpGValues.length; i++) {
-			int cpGUnit = cpGValues[i];
-			if (cpGUnit == 0) {
-				cpGValuesNew[i] = cpGUnit;
-				continue;
-			}
-			CpGInfo cpGInfo = CpGInfo.decodeInt2Cpg(cpGUnit);
-			if (cpGInfo.getEnumCpGmethyType() != cpGmethyType) {
-				cpGValuesNew[i] = 0;
-			} else {
-				cpGValuesNew[i] = cpGUnit;
-			}
-		}
-		return cpGValuesNew;
-	}
-	
-	
 }
+

@@ -1,6 +1,8 @@
 package com.novelbio.analysis.seq.chipseq;
 
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP;
+import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.CpGCalculator;
 import com.novelbio.base.dataStructure.MathComput;
 
 /** 仅用于测试，目前用在 {@link TestGene2Value} 上
@@ -8,29 +10,35 @@ import com.novelbio.base.dataStructure.MathComput;
  * @author zong0jie
  * @data 2016年11月20日
  */
-public class MapReadsStub extends MapReadsAbs {
+public class MapReadsBSPStub extends MapReadsAbs {
 	double[] value = new double[7000];
-
-	public MapReadsStub() {
+	CpGCalculator cpGCalculator;
+	
+	public MapReadsBSPStub() {
 		for (int i = 0; i < value.length; i++) {
-			value[i] = i+1;
+			int mc = i;
+			int nonmc = i+20;
+			int type = i%4;
+			if (type == 0) {
+				value[i] = 0;
+				continue;
+			}
+			value[i] = mc*100000 + nonmc*10 + type;
 		}
 	}
 
+	public void setCpGCalculator(CpGCalculator cpGCalculator) {
+		this.cpGCalculator = cpGCalculator;
+	}
+	
 	@Override
 	protected void ReadMapFileExp() throws Exception {
 	}
 
 	@Override
 	public double[] getReadsDensity(String chrID, int startLoc, int endLoc, int binNum) {
-		startLoc--;
-		endLoc--;
-		double[] tmpReadsNum = getSub(startLoc, endLoc);
-		if (tmpReadsNum == null) {
-			return null;
-		}
-		double[] resultTagDensityNum = MathComput.mySpline(tmpReadsNum, binNum, 0, 0, 2);
-		return resultTagDensityNum;
+		double[] tmpResult = getRangeInfo(1, chrID, startLoc, endLoc, 0);
+		return cpGCalculator.calculateCpGInfo(tmpResult, binNum);
 	}
 
 	@Override

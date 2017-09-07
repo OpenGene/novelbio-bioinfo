@@ -106,7 +106,9 @@ public abstract class MapReadsAbs extends RunProcess {
 			 this.mapChrID2Len.put(chrID.toLowerCase(), mapChrID2Len.get(chrID));
 		}
 	 }
-
+	 
+	 /** 设定需要读取的文件 */
+	 public abstract void setReadsInfoFile(String mapFile);
 	 /**
 	  * 返回所有chrID的list
 	  * @return
