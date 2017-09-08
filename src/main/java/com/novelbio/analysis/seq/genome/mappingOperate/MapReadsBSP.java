@@ -346,14 +346,12 @@ public class MapReadsBSP extends MapReadsAbs {
 			int coverageT = 0;
 			//甲基化的C
 			int numMC = 0;
-			//甲基化C的百分比之和
+			//全体甲基化C的覆盖度百分比之和
 			double CPropertyAll = 0;
 			//全部的C
 			int numC = 0;
 			//全部的碱基数
 			int numAll = cpGValues.length;
-			//全体甲基化c的比值加和
-			double percentageAllC = 0;
 			for (int i : cpGValues) {
 				if (i == 0) continue;
 				CpGInfo cpGInfo = CpGInfo.decodeInt2Cpg(i);

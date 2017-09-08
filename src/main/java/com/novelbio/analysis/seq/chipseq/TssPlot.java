@@ -128,11 +128,12 @@ public class TssPlot {
 	}
 	
 	public static void TestMethy(String bspFile, String regionBedFile, String outTssMerge, String outTssSep) {
+		String chrFai = "";
 		CpGCalculator cpGCalculator = new CpGCalculator();
-		cpGCalculator.setCoverageFilter(coverageFilter);
-		cpGCalculator.setCpGCalculateType(cpGCalculateType);
-		cpGCalculator.setCpGmethyType(cpGmethyType);
-		cpGCalculator.setIsCis5To3(isCis5To3);
+		cpGCalculator.setCoverageFilter(10);
+		cpGCalculator.setCpGCalculateType(EnumBspCpGCalculateType.CpGCoverage);
+		cpGCalculator.setCpGmethyType(EnumCpGmethyType.ALL);
+		cpGCalculator.setIsCis5To3(true);
 		
 		MapReadsBSP mapReads = new MapReadsBSP();
 		mapReads.setChrFai(chrFai);
