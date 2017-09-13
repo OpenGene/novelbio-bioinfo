@@ -227,6 +227,28 @@ public class MapReadsBSP extends MapReadsAbs {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/** 用来画CpG覆盖度情况的 */
+	public Map<EnumCpGmethyType, DepthPercentage> getMapCpGType2DepthInfo() {
+		Map<EnumCpGmethyType, DepthPercentage> mapCpGType2DepthInfo = new HashMap<>();
+		mapCpGType2DepthInfo.put(EnumCpGmethyType.ALL, new DepthPercentage());
+		mapCpGType2DepthInfo.put(EnumCpGmethyType.CG, new DepthPercentage());
+		mapCpGType2DepthInfo.put(EnumCpGmethyType.CHG, new DepthPercentage());
+		mapCpGType2DepthInfo.put(EnumCpGmethyType.CHH, new DepthPercentage());
+
+		for (ChrMapReadsInfo chrInfo : mapChrID2ReadsInfo.values()) {
+			for (int cpGint : chrInfo.getSumChrBpReads()) {
+				if (cpGint == 0) continue;
+				CpGInfo cpGInfo = CpGInfo.decodeInt2Cpg(cpGint);
+				DepthPercentage depthPercentageAll = mapCpGType2DepthInfo.get(EnumCpGmethyType.ALL);
+				depthPercentageAll.addCoverageSite(cpGInfo);
+				
+				DepthPercentage depthPercentageDetail = mapCpGType2DepthInfo.get(cpGInfo.getEnumCpGmethyType());
+				depthPercentageDetail.addCoverageSite(cpGInfo);
+			}
+		}
+		return mapCpGType2DepthInfo;
+	}
 
 	public static class CpGCalculator {
 		/** CpG的计算方式 */
