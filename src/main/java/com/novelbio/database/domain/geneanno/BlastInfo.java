@@ -18,8 +18,11 @@ import com.novelbio.analysis.annotation.blast.BlastStatistics;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
+
+import bsh.commands.dir;
 
 /**
  * <b>导入数据库时会</b>将queryID和subjectID都<b>转变为小写</b><p>
@@ -355,6 +358,23 @@ public class BlastInfo implements Comparable<BlastInfo> {
 		}
 
 		return result;
+	}
+	
+	public String toString() {
+		List<String> lsResult = new ArrayList<>();
+		lsResult.add(queryID);
+		lsResult.add(subjectID);
+		lsResult.add(identities+"");
+		lsResult.add(alignLen+"");
+		lsResult.add(mismatchNum+"");
+		lsResult.add(gapNum+"");
+		lsResult.add(qStartLoc+"");
+		lsResult.add(qEndLoc+"");
+		lsResult.add(sStartLoc+"");
+		lsResult.add(sEndLoc+"");
+		lsResult.add(evalue+"");
+		lsResult.add(score+"");
+		return ArrayOperate.cmbString(lsResult, "\t");
 	}
 	
 	public static BlastStatistics getHistEvalue(List<BlastInfo> lsBlastinfos) {

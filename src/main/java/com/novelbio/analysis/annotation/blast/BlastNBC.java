@@ -6,7 +6,8 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
@@ -33,7 +34,7 @@ import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
  *
  */
 public class BlastNBC implements IntCmdSoft {
-	private static final Logger logger = Logger.getLogger(BlastNBC.class);
+	private static final Logger logger = LoggerFactory.getLogger(BlastNBC.class);
 	public static final int ResultType_Simple = 6;
 	public static final int ResultType_Normal = 0;
 	

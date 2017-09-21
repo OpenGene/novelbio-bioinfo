@@ -3,7 +3,8 @@ package com.novelbio.analysis.seq.fasta;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.reseq.SoapsnpInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -13,7 +14,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * 本类与Seq没有关系
  */
 public class SeqFasta implements Cloneable {
-	private static Logger logger = Logger.getLogger(SeqFasta.class);
+	private static Logger logger = LoggerFactory.getLogger(SeqFasta.class);
 
 	public static final int SEQ_UNKNOWN = 128;
 	public static final int SEQ_PRO = 256;
