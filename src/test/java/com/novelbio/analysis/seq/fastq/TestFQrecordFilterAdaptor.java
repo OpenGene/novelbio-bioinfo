@@ -24,6 +24,24 @@ public class TestFQrecordFilterAdaptor extends TestCase {
 		super.tearDown();
 	}
 	
+	public void testcopeReadsRightAdaptorShort() {
+		fQrecordcopeReadsAdaptor.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
+		fQrecordcopeReadsAdaptor.setSeqAdaptorR("CACCCCTGTA");
+		FastQRecord fastQRecord2 = fastQRecord.clone();
+		boolean iscopeReadsed = fQrecordcopeReadsAdaptor.copeReads(fastQRecord2);
+		assertEquals(iscopeReadsed, true);
+		assertEquals("CCTTCGATAGCTCAGCTGGTAGAGCCTGTAGG", fastQRecord2.getSeqFasta().toString());
+		assertEquals("CCCFFFFFHHHGHJGGIJJJHHIFHIIJIJII", fastQRecord2.getSeqQuality());
+		
+		fQrecordcopeReadsAdaptor.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
+		fQrecordcopeReadsAdaptor.setSeqAdaptorR("ACCCCTGTAC");
+		fastQRecord2 = fastQRecord.clone();
+		iscopeReadsed = fQrecordcopeReadsAdaptor.copeReads(fastQRecord2);
+		assertEquals(iscopeReadsed, true);
+		assertEquals("CCTTCGATAGCTCAGCTGGTAGAGCCTGTAGGCACC", fastQRecord2.getSeqFasta().toString());
+		assertEquals("CCCFFFFFHHHGHJGGIJJJHHIFHIIJIJIIIIJJ", fastQRecord2.getSeqQuality());
+	}
+	
 	public void testcopeReadsRightAdaptor() {
 		fQrecordcopeReadsAdaptor.setFastqOffset(FastQ.FASTQ_SANGER_OFFSET);
 		fQrecordcopeReadsAdaptor.setSeqAdaptorR("CTGTAGGCACCATCAAT");

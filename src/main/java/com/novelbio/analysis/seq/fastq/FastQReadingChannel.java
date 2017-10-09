@@ -18,7 +18,7 @@ import com.novelbio.base.multithread.RunProcess;
 public class FastQReadingChannel extends RunProcess {
 	private static final Logger logger = Logger.getLogger(FastQReadingChannel.class);
 	
-	List<FastQ[]> lsFastqReader;
+	List<FastQ[]> lsFastqReader = new ArrayList<>();
 	FastQ[] fqWrite = new FastQ[2];
 	
 	/** 队列最大数量 */
@@ -41,6 +41,24 @@ public class FastQReadingChannel extends RunProcess {
 	public void setFastQRead(List<FastQ[]> lsFastQs) {
 		this.lsFastqReader = lsFastQs;
 	}
+	
+	/** 输入的FastQ是否为双端，务必一致 */
+	public void addastQRead(FastQ fastqL, FastQ fastqR) {
+		if (fastqL == null && fastqR == null) {
+			return;
+		}
+		if (fastqL == null && fastqR != null) {
+			throw new ExceptionFastq("Fastq left is not exist but right is exist! Fastq right name is " + fastqR.getReadFileName());
+		}
+		FastQ[] fastqArray = null;
+		if (fastqR == null) {
+			fastqArray = new FastQ[]{fastqL};
+		} else {
+			fastqArray = new FastQ[]{fastqL, fastqR};
+		}
+		this.lsFastqReader.add(fastqArray);
+	}
+	
 	/** 是否输出过滤文件，false一般用来仅输出fastqc结果 */
 	public void setOutputResult(boolean isOutputResult) {
 		this.isOutputResult = isOutputResult;
@@ -240,7 +258,7 @@ public class FastQReadingChannel extends RunProcess {
 	/** 等待处理线程将AbsQueue队列中的记录处理掉 */
 	protected void wait_To_Cope_AbsQueue() {
 		suspendCheck();
-		if (isOutputResult && fqWrite[0].fastQwrite.getRunThreadStat() != RunThreadStat.running) {
+		if (isOutputResult && (fqWrite[0].fastQwrite.getRunThreadStat() != RunThreadStat.running && fqWrite[0].fastQwrite.getRunThreadStat() != RunThreadStat.finishNormal)) {
 			throw new ExceptionFastq(fqWrite[0].fastQwrite.getFileName() + " fastq write error", fqWrite[0].fastQwrite.getException());
 		}
 

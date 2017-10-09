@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -114,44 +115,20 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	/** 获得alt5， alt3的差异位点 */
 	@Override
 	public List<Align> getDifSite() {
-		Map<Double, List<Integer>> mapJuncNum2Edge = new TreeMap<>(new Comparator<Double>() {
-			public int compare(Double o1, Double o2) {
-				return -o1.compareTo(o2);
-			}
-		});
+		Map<Integer, Double> mapEdge2JuncNum = new HashMap<>();
+		
 		//把每个exon边界 所对应的junc reads Num放入treemap
 		//junc reads Num为key，treemap直接排序
 		//为防止junc reads num重复，用list装value
 		for (Integer edge : mapEdge2Iso.keySet()) {
 			double juncNum = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), edge);
-			List<Integer> lsSite = null;
-			if (mapJuncNum2Edge.containsKey(juncNum)) {
-				lsSite = mapJuncNum2Edge.get(juncNum);
-			} else {
-				lsSite = new ArrayList<Integer>();
-				mapJuncNum2Edge.put(juncNum, lsSite);
-			}
-			lsSite.add(edge);
+			mapEdge2JuncNum.put(edge, juncNum);
 		}
 		
-		//获得reads数最多的两个边界
-		int i = 0;
-		int[] startEnd = new int[2];
-		for (Double juncNum : mapJuncNum2Edge.keySet()) {
-			List<Integer> lsSite = mapJuncNum2Edge.get(juncNum);
-			for (Integer integer : lsSite) {
-				if (i >= 2) {
-					break;
-				}
-				startEnd[i] = integer;
-				i++;
-			}
-		}
-		if (Math.abs(startEnd[0] - startEnd[1]) < lengthMin) {
-			isFiltered = false;
-		} else {
-			isFiltered = true;
-		}
+		//获得reads数最多的两个边界，同时还要比最短  lengthMin 要长
+		int[] startEnd = getStartEnd(mapEdge2JuncNum);
+		isFiltered = Math.abs(startEnd[0] - startEnd[1]) >= lengthMin;
+
 		Align align = new Align(exonCluster.getRefID(), MathComput.min(startEnd), MathComput.max(startEnd));
 		align.setCis5to3(exonCluster.isCis5to3());
 		
@@ -159,7 +136,52 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		lsAligns.add(align);
 		return lsAligns;
 	}
-
+	
+	/**
+	 * 给定边界和该边界所对应的reads，获得相对来说区域比较长，并且reads比较多的区段
+	 * @param mapEdge2JuncNum
+	 * @return
+	 */
+	private int[] getStartEnd(Map<Integer, Double> mapEdge2JuncNum) {
+		TreeMap<Double, List<int[]>> treeReadsAll2LsStartEnd = new TreeMap<>(
+				new Comparator<Double>() {
+					public int compare(Double o1, Double o2) {
+						return -o1.compareTo(o2);
+					}
+				}
+		);
+		List<int[]> lsEdge2Value = new ArrayList<>();
+		for (Integer edge : mapEdge2JuncNum.keySet()) {
+			lsEdge2Value.add(new int[]{edge, mapEdge2JuncNum.get(edge).intValue()});
+		}
+		for (int i = 0; i < lsEdge2Value.size()-1; i++) {
+			for (int j = i+1; j < lsEdge2Value.size(); j++) {
+				//看几何平均
+				double max = Math.sqrt(lsEdge2Value.get(i)[1] * lsEdge2Value.get(j)[1]);
+				List<int[]> lsStartEnd = treeReadsAll2LsStartEnd.get(max);
+				if (lsStartEnd == null) {
+					lsStartEnd = new ArrayList<>();
+					treeReadsAll2LsStartEnd.put(max, lsStartEnd);
+				}
+				lsStartEnd.add(new int[]{lsEdge2Value.get(i)[0], lsEdge2Value.get(j)[0]});
+			}
+		}
+		int[] startEnd = null;
+		for (Double readsNum : treeReadsAll2LsStartEnd.keySet()) {
+			List<int[]> lsStartEnd = treeReadsAll2LsStartEnd.get(readsNum);
+			for (int[] is : lsStartEnd) {
+				if (Math.abs(is[0] - is[1]) >= lengthMin) {
+					startEnd = is;
+					break;
+				}
+			}
+		}
+		if (startEnd == null) {
+			startEnd = treeReadsAll2LsStartEnd.firstEntry().getValue().get(0);
+		}
+		return startEnd;
+	}
+	
 	
 	public boolean isFiltered() {
 		return isFiltered;
