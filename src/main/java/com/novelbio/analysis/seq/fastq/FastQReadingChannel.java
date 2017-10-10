@@ -258,10 +258,10 @@ public class FastQReadingChannel extends RunProcess {
 	/** 等待处理线程将AbsQueue队列中的记录处理掉 */
 	protected void wait_To_Cope_AbsQueue() {
 		suspendCheck();
-		if (isOutputResult && (fqWrite[0].fastQwrite.getRunThreadStat() != RunThreadStat.running && fqWrite[0].fastQwrite.getRunThreadStat() != RunThreadStat.finishNormal)) {
+		RunThreadStat stat = fqWrite[0].fastQwrite.getRunThreadStat();
+		if (isOutputResult && (stat == RunThreadStat.finishNormal || stat == RunThreadStat.finishAbnormal)) {
 			throw new ExceptionFastq(fqWrite[0].fastQwrite.getFileName() + " fastq write error", fqWrite[0].fastQwrite.getException());
 		}
-
 		while (executorPool.getQueue().size() == maxNumReadInLs || (queueResult != null && queueResult.size() == maxNumReadInLs)) {
 			try { Thread.sleep(50); } catch (InterruptedException e) { }
 		}
