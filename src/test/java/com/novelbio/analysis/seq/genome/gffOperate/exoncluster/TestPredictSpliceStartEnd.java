@@ -6,10 +6,13 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
+import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 /** 
@@ -72,6 +75,26 @@ public class TestPredictSpliceStartEnd extends TestCase {
 				SpliceTypePredict spliceTypeS= new PredictAltStart(exonCluster);
 				assertEquals(true, spliceTypeS.isSpliceType());
 			}
+		}
+		
+		List<? extends Alignment> lsAligns = PredictAltStartEnd.getBGSite(new Align("chr1", 35, 40), SplicingAlternativeType.altstart, gffDetailGeneCis);
+		List<Align> lsExp = Lists.newArrayList(new Align("chr1", 10, 16), new Align("chr1", 20, 31));
+		assertEquals(lsExp.size(), lsAligns.size());
+		for (int i = 0; i < lsExp.size(); i++) {
+			Alignment align1 = lsAligns.get(i);
+			Align align2 = lsExp.get(i);
+			assertEquals(align1.getStartAbs(), align2.getStartAbs());
+			assertEquals(align1.getEndAbs(), align2.getEndAbs());
+		}
+		
+		lsAligns = PredictAltStartEnd.getBGSite(new Align("chr1", 35, 39), SplicingAlternativeType.altend, gffDetailGeneCis);
+		lsExp = Lists.newArrayList(new Align("chr1", 40, 50), new Align("chr1", 60, 72), new Align("chr1", 80, 90));
+		assertEquals(lsExp.size(), lsAligns.size());
+		for (int i = 0; i < lsExp.size(); i++) {
+			Alignment align1 = lsAligns.get(i);
+			Align align2 = lsExp.get(i);
+			assertEquals(align1.getStartAbs(), align2.getStartAbs());
+			assertEquals(align1.getEndAbs(), align2.getEndAbs());
 		}
 	}
 	

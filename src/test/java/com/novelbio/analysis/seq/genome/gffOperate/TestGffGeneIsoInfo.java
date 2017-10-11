@@ -1,8 +1,11 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.google.common.collect.Lists;
 import com.novelbio.database.model.modgeneid.GeneType;
 
 public class TestGffGeneIsoInfo {
@@ -37,6 +40,18 @@ public class TestGffGeneIsoInfo {
 		
 		gffGeneIsoInfo.extendUtr(gffGeneIsoInfoExtend1);
 		Assert.assertEquals(gffGeneIsoInfoExtendExpect1, gffGeneIsoInfo);
+		
+		List<ExonInfo> lsExons = gffGeneIsoInfo.searchLocationDu(1500, 7500).getCoveredElement();
+		ExonInfo exonInfo1 = new ExonInfo(true, 3000, 4000); exonInfo1.setParentListAbs(gffGeneIsoInfo);
+		ExonInfo exonInfo2 = new ExonInfo(true, 5000, 6000); exonInfo2.setParentListAbs(gffGeneIsoInfo);
+		List<ExonInfo> lsExonsExp = Lists.newArrayList(exonInfo1, exonInfo2);
+		Assert.assertEquals(lsExonsExp, lsExons);
+		
+		lsExons = gffGeneIsoInfo.searchLocationDu(3000, 6000).getCoveredElement();
+		exonInfo1 = new ExonInfo(true, 3000, 4000); exonInfo1.setParentListAbs(gffGeneIsoInfo);
+		exonInfo2 = new ExonInfo(true, 5000, 6000); exonInfo2.setParentListAbs(gffGeneIsoInfo);
+		lsExonsExp = Lists.newArrayList(exonInfo1, exonInfo2);
+		Assert.assertEquals(lsExonsExp, lsExons);
 	}
 	@Test
 	public void testExtenUtrCis2() {
@@ -125,7 +140,12 @@ public class TestGffGeneIsoInfo {
 		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(false, 8500, 9000));
 		gffGeneIsoInfoExtendExpect1.add(new ExonInfo(false, 9500, 9800));
 		gffGeneIsoInfoExtendExpect1.sort();
-
+		
+		List<ExonInfo> lsExons = gffGeneIsoInfo.searchLocationDu(1500, 7500).getCoveredElement();
+		ExonInfo exonInfo1 = new ExonInfo(false, 5000, 6000); exonInfo1.setParentListAbs(gffGeneIsoInfo);
+		ExonInfo exonInfo2 = new ExonInfo(false, 3000, 4000); exonInfo2.setParentListAbs(gffGeneIsoInfo);
+		List<ExonInfo> lsExonsExp = Lists.newArrayList(exonInfo1, exonInfo2);
+		Assert.assertEquals(lsExonsExp, lsExons);
 		
 		gffGeneIsoInfo.extendUtr(gffGeneIsoInfoExtend1);
 		Assert.assertEquals(gffGeneIsoInfoExtendExpect1, gffGeneIsoInfo);

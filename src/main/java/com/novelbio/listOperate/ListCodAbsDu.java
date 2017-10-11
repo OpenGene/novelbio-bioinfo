@@ -1,6 +1,8 @@
 package com.novelbio.listOperate;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -191,6 +193,22 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 			}
 		}
 		List<T> lsResult = new ArrayList<T>(lsGffDetailAll);
+		Collections.sort(lsResult, new Comparator<T>() {
+			@Override
+			public int compare(T o1, T o2) {
+				Integer o1start = o1.getStartAbs();
+				Integer o2start = o2.getStartAbs();
+				if (o1.isCis5to3() != null && o2.isCis5to3() != null && o1.isCis5to3() == o2.isCis5to3()) {
+					if (o1.isCis5to3()) {
+						return o1start.compareTo(o2start);
+					} else {
+						return -o1start.compareTo(o2start);
+					}
+				} else {
+					return o1start.compareTo(o2start);
+				}
+			}
+		});
 		return lsResult;
 	}
 	

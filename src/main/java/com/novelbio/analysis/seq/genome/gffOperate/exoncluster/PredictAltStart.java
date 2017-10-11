@@ -82,6 +82,9 @@ public class PredictAltStart extends PredictAltStartEnd {
 		}
 	}
 	
+	/**
+	 * 注意本类型中只有一个align
+	 */
 	@Override
 	public List<Align> getDifSite() {
 		isType();
@@ -102,7 +105,7 @@ public class PredictAltStart extends PredictAltStartEnd {
 			List<ExonInfo> lsExonInfos = mapJuncNum2Exon.get(juncNum);
 			align = new Align(exonCluster.getRefID(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
 			break;
-		}		
+		}
 		List<Align> lsAligns = new ArrayList<>();
 		lsAligns.add(align);
 		return lsAligns;

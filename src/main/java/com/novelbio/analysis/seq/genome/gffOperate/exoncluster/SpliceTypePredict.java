@@ -64,7 +64,9 @@ public abstract class SpliceTypePredict {
 	 * @param condition
 	 * @return
 	 * key: GroupId<br>
-	 * value: list 0.连接上junct的reads数，1. skip的reads数
+	 * value: list
+	 *  0.连接上junct的reads数，include
+	 *  1. skip的reads数，exclude
 	 */
 	protected abstract ArrayListMultimap<String, Double> getLsJuncCounts(String condition);
 	/** 是否为该种剪接类型 */

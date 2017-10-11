@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -8,13 +9,20 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
 
 public abstract class PredictAltStartEnd extends SpliceTypePredict {
+	private static final Logger logger = LoggerFactory.getLogger(PredictAltStartEnd.class);
 	/** exon与前面一个exon尾巴的坐标 */
 	ArrayList<Align> lsSite;
 
@@ -59,9 +67,10 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		//3.              30--50-------------------------
 		//4.              30--52-------------------------
 		//5.              30---60------------------------
-		//那么就只会取2,3,4,5号iso其中一个
-		int edge = mapValue2Edge.values().iterator().next();
-		addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
+		//那么就会取全部2,3,4,5号iso的边
+		for (Integer edge : mapValue2Edge.values()) {
+			addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
+		}
 		
 		addMapGroup2LsValue(mapGroup2LsValue, getSkipReadsNum(condition));
 		return mapGroup2LsValue;
@@ -75,7 +84,76 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 	 * 如果是retain intron和alt5 alt3，返回该exon的长度
 	 */
 	public List<? extends Alignment> getBGSite() {
-		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
+		//altstart和altend只有一个类型
+		Align align = getDifSite().get(0);
+		return getBGSite(align, getType(), exonCluster.getParentGene());
+	}
+	
+	@VisibleForTesting
+	protected static List<? extends Alignment> getBGSite(Align align, SplicingAlternativeType type, GffDetailGene gffDetailGene) {
+		int startAbs = align.getStartAbs();
+		int endAbs = align.getEndAbs();
+		
+		List<ExonInfo> lsExonInfos = new ArrayList<>();
+		for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+			if (
+					(iso.isCis5to3() && type == SplicingAlternativeType.altstart)
+					|| (!iso.isCis5to3() && type == SplicingAlternativeType.altend)
+					) {
+				for (ExonInfo exonInfo : iso) {
+					if (exonInfo.getEndAbs() < startAbs) {
+						lsExonInfos.add(exonInfo);
+					}
+				}
+			} else if (
+					(!iso.isCis5to3() && type == SplicingAlternativeType.altstart)
+					||(iso.isCis5to3() && type == SplicingAlternativeType.altend)
+					)
+					{
+				for (ExonInfo exonInfo : iso) {
+					if (exonInfo.getStartAbs() > endAbs) {
+						lsExonInfos.add(exonInfo);
+					}
+				}
+			}
+		}
+		boolean isCis5to3 = lsExonInfos.get(0).isCis5to3();
+		Collections.sort(lsExonInfos);
+		List<Alignment> lsResult = new ArrayList<>();
+		Align alignLast = new Align(lsExonInfos.get(0).getRefID(), lsExonInfos.get(0).getStartAbs(), lsExonInfos.get(0).getEndAbs());
+		alignLast.setCis5to3(isCis5to3);
+		lsResult.add(alignLast);
+
+		if (isCis5to3) {
+			for (ExonInfo exonInfo : lsExonInfos) {
+				if (exonInfo.getStartAbs() <= alignLast.getEndAbs() && exonInfo.getEndAbs() > alignLast.getEndAbs()) {
+					alignLast.setEndAbs(exonInfo.getEndAbs());
+				} else if (exonInfo.getStartAbs() > alignLast.getEndAbs()) {
+					alignLast = new Align(exonInfo.getRefID(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
+					alignLast.setCis5to3(isCis5to3);
+					lsResult.add(alignLast);
+				}
+			}
+		} else {
+			for (ExonInfo exonInfo : lsExonInfos) {
+				if (exonInfo.getEndAbs() >= alignLast.getStartAbs() && exonInfo.getStartAbs() < alignLast.getStartAbs()) {
+					alignLast.setStartAbs(exonInfo.getStartAbs());
+				} else if (exonInfo.getStartAbs() > alignLast.getEndAbs()) {
+					alignLast = new Align(exonInfo.getRefID(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
+					alignLast.setCis5to3(isCis5to3);
+					lsResult.add(alignLast);
+				}
+			}
+		}
+		if (lsResult.isEmpty()) {
+			if (type == SplicingAlternativeType.altstart) {
+				logger.error("gene {} cannot find exons before alt start exon {}, use all iso as background", gffDetailGene.getNameSingle(), align.toString());
+			} else {
+				logger.error("gene {} cannot find exons after alt end exon {}, use all iso as background", gffDetailGene.getNameSingle(), align.toString());
+			}
+			return gffDetailGene.getLongestSplitMrna().getLsElement();
+		}
+		return lsResult;
 	}
 	
 	/**

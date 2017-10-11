@@ -73,9 +73,12 @@ public class ExonInfo extends ListDetailAbs implements Comparable<ExonInfo> {
 		
 		if (getClass() != elementAbs.getClass()) return false;
 		ExonInfo element = (ExonInfo)elementAbs;
+		if (this.isCis5to3() != element.isCis5to3()) {
+			return false;
+		}
 		//先不比较两个exon所在转录本的名字
 		if (numberstart == element.numberstart && numberend == element.numberend && super.cis5to3 == element.cis5to3 ) {
-			if (getParent().getRefIDlowcase().equalsIgnoreCase(element.getParent().getRefIDlowcase())) {
+			if (getRefID().equalsIgnoreCase(getRefID())) {
 				return true;
 			}
 		}

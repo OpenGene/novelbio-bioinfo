@@ -69,11 +69,11 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 			}
 		}
 		if (isCis()) {
-			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueEndSite);
 			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueStartSite);
+			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueEndSite);
 		} else {
-			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueStartSite);
 			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueEndSite);
+			addMapGroup2Value(mapGroup2LsValue, mapGroup2ValueStartSite);
 		}
 
 		return mapGroup2LsValue;

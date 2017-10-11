@@ -394,7 +394,54 @@ public class TestPredictSplice extends TestCase {
 		}
 	}
 	
-	
+	@Test
+	public void testCassetteAlt5and3() {
+		gffDetailGeneCis.clearIso();
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans3 = GffGeneIsoInfo.createGffGeneIso("Iso2", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+
+		//<----------20--30--------------40-50----------------------------------------80-90---<
+		//<----------20--35---------------------------------------------------------75-----90---<
+		//<----------20--30--------------40-50----------60-70
+		isoTrans1.add(new ExonInfo( true, 10, 20));
+		isoTrans1.add(new ExonInfo( true, 20, 30));
+		isoTrans1.add(new ExonInfo( true, 40, 50));
+		isoTrans1.add(new ExonInfo( true, 80, 90));
+
+		isoTrans2.add(new ExonInfo( true, 10, 20));
+		isoTrans2.add(new ExonInfo( true, 20, 35));
+		isoTrans2.add(new ExonInfo( true, 75, 90));
+		
+		isoTrans3.add(new ExonInfo( true, 10, 20));
+		isoTrans3.add(new ExonInfo( true, 20, 30));
+		isoTrans3.add(new ExonInfo( true, 40, 50));
+		isoTrans3.add(new ExonInfo( true, 60, 70));
+		gffDetailGeneCis.addIso(isoTrans1);
+		gffDetailGeneCis.addIso(isoTrans2);
+		gffDetailGeneCis.addIso(isoTrans3);
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
+		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
+		for (ExonCluster exonCluster : lsExonClusters) {
+			if (exonCluster.getStartAbs() == 20) {
+				SpliceTypePredict spliceTypeCS = new PredictAlt5(exonCluster);
+				assertEquals(true, spliceTypeCS.isSpliceType());
+				assertEquals(SplicingAlternativeType.alt5, spliceTypeCS.getType());
+				
+				SpliceTypePredict spliceTypeAltStart = new PredictAltStart(exonCluster);
+				assertEquals(false, spliceTypeAltStart.isSpliceType());
+			}
+			
+			if (exonCluster.getStartAbs() == 75) {
+				SpliceTypePredict spliceTypeCS = new PredictAlt3(exonCluster);
+				assertEquals(true, spliceTypeCS.isSpliceType());
+				assertEquals(SplicingAlternativeType.alt3, spliceTypeCS.getType());
+				
+				SpliceTypePredict spliceTypeAltEnd= new PredictAltEnd(exonCluster);
+				assertEquals(false, spliceTypeAltEnd.isSpliceType());
+			}
+		}
+	}
 
 	@Override
 	protected void tearDown() throws Exception {

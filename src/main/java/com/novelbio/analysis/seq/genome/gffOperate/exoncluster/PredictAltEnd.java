@@ -85,6 +85,9 @@ public class PredictAltEnd extends PredictAltStartEnd {
 		
 	}
 	
+	/**
+	 * 注意本类型中只有一个align
+	 */
 	@Override
 	public List<Align> getDifSite() {
 		isType();
