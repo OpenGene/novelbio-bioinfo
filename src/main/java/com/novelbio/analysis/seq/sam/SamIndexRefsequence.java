@@ -21,8 +21,8 @@ public class SamIndexRefsequence {
 	String sequence;
 	
 	public SamIndexRefsequence() {
-		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
-		ExePath = softWareInfo.getExePathRun();
+//		SoftWareInfo softWareInfo = new SoftWareInfo(SoftWare.samtools);
+//		ExePath = softWareInfo.getExePathRun();
 	}
 	
 	public void setRefsequence(String sequence) {

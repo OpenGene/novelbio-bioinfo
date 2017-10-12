@@ -145,4 +145,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
 	}
 	
+	public Align getResultSite() {
+		return Align.getAlignFromList(getDifSite());
+	}
 }

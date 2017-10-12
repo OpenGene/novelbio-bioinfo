@@ -1000,9 +1000,9 @@ class BinarySearch {
  * 从小到大排序
  * @author zong0jie
  */
-class CompS2M implements Comparator<ListDetailAbs> {
+class CompS2M implements Comparator<Alignment> {
 	@Override
-	public int compare(ListDetailAbs o1, ListDetailAbs o2) {
+	public int compare(Alignment o1, Alignment o2) {
 		Integer o1start = o1.getStartCis();
 		Integer o2start = o2.getStartCis();
 		int comp = o1start.compareTo(o2start);
@@ -1019,9 +1019,9 @@ class CompS2M implements Comparator<ListDetailAbs> {
  * 从小到大排序，用绝对坐标值排序
  * @author zong0jie
  */
-class CompS2MAbs implements Comparator<ListDetailAbs> {
+class CompS2MAbs implements Comparator<Alignment> {
 	@Override
-	public int compare(ListDetailAbs o1, ListDetailAbs o2) {
+	public int compare(Alignment o1, Alignment o2) {
 		Integer o1start = o1.getStartAbs();
 		Integer o2start = o2.getStartAbs();
 		int comp = o1start.compareTo(o2start);
@@ -1038,9 +1038,9 @@ class CompS2MAbs implements Comparator<ListDetailAbs> {
  * 从大到小排序
  * @author zong0jie
  */
-class CompM2S implements Comparator<ListDetailAbs> {
+class CompM2S implements Comparator<Alignment> {
 	@Override
-	public int compare(ListDetailAbs o1, ListDetailAbs o2) {
+	public int compare(Alignment o1, Alignment o2) {
 		Integer o1start = o1.getStartCis();
 		Integer o2start = o2.getStartCis();
 		int comp = o1start.compareTo(o2start);

@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.Alignment;
@@ -471,5 +472,11 @@ public class PredictCassette extends SpliceTypePredict {
 			return iso.getLsElement();
 		}
 	}
-
+	public Align getResultSite() {
+		List<Align> lsDifSite = getDifSite();
+		List<Alignment> lsResult = new ArrayList<>();
+		lsResult.addAll(lsBG);
+		lsResult.addAll(lsDifSite);
+		return Align.getAlignFromList(lsResult);
+	}
 }

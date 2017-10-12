@@ -67,10 +67,17 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		//3.              30--50-------------------------
 		//4.              30--52-------------------------
 		//5.              30---60------------------------
-		//那么就会取全部2,3,4,5号iso的边
-		for (Integer edge : mapValue2Edge.values()) {
-			addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
-		}
+		
+		//================================
+		//取2,3,4,5号iso全部的
+//		for (Integer edge : setEdge) {
+//			addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
+//		}
+		//================================
+		//只取2,3,4,5号iso其中value最大的一个
+		int edge = mapValue2Edge.values().iterator().next();
+		addMapGroup2LsValue(mapGroup2LsValue, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), chrID, edge));
+		//================================
 		
 		addMapGroup2LsValue(mapGroup2LsValue, getSkipReadsNum(condition));
 		return mapGroup2LsValue;
@@ -85,10 +92,18 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 	 */
 	public List<? extends Alignment> getBGSite() {
 		//altstart和altend只有一个类型
-		Align align = getDifSite().get(0);
+		List<Align> lsDifSites = getDifSite();
+		Align align = Align.getAlignFromList(lsDifSites);
 		return getBGSite(align, getType(), exonCluster.getParentGene());
 	}
 	
+	/**
+	 * 给定一个exon区段，把在这个exon之前或者之后的exon全提取出来，并按照顺序排列
+	 * @param align
+	 * @param type
+	 * @param gffDetailGene
+	 * @return
+	 */
 	@VisibleForTesting
 	protected static List<? extends Alignment> getBGSite(Align align, SplicingAlternativeType type, GffDetailGene gffDetailGene) {
 		int startAbs = align.getStartAbs();
@@ -154,6 +169,22 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 			return gffDetailGene.getLongestSplitMrna().getLsElement();
 		}
 		return lsResult;
+	}
+	
+	public Align getResultSite() {
+		List<Alignment> lsResult = new ArrayList<>();
+
+		List<Align> lsDifSite = getDifSite();
+		List<? extends Alignment> lsBG = getBGSite();
+		if (getType() == SplicingAlternativeType.altstart) {
+			lsResult.add(lsBG.get(lsBG.size() - 1));
+		} else if (getType() == SplicingAlternativeType.altend) {
+			lsResult.add(lsBG.get(0));
+		} else {
+			throw new RuntimeException("does not support splice type " + getType().toString());
+		}
+		lsResult.addAll(lsDifSite);
+		return Align.getAlignFromList(lsResult);
 	}
 	
 	/**

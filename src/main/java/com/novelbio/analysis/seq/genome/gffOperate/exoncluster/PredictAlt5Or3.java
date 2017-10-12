@@ -137,6 +137,15 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 		return lsAligns;
 	}
 	
+	public Align getResultSite() {
+		List<Align> lsDifSite = getDifSite();
+		List<? extends Alignment> lsBG = getBGSite();
+		List<Alignment> lsResult = new ArrayList<>();
+		lsResult.addAll(lsBG);
+		lsResult.addAll(lsDifSite);
+		return Align.getAlignFromList(lsResult);
+	}
+	
 	/**
 	 * 给定边界和该边界所对应的reads，获得相对来说区域比较长，并且reads比较多的区段
 	 * @param mapEdge2JuncNum

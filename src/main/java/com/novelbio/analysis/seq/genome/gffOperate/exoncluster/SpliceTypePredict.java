@@ -87,7 +87,8 @@ public abstract class SpliceTypePredict {
 	public abstract SplicingAlternativeType getType();
 	/** 获得差异可变剪接的位点，用于检测表达 */
 	public abstract List<Align> getDifSite();
-
+	/** 获得差异可变剪接的区段，用于IGV查看位点 */
+	public abstract Align getResultSite();
 	/**
 	 * 获得比较的位点
 	 * 如果是cassette则返回全基因长度

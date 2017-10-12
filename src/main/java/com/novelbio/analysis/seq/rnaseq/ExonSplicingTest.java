@@ -356,20 +356,8 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return alignDisplay;
 		}
 		
-		List<Align> lsAligns = mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite();
-		if (lsAligns.isEmpty()) {
-			return null;
-		}
-		if (lsAligns.size() == 1) {
-			Align align = new Align(lsAligns.get(0));
-			align.setChrID(exonCluster.getRefID());
-		}
-		
-		Align alignStart = lsAligns.get(0);
-		Align alignEnd = lsAligns.get(lsAligns.size()-1);
-		Align alignResult = new Align(exonCluster.getRefID(), Math.min(alignStart.getStartAbs(), alignEnd.getStartAbs()), 
-				Math.max(alignStart.getEndAbs(), alignEnd.getEndAbs()));
-		return alignResult;
+		Align align = mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getResultSite();
+		return align;
 	}
 	
 	public double getPvalue() {
@@ -709,8 +697,10 @@ class SpliceType2Value {
 
 	Set<SplicingAlternativeType> setExonSplicingTypes = new HashSet<SplicingAlternativeType>();
 	/**
-	 * key: splice type
-	 * value: group1: difsite:BG group2: difsite:BG
+	 * key: splice type<br>
+	 * value:<br> 
+	 * group1: difsite:BG<br>
+	 * group2: difsite:BG<br>
 	 */
 	Map<SplicingAlternativeType, ArrayListMultimap<String, Double>> mapSplicingType2_MapGroup2LsExpValue = new HashMap<>();
 	/**

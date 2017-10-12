@@ -81,10 +81,13 @@ public class PredictStartDifStart extends SpliceTypePredict {
 		return lsAligns;
 	}
 
-
 	@Override
 	public List<? extends Alignment> getBGSite() {
 		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
+	}
+	
+	public Align getResultSite() {
+		return Align.getAlignFromList(getDifSite());
 	}
 
 }

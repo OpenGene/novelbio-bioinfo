@@ -81,7 +81,7 @@ public class ExonJunction extends RunProcess {
 		dateUtil.setStartTime();
 		
 		List<Align> lsAligns = new ArrayList<>();
-		lsAligns.add(new Align("chrX", 0, 11111111));
+//		lsAligns.add(new Align("chrX", 0, 11111111));
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setGffHash(new GffHashGene("/media/winE/test/altersplice/bug2/mm10_refGene.gtf"));
 		ExonJunction exonJunction = new ExonJunction();
@@ -97,12 +97,13 @@ public class ExonJunction extends RunProcess {
 		exonJunction.setRunSepChr(true);
 //		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
 		exonJunction.running();
-		exonJunction.writeResult(parentPath + "result-sep-exon", exonJunction.lsResult, false);
+		exonJunction.writeResult(parentPath + "result-sep-exon-new-juc", exonJunction.lsResult, false);
 		exonJunction = null;
 		gffChrAbs.close();
 		return dateUtil.getElapseTime();
 	}
 		
+	
 	private static Logger logger = LoggerFactory.getLogger(ExonJunction.class);
 	private static String stopGeneName = "OSMR";
 		

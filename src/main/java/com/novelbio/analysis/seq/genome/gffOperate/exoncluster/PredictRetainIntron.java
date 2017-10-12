@@ -16,6 +16,7 @@ import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.base.dataStructure.ArrayOperate;
 
 /**
  * 获取getJuncCounts时需要设定
@@ -160,6 +161,9 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 		return lsAlignments;
 	}
 	
+	public Align getResultSite() {
+		return new Align(exonCluster);
+	}
 	/**
 	 * retainIntron有两个条件：1：存在一个长的exon，2：存在两个短的exon
 	 */

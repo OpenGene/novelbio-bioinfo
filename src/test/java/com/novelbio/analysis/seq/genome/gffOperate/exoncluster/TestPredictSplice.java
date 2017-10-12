@@ -351,6 +351,52 @@ public class TestPredictSplice extends TestCase {
 	}
 	
 	@Test
+	public void testCassetteME2() {
+		gffDetailGeneCis.clearIso();
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+		GffGeneIsoInfo isoTrans3 = GffGeneIsoInfo.createGffGeneIso("Iso2", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);
+
+		//<----------20--30--------------40-50----------------------------------------80-90---<
+		//<----------20--30--------------------------------------55-69----------------80-90---<
+		isoTrans1.add(new ExonInfo( true, 10, 20));
+		isoTrans1.add(new ExonInfo( true, 20, 30));
+		isoTrans1.add(new ExonInfo( true, 40, 50));
+		isoTrans1.add(new ExonInfo( true, 80, 90));
+		isoTrans1.add(new ExonInfo( true, 100, 110));
+		
+		isoTrans2.add(new ExonInfo( true, 10, 20));
+		isoTrans2.add(new ExonInfo( true, 20, 30));
+		isoTrans2.add(new ExonInfo( true, 40, 45));
+		isoTrans2.add(new ExonInfo( true, 55, 69));
+		isoTrans2.add(new ExonInfo( true, 80, 90));
+		isoTrans2.add(new ExonInfo( true, 100, 110));
+		
+//		isoTrans3.add(new ExonInfo(isoTrans1, true, 10, 20));
+//		isoTrans3.add(new ExonInfo(isoTrans2, true, 20, 30));
+//		isoTrans3.add(new ExonInfo(isoTrans2, true, 80, 90));
+//		isoTrans3.add(new ExonInfo(isoTrans1, true, 100, 110));
+		
+		gffDetailGeneCis.addIso(isoTrans1);
+		gffDetailGeneCis.addIso(isoTrans2);
+//		gffDetailGeneCis.addIso(isoTrans3);
+		
+		ExonClusterExtract exonClusterExtract = new ExonClusterExtract(gffDetailGeneCis);
+		List<ExonCluster> lsExonClusters = exonClusterExtract.getLsDifExon();
+		for (ExonCluster exonCluster : lsExonClusters) {
+			if (exonCluster.getStartAbs() == 40) {
+				SpliceTypePredict spliceTypeME= new PredictME(exonCluster);
+				assertEquals(false, spliceTypeME.isSpliceType());
+			}
+			
+			if (exonCluster.getStartAbs() == 55) {
+				SpliceTypePredict spliceTypeME= new PredictME(exonCluster);
+				assertEquals(false, spliceTypeME.isSpliceType());
+			}
+		}
+	}
+	
+	@Test
 	public void testCassetteMix() {
 		gffDetailGeneCis.clearIso();
 		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "geneCis", gffDetailGeneCis, GeneType.mRNA, true);

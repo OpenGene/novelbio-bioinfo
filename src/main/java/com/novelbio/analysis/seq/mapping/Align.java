@@ -207,4 +207,21 @@ public class Align implements Alignment {
 		}
 		return false;
 	}
+	
+	/**
+	 * 从一个list中获取其最前的坐标和最后的坐标，组成一个align
+	 * @return
+	 */
+	public static Align getAlignFromList(List<? extends Alignment> lsAlign) {
+		Align alignResult = new Align(lsAlign.get(0));
+		for (Alignment align : lsAlign) {
+			if (align.getStartAbs() < alignResult.getStartAbs()) {
+				alignResult.setStartAbs(align.getStartAbs());
+			}
+			if (align.getEndAbs() > alignResult.getEndAbs()) {
+				alignResult.setEndAbs(align.getEndAbs());
+			}
+		}
+		return alignResult;
+	}
 }

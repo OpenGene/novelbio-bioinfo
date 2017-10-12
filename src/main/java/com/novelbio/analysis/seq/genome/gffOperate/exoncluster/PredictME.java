@@ -11,6 +11,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
 import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.base.dataStructure.ArrayOperate;
 
 
 /** 判定本exonCluster是否为mutually exclusive */
@@ -135,11 +136,7 @@ public class PredictME extends SpliceTypePredict {
 		if (isAfterNotSame()) {
 			findAfter();
 		}
-		if (
-				(lsExonThisBefore != null && lsExonThisBefore.size() > 0)
-				||
-				(lsExonThisAfter != null && lsExonThisAfter.size() > 0)	
-			) {
+		if (!ArrayOperate.isEmpty(lsExonThisBefore) || !ArrayOperate.isEmpty(lsExonThisAfter)) {
 			istype = true;
 		}
 		return istype;
@@ -216,7 +213,7 @@ public class PredictME extends SpliceTypePredict {
 			GffGeneIsoInfo gffGeneIsoInfo = entry.getKey();
 			List<ExonInfo> lsExonInfo = entry.getValue();
 			
-			//本位点必须没有exon
+			//本位点必须存在exon
 			if (lsExonInfo.size() == 0) continue;
 			
 			//不能是开头和结尾的位点
@@ -225,7 +222,7 @@ public class PredictME extends SpliceTypePredict {
 				continue;
 			}
 			
-			//上一个位点必须存在exon
+			//上一个位点必须不存在exon
 			List<ExonInfo> lsExons = exonClusterBeforeOrAfter.getMapIso2LsExon().get(gffGeneIsoInfo);
 			if (lsExons != null && lsExons.size() == 0 ) {
 				lsExonThis.add(lsExonInfo);
@@ -243,10 +240,10 @@ public class PredictME extends SpliceTypePredict {
 	 */
 	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
-		if (lsExonThisBefore != null && lsExonThisBefore.size() > 0) {
+		if (!ArrayOperate.isEmpty(lsExonThisBefore)) {
 			addMapGroup2LsValue(mapGroup2LsValue, getJuncNum(true, getSiteInfoThisBefore(), condition, tophatJunction));
 			addMapGroup2LsValue(mapGroup2LsValue,  getJuncNum(false, getSiteInfoBefore(), condition, tophatJunction));
-		} else if (lsExonThisAfter != null && lsExonThisAfter.size() > 0) {
+		} else if (!ArrayOperate.isEmpty(lsExonThisAfter)) {
 			addMapGroup2LsValue(mapGroup2LsValue, getJuncNum(false, getSiteInfoThisAfter(), condition, tophatJunction));
 			addMapGroup2LsValue(mapGroup2LsValue, getJuncNum(true, getSiteInfoAfter(), condition, tophatJunction));
 		}
@@ -284,5 +281,24 @@ public class PredictME extends SpliceTypePredict {
 	public List<? extends Alignment> getBGSite() {
 		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
 	}
-
+	
+	public Align getResultSite() {
+		List<Alignment> lsResult = new ArrayList<>();
+		if (!ArrayOperate.isEmpty(lsExonThisBefore)) {
+			for (List<ExonInfo> lsExons : lsExonThisBefore) {
+				lsResult.addAll(lsExons);
+			}
+			for (List<ExonInfo> lsExons : lsExonBefore) {
+				lsResult.addAll(lsExons);
+			}
+		} else if (!ArrayOperate.isEmpty(lsExonThisAfter)) {
+			for (List<ExonInfo> lsExons : lsExonThisAfter) {
+				lsResult.addAll(lsExons);
+			}
+			for (List<ExonInfo> lsExons : lsExonAfter) {
+				lsResult.addAll(lsExons);
+			}
+		}
+		return Align.getAlignFromList(lsResult);
+	}
 }
