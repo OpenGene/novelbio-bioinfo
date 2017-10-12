@@ -85,6 +85,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	boolean isCombine = true;
 	
 	/** 显示最后区域的，主要是给MXE使用 */
+	@Deprecated
 	Align alignDisplay;
 	
 	int minLen;
@@ -96,6 +97,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		this.minLen = minLen;
 	}
 	/** 显示最后区域的，如 chr1:23456-34567，主要是给MXE使用 */
+	@Deprecated
 	public void setAlignDisplay(Align alignDisplay) {
 		this.alignDisplay = alignDisplay;
 	}
@@ -357,9 +359,18 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		
 		Align align = mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getResultSite();
+		align.setChrID(exonCluster.getRefID());
 		return align;
 	}
-	
+	public Align getDifSite() {
+		List<Align> lsAligns = mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite();
+		if (lsAligns.isEmpty()) {
+			return null;
+		}
+		Align align = Align.getAlignFromList(lsAligns);
+		align.setChrID(exonCluster.getRefID());
+		return align;
+	}
 	public double getPvalue() {
 		return lsPvalueInfo.get(0).pvalueAvg;
 	}

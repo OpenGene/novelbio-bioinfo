@@ -1061,7 +1061,7 @@ public class ExonJunction extends RunProcess {
 	 * @param lsTestResult
 	 * @return
 	 */
-	private List<ExonSplicingTest> combineMXE(List<ExonSplicingTest> lsTestResult) {
+	private List<ExonSplicingTest> combineMXEOld(List<ExonSplicingTest> lsTestResult) {
 		List<ExonSplicingTest> lsFinal = new ArrayList<>();
 		
 		ArrayListMultimap<String, ExonSplicingTest> mapJuncInfo2ExonTest = ArrayListMultimap.create();
@@ -1152,6 +1152,100 @@ public class ExonJunction extends RunProcess {
 		return lsFinal;
 	}
 	
+	/**
+	 * 将 mutually exclusive的exon合并起来，就保留一个exon
+	 * @param lsTestResult
+	 * @return
+	 */
+	private List<ExonSplicingTest> combineMXE(List<ExonSplicingTest> lsTestResult) {
+		List<ExonSplicingTest> lsFinal = new ArrayList<>();
+		
+		ArrayListMultimap<String, ExonSplicingTest> mapJuncInfo2ExonTest = ArrayListMultimap.create();
+		//将MXE位点提取出来，用junction的数字作为key
+		for (ExonSplicingTest exonSplicingTest : lsTestResult) {
+			if (exonSplicingTest.getSplicingType() == SplicingAlternativeType.mutually_exclusive) {
+				PvalueCalculate pvalueCalculate = exonSplicingTest.getSpliceTypePvalue();
+				String[] treat = pvalueCalculate.getStrInfo(false, false).split("::");
+				String[] ctrl = pvalueCalculate.getStrInfo(false, true).split("::");
+				String combine = exonSplicingTest.getExonCluster().getRefID() + treat[1] + "::" + treat[0] + SepSign.SEP_ID + ctrl[1] + "::" + ctrl[0];
+				mapJuncInfo2ExonTest.put(combine, exonSplicingTest);
+			} else {
+				lsFinal.add(exonSplicingTest);
+			}
+		}
+		if (mapJuncInfo2ExonTest.isEmpty()) {
+			return lsFinal;
+		}
+		Map<ExonSplicingTest, ExonSplicingTest> mapKey2Value = new HashMap<>();
+		Set<ExonSplicingTest> setExonTest = new HashSet<>();//去重复用
+		//找出配对的MXE位点。筛选方法是mxe位点的reads数是相关的，如下：
+		//
+		for (ExonSplicingTest exonSplicingTest : mapJuncInfo2ExonTest.values()) {
+			if (setExonTest.contains(exonSplicingTest)) continue;
+			
+			PvalueCalculate pvalueCalculate = exonSplicingTest.getSpliceTypePvalue();
+			String[] treat = pvalueCalculate.getStrInfo(false, false).split("::");
+			String[] ctrl = pvalueCalculate.getStrInfo(false, true).split("::");
+			//注意跟上面方向相反
+			String combine = exonSplicingTest.getExonCluster().getRefID() + treat[0] + "::" + treat[1] + SepSign.SEP_ID + ctrl[0] + "::" + ctrl[1];
+			
+			List<ExonSplicingTest> lsExonSplicingTests = mapJuncInfo2ExonTest.get(combine);
+			if (lsExonSplicingTests == null) {
+				mapKey2Value.put(exonSplicingTest, null);
+				setExonTest.add(exonSplicingTest);
+			} else {
+				int midExon = middle(exonSplicingTest);
+				int distance = Integer.MAX_VALUE;
+				ExonSplicingTest exonTestPair = null;
+				for (ExonSplicingTest test : lsExonSplicingTests) {
+					if (!setExonTest.contains(test) && Math.abs(midExon - middle(test)) < distance) {
+						distance = Math.abs(midExon - middle(test));
+						exonTestPair = test;
+					}
+				}
+				if (exonTestPair != null) {
+					setExonTest.add(exonTestPair);
+				}
+				mapKey2Value.put(exonSplicingTest, exonTestPair);
+			}			
+		}
+		
+		for (ExonSplicingTest keyTest : mapKey2Value.keySet()) {
+			ExonSplicingTest value = mapKey2Value.get(keyTest);
+			if (value == null) {
+				lsFinal.add(keyTest);
+			} else {
+				Align a = keyTest.getSpliceSiteAlignDisplay();
+				Align b = value.getSpliceSiteAlignDisplay();
+				if (a == null && b == null) {
+					continue;
+				} else if (a == null) {
+					lsFinal.add(value);
+				} else if (b == null) {
+					lsFinal.add(keyTest);
+				} else {
+					int start = Math.min(a.getStartAbs(), b.getStartAbs());
+					int end = Math.max(a.getEndAbs(), b.getEndAbs());
+					Align alignDisplay = new Align(keyTest.getExonCluster().getRefID(), start, end);
+					alignDisplay.setCis5to3(a.isCis5to3());
+					if (keyTest.getAndCalculatePvalue() < value.getAndCalculatePvalue()) {
+						lsFinal.add(keyTest);
+					} else {
+						lsFinal.add(value);
+					}
+				}
+			}
+		}
+		
+		//按照pvalue从小到大排序
+		Collections.sort(lsFinal, new Comparator<ExonSplicingTest>() {
+			public int compare(ExonSplicingTest o1, ExonSplicingTest o2) {
+				return o1.getAndCalculatePvalue().compareTo(o2.getAndCalculatePvalue());
+			}
+		});
+		return lsFinal;
+	}
+	
 	/** 去除重复的multise */
 	private List<ExonSplicingTest> combineMultiSE(List<ExonSplicingTest> lsTestResult) {
 		if (lsTestResult.get(0).getExonCluster().getParentGene().getName().contains(stopGeneName)) {
@@ -1164,7 +1258,7 @@ public class ExonJunction extends RunProcess {
 		Map<Align, ExonSplicingTest> mapAlign2Exon = new HashMap<>();
 		for (ExonSplicingTest exonSplicingTest : lsTestResult) {
 			if (exonSplicingTest.getSplicingType() == SplicingAlternativeType.cassette_multi) {
-				Align alignMultiSE = exonSplicingTest.getSpliceSiteAlignDisplay();
+				Align alignMultiSE = exonSplicingTest.getDifSite();
 				alignMultiSE.setCis5to3(exonSplicingTest.getExonCluster().isCis5to3());
 				mapAlign2Exon.put(alignMultiSE, exonSplicingTest);
 				lsAlignMultiSE.add(alignMultiSE);
