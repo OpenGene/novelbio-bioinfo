@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.chipseq;
 
 import java.io.File;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,8 +39,8 @@ public class GffChrAnnoSeq {
 		gffChrAnnoSeq.setTssUpstream(1500);
 		gffChrAnnoSeq.setTesDownstream(500);
 		String parentPath = "/home/novelbio/下载/张宏宇2011-12-25/川农-张宏宇分析结果/Peak Calling/";
-		List<File> lsFiles = FileOperate.getFoldFileLs(parentPath, "*", "txt");
-		for (File file : lsFiles) {
+		List<Path> lsFiles = FileOperate.getLsFoldPath(parentPath, "*", "txt");
+		for (Path file : lsFiles) {
 			Map<GeneStructure, CpGanalysis> mapStr2CpgInfo = new HashMap<>();
 			TxtReadandWrite txtRead = new TxtReadandWrite(file);
 			for (String content : txtRead.readlines(2)) {
@@ -57,7 +58,7 @@ public class GffChrAnnoSeq {
 			}
 			txtRead.close();
 			
-			TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.changeFileSuffix(file.getAbsolutePath(), "_cpg", "info"), true);
+			TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.changeFileSuffix(FileOperate.getAbsolutePath(file), "_cpg", "info"), true);
 			for (GeneStructure str : mapStr2CpgInfo.keySet()) {
 				txtWrite.writefileln(str.toString());
 				List<String[]> lsCpGInfo = mapStr2CpgInfo.get(str).getLsCpGInfo();
