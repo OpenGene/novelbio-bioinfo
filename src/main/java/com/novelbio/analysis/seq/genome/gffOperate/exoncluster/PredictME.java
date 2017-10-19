@@ -136,7 +136,7 @@ public class PredictME extends SpliceTypePredict {
 		if (isAfterNotSame()) {
 			findAfter();
 		}
-		if (!ArrayOperate.isEmpty(lsExonThisBefore) || !ArrayOperate.isEmpty(lsExonThisAfter)) {
+		if (!ArrayOperate.isEmpty(lsExonThisAfter) || !ArrayOperate.isEmpty(lsExonThisBefore)) {
 			istype = true;
 		}
 		return istype;
@@ -240,13 +240,13 @@ public class PredictME extends SpliceTypePredict {
 	 */
 	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
-		if (!ArrayOperate.isEmpty(lsExonThisBefore)) {
-			addMapGroup2LsValue(mapGroup2LsValue, getJuncNum(true, getSiteInfoThisBefore(), condition, tophatJunction));
-			addMapGroup2LsValue(mapGroup2LsValue,  getJuncNum(false, getSiteInfoBefore(), condition, tophatJunction));
-		} else if (!ArrayOperate.isEmpty(lsExonThisAfter)) {
+		if (!ArrayOperate.isEmpty(lsExonThisAfter)) {
 			addMapGroup2LsValue(mapGroup2LsValue, getJuncNum(false, getSiteInfoThisAfter(), condition, tophatJunction));
 			addMapGroup2LsValue(mapGroup2LsValue, getJuncNum(true, getSiteInfoAfter(), condition, tophatJunction));
-		}
+		} else if (!ArrayOperate.isEmpty(lsExonThisBefore)) {
+			addMapGroup2LsValue(mapGroup2LsValue, getJuncNum(true, getSiteInfoThisBefore(), condition, tophatJunction));
+			addMapGroup2LsValue(mapGroup2LsValue,  getJuncNum(false, getSiteInfoBefore(), condition, tophatJunction));
+		} 
 		return mapGroup2LsValue;
 	}
 	/** 输入的是
@@ -280,32 +280,32 @@ public class PredictME extends SpliceTypePredict {
 	@Override
 	public List<? extends Alignment> getBGSite() {
 		List<Alignment> lsResult = new ArrayList<>();
-		if (!ArrayOperate.isEmpty(lsExonThisBefore)) {
-			for (List<ExonInfo> lsExons : lsExonBefore) {
-				lsResult.addAll(lsExons);
-			}
-		} else if (!ArrayOperate.isEmpty(lsExonThisAfter)) {
+		if (!ArrayOperate.isEmpty(lsExonThisAfter)) {
 			for (List<ExonInfo> lsExons : lsExonAfter) {
 				lsResult.addAll(lsExons);
 			}
-		}
+		} else if (!ArrayOperate.isEmpty(lsExonThisBefore)) {
+			for (List<ExonInfo> lsExons : lsExonBefore) {
+				lsResult.addAll(lsExons);
+			}
+		} 
 		return lsResult;
 	}
 	
 	public Align getResultSite() {
 		List<Alignment> lsResult = new ArrayList<>();
-		if (!ArrayOperate.isEmpty(lsExonThisBefore)) {
-			for (List<ExonInfo> lsExons : lsExonThisBefore) {
-				lsResult.addAll(lsExons);
-			}
-			for (List<ExonInfo> lsExons : lsExonBefore) {
-				lsResult.addAll(lsExons);
-			}
-		} else if (!ArrayOperate.isEmpty(lsExonThisAfter)) {
+		if (!ArrayOperate.isEmpty(lsExonThisAfter)) {
 			for (List<ExonInfo> lsExons : lsExonThisAfter) {
 				lsResult.addAll(lsExons);
 			}
 			for (List<ExonInfo> lsExons : lsExonAfter) {
+				lsResult.addAll(lsExons);
+			}
+		} else if (!ArrayOperate.isEmpty(lsExonThisBefore)) {
+			for (List<ExonInfo> lsExons : lsExonThisBefore) {
+				lsResult.addAll(lsExons);
+			}
+			for (List<ExonInfo> lsExons : lsExonBefore) {
 				lsResult.addAll(lsExons);
 			}
 		}
