@@ -715,8 +715,11 @@ class SpliceType2Value {
 	 */
 	Map<SplicingAlternativeType, ArrayListMultimap<String, Double>> mapSplicingType2_MapGroup2LsExpValue = new HashMap<>();
 	/**
-	 * key: splice type
-	 * value: group1: inclusive:exclusive group2: inclusive:exclusive
+	 * key: splice type<br>
+	 * <br>
+	 * value:<br> 
+	 * group1: inclusive:exclusive <br>
+	 * group2: inclusive:exclusive<br>
 	 */
 	Map<SplicingAlternativeType, ArrayListMultimap<String, Double>> mapSplicingType2_MapGroup2LsJunctionReads = new HashMap<>();
 	Map<SplicingAlternativeType, SpliceTypePredict> mapSplicingType2Detail = new HashMap<SplicingAlternativeType, SpliceTypePredict>();

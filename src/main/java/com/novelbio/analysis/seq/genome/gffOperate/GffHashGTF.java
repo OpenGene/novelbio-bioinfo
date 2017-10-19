@@ -138,7 +138,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 				}
 
 				if (gffGeneIsoInfo == null && !ss[2].toLowerCase().contains("utr")) {
-					logger.error("没找到其对应的转录本：" + content);
+					logger.error("gtf record cannot find corresponding iso " + content);
 					continue;
 				}
 				
@@ -155,7 +155,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 					//所以该方法在这里不适用，不过后面有个专门设定uag的方法，所以倒也无所谓了。
 					gffGeneIsoInfo.setATGUAGauto(exonStart, exonEnd);
 					if (mapIso2IsHaveExon.get(tmpTranscriptName) == null) {
-						logger.error("没有找到相应的GeneID:" + tmpTranscriptName);
+						logger.error("gtf cannot find corresponding gene : " + tmpTranscriptName);
 					}
 					if (!mapIso2IsHaveExon.get(tmpTranscriptName)) {
 						gffGeneIsoInfo.addCDS(cisExon, exonStart, exonEnd);

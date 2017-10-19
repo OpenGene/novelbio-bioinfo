@@ -21,6 +21,9 @@ import com.novelbio.generalConf.TitleFormatNBC;
 public class ExonSplicingResultUnit {
 	public static final String PvalueArithmetic = "Pvalue-Arithmetic";
 	public static final String PvalueGeometric = "Pvalue-Geometric";
+	public static final String FdrArithmetic = "Fdr-Arithmetic";
+	public static final String FdrGeometric = "Fdr-Geometric";
+
 	public static final String SpliceIndex = "SpliceIndex";
 	public static final String ExonAround = "AroundExon";
 	public static final String SplicingType = "SplicingType";
@@ -33,8 +36,8 @@ public class ExonSplicingResultUnit {
 	/** 本剪接位点周边的坐标 */
 	List<Align> lsBeforeThisAfterAlign;
 	String exonNumStr;
-	String cond1_ExcludevsInclude;
-	String cond2_ExcludevsInclude;
+	String cond1_IncludevsExclude;
+	String cond2_IncludevsExclude;
 	String cond1_Exp;
 	String cond2_Exp;
 	
@@ -43,7 +46,9 @@ public class ExonSplicingResultUnit {
 	
 	double pvalueArithmetic;
 	double pvalueGeometric;
-	double fdr;
+	double fdrArithmetic;
+	double fdrGeometric;
+
 	double spliceIndex;
 	SplicingAlternativeType splicingType;
 	
@@ -59,8 +64,8 @@ public class ExonSplicingResultUnit {
 			e.printStackTrace();
 		}
 		exonNumStr = exonSplicingTest.getExonNumStr();
-		cond1_ExcludevsInclude = pvalueCalculate.getStrInfo(false, false);
-		cond2_ExcludevsInclude = pvalueCalculate.getStrInfo(false, true);
+		cond1_IncludevsExclude = pvalueCalculate.getStrInfo(false, false);
+		cond2_IncludevsExclude = pvalueCalculate.getStrInfo(false, true);
 		cond1_Exp = pvalueCalculate.getStrInfo(true, false);
 		cond2_Exp = pvalueCalculate.getStrInfo(true, true);
 		
@@ -80,14 +85,23 @@ public class ExonSplicingResultUnit {
 		this.isArithmeticPvalue = isArithmeticPvalue;
 	}
 	
-	public void setFdr(double fdr) {
-		this.fdr = fdr;
+	public void setFdrArithmetic(double fdrArithmetic) {
+		this.fdrArithmetic = fdrArithmetic;
+	}
+	public void setFdrGeometric(double fdrGeometric) {
+		this.fdrGeometric = fdrGeometric;
 	}
 	public Double getPvalue() {
 		return isArithmeticPvalue ? pvalueArithmetic : pvalueGeometric;
 	}
+	public double getPvalueArithmetic() {
+		return pvalueArithmetic;
+	}
+	public double getPvalueGeometric() {
+		return pvalueGeometric;
+	}
 	public double getFdr() {
-		return fdr;
+		return isArithmeticPvalue ? fdrArithmetic : fdrGeometric;
 	}
 	public SplicingAlternativeType getSplicingType() {
 		return splicingType;
@@ -116,8 +130,8 @@ public class ExonSplicingResultUnit {
 		lsResult.add(accId);
 		lsResult.add(alignLoc.toStringNoStrand());
 		lsResult.add(exonNumStr);
-		lsResult.add(cond1_ExcludevsInclude);
-		lsResult.add(cond2_ExcludevsInclude);
+		lsResult.add(cond1_IncludevsExclude);
+		lsResult.add(cond2_IncludevsExclude);
 		lsResult.add(cond1_Exp);
 		lsResult.add(cond2_Exp);
 		return lsResult;
@@ -127,10 +141,10 @@ public class ExonSplicingResultUnit {
 		lsTitle.add(TitleFormatNBC.AccID.toString());
 		lsTitle.add(TitleFormatNBC.Location.toString());
 		lsTitle.add(ExonNum);
-		lsTitle.add(condition1 + "_Exclusive::Inclusive");
-		lsTitle.add(condition2 + "_Exclusive::Inclusive");
-		lsTitle.add(condition1 + "Exp");
-		lsTitle.add(condition2 + "Exp");
+		lsTitle.add(condition1 + "_Junc_Inclusive::Exclusive");
+		lsTitle.add(condition2 + "_Junc_Inclusive::Exclusive");
+		lsTitle.add(condition1 + "_Exp_Inclusive::Exclusive");
+		lsTitle.add(condition2 + "_Exp_Inclusive::Exclusive");
 		return lsTitle;
 	}
 	//=============== 每条染色体跑一个cmd命令的时候，写入临时文件 =======
@@ -142,7 +156,7 @@ public class ExonSplicingResultUnit {
 		
 		lsResult.add(psiCond1+"");
 		lsResult.add(psiCond2+"");
-		lsResult.add(spliceIndex+"");
+//		lsResult.add(spliceIndex+"");
 		lsResult.add(splicingType.toString());
 		lsResult.add(getLocAround());
 		return lsResult.toArray(new String[0]);
@@ -155,7 +169,7 @@ public class ExonSplicingResultUnit {
 		
 		lsTitle.add("PSI-" + condition1);
 		lsTitle.add("PSI-" + condition2);
-		lsTitle.add(SpliceIndex);
+//		lsTitle.add(SpliceIndex);
 		lsTitle.add(SplicingType);
 		lsTitle.add(ExonAround);
 		return lsTitle.toArray(new String[0]);
@@ -166,11 +180,12 @@ public class ExonSplicingResultUnit {
 		List<String> lsResult = getLsArrayBasic();
 		lsResult.add(pvalueArithmetic+"");
 		lsResult.add(pvalueGeometric+"");
-		lsResult.add(fdr+"");
-		
+		lsResult.add(fdrArithmetic+"");
+		lsResult.add(fdrGeometric+"");
+
 		lsResult.add(psiCond1+"");
 		lsResult.add(psiCond2+"");
-		lsResult.add(spliceIndex+"");
+//		lsResult.add(spliceIndex+"");
 		lsResult.add(splicingType.toString());
 		return lsResult.toArray(new String[0]);
 	}
@@ -178,12 +193,14 @@ public class ExonSplicingResultUnit {
 	public static String[] getTitle(String condition1, String condition2) {
 		List<String> lsTitle = getLsTitleBasic(condition1, condition2);
 		lsTitle.add(PvalueArithmetic);
+		lsTitle.add(FdrArithmetic);
+
 		lsTitle.add(PvalueGeometric);
-		lsTitle.add(TitleFormatNBC.FDR.toString());
-		
+		lsTitle.add(FdrGeometric);
+
 		lsTitle.add("PSI-" + condition1);
 		lsTitle.add("PSI-" + condition2);
-		lsTitle.add(SpliceIndex);
+//		lsTitle.add(SpliceIndex);
 		lsTitle.add(SplicingType);
 		return lsTitle.toArray(new String[0]);
 	}
@@ -196,11 +213,15 @@ public class ExonSplicingResultUnit {
 		} else {
 			lsResult.add(pvalueGeometric+"");
 		}
-		lsResult.add(fdr+"");
+		if (isArithmeticPvalue) {
+			lsResult.add(fdrArithmetic+"");
+		} else {
+			lsResult.add(fdrGeometric+"");
+		}
 		
 		//暂不启用psi
-//		lsResult.add(psiCond1+"");
-//		lsResult.add(psiCond2+"");
+		lsResult.add(psiCond1+"");
+		lsResult.add(psiCond2+"");
 		
 		lsResult.add(splicingType.toString());
 		return lsResult.toArray(new String[0]);
@@ -213,10 +234,10 @@ public class ExonSplicingResultUnit {
 		lsTitle.add(TitleFormatNBC.FDR.toString());
 		
 		//暂不启用psi
-//		lsTitle.add("PSI-" + condition1);
-//		lsTitle.add("PSI-" + condition2);
+		lsTitle.add("PSI-" + condition1);
+		lsTitle.add("PSI-" + condition2);
 		
-		lsTitle.add("SplicingType");
+		lsTitle.add(SplicingType);
 
 		return lsTitle.toArray(new String[0]);
 	}
@@ -231,21 +252,41 @@ public class ExonSplicingResultUnit {
 			}
 		});
 //		
-		ArrayList<Double> lsPvalue = new ArrayList<Double>();
+		ArrayList<Double> lsPvalueA = new ArrayList<Double>();
 		for (ExonSplicingResultUnit exonSplicingTest : colExonSplicingTests) {
 			if (exonSplicingTest.getPvalue() > fdrCutoff) {
 				break;
 			}
-			lsPvalue.add(exonSplicingTest.getPvalue());
+			lsPvalueA.add(exonSplicingTest.getPvalueArithmetic());
 		}
 		
-		ArrayList<Double> lsFdr = MathComput.pvalue2Fdr(lsPvalue);
+		ArrayList<Double> lsFdrA = MathComput.pvalue2Fdr(lsPvalueA);
 		int i = 0;
 		for (ExonSplicingResultUnit exonSplicingTest : colExonSplicingTests) {
-			if (i < lsFdr.size()) {
-				exonSplicingTest.setFdr(lsFdr.get(i));
+			if (i < lsFdrA.size()) {
+				exonSplicingTest.setFdrArithmetic(lsFdrA.get(i));
 			} else {
-				exonSplicingTest.setFdr(1);
+				exonSplicingTest.setFdrArithmetic(1);
+			}
+			i++;
+		}
+		//===============================================================//
+		ArrayList<Double> lsPvalueG = new ArrayList<Double>();
+		for (ExonSplicingResultUnit exonSplicingTest : colExonSplicingTests) {
+			if (exonSplicingTest.getPvalue() > fdrCutoff) {
+				break;
+			}
+			lsPvalueG.add(exonSplicingTest.getPvalueGeometric());
+		}
+
+		
+		ArrayList<Double> lsFdrG = MathComput.pvalue2Fdr(lsPvalueG);
+		i = 0;
+		for (ExonSplicingResultUnit exonSplicingTest : colExonSplicingTests) {
+			if (i < lsFdrG.size()) {
+				exonSplicingTest.setFdrGeometric(lsFdrG.get(i));
+			} else {
+				exonSplicingTest.setFdrGeometric(1);
 			}
 			i++;
 		}

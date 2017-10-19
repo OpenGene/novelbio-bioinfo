@@ -47,7 +47,7 @@ public interface ISpliceTestModule {
 	
 	/**
 	 * 设定junction数量，小于该数量的不会进行分析
-	 * @param juncAllReadsNum 所有样本的junction数量必须大于该值，否则不进行计算，默认25
+	 * @param juncAllReadsNum 所有样本的junction数量之和必须大于该值，否则不进行计算，默认25
 	 * @param juncSampleReadsNum 单个样本的junction数量必须大于该值，否则不进行计算，默认10
 	 */
 	public void setJuncReadsNum(int juncAllReadsNum, int juncSampleReadsNum);
@@ -88,7 +88,7 @@ public interface ISpliceTestModule {
 	public static double getPsi(ArrayListMultimap<String, Double> mapGroup2LsValue) {
 		double IR = 0, ER = 0;
 		for (String group : mapGroup2LsValue.keySet()) {
-			List<Double> lsValues = mapGroup2LsValue.get(group);//第一个是跳过，第二个是连上
+			List<Double> lsValues = mapGroup2LsValue.get(group);//第一个是连上，第二个是跳过
 			IR += lsValues.get(0);
 			if (lsValues.size() == 1) {
 				ER += 0;
@@ -1051,7 +1051,7 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		int[] junction = combReadsNumInt(mapGroup2LsValue);
 		String condition = junction[0]+ "";
 		for (int i = 1; i < junction.length; i++) {
-			condition = junction[i] + "::" + condition;
+			condition = condition + "::" + junction[i];
 		}
 		return condition;
 	}
@@ -1063,7 +1063,7 @@ class SpliceTestRepeat implements ISpliceTestModule {
 		double[] junction = combReadsNumDouble(mapGroup2LsValue);
 		String condition = junction[0]+ "";
 		for (int i = 1; i < junction.length; i++) {
-			condition = junction[i] + "::" + condition;
+			condition = condition + "::" + junction[i];
 		}
 		return condition;
 	}

@@ -279,7 +279,17 @@ public class PredictME extends SpliceTypePredict {
 	}
 	@Override
 	public List<? extends Alignment> getBGSite() {
-		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
+		List<Alignment> lsResult = new ArrayList<>();
+		if (!ArrayOperate.isEmpty(lsExonThisBefore)) {
+			for (List<ExonInfo> lsExons : lsExonBefore) {
+				lsResult.addAll(lsExons);
+			}
+		} else if (!ArrayOperate.isEmpty(lsExonThisAfter)) {
+			for (List<ExonInfo> lsExons : lsExonAfter) {
+				lsResult.addAll(lsExons);
+			}
+		}
+		return lsResult;
 	}
 	
 	public Align getResultSite() {

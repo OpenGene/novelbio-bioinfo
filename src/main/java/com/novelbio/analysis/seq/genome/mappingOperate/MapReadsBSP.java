@@ -1,7 +1,6 @@
 package com.novelbio.analysis.seq.genome.mappingOperate;
 
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -12,16 +11,11 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumBspCpGCalculateType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumCpGmethyType;
-import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.fileOperate.FileOperate;
-
-import picard.analysis.directed.CalculateHsMetrics;
 
 /**
  * 给马红那边，杨红星生成的

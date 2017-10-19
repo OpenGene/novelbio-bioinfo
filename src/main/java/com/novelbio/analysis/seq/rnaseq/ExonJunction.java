@@ -76,28 +76,28 @@ public class ExonJunction extends RunProcess {
 	}
 	//HES4	chr1:999692-999787	2	40::1436	37::2294	3154::468	2583::220	3.119998921325775E-10	0.0	0.0	Cassette
 	public static long wwwSimulation() {
-		String parentPath = "/media/winE/test/altersplice/bug2/";
+		String parentPath = "/home/novelbio/NBCresource/www/grch38/";
 		DateUtil dateUtil = new DateUtil();
 		dateUtil.setStartTime();
 		
 		List<Align> lsAligns = new ArrayList<>();
-//		lsAligns.add(new Align("chrX", 0, 11111111));
+//		lsAligns.add(new Align("chr2:173905236-174357658"));
 		GffChrAbs gffChrAbs = new GffChrAbs();
-		gffChrAbs.setGffHash(new GffHashGene("/media/winE/test/altersplice/bug2/mm10_refGene.gtf"));
+		gffChrAbs.setGffHash(new GffHashGene("/home/novelbio/NBCresource/genome/species/9606/GRCh38/gff/ref_GRCh38_top_level.gtf"));
 		ExonJunction exonJunction = new ExonJunction();
 		exonJunction.setGffHashGene(gffChrAbs.getGffHashGene());
 		exonJunction.setgenerateNewIso(true);
 		exonJunction.setLsReadRegion(lsAligns);
 		exonJunction.setOneGeneOneSpliceEvent(false);
-		exonJunction.addBamSorted("Ex", parentPath + "A2.AddRG.Reorder.Sort.bam");
-		exonJunction.addBamSorted("In", parentPath + "WT.AddRG.Reorder.Sort.bam");
-		exonJunction.setCompareGroups("Ex", "In", "ExvsIn");
-		exonJunction.setResultFile(parentPath + "result-sep-exon");
+		exonJunction.addBamSorted("SINC", parentPath + "Sample_7721SINC.sorted.bam");
+		exonJunction.addBamSorted("SIPRPF3", parentPath + "Sample_7721SIPRPF3.sorted.bam");
+		exonJunction.setCompareGroups("SINC", "SIPRPF3", "ExvsIn");
+		exonJunction.setResultFile(parentPath + "result-new");
 		exonJunction.setJunctionMinAnchorLen(0);
 		exonJunction.setRunSepChr(true);
-//		exonJunction.setStrandSpecific(StrandSpecific.FIRST_READ_TRANSCRIPTION_STRAND);
+		exonJunction.setStrandSpecific(StrandSpecific.SECOND_READ_TRANSCRIPTION_STRAND);
 		exonJunction.running();
-		exonJunction.writeResult(parentPath + "result-sep-exon-new-juc", exonJunction.lsResult, false);
+		exonJunction.writeResult(parentPath + "result-new", exonJunction.lsResult, false);
 		exonJunction = null;
 		gffChrAbs.close();
 		return dateUtil.getElapseTime();
@@ -105,7 +105,7 @@ public class ExonJunction extends RunProcess {
 		
 	
 	private static Logger logger = LoggerFactory.getLogger(ExonJunction.class);
-	private static String stopGeneName = "OSMR";
+	private static String stopGeneName = "OLA1";
 		
 	GffHashGene gffHashGene = null;
 	

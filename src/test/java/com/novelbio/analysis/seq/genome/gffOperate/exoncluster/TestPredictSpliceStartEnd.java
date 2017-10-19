@@ -331,9 +331,9 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		GffGeneIsoInfo isoTrans3 = GffGeneIsoInfo.createGffGeneIso("Iso3", "geneCis", gffDetailGeneCis, GeneType.mRNA, false);
 
 		//<------------------18------30--------------40-50----------------------------------------80-90---<
-		//<------10--16------------------------------40-50----------60---72
-		//<------10--16-------20--30--------------40-50----------60-70----------------------80---90----<
-		isoTrans1.add(new ExonInfo( false, 80, 90));
+		//<------10--16------------------------------40-50--------55------72
+		//<------10--16-------20--30--------------40-50--------------60-70----------------------80---90----<
+		isoTrans1.add(new ExonInfo( false, 800, 900));
 		isoTrans1.add(new ExonInfo( false, 40, 50));
 		isoTrans1.add(new ExonInfo( false, 18, 30));
 		
@@ -341,7 +341,7 @@ public class TestPredictSpliceStartEnd extends TestCase {
 		isoTrans2.add(new ExonInfo( false, 40, 50));
 		isoTrans2.add(new ExonInfo( false, 10, 16));
 
-		isoTrans3.add(new ExonInfo( false, 80, 90));
+		isoTrans3.add(new ExonInfo( false, 800, 900));
 		isoTrans3.add(new ExonInfo( false, 60, 70));
 		isoTrans3.add(new ExonInfo( false, 40, 50));
 		isoTrans3.add(new ExonInfo( false, 20, 30));
@@ -370,6 +370,76 @@ public class TestPredictSpliceStartEnd extends TestCase {
 				SpliceTypePredict spliceTypeS= new PredictAltEnd(exonCluster);
 				assertEquals(false, spliceTypeS.isSpliceType());
 			}
+		}
+		
+		List<? extends Alignment> lsAligns = PredictAltStartEnd.getBGSite(new Align("chr1", 35, 38), SplicingAlternativeType.altstart, gffDetailGeneCis);
+		List<Align> lsExp = Lists.newArrayList(new Align("chr1", 72, 55), new Align("chr1", 50, 40));
+		assertEquals(lsExp.size(), lsAligns.size());
+		for (int i = 0; i < lsExp.size(); i++) {
+			Alignment align1 = lsAligns.get(i);
+			Align align2 = lsExp.get(i);
+			assertEquals(align1.getStartAbs(), align2.getStartAbs());
+			assertEquals(align1.getEndAbs(), align2.getEndAbs());
+		}
+		
+		lsAligns = PredictAltStartEnd.getBGSite(new Align("chr1", 35, 38), SplicingAlternativeType.altend, gffDetailGeneCis);
+		lsExp = Lists.newArrayList(new Align("chr1", 30, 18), new Align("chr1", 16, 10));
+		assertEquals(lsExp.size(), lsAligns.size());
+		for (int i = 0; i < lsExp.size(); i++) {
+			Alignment align1 = lsAligns.get(i);
+			Align align2 = lsExp.get(i);
+			assertEquals(align1.getStartAbs(), align2.getStartAbs());
+			assertEquals(align1.getEndAbs(), align2.getEndAbs());
+		}
+	}
+	
+	@Test
+	public void testStartEndTransTrue3() {
+		gffDetailGeneCis.clearIso();
+		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "geneCis", gffDetailGeneCis, GeneType.mRNA, false);
+		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "geneCis", gffDetailGeneCis, GeneType.mRNA, false);
+		GffGeneIsoInfo isoTrans3 = GffGeneIsoInfo.createGffGeneIso("Iso3", "geneCis", gffDetailGeneCis, GeneType.mRNA, false);
+
+		//<------------------18------30--------------40-50----------------------------------------80-90---<
+		//<------10--16------------------------------40-50--------55------72
+		//<------10--16-------20--30--------------40-50--------------60-70----------------------80---90----<
+		isoTrans1.add(new ExonInfo( false, 80, 90));
+		isoTrans1.add(new ExonInfo( false, 40, 50));
+		isoTrans1.add(new ExonInfo( false, 18, 30));
+		
+		isoTrans2.add(new ExonInfo( false, 55, 72));
+		isoTrans2.add(new ExonInfo( false, 40, 50));
+		isoTrans2.add(new ExonInfo( false, 10, 16));
+
+		isoTrans3.add(new ExonInfo( false, 80, 90));
+		isoTrans3.add(new ExonInfo( false, 60, 70));
+		isoTrans3.add(new ExonInfo( false, 40, 50));
+		isoTrans3.add(new ExonInfo( false, 20, 30));
+		isoTrans3.add(new ExonInfo( false, 10, 16));
+		isoTrans3.add(new ExonInfo( false, 5, 8));
+
+		gffDetailGeneCis.addIso(isoTrans1);
+		gffDetailGeneCis.addIso(isoTrans2);
+		gffDetailGeneCis.addIso(isoTrans3);
+
+		List<? extends Alignment> lsAligns = PredictAltStartEnd.getBGSite(new Align("chr1", 35, 38), SplicingAlternativeType.altstart, gffDetailGeneCis);
+		List<Align> lsExp = Lists.newArrayList(new Align("chr1", 90, 80), new Align("chr1", 72, 55), new Align("chr1", 50, 40));
+		assertEquals(lsExp.size(), lsAligns.size());
+		for (int i = 0; i < lsExp.size(); i++) {
+			Alignment align1 = lsAligns.get(i);
+			Align align2 = lsExp.get(i);
+			assertEquals(align1.getStartAbs(), align2.getStartAbs());
+			assertEquals(align1.getEndAbs(), align2.getEndAbs());
+		}
+		
+		lsAligns = PredictAltStartEnd.getBGSite(new Align("chr1", 35, 38), SplicingAlternativeType.altend, gffDetailGeneCis);
+		lsExp = Lists.newArrayList(new Align("chr1", 30, 18), new Align("chr1", 16, 10), new Align("chr1", 8, 5));
+		assertEquals(lsExp.size(), lsAligns.size());
+		for (int i = 0; i < lsExp.size(); i++) {
+			Alignment align1 = lsAligns.get(i);
+			Align align2 = lsExp.get(i);
+			assertEquals(align1.getStartAbs(), align2.getStartAbs());
+			assertEquals(align1.getEndAbs(), align2.getEndAbs());
 		}
 	}
 	
@@ -481,7 +551,20 @@ public class TestPredictSpliceStartEnd extends TestCase {
 			}
 		}
 	}
-
+	
+	@Test
+	public void testGetDistance() {
+		Align align1 = new Align("chr1:123-400");
+		Align align2 = new Align("chr1:700-900");
+		int distance = PredictAltStartEnd.getDistance(align1, align2);
+		assertEquals(300, distance);
+		
+		align1 = new Align("chr1:400-123");
+		align2 = new Align("chr1:900-700");
+		distance = PredictAltStartEnd.getDistance(align1, align2);
+		assertEquals(300, distance);
+	}
+	
 	@Override
 	protected void tearDown() throws Exception {
 		// TODO Auto-generated method stub
