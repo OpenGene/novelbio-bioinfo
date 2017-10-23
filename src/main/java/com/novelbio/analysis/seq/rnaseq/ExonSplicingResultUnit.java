@@ -27,7 +27,7 @@ public class ExonSplicingResultUnit {
 	public static final String SpliceIndex = "SpliceIndex";
 	public static final String ExonAround = "AroundExon";
 	public static final String SplicingType = "SplicingType";
-	public static final String ExonNum = "ExonNumber";
+	public static final String ExonNum = "Exon";
 
 	boolean isArithmeticPvalue = true;
 	
@@ -151,11 +151,14 @@ public class ExonSplicingResultUnit {
 	/** 写入临时文件 */
 	public String[] toStringArrayTmp() {
 		List<String> lsResult = getLsArrayBasic();
-		lsResult.add(pvalueArithmetic+"");
-		lsResult.add(pvalueGeometric+"");
 		
 		lsResult.add(psiCond1+"");
 		lsResult.add(psiCond2+"");
+		
+		lsResult.add(pvalueArithmetic+"");
+		lsResult.add(pvalueGeometric+"");
+		
+	
 //		lsResult.add(spliceIndex+"");
 		lsResult.add(splicingType.toString());
 		lsResult.add(getLocAround());
@@ -164,11 +167,14 @@ public class ExonSplicingResultUnit {
 	/** 写入临时文件的标题 */
 	public static String[] getTitleTmp(String condition1, String condition2) {
 		List<String> lsTitle = getLsTitleBasic(condition1, condition2);
-		lsTitle.add(PvalueArithmetic);
-		lsTitle.add(PvalueGeometric);
 		
 		lsTitle.add("PSI-" + condition1);
 		lsTitle.add("PSI-" + condition2);
+		
+		lsTitle.add(PvalueArithmetic);
+		lsTitle.add(PvalueGeometric);
+		
+
 //		lsTitle.add(SpliceIndex);
 		lsTitle.add(SplicingType);
 		lsTitle.add(ExonAround);
@@ -178,13 +184,17 @@ public class ExonSplicingResultUnit {
 	//================ 自己用 ==========================================
 	public String[] toStringArray() {
 		List<String> lsResult = getLsArrayBasic();
+		lsResult.add(psiCond1+"");
+		lsResult.add(psiCond2+"");
+		
+		lsResult.add((psiCond1-psiCond2)+"");
+
 		lsResult.add(pvalueArithmetic+"");
 		lsResult.add(pvalueGeometric+"");
 		lsResult.add(fdrArithmetic+"");
 		lsResult.add(fdrGeometric+"");
 
-		lsResult.add(psiCond1+"");
-		lsResult.add(psiCond2+"");
+
 //		lsResult.add(spliceIndex+"");
 		lsResult.add(splicingType.toString());
 		return lsResult.toArray(new String[0]);
@@ -192,14 +202,18 @@ public class ExonSplicingResultUnit {
 	/** 获得标题,我们自己用 */
 	public static String[] getTitle(String condition1, String condition2) {
 		List<String> lsTitle = getLsTitleBasic(condition1, condition2);
+
+		lsTitle.add("PSI-" + condition1);
+		lsTitle.add("PSI-" + condition2);
+		
+		lsTitle.add("delta_PSI");
+		
 		lsTitle.add(PvalueArithmetic);
 		lsTitle.add(FdrArithmetic);
 
 		lsTitle.add(PvalueGeometric);
 		lsTitle.add(FdrGeometric);
 
-		lsTitle.add("PSI-" + condition1);
-		lsTitle.add("PSI-" + condition2);
 //		lsTitle.add(SpliceIndex);
 		lsTitle.add(SplicingType);
 		return lsTitle.toArray(new String[0]);
@@ -207,7 +221,10 @@ public class ExonSplicingResultUnit {
 
 	//================ 对外软件 ==========================================
 	public String[] toStringArray_ASD() {
+
 		List<String> lsResult = getLsArrayBasic();
+		lsResult.add((psiCond1-psiCond2)+"");
+
 		if (isArithmeticPvalue) {
 			lsResult.add(pvalueArithmetic+"");
 		} else {
@@ -219,10 +236,6 @@ public class ExonSplicingResultUnit {
 			lsResult.add(fdrGeometric+"");
 		}
 		
-		//暂不启用psi
-		lsResult.add(psiCond1+"");
-		lsResult.add(psiCond2+"");
-		
 		lsResult.add(splicingType.toString());
 		return lsResult.toArray(new String[0]);
 	}
@@ -230,12 +243,11 @@ public class ExonSplicingResultUnit {
 	/** 获得标题,对外软件 */
 	public static String[] getTitle_ASD(String condition1, String condition2) {
 		List<String> lsTitle = getLsTitleBasic(condition1, condition2);
+		
+		lsTitle.add("delta_PSI");
+
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.FDR.toString());
-		
-		//暂不启用psi
-		lsTitle.add("PSI-" + condition1);
-		lsTitle.add("PSI-" + condition2);
 		
 		lsTitle.add(SplicingType);
 

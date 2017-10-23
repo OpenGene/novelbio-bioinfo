@@ -311,4 +311,9 @@ public class PredictME extends SpliceTypePredict {
 		}
 		return Align.getAlignFromList(lsResult);
 	}
+	
+	public boolean isBeforeExon() {
+		return !ArrayOperate.isEmpty(lsExonThisAfter);
+	}
+
 }

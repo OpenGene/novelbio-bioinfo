@@ -371,6 +371,9 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		align.setChrID(exonCluster.getRefID());
 		return align;
 	}
+	public SpliceTypePredict getSpliceTypePredict() {
+		return mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType());
+	}
 	public double getPvalue() {
 		return lsPvalueInfo.get(0).pvalueAvg;
 	}

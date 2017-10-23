@@ -244,7 +244,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 					continue;
 				}
 			} else if (ss[2].equals("CDS")) {
-				addCDS(thisGeneIDandName, thisRnaIDandName, ss);
+				try {
+					addCDS(thisGeneIDandName, thisRnaIDandName, ss);
+
+				} catch (Exception e) {
+					addCDS(thisGeneIDandName, thisRnaIDandName, ss);
+				}
 			} else if (ss[2].equals("STS") || ss[2].contains("gene_segment")
 					|| ss[2].contains("contig") || ss[2].contains("match")) {
 				continue;
@@ -261,7 +266,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 
 		clear();
 	}
-
+	
 	private void fillDuplicateNameSet() {
 		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
 		Set<String> setMrnaAll = new HashSet<>();

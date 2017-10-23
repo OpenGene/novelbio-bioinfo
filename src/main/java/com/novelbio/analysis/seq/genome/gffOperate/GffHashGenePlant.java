@@ -43,9 +43,9 @@ public class GffHashGenePlant extends GffHashGeneAbs{
 	 * Species.ARABIDOPSIS和DB.equals(Species.RICE
 	 * @throws Exception
 	 */
-	public GffHashGenePlant(GffType gffType) {
-		GeneName= "(?<=Name\\=)[\\w\\-%\\:\\.\\{\\}]+";
-		splitmRNA= "(?<=Name\\=)[\\w\\-%\\:\\.\\{\\}]+";
+	public GffHashGenePlant() {
+		GeneName= "(?<=ID\\=)[\\w\\-%\\:\\.\\{\\}]+";
+		splitmRNA= "(?<=ID\\=)[\\w\\-%\\:\\.\\{\\}]+";
 	}
 
 	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */

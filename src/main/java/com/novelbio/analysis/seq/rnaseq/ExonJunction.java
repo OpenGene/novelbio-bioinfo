@@ -31,7 +31,9 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonClusterExtract;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonClusterSite;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictME;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.PredictRetainIntron;
+import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
@@ -1160,80 +1162,15 @@ public class ExonJunction extends RunProcess {
 	private List<ExonSplicingTest> combineMXE(List<ExonSplicingTest> lsTestResult) {
 		List<ExonSplicingTest> lsFinal = new ArrayList<>();
 		
-		ArrayListMultimap<String, ExonSplicingTest> mapJuncInfo2ExonTest = ArrayListMultimap.create();
 		//将MXE位点提取出来，用junction的数字作为key
 		for (ExonSplicingTest exonSplicingTest : lsTestResult) {
 			if (exonSplicingTest.getSplicingType() == SplicingAlternativeType.mutually_exclusive) {
-				PvalueCalculate pvalueCalculate = exonSplicingTest.getSpliceTypePvalue();
-				String[] treat = pvalueCalculate.getStrInfo(false, false).split("::");
-				String[] ctrl = pvalueCalculate.getStrInfo(false, true).split("::");
-				String combine = exonSplicingTest.getExonCluster().getRefID() + treat[1] + "::" + treat[0] + SepSign.SEP_ID + ctrl[1] + "::" + ctrl[0];
-				mapJuncInfo2ExonTest.put(combine, exonSplicingTest);
+				PredictME predictME = (PredictME)exonSplicingTest.getSpliceTypePredict();
+				if (predictME.isBeforeExon()) {
+					lsFinal.add(exonSplicingTest);
+				}
 			} else {
 				lsFinal.add(exonSplicingTest);
-			}
-		}
-		if (mapJuncInfo2ExonTest.isEmpty()) {
-			return lsFinal;
-		}
-		Map<ExonSplicingTest, ExonSplicingTest> mapKey2Value = new HashMap<>();
-		Set<ExonSplicingTest> setExonTest = new HashSet<>();//去重复用
-		//找出配对的MXE位点。筛选方法是mxe位点的reads数是相关的，如下：
-		//
-		for (ExonSplicingTest exonSplicingTest : mapJuncInfo2ExonTest.values()) {
-			if (setExonTest.contains(exonSplicingTest)) continue;
-			
-			PvalueCalculate pvalueCalculate = exonSplicingTest.getSpliceTypePvalue();
-			String[] treat = pvalueCalculate.getStrInfo(false, false).split("::");
-			String[] ctrl = pvalueCalculate.getStrInfo(false, true).split("::");
-			//注意跟上面方向相反
-			String combine = exonSplicingTest.getExonCluster().getRefID() + treat[0] + "::" + treat[1] + SepSign.SEP_ID + ctrl[0] + "::" + ctrl[1];
-			
-			List<ExonSplicingTest> lsExonSplicingTests = mapJuncInfo2ExonTest.get(combine);
-			if (lsExonSplicingTests == null) {
-				mapKey2Value.put(exonSplicingTest, null);
-				setExonTest.add(exonSplicingTest);
-			} else {
-				int midExon = middle(exonSplicingTest);
-				int distance = Integer.MAX_VALUE;
-				ExonSplicingTest exonTestPair = null;
-				for (ExonSplicingTest test : lsExonSplicingTests) {
-					if (!setExonTest.contains(test) && Math.abs(midExon - middle(test)) < distance) {
-						distance = Math.abs(midExon - middle(test));
-						exonTestPair = test;
-					}
-				}
-				if (exonTestPair != null) {
-					setExonTest.add(exonTestPair);
-				}
-				mapKey2Value.put(exonSplicingTest, exonTestPair);
-			}			
-		}
-		
-		for (ExonSplicingTest keyTest : mapKey2Value.keySet()) {
-			ExonSplicingTest value = mapKey2Value.get(keyTest);
-			if (value == null) {
-				lsFinal.add(keyTest);
-			} else {
-				Align a = keyTest.getSpliceSiteAlignDisplay();
-				Align b = value.getSpliceSiteAlignDisplay();
-				if (a == null && b == null) {
-					continue;
-				} else if (a == null) {
-					lsFinal.add(value);
-				} else if (b == null) {
-					lsFinal.add(keyTest);
-				} else {
-					int start = Math.min(a.getStartAbs(), b.getStartAbs());
-					int end = Math.max(a.getEndAbs(), b.getEndAbs());
-					Align alignDisplay = new Align(keyTest.getExonCluster().getRefID(), start, end);
-					alignDisplay.setCis5to3(a.isCis5to3());
-					if (keyTest.getAndCalculatePvalue() < value.getAndCalculatePvalue()) {
-						lsFinal.add(keyTest);
-					} else {
-						lsFinal.add(value);
-					}
-				}
 			}
 		}
 		
