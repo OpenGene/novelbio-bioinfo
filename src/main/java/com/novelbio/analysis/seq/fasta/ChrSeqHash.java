@@ -411,4 +411,29 @@ public class ChrSeqHash extends SeqHashAbs {
 		}
 		
 	}
+	
+	/** 专门用于排序比较的类 */
+	public static class CompareChrID2 implements Comparator<String> {
+		@Override
+		public int compare(String chrID1, String chrID2) {
+			Integer chr1 = -1;
+			Integer chr2 = -1;
+			try { chr1 = Integer.parseInt(chrID1); } catch (Exception e) { }
+			try { chr2 = Integer.parseInt(chrID2); } catch (Exception e) { }
+
+			if (chr1 < 0 && chr2 < 0) {
+				return chrID1.compareTo(chrID2);
+			}
+			
+			if (chr1 < 0 || chr2 < 0) {	
+				if (chr1 > 0) {
+					return -1;
+				} else {
+					return 1;
+				}
+			}
+			return chr1.compareTo(chr2);
+		}
+		
+	}
 }
