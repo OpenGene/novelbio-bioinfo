@@ -246,8 +246,8 @@ public class ChrBaseIter implements Closeable {
 		int lengthRow = mapChrID2LenRow.get(chrIDLowcase);
 		int lenRowEnter = mapChrID2LenRowEnter.get(chrIDLowcase);
 		try {
-			long startReal = getRealSite(startChr, start, lengthRow, lenRowEnter);
-			long endReal = getRealSite(startChr, end, lengthRow, lenRowEnter);
+			long startReal = getRealSiteStart(startChr, start, lengthRow, lenRowEnter);
+			long endReal = getRealSiteEnd(startChr, end, lengthRow, lenRowEnter);
 			return new long[]{startReal, endReal};
 		} catch (Exception e) {
 			throw new RuntimeException("extract seq error: " + chrFile + "\t" + chrIDLowcase + " " + start + " " + end, e);
@@ -262,14 +262,27 @@ public class ChrBaseIter implements Closeable {
 	 * @return
 	 * @throws IOException 
 	 */
-	private long getRealSite(long chrStart, long site, int rowLen, int rowEnterLen) throws IOException {
-		// 设定到0位
-		seekablePathInputStream.seek(0);
+	private long getRealSiteStart(long chrStart, long site, int rowLen, int rowEnterLen) throws IOException {
 		// 实际序列在文件中的起点
 		long siteReal = chrStart + rowEnterLen * getRowNum(site, rowLen) + getBias(site, rowLen);
 		return siteReal;
 	}
-	
+	/**
+	 * @param chrStart 该染色体起点在文本中的位置
+	 * @param site 想转换的某个染色体坐标
+	 * @param rowLen 每行有多少碱基
+	 * @return
+	 * @throws IOException 
+	 */
+	private long getRealSiteEnd(long chrStart, long site, int rowLen, int rowEnterLen) throws IOException {
+		// 实际序列在文件中的起点
+		int bias = getBias(site, rowLen);
+		if (bias == 0 && site > 0) {
+			bias = rowLen - rowEnterLen;
+		}
+		long siteReal = chrStart + rowEnterLen * getRowNum(site, rowLen) + bias;
+		return siteReal;
+	}
 	/** 指定染色体的某个位点，返回该位点的偏移，也就是在某一行的第几个碱基 */
 	private int getBias(long site, int rowLen) {
 		return (int) (site % rowLen);
