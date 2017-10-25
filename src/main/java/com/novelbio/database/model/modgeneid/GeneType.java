@@ -32,7 +32,7 @@ For Ensembl release 73, connect to database "ensembl_production_73" eg.
 public enum GeneType {
 	 mRNA,
 	 lncRNA,
-	 PSEU, 
+	 pseudogene, 
 	 mRNA_TE,
 	 miRNA,  
 	 Precursor_RNA, 
@@ -57,7 +57,10 @@ public enum GeneType {
 	  * http://www.ncbi.nlm.nih.gov/books/NBK3841/
 	  */
 	 miscRNA,
-	 ncRNA, 
+	 ncRNA,
+	 
+	 synthetic,
+	 
 	 /** mRNA的反义链上的ncRNA */
 	 antisense_RNA, 
 	 /** 端粒RNA */
@@ -113,6 +116,8 @@ public enum GeneType {
 			mapMRNA2GeneType.put("ambiguous_orf".toLowerCase(), ncRNA);
 			mapMRNA2GeneType.put("SRP_RNA".toLowerCase(), ncRNA);
 
+			mapMRNA2GeneType.put("synthetic".toLowerCase(), synthetic);
+
 			
 			
 			mapMRNA2GeneType.put("primary_transcript".toLowerCase(), ncRNA);
@@ -123,8 +128,10 @@ public enum GeneType {
 			mapMRNA2GeneType.put("RNase_P_RNA".toLowerCase(), RNase_P_RNA);
 			mapMRNA2GeneType.put("RNase_MRP_RNA".toLowerCase(), RNase_MRP_RNA);
 			mapMRNA2GeneType.put("scRNA".toLowerCase(), scRNA);
-			mapMRNA2GeneType.put("pseudogene".toLowerCase(),PSEU);
-			mapMRNA2GeneType.put("pseudogenic_transcript".toLowerCase(), PSEU);
+
+			mapMRNA2GeneType.put("PSEU".toLowerCase(),pseudogene);
+			mapMRNA2GeneType.put("pseudogene".toLowerCase(),pseudogene);
+			mapMRNA2GeneType.put("pseudogenic_transcript".toLowerCase(), pseudogene);
 			mapMRNA2GeneType.put("tmRNA".toLowerCase(), tmRNA);
 			//TODO
 			mapMRNA2GeneType.put("transcript".toLowerCase(),miscRNA);
@@ -150,7 +157,7 @@ public enum GeneType {
 			setSmallRNA.add(mRNA_TE);
 			
 			setSmallRNA.add(Precursor_miRNA);
-			setSmallRNA.add(PSEU);
+			setSmallRNA.add(pseudogene);
 			setSmallRNA.add(RNase_MRP_RNA);
 			setSmallRNA.add(RNase_P_RNA);
 			setSmallRNA.add(rRNA);
@@ -173,7 +180,7 @@ public enum GeneType {
 	 * @return
 	 */
 	public static boolean isMRNA_CanHaveUTR(GeneType geneType) {
-		if (geneType == mRNA || geneType == mRNA_TE || geneType == PSEU) {
+		if (geneType == mRNA || geneType == mRNA_TE || geneType == pseudogene) {
 			return true;
 		}
 		return false;

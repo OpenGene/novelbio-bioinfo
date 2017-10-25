@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.database.model.modgeneid.GeneType;
 public class GffGeneIsoTrans extends GffGeneIsoInfo {
 	private static final long serialVersionUID = -3187469258704218874L;
@@ -22,7 +23,7 @@ public class GffGeneIsoTrans extends GffGeneIsoInfo {
 	@Override
 	public int getStartAbs() {
 		if (size() == 0) {
-			logger.error(getName() + "没有元素");
+			throw new ExceptionNbcGFF(getName() + " has no exon infomation please check!");
 		}
 		return get(size() - 1).getEndCis();
 	}

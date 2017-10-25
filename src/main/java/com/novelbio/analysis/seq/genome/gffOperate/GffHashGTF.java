@@ -20,6 +20,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.modgeneid.GeneType;
+import com.sun.tools.javac.util.Name;
 
 public class GffHashGTF extends GffHashGeneAbs{
 	private final static Logger logger = Logger.getLogger(GffHashGTF.class);
@@ -76,6 +77,9 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpTranscriptNameLast = "";
 		int line = 0;
 		for (String content : txtgff.readlines() ) {
+			if (content.contains("transcript	11872")) {
+				logger.info("test");
+			}
 			try {
 				line++;
 				if (StringOperate.isRealNull(content) || content.charAt(0) == '#') continue;
@@ -107,14 +111,31 @@ public class GffHashGTF extends GffHashGeneAbs{
 				
 				if (setIsGene.contains(ss[2].toLowerCase())) continue;
 				
+				
+				/** 如果当前exon的转录本和上一个转录本不一样，可以先找一下是不是已经存在这个名字的iso */
+				boolean getBeforeIso = false;
+				if (!GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())
+						&&
+						!tmpTranscriptName.equals(tmpTranscriptNameLast)
+					)
+				{
+					gffGeneIsoInfo = getGffIsoSimple(tmpGeneName, tmpTranscriptName, exonStart, exonEnd);
+					if (gffGeneIsoInfo != null) {
+						getBeforeIso = true;
+					}
+				}
+				
 				//出现新转录本有两种可能：
 				//1： 单开一行标记新的transcript
 				//2： 还是标记exon，只是后面的transcriptID 变了
-				if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())
-					||
-					(!tmpTranscriptName.equals(tmpTranscriptNameLast) 
+				if (!getBeforeIso &&
+					(
+							GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())
+							||
+							(!tmpTranscriptName.equals(tmpTranscriptNameLast) 
 							&& !isHaveIso(tmpGeneName, tmpTranscriptName, Integer.parseInt(ss[3]), Integer.parseInt(ss[4])))
-						) 
+						)
+					) 
 				{
 					GeneType geneType = GeneType.getMapMRNA2GeneType().get(geneTypeStr.toLowerCase());
 					if (geneType == null) {
@@ -238,23 +259,21 @@ public class GffHashGTF extends GffHashGeneAbs{
 		for (int i = 0; i < lsAnnoInfo.size(); i+=2) {
 			String name = CmdOperate.removeQuot(lsAnnoInfo.get(i)) + " " + CmdOperate.removeQuot(lsAnnoInfo.get(i+1));
 			 name = name.trim();
-				if (name.startsWith("transcript_id")) {
-					iso2geneName[0] = name.replace("transcript_id", "").replace("=", "").replace("\"", "").trim();
+				if (isKeyContainsValue(name, "transcript") && isKeyContainsValue(name	, "id")) {
+					iso2geneName[0] = getLastValue(name);
 				} else if (name.startsWith(geneNameFlag)) {
-					iso2geneName[1] = name.replace(geneNameFlag, "").replace("=", "").replace("\"", "").trim();
+					iso2geneName[1] = getLastValue(name);
 				} else if (name.startsWith("ID")) {
-					iso2geneName[0] = name.replace("ID", "").replace("=", "").replace("\"", "").trim();
-				} else if (name.startsWith("ID")) {
-					iso2geneName[0] = name.replace("ID", "").replace("=", "").replace("\"", "").trim();
-				} else if (name.toLowerCase().startsWith("genetype")) {
+					iso2geneName[0] = getLastValue(name);
+				} else if (isKeyContainsValue(name, "type")) {
 					try {
-						iso2geneName[2] = name.replace("genetype", "").replace("=", "").replace("\"", "").trim();
+						iso2geneName[2] = getLastValue(name);
 					} catch (Exception e) {
 						iso2geneName[2] = GeneType.mRNA.toString(); 
 					}
 				} else if (name.toLowerCase().startsWith("gene_biotype")) {
 					try {
-						iso2geneName[2] = name.replace("gene_biotype", "").replace("=", "").replace("\"", "").trim();
+						iso2geneName[2] = getLastValue(name);
 					} catch (Exception e) {
 						iso2geneName[2] = GeneType.mRNA.toString(); 
 					}
@@ -262,6 +281,29 @@ public class GffHashGTF extends GffHashGeneAbs{
 		}
 		
 		 return iso2geneName;
+	}
+	
+	/**
+	 * 给定 transcript_id "R2_19_1" 这种，返回 
+	 * @param keyvalue
+	 * @return
+	 */
+	private static String getLastValue(String keyValue) {
+		String[] ss = keyValue.replace("=", " ").trim().split(" ");
+		String value = ss[ss.length-1];
+		value = value.replace("\"", "").trim();
+		return value;
+	}
+	
+	/**
+	 * 给定 transcript_id "R2_19_1" 这种，
+	 * 判定 transcript_id 字段是否含有id片段
+	 * @param keyvalue
+	 * @return
+	 */
+	private static boolean isKeyContainsValue(String info, String value) {
+		String key = info.trim().replace("=", " ").split(" ")[0].toLowerCase();
+		return key.contains(value.toLowerCase());
 	}
 	
 	private void addGffIso(String geneName, GffGeneIsoInfo gffGeneIsoInfo) {
@@ -352,6 +394,34 @@ public class GffHashGTF extends GffHashGeneAbs{
 		return gffGeneIsoInfoFinal;
 	}
 
+	/**
+	    * 从hashRnaID2RnaName中获得该RNA的GffGeneIsoInfo
+	    * @return
+	    */  
+	private GffGeneIsoInfo getGffIsoSimple(String geneName, String isoName, int startExon, int endExon) {
+		int start = Math.min(startExon, endExon), end = Math.max(startExon, startExon);
+		List<GffGeneIsoInfo> lsIsos = mapID2Iso.get(geneName);
+		if (lsIsos == null || lsIsos.size() == 0) {
+			return null;
+		}
+		for (GffGeneIsoInfo gffGeneIsoInfo : lsIsos) {
+			if (gffGeneIsoInfo.getName().equalsIgnoreCase(isoName)) {
+				if (gffGeneIsoInfo.isEmpty()) {
+					return gffGeneIsoInfo;
+				}
+				if (start <= gffGeneIsoInfo.getEndAbs() && end >= gffGeneIsoInfo.getStartAbs()) {
+					return gffGeneIsoInfo;
+				}
+				int distance = Math.min(Math.abs(start - gffGeneIsoInfo.getEndAbs()), Math.abs(gffGeneIsoInfo.getStartAbs() - end));
+
+				if (distance < isoDistance) {
+					return gffGeneIsoInfo;
+				}
+			}
+		}
+		
+		return null;
+	}
 	private void CopeChrIso(ArrayListMultimap<String, GffGeneIsoInfo> hashChrIso) {
 		for (String chrID : hashChrIso.keySet()) {
 			List<GffGeneIsoInfo> listIso = hashChrIso.get(chrID);
