@@ -38,7 +38,7 @@ public class GffChrSeq extends RunProcess {
 		setNcRNA.add(GeneType.miscRNA);
 		setNcRNA.add(GeneType.ncRNA);
 		setNcRNA.add(GeneType.Precursor_RNA);
-		setNcRNA.add(GeneType.PSEU);
+		setNcRNA.add(GeneType.pseudogene);
 		setNcRNA.add(GeneType.telomerase_RNA);
 	}
 	
