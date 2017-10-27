@@ -7,6 +7,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
@@ -28,6 +31,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
  * @author zong0jie
  */
 public class RefSeqCounts implements AlignmentRecorder {
+	private static final Logger logger = LoggerFactory.getLogger(RefSeqCounts.class);
 	public static void main(String[] args) {
 		String parentPath = "/hdfs:/nbCloud/public/AllProject/project_539a72a3e4b0e2f2f738c15b/task_5427ddb0e4b0ece9e25a7396/DNASeqMap_result/";
 		String resultPath = parentPath + "expAllId/";
@@ -106,7 +110,11 @@ public class RefSeqCounts implements AlignmentRecorder {
 	 */
 	public void readGene2IsoFile(String gene2IsoFile) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(gene2IsoFile);
-		for (String content : txtRead.readlines(2)) {
+		int i = 0;
+		for (String content : txtRead.readlines()) {
+			if (i++ == 1&& (content.startsWith("iso") || content.startsWith("#")))	{
+				continue;
+			}
 			if (content.startsWith("#") || StringOperate.isRealNull(content)) {
 				continue;
 			}
