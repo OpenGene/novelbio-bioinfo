@@ -30,7 +30,7 @@ public class TestSamReorder {
 		samToBamSort.setAddMultiHitFlag(false);
 		samToBamSort.setNeedSort(false);
 		samToBamSort.setSamSequenceDictionary(getSeqDict(true));
-		samToBamSort.convert();
+		samToBamSort.convertAndFinish();
 	
 		SamFile samFileOut = samToBamSort.getSamFileBam();
 		Assert.assertEquals("chr1", samFileOut.getMapChrID2Length().keySet().iterator().next());
@@ -118,6 +118,7 @@ public class TestSamReorder {
 		
 		samToBam.readInputStream();
 		samToBam.writeToOs();
+		samToBam.finish();
 		return outputTest;
 	}
 	

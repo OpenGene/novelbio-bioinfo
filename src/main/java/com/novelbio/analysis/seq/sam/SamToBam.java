@@ -184,12 +184,13 @@ public class SamToBam {
 			samFileIn.close();
 			samWriteTo.close();
 		}
-		
+	}
+	
+	public void finish() {
 		if (!isError) {
 			samWriteTo.finish();
 			summaryLsRecorder();
 		}
-
 	}
 	
 	protected void setSamHeader() {
@@ -261,7 +262,7 @@ public class SamToBam {
 			this.isWriteOut = isWriteOut;
 		}
 		private String getTmpFileName() {
-			return  FileOperate.changeFileSuffix(outFileName, "_tmp", null);
+			return  FileOperate.changeFileSuffix(outFileName, ".tmp", null);
 		}
 		
 		public void setNeedSort(boolean isNeedSort) {

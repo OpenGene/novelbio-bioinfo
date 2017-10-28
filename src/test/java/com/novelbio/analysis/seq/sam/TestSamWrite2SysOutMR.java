@@ -27,7 +27,8 @@ public class TestSamWrite2SysOutMR {
 		sam2bam.setSamWriteTo(samWrite2SysOutMR);
 		
 		sam2bam.writeToOs();
-		
+		sam2bam.finish();
+
 		List<String> lsRecord = TxtReadandWrite.readfileLs(outputTest);
 		Iterator<String> itor = lsRecord.iterator();
 

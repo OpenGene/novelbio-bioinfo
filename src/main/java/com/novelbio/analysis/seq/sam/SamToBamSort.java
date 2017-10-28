@@ -82,13 +82,31 @@ public class SamToBamSort {
 	 * 开始转换
 	 * 转换结束后，关闭输出的bam文件，并关闭输入的sam文件
 	 */
+	@Deprecated
+	public void convertAndFinish() {
+		samToBam.setRgLine(rgLine);
+		samToBam.setSamWriteTo(samToBamOutFile);
+		samToBam.readInputStream();
+		samToBam.writeToOs();
+		samToBam.finish();
+	}
+	
+	/**
+	 * 开始转换
+	 * 转换结束后，关闭输出的bam文件，并关闭输入的sam文件
+	 */
 	public void convert() {
 		samToBam.setRgLine(rgLine);
 		samToBam.setSamWriteTo(samToBamOutFile);
 		samToBam.readInputStream();
 		samToBam.writeToOs();
 	}
-	
+	/**
+	 * 转换结束后，将输出的文件名进行改名处理
+	 */
+	public void finish() {
+		samToBam.finish();
+	}
 	/** 返回转换好的bam文件 */
 	public SamFile getSamFileBam() {
 		return samToBamOutFile.getSamFileBam();

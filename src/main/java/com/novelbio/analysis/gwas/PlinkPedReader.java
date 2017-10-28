@@ -1,20 +1,27 @@
 package com.novelbio.analysis.gwas;
 
 import java.io.BufferedReader;
+import java.io.Closeable;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.fasta.Base;
+import com.novelbio.analysis.seq.fasta.ExceptionSeqFasta;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.ExceptionNbcFile;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.fileOperate.RandomFileInt;
 import com.novelbio.base.fileOperate.RandomFileInt.RandomFileFactory;
+import com.novelbio.base.fileOperate.SeekablePathInputStream;
 
-public class PlinkPedReader {
+public class PlinkPedReader implements Closeable {
 
 	/**
 	 * 一列一个样本，<br>
@@ -31,21 +38,141 @@ public class PlinkPedReader {
 	 * 考虑建立索引然后随机读取进行优化<br>
 	 */
 	String plinkPed;
-	RandomFileInt randomFile;
-	public void setPlinkPed(String plinkPed) {
-		
-		randomFile = RandomFileFactory.createInstance(plinkPed);
-	}
+	SeekablePathInputStream seekablePathInputStream;
+	
 	/**
-	 * 
-	 * @param sampleName
-	 * @param locStart 从第几位开始读取，包含该位置。
-	 * @return
+	 * key: 种系<br>
+	 * value: <br>
+	 * 0. 种系起点坐标<br>
+	 * 1. 第一个碱基的起点坐标<br>
+	 * 2. 本行有多少碱基
 	 */
-	public List<Allele> getItSnpsFromSample(String sampleName, int siteStart, int siteEnd) {
-		byte[] readInfo = new byte[(int) (endReal - startReal)];
-		randomChrFileInt.seek(startReal);
-		randomChrFileInt.read(readInfo);		return null;
+	Map<String, long[]> mapLine2Index = new HashMap<>();
+	
+	public void setPlinkPed(String plinkPed) {
+		this.plinkPed = plinkPed;
+		try {
+			seekablePathInputStream = FileOperate.getInputStreamSeekable(plinkPed);
+		} catch (FileNotFoundException e) {
+			throw new ExceptionNbcFile("read file error " + plinkPed, e);
+		}
+	}
+	
+	public void readIndex(List<String[]> lsIndex) {
+		for (String[] contents : lsIndex) {
+			long[] index = new long[3];
+			index[0] = Long.parseLong(contents[1]);
+			index[1] = Long.parseLong(contents[2]);
+			index[2] = Long.parseLong(contents[3]);
+			mapLine2Index.put(contents[0].trim(), index);
+		}
+		
+	}
+	
+	/**
+	 * @param sampleName
+	 * @param siteStart 从第几个位置开始
+	 * @param siteEnd 到第几个位置结束
+	 * @return
+	 * @throws IOException 
+	 */
+	public Iterable<Allele> readAllelsFromSample(String sampleName, int siteStart) throws IOException {		
+		long[] lineStart2BaseStart = mapLine2Index.get(sampleName);
+		if (siteStart <= 0) siteStart = 1;		
+		long start = (siteStart-1) * 4 + lineStart2BaseStart[1];
+		seekablePathInputStream.seek(start);
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(seekablePathInputStream));
+		long[] site = new long[]{siteStart};
+		long end = lineStart2BaseStart[2];
+		
+		return new Iterable<Allele>() {
+			public Iterator<Allele> iterator() {
+				return new Iterator<Allele>() {
+					Allele allele = getNext();
+
+					public boolean hasNext() {
+						return allele != null;
+					}
+					public Allele next() {
+						Allele retval = allele;
+						allele = getNext();
+						return retval;
+					}
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+					Allele getNext() {
+						if (site[0] > end) {
+							return null;
+						}
+						char[] cAllel = new char[4];
+						try {
+							int i = bufferedReader.read(cAllel);
+							if (i != 4 || cAllel[1] != ' ' || (cAllel[3] != ' ' && cAllel[3] != '\r' && cAllel[3] != '\n')) {
+								throw new ExceptionNbcFile("read plinkped file error " + plinkPed);
+							}
+						} catch (Exception e) {
+							throw new ExceptionNbcFile("read plinkped file error " + plinkPed);
+						}
+						Allele allele = new Allele();
+						allele.setRef(cAllel[0]);
+						allele.setAlt(cAllel[2]);
+						allele.setStartAbs((int) site[0]);
+						site[0]++;
+						return allele;
+					}
+				};
+			}
+		};
+	}
+	
+	/**
+	 * @param sampleName
+	 * @param siteStart 从第几个位置开始
+	 * @param siteEnd 到第几个位置结束
+	 * @return
+	 * @throws IOException 
+	 */
+	public List<Allele> readAllelsFromSample(String sampleName, int siteStart, int siteEnd) throws IOException {
+		List<Allele> lsResult = new ArrayList<>();
+		
+		long[] lineStart2BaseStart = mapLine2Index.get(sampleName);
+		if (siteStart <= 0) siteStart = 1;
+		if (siteEnd <=0 || siteEnd > lineStart2BaseStart[2]) siteEnd = (int)lineStart2BaseStart[2];
+		
+		long start = (siteStart-1) * 4 + lineStart2BaseStart[1];
+		long end = siteEnd*4 + lineStart2BaseStart[1];
+		seekablePathInputStream.seek(start);
+		
+		Allele allele = null;
+		for (int i = 0; i < end-start; i++) {
+			int baseInt = seekablePathInputStream.read();
+			if (i%4 == 0) {
+				allele = new Allele();
+				lsResult.add(allele);
+			}
+			
+			//注意这里allel的ref和alt都是根据plinkPed里面的顺序指定的，并不是实际的ref和alt
+			if (i%4 == 0) {
+				char base = (char)baseInt;
+				if (base == ' ') {
+					throw new ExceptionNbcFile("read plinkPed error " + plinkPed);
+				}
+				allele.setRef(base);
+			} else if (i%4 == 2) {
+				char base = (char)baseInt;
+				if (base == ' ') {
+					throw new ExceptionNbcFile("read plinkPed error " + plinkPed);
+				}
+				allele.setAlt(base);
+			}
+		}
+		return lsResult;
+	}
+	
+	@Override
+	public void close() throws IOException {
+		seekablePathInputStream.close();		
 	}
 	
 	public static void createPlinkPedIndex(String plinkPed, String plinkPedIndex) throws IOException {
@@ -59,8 +186,11 @@ public class PlinkPedReader {
 	
 	/**
 	 * 建索引，本方法有错误
-	 * index 文件格式如下
-	 * chrID chrLength start   rowLength rowLenWithEnter
+	 * index 文件格式如下<br>
+	 * line lineStart BaseStart<br>
+	 * line: 种系<br>
+	 * lineStart 本行的起始坐标，从0开始<br>
+	 * lineStart 本行第一个碱基，从0开始<br>
 	 * @param plinkPed 输入plinkPed文件
 	 * @param plinkIndex 输出的index文件
 	 * @throws IOException
@@ -69,7 +199,7 @@ public class PlinkPedReader {
 	protected static List<String[]> createPlinkPedIndex(String plinkPed) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(FileOperate.getInputStream(plinkPed)));
 		
-		//String[] 其中0: SampleName 1:SampleStart 2:SampleLocStart
+		//String[] 其中0: SampleName 1:SampleStart 2:SampleLocStart 3:BaseNum
 		List<String[]> lsIndexes = new ArrayList<>();
 		String[] sampleIndex =null;
 		
@@ -78,14 +208,20 @@ public class PlinkPedReader {
 		
 		int result = 0;
 		long site = 0;
+		long baseNum = 0;
 		//当出现6个空格的时候，意味着开始读取snp了
 		int spaceNum = 0;
 		StringBuilder sBuilder = null;
+		boolean isCountBase = false;
 		while ((result = bufferedReader.read()) > 0) {
 			char charInfo = (char)result;
 			//TODO 待测试
 			if (isSampleStart && charInfo != '\r' && charInfo != '\n') {
-				sampleIndex = new String[3];
+				if (sampleIndex != null) {
+					sampleIndex[3] = baseNum/2 + "";
+					baseNum = 0;
+				}
+				sampleIndex = new String[4];
 				lsIndexes.add(sampleIndex);
 				sampleIndex[1] = site+"";
 				sBuilder = new StringBuilder();
@@ -105,16 +241,22 @@ public class PlinkPedReader {
 
 			if (spaceNum == 6) {
 				sampleIndex[2] = site +"";
+				isCountBase = true;
 			}
 			
 			//不支持苹果的换行符 "\r"
 			if (charInfo == '\r' || charInfo == '\n') {
+				isCountBase = false;
 				isSampleStart = true;
+			}
+			if (isCountBase && charInfo != ' ') {
+				baseNum++;
 			}
 			site++;
 		}
+		
+		sampleIndex[3] = baseNum/2 + "";
 		return lsIndexes;
 	}
-	
-	
+
 }

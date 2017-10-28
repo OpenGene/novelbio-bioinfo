@@ -110,6 +110,12 @@ class Allele extends Align {
 			alt = ss[5];
 		}
 	}
+	public void setAlt(String alt) {
+		this.alt = alt;
+	}
+	public void setAlt(Character alt) {
+		this.alt = alt+"";
+	}
 	public void setRef(String ref) {
 		this.ref = ref;
 	}

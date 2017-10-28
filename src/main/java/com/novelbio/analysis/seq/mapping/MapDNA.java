@@ -152,7 +152,7 @@ public abstract class MapDNA implements MapDNAint {
 		samToBamSort.setNeedSort(isNeedSort);
 		samToBamSort.setAddMultiHitFlag(isSetMulitFlag);
 		samToBamSort.setLsAlignmentRecorders(lsAlignmentRecorders);
-		samToBamSort.convert();
+		samToBamSort.convertAndFinish();
 		return samToBamSort.getSamFileBam();
 	}
 	/** 运行失败后删除文件 */

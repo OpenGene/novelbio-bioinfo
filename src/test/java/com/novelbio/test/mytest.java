@@ -1,10 +1,8 @@
 package com.novelbio.test;
 
-import java.io.FileReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
+
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -12,24 +10,21 @@ import java.util.Random;
 import java.util.Set;
 
 import org.apache.commons.math3.stat.inference.TestUtils;
-import org.apache.poi.hssf.util.HSSFColor.AQUA;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.novelbio.analysis.seq.chipseq.RegionBed;
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
+import com.novelbio.analysis.seq.fasta.Base;
+import com.novelbio.analysis.seq.fasta.ChrBaseIter;
 import com.novelbio.analysis.seq.fasta.ChrDensity;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -37,21 +32,14 @@ import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.StringOperate;
-import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.BufferedReaderNBC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.dataStructure.PatternOperate;
-import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
 import com.novelbio.database.domain.kegg.KGentry;
 import com.novelbio.database.domain.kegg.KGpathway;
 import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgeneid.GeneType;
 import com.novelbio.database.model.species.Species;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
@@ -68,15 +56,39 @@ public class mytest {
 	static boolean is;
 
 	public static void main(String[] args) throws Exception {
-		GffHashGene gffHashGene = new GffHashGene("/home/novelbio/tools/ref_GRCm38.p2_top_level.gff3");
-		for (GffDetailGene gene : gffHashGene.getLsGffDetailGenes()) {
-			if (gene.getNameSingle().contains("Ifi202b")) {
-				System.out.println(gene.getNameSingle());
+		GffHashGene gffHashGene = new GffHashGene("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.1.gtf");
+		gffHashGene.writeToGTF("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.2.gtf");
+//		
+//		gffHashGene = new GffHashGene("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.2.gtf");
+//		gffHashGene.writeToGTF("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.3.gtf");
+		
+		TxtReadandWrite txtRead1 = new TxtReadandWrite("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.2.gtf");
+		TxtReadandWrite txtRead2 = new TxtReadandWrite("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.3.gtf");
+		Iterator<String> it2 = txtRead2.readlines().iterator();
+		for (String content : txtRead1.readlines()) {
+			String content2 = it2.next();
+			if (!content.equals(content2)) {
+				System.out.println(content + "\n" + content2);
+				System.out.println();
 			}
 		}
-		gffHashGene.writeToGTF("/home/novelbio/tools/ref_GRCm38.p2_top_level.gtf");
+		txtRead1.close();
+		txtRead2.close();
 		
+//		ChrBaseIter chrBaseIter = new ChrBaseIter("/home/novelbio/NBCresource/gwas/gwas/test.fa");
+//		StringBuilder stringBuilder = new StringBuilder();
+//		for (Base base : chrBaseIter.readBase("Contig2")) {
+//			stringBuilder.append(base.getBase());
+//		}
+//		System.out.println(stringBuilder.toString());
 		
+//		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/NBCresource/gwas/gwas/test.fa");
+//		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/NBCresource/gwas/gwas/test2.fa", true);
+//		for (String string : txtRead.readlines()) {
+//			txtWrite.writefileln(string);
+//		}
+//		txtRead.close();
+//		txtWrite.close();
 	}
 	
 	public static void geneBody(GffHashGene gffHashGene, String parentPath) throws Exception {

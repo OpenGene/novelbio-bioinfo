@@ -89,6 +89,7 @@ public class MapBwaMemMR{
 		sam2SysOutMR.setIsPairend(isPairend);
 		sam2SysOutMR.readInputStream();
 		sam2SysOutMR.writeToOs();
+		sam2SysOutMR.finish();
 	}
 	
 	public static class BamStreamIn extends StreamIn {

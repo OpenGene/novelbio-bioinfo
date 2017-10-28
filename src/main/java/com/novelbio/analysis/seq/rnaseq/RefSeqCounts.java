@@ -68,7 +68,7 @@ public class RefSeqCounts implements AlignmentRecorder {
 			samToBamSort.setAddMultiHitFlag(true);
 			samToBamSort.setLsAlignmentRecorders(lsRecorders);
 			samToBamSort.setWriteToBam(false);
-			samToBamSort.convert();
+			samToBamSort.convertAndFinish();
 			refSeqCounts.geneExpTable.writeFile(false, resultPath + prefix, EnumExpression.Counts);
 		}
 		refSeqCounts.geneExpTable.writeFile(true, resultPath + "All" + ".txt", EnumExpression.Counts);

@@ -550,7 +550,7 @@ public class SamFile implements AlignSeq {
 		SamToBamSort samToBam = new SamToBamSort(outFile, this, isPairend());
 		samToBam.setAddMultiHitFlag(addMultiHitFlag);
 		samToBam.setLsAlignmentRecorders(lsAlignmentRecorders);
-		samToBam.convert();
+		samToBam.convertAndFinish();
 		return samToBam.getSamFileBam();
 	}
 	/**

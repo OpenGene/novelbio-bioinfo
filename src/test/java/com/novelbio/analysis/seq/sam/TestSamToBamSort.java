@@ -31,7 +31,8 @@ public class TestSamToBamSort extends TestCase {
 		samToBamSort.setSamWriteTo(samWriteSort);
 		
 		samToBamSort.writeToOs();
-	
+		samToBamSort.finish();
+
 		SamFile samFile = new SamFile(outFile);
 		assertEquals(true, SamFile.isSorted(samFile));
 		
@@ -60,7 +61,7 @@ public class TestSamToBamSort extends TestCase {
 		samToBamSort.setAddMultiHitFlag(false);
 		samToBamSort.setNeedSort(true);
 		samToBamSort.setSamSequenceDictionary(getSeqDict());
-		samToBamSort.convert();
+		samToBamSort.convertAndFinish();
 	
 		SamFile samFile = samToBamSort.getSamFileBam();
 		assertEquals("chr1", samFile.getMapChrID2Length().keySet().iterator().next());

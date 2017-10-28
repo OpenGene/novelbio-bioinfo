@@ -547,7 +547,7 @@ public class MapHisat implements MapRNA {
 	protected SamFile copeSamStream(boolean isSetMulitFlag, InputStream inputStream) {
 		SamToBamSort samToBamSort = new SamToBamSort(outputSam, inputStream, isPairend());
 		samToBamSort.setAddMultiHitFlag(true);
-		samToBamSort.convert();
+		samToBamSort.convertAndFinish();
 		return samToBamSort.getSamFileBam();
 	}
 
