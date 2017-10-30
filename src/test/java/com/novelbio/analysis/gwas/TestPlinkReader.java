@@ -34,10 +34,8 @@ public class TestPlinkReader {
 	
 	@Test
 	public void testRead() throws IOException {
-		PlinkPedReader plinkPedReader = new PlinkPedReader();
-		List<String[]> lsIndexes = PlinkPedReader.createPlinkPedIndex(testPlinkPed);
-		
-		plinkPedReader.setPlinkPed(testPlinkPed);
+		List<String[]> lsIndexes = PlinkPedReader.createPlinkPedIndexLs(testPlinkPed);
+		PlinkPedReader plinkPedReader = new PlinkPedReader(testPlinkPed);		
 		plinkPedReader.readIndex(lsIndexes);
 		
 		List<Allele> lsAlleles = plinkPedReader.readAllelsFromSample("IRI910", 4, 7);
@@ -58,10 +56,8 @@ public class TestPlinkReader {
 	
 	@Test
 	public void testReadIt() throws IOException {
-		PlinkPedReader plinkPedReader = new PlinkPedReader();
-		List<String[]> lsIndexes = PlinkPedReader.createPlinkPedIndex(testPlinkPed);
-		
-		plinkPedReader.setPlinkPed(testPlinkPed);
+		List<String[]> lsIndexes = PlinkPedReader.createPlinkPedIndexLs(testPlinkPed);
+		PlinkPedReader plinkPedReader = new PlinkPedReader(testPlinkPed);
 		plinkPedReader.readIndex(lsIndexes);
 		
 		List<Allele> lsAlleles = new ArrayList<>();
@@ -85,7 +81,7 @@ public class TestPlinkReader {
 	}
 	@Test
 	public void testCreatePlinkPedIndex() throws IOException {
-		List<String[]> lsIndexes = PlinkPedReader.createPlinkPedIndex(testPlinkPed);
+		List<String[]> lsIndexes = PlinkPedReader.createPlinkPedIndexLs(testPlinkPed);
 		Assert.assertArrayEquals(new String[]{"IRIS_-43", "0", "26", "7"}, lsIndexes.get(0));
 		Assert.assertArrayEquals(new String[]{"IRI910", "54", "78", "7"}, lsIndexes.get(1));
 		Assert.assertArrayEquals(new String[]{"IR23S_0", "107", "135", "7"}, lsIndexes.get(2));

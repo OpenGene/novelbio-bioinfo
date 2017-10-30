@@ -125,6 +125,9 @@ public class ChrBaseIter implements Closeable {
 			throw new ExceptionSeqFasta("no file exist: " + chrFile);
 		}
 		String chrIDLowcase = chrId.toLowerCase();
+		if (!mapChrID2Length.containsKey(chrIDLowcase)) {
+			throw new ExceptionNbcFile("cannot find chrId " + chrId + " in chr file " + chrFile);
+		}
 		long chrLength = mapChrID2Length.get(chrIDLowcase);
 		
 		if (startlocation <= 0) startlocation = 1;

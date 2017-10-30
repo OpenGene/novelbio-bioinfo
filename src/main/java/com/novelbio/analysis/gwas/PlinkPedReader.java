@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -49,8 +50,9 @@ public class PlinkPedReader implements Closeable {
 	 */
 	Map<String, long[]> mapLine2Index = new HashMap<>();
 	
-	public void setPlinkPed(String plinkPed) {
+	public PlinkPedReader(String plinkPed) {
 		this.plinkPed = plinkPed;
+		readIndex(plinkPed + ".index");
 		try {
 			seekablePathInputStream = FileOperate.getInputStreamSeekable(plinkPed);
 		} catch (FileNotFoundException e) {
@@ -58,7 +60,35 @@ public class PlinkPedReader implements Closeable {
 		}
 	}
 	
-	public void readIndex(List<String[]> lsIndex) {
+	@VisibleForTesting
+	protected void readIndex(List<String[]> lsIndex) {
+		mapLine2Index = readIndexLs(lsIndex);
+	}
+	@VisibleForTesting
+	protected void readIndex(String indexFile) {
+		if (FileOperate.isFileExistAndBigThan0(indexFile)) {
+			mapLine2Index = readIndexFile(indexFile);
+		}
+	}
+	
+	private static Map<String, long[]> readIndexFile(String indexFile) {
+		Map<String, long[]> mapLine2Index = new LinkedHashMap<>();
+		TxtReadandWrite txtRead = new TxtReadandWrite(indexFile);
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith("#")) continue;
+			String[] ss = content.split("\t");
+			long[] index = new long[3];
+			index[0] = Long.parseLong(ss[1]);
+			index[1] = Long.parseLong(ss[2]);
+			index[2] = Long.parseLong(ss[3]);
+			mapLine2Index.put(ss[0].trim(), index);
+		}
+		txtRead.close();
+		return mapLine2Index;
+	}
+	
+	private static Map<String, long[]> readIndexLs(List<String[]> lsIndex) {
+		Map<String, long[]> mapLine2Index = new LinkedHashMap<>();
 		for (String[] contents : lsIndex) {
 			long[] index = new long[3];
 			index[0] = Long.parseLong(contents[1]);
@@ -66,9 +96,19 @@ public class PlinkPedReader implements Closeable {
 			index[2] = Long.parseLong(contents[3]);
 			mapLine2Index.put(contents[0].trim(), index);
 		}
-		
+		return mapLine2Index;
 	}
-	
+	public Iterable<Allele> readAllelsFromSample(String sampleName) {
+		return readAllelsFromSample(sampleName, 0);
+	}
+	public Iterable<Allele> readAllelsFromSample(String sampleName, int siteStart) {
+		try {
+			return readAllelsFromSampleExp(sampleName, siteStart);
+		} catch (Exception e) {
+			close();
+			throw new ExceptionNbcFile("read file error " + plinkPed, e);
+		}
+	}
 	/**
 	 * @param sampleName
 	 * @param siteStart 从第几个位置开始
@@ -76,7 +116,7 @@ public class PlinkPedReader implements Closeable {
 	 * @return
 	 * @throws IOException 
 	 */
-	public Iterable<Allele> readAllelsFromSample(String sampleName, int siteStart) throws IOException {		
+	private Iterable<Allele> readAllelsFromSampleExp(String sampleName, int siteStart) throws IOException {		
 		long[] lineStart2BaseStart = mapLine2Index.get(sampleName);
 		if (siteStart <= 0) siteStart = 1;		
 		long start = (siteStart-1) * 4 + lineStart2BaseStart[1];
@@ -171,12 +211,36 @@ public class PlinkPedReader implements Closeable {
 	}
 	
 	@Override
-	public void close() throws IOException {
-		seekablePathInputStream.close();		
+	public void close() {
+		try {
+			if (seekablePathInputStream != null) {
+				seekablePathInputStream.close();		
+			}
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
 	}
 	
-	public static void createPlinkPedIndex(String plinkPed, String plinkPedIndex) throws IOException {
-		List<String[]> lsIndexes = createPlinkPedIndex(plinkPed);
+	public static List<String> getLsSamples(String plinkPedIndex) {
+		Map<String, long[]> mapLine2Index = readIndexFile(plinkPedIndex);
+		return new ArrayList<>(mapLine2Index.keySet());
+	}
+	
+	public static String createPlinkPedIndex(String plinkPed) {
+		String indexFile = plinkPed + ".index";
+		if (!FileOperate.isFileExistAndBigThan0(indexFile)) {
+			createPlinkPedIndex(plinkPed, indexFile);
+		}
+		return indexFile;
+	}
+	
+	public static void createPlinkPedIndex(String plinkPed, String plinkPedIndex) {
+		List<String[]> lsIndexes;
+		try {
+			lsIndexes = createPlinkPedIndexLs(plinkPed);
+		} catch (IOException e) {
+			throw new ExceptionNbcFile("read plinkPed errpr " + plinkPed, e);
+		}
 		TxtReadandWrite txtWrite = new TxtReadandWrite(plinkPedIndex, true);
 		for (String[] index : lsIndexes) {
 			txtWrite.writefileln(index);
@@ -196,7 +260,7 @@ public class PlinkPedReader implements Closeable {
 	 * @throws IOException
 	 */
 	@VisibleForTesting
-	protected static List<String[]> createPlinkPedIndex(String plinkPed) throws IOException {
+	protected static List<String[]> createPlinkPedIndexLs(String plinkPed) throws IOException {
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(FileOperate.getInputStream(plinkPed)));
 		
 		//String[] 其中0: SampleName 1:SampleStart 2:SampleLocStart 3:BaseNum

@@ -105,8 +105,10 @@ class Allele extends Align {
 		other = ss[2];
 		setEndAbs(Integer.parseInt(ss[3]));
 		setStartAbs(Integer.parseInt(ss[3]));
-		if (ss.length > 6) {
+		if (ss.length >= 5) {
 			ref = ss[4];
+		}
+		if (ss.length >= 6) {
 			alt = ss[5];
 		}
 	}
