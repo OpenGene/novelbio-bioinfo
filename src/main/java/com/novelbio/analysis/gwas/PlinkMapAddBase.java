@@ -95,6 +95,8 @@ class Allele extends Align {
 	String ref;
 	String alt;
 	
+	/** 该snp的序号 */
+	int index;
 	
 	public Allele() {}
 	
@@ -111,6 +113,24 @@ class Allele extends Align {
 		if (ss.length >= 6) {
 			alt = ss[5];
 		}
+	}
+	/** 该snp的序号，在plinkPed中，只能知道allel的序号而不知道snp的具体position<br>
+	 * 必须从plinkMap相同序号的allel中获取position<br>
+	 * <br>
+	 * 从1开始计数
+	 * @param index
+	 */
+	public void setIndex(int index) {
+		this.index = index;
+	}
+	/** 该snp的序号，在plinkPed中，只能知道allel的序号而不知道snp的具体position<br>
+	 * 必须从plinkMap相同序号的allel中获取position<br>
+	 * <br>
+	 * 从1开始计数
+	 * @param index
+	 */
+	public int getIndex() {
+		return index;
 	}
 	public void setAlt(String alt) {
 		this.alt = alt;

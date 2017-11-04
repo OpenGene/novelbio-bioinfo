@@ -67,16 +67,20 @@ public class TestPlinkReader {
 		Assert.assertEquals(4, lsAlleles.size());
 		Assert.assertEquals("T", lsAlleles.get(0).getRefBase());
 		Assert.assertEquals("G", lsAlleles.get(0).getAltBase());
+		Assert.assertEquals(4, lsAlleles.get(0).getIndex());
 
 		Assert.assertEquals("C", lsAlleles.get(1).getRefBase());
 		Assert.assertEquals("T", lsAlleles.get(1).getAltBase());
-		
+		Assert.assertEquals(5, lsAlleles.get(1).getIndex());
+
 		Assert.assertEquals("C", lsAlleles.get(2).getRefBase());
 		Assert.assertEquals("A", lsAlleles.get(2).getAltBase());
-		
+		Assert.assertEquals(6, lsAlleles.get(2).getIndex());
+
 		Assert.assertEquals("G", lsAlleles.get(3).getRefBase());
 		Assert.assertEquals("G", lsAlleles.get(3).getAltBase());
-		
+		Assert.assertEquals(7, lsAlleles.get(3).getIndex());
+
 		plinkPedReader.close();
 	}
 	@Test

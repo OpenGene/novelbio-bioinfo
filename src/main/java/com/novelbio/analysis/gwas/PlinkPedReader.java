@@ -157,7 +157,7 @@ public class PlinkPedReader implements Closeable {
 						Allele allele = new Allele();
 						allele.setRef(cAllel[0]);
 						allele.setAlt(cAllel[2]);
-						allele.setStartAbs((int) site[0]);
+						allele.setIndex((int) site[0]);
 						site[0]++;
 						return allele;
 					}

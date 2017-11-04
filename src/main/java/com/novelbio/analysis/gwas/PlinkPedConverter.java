@@ -148,10 +148,15 @@ public class PlinkPedConverter {
 		Iterator<Allele> itPlinkPed = pedReader.readAllelsFromSample(sample).iterator();
 		TxtReadandWrite txtPlinkMapReader = new TxtReadandWrite(inputStream);
 		txtWrite.writefile(sample);
+		int i = 1;
 		for (String content : txtPlinkMapReader.readlines()) {
 			Allele alleleMap = new Allele(content);
+			alleleMap.setIndex(i);
+			i++;
 			Allele allelePed = itPlinkPed.next();
-			
+			if (alleleMap.getIndex() != allelePed.getIndex()) {
+				throw new ExceptionNBCPlink("index is not consistant! " + allelePed.toString() + " " + allelePed.toString());
+			}
 			int result = getResult(alleleMap.getRefBase(), allelePed.getRefBase(), allelePed.getAltBase());
 			txtWrite.writefile(" " + result);
 		}
