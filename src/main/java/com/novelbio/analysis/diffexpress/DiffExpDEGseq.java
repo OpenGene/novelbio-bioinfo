@@ -110,13 +110,13 @@ public class DiffExpDEGseq extends DiffExpAbs {
 	}
 	
 	/**
-SampleTreat=0<br>
-SampleTreatNum=1<br>
-SampleTreatName=2<br>
-SampleControl=3<br>
-SampleControlNum=4<br>
-SampleControlName=5<br>
-OutDir=6
+	 * SampleTreat=0<br>
+	 * SampleTreatNum=1<br>
+	 * SampleTreatName=2<br>
+	 * SampleControl=3<br>
+	 * SampleControlNum=4<br>
+	 * SampleControlName=5<br>
+	 * OutDir=6
 	 * @param content
 	 * @return
 	 */

@@ -287,12 +287,14 @@ public class BlastFileInfo {
 	 */
 	private static BlastFileInfo readFromMetaFile(String metafileNameAndPath) {
 		Properties properties = new Properties();
+		InputStream inputStream = null;
 		try {
-			InputStream inputStream = FileOperate.getInputStream(metafileNameAndPath);
+			inputStream = FileOperate.getInputStream(metafileNameAndPath);
 			properties.load(inputStream);
-			inputStream.close(); // 关闭流
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			FileOperate.close(inputStream);
 		}
 		return new BlastFileInfo(properties);
 	}
