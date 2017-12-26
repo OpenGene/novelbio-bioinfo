@@ -48,7 +48,7 @@ public class PlinkPedReader implements Closeable {
 	 * 1. 第一个碱基的起点坐标<br>
 	 * 2. 本行有多少碱基
 	 */
-	Map<String, long[]> mapLine2Index = new HashMap<>();
+	Map<String, long[]> mapLine2Index = new LinkedHashMap<>();
 	
 	public PlinkPedReader(String plinkPed) {
 		this.plinkPed = plinkPed;
@@ -98,6 +98,11 @@ public class PlinkPedReader implements Closeable {
 		}
 		return mapLine2Index;
 	}
+	
+	public List<String> getLsAllSamples() {
+		return new ArrayList<>(mapLine2Index.keySet());
+	}
+	
 	public Iterable<Allele> readAllelsFromSample(String sampleName) {
 		return readAllelsFromSample(sampleName, 0);
 	}

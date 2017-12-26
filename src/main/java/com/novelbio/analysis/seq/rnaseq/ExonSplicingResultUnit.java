@@ -33,6 +33,7 @@ public class ExonSplicingResultUnit {
 	
 	String accId;
 	Align alignLoc;
+	Align alignLocDetail;
 	/** 本剪接位点周边的坐标 */
 	List<Align> lsBeforeThisAfterAlign;
 	String exonNumStr;
@@ -56,7 +57,7 @@ public class ExonSplicingResultUnit {
 		GffDetailGene gffDetailGene = exonSplicingTest.exonCluster.getParentGene();
 		PvalueCalculate pvalueCalculate = exonSplicingTest.getSpliceTypePvalue();
 		accId = gffDetailGene.getNameSingle();
-		alignLoc = exonSplicingTest.getSpliceSiteAlignDisplay();
+		alignLoc = exonSplicingTest.getDifSite();
 		alignLoc.setChrID(mapChrIdLowcase2ChrId.get(alignLoc.getRefID().toLowerCase()));
 		try {
 			lsBeforeThisAfterAlign = exonSplicingTest.getLsAlignBeforeThisAfter(mapChrIdLowcase2ChrId);

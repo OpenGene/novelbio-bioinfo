@@ -71,14 +71,14 @@ public class PlinkPedConverter {
 		
 		String plinkMapNewPath = outPath + FileOperate.getFileName(plinkMap);
 		String plinkPedNewPath = outPath + FileOperate.getFileName(plinkPed);
-
+		PlinkPedReader.createPlinkPedIndex(plinkPed);
 		String plinkMapAnno = FileOperate.changeFileSuffix(plinkMapNewPath, ".anno", null);
 		
 		String plinkMapConvert = FileOperate.changeFileSuffix(plinkMapNewPath, ".convert", null);
 		String plinkPedConvert = FileOperate.changeFileSuffix(plinkPedNewPath, ".convert", null);
 
 		PlinkMapAddBase plinkMapAddBase = new PlinkMapAddBase(chrFile);
-		plinkMapAddBase.AddAnno(plinkMap, plinkMapAnno);
+		plinkMapAddBase.AddAnno(plinkMap, plinkPed, plinkMapAnno);
 		
 		PlinkPedConverter pedConverter = new PlinkPedConverter();
 		pedConverter.setPlinkMap(plinkMapAnno);
