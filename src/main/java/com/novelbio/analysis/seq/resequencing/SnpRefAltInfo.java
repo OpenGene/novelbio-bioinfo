@@ -9,6 +9,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.StrandType;
@@ -29,7 +30,7 @@ import com.novelbio.database.model.modgeneid.GeneID;
  * 在setSampleName()方法中可设定样本名，并获得该样本的信息。
  * @author zong0jie
  */
-public abstract class SnpRefAltInfo {
+public class SnpRefAltInfo {
 	private static final Logger logger = Logger.getLogger(SnpRefAltInfo.class);
 
 	
@@ -53,6 +54,12 @@ public abstract class SnpRefAltInfo {
 		this.seqAlt = seqAlt;
 	}
 	
+	/** 仅用于测试 */
+	@VisibleForTesting
+	protected void setAlignRef(Align align) {
+		this.alignRef = align;
+	}
+	
 	/** 根据parent，设定GffChrAbs */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		GffCodGeneDU gffCodGeneDu = gffChrAbs.getGffHashGene().searchLocation(alignRef.getRefID(), alignRef.getStartAbs(), alignRef.getEndAbs());
@@ -62,9 +69,6 @@ public abstract class SnpRefAltInfo {
 		Set<GffDetailGene> setGenes = gffCodGeneDu.getCoveredOverlapGffGene();
 		setMapInfoRefSeqAAabs(gffChrAbs.getSeqHash());
 	}
-	/** 如果Iso不存在，该方法不会被调用。
-	 * 如果Iso存在，并且snp位点在exon上，那么就设置ref序列的氨基酸的信息 */
-	protected abstract void setMapInfoRefSeqAAabs(SeqHash seqHash);
 	
 	public String getRefId() {
 		return alignRef.getRefID();
@@ -122,11 +126,6 @@ public abstract class SnpRefAltInfo {
 		return splitString;
 	}
 	
-	public abstract SnpIndelType getSnpIndelType();
-	
-	public abstract String getAffectCdsInfo();
-	public abstract String getAffectAAInfo();
-
 	/**
 	 * 返回变化的AA的化学性质改变形式，不在cds中则返回""；
 	 * @return

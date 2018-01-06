@@ -67,29 +67,15 @@ public abstract class SnpRefAltIso {
 		return seqFasta;
 	}
 	
-	public String getAAchange1() {
-		if (this instanceof SiteSnpIndelInfoSnp && getAffectAANum() > 0) {
-			return getRefAAnr().toStringAA1() + getAffectAANum() + getThisAAnr().toStringAA1();
-		} else {
-			return "";
-		}
-	}
-	public String getAAchange3() {
-		if (this instanceof SiteSnpIndelInfoSnp && getAffectAANum() > 0) {
-			return getRefAAnr().toStringAA3() + getAffectAANum() + getThisAAnr().toStringAA3();
-		} else {
-			return "";
-		}
-	}
-	
 	/**
-“g.” for a genomic reference sequence
-“c.” for a coding DNA reference sequence
-“m.” for a mitochondrial DNA reference sequence
-“n.” for a non-coding DNA reference sequence
-“r.” for an RNA reference sequence (transcript)
-“p.” for a protein reference sequence
-http://varnomen.hgvs.org/recommendations/general/
+	 * “g.” for a genomic reference sequence<br>
+	 * “c.” for a coding DNA reference sequence<br>
+	 * “m.” for a mitochondrial DNA reference sequence<br>
+	 * “n.” for a non-coding DNA reference sequence<br>
+	 * “r.” for an RNA reference sequence (transcript)<br>
+	 * “p.” for a protein reference sequence<br>
+	 * <br>
+	 * http://varnomen.hgvs.org/recommendations/general/<br>
 	 * @return
 	 */
 	private String getHgvscPrefix() {
@@ -98,51 +84,101 @@ http://varnomen.hgvs.org/recommendations/general/
 	
 	protected abstract EnumVariantClass getVariantClassification();
 	
-	private String getFirstSite() {
-		/** 有一头在iso外部的，则暂时不知道其HGVSc和HGVSp的值 */
-		if (iso.getCodLoc(snpRefAltInfo.getStartPosition()) == GffGeneIsoInfo.COD_LOC_OUT
-				|| iso.getCodLoc(snpRefAltInfo.getStartPosition()) == GffGeneIsoInfo.COD_LOC_OUT
-				) {
-			return "";
-		}
-		int startNum = iso.getCod2ATGmRNA(coord);(snpRefAltInfo.getStartPosition());
-		if (is) {
-			
-		}
-		iso.getNumCodInEle(location);
-	}
-	
-	private String getStartPosCis() {
+	/** 获得起点的 HGVSc */
+	@VisibleForTesting
+	public String getStartPosCis() {
 		if (iso.getCodLoc(snpRefAltInfo.getStartPosition()) == GffGeneIsoInfo.COD_LOC_OUT
 				&& iso.getCodLoc(snpRefAltInfo.getEndPosition()) == GffGeneIsoInfo.COD_LOC_OUT
 				) {
-			return "g." + snpRefAltInfo.getStartPosition();
-		} else if (iso.isCis5to3() && iso.getCodLoc(snpRefAltInfo.getStartPosition()) == GffGeneIsoInfo.COD_LOC_OUT) {
-			return "g." + snpRefAltInfo.getStartPosition();
-		} else if (!iso.isCis5to3() && iso.getCodLoc(snpRefAltInfo.getEndPosition()) == GffGeneIsoInfo.COD_LOC_OUT) {
-			return "g." + snpRefAltInfo.getEndPosition();
+			return snpRefAltInfo.getStartPosition() + "";
 		} else {
 			//暂时不清楚n怎么弄
 			//http://varnomen.hgvs.org/bg-material/numbering/
-			return "c." + getCodeStartInMRNA();
+			return getCodeStartInMRNA();
 		}
-		
 	}
-
+	/** 获得终点的 HGVSc */
+	@VisibleForTesting
+	public String getEndPosCis() {
+		if (iso.getCodLoc(snpRefAltInfo.getStartPosition()) == GffGeneIsoInfo.COD_LOC_OUT
+				&& iso.getCodLoc(snpRefAltInfo.getEndPosition()) == GffGeneIsoInfo.COD_LOC_OUT
+				) {
+			return snpRefAltInfo.getEndPosition() + "";
+		} else {
+			//暂时不清楚n怎么弄
+			//http://varnomen.hgvs.org/bg-material/numbering/
+			return getCodeEndInMRNA();
+		}
+	}
+	
 	private String getCodeStartInMRNA() {
 		int coord = iso.isCis5to3() ? snpRefAltInfo.getStartPosition() : snpRefAltInfo.getEndPosition();
-		return getCodInMRNA(coord);
+		return iso.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_OUT ? getCodOutMRNA(coord) : getCodInMRNA(coord);
 	}
+	
 	private String getCodeEndInMRNA() {
 		int coord = iso.isCis5to3() ? snpRefAltInfo.getEndPosition() : snpRefAltInfo.getStartPosition();
-		return getCodInMRNA(coord);
+		return iso.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_OUT ? getCodOutMRNA(coord) : getCodInMRNA(coord);
+	}
+	
+	private String getCodOutMRNA(int coord) {
+		int[] result = getCodOutOfGene2AtgUag(coord);
+		String prefix = result[0] <0 ? "" : "*";
+		String prefixOut = result[0] <0 ? "u" : "d";
+		String append = result[1] > 0 ? "+" : "-";
+		return prefix + result[0] + append + prefixOut + Math.abs(result[1]);
 	}
 	
 	private String getCodInMRNA(int coord) {
 		int[] result = iso.getCod2UAG(coord) < 0 ?  getCod2AtgUagMRNA(coord, true) : getCod2AtgUagMRNA(coord, false);
 		String prefix = iso.getCod2UAG(coord) < 0 ? "" : "*";
-		String append = result[1] > 0 ? "+" : "-";
-		return prefix + result[0] + append + Math.abs(result[1]);
+		String append = "";
+		if (result[1] > 0) {
+			append = "+" + result[1];
+		} else if (result[1] < 0) {
+			append = result[1] + "";
+		}
+		return prefix + result[0] + append;
+	}
+	
+	/** 必须为mRNA才能计算, coord 在基因外部<br>
+	 * 参考网址：<br>
+	 * http://www.hgvs.org/mutnomen/disc.html#frameshift<br>
+	 * <br>
+	 * -N-uM = nucleotide M 5' (upstream) of the nucleotide -N of the transcription initiation site -N (e.g. -237-u5A>G)<br>
+	 * NOTE: restricted to nucleotides 5' of the transcription initiation site (cap site, i.e. upstream of the gene incl. the promoter)<br>
+	 * N+dM = nucleotide M 3' (downstream) of the nucleotide transcription termination site *N (e.g. *237+d5A>G)<br>
+	 * NOTE: restricted to locations 3' of the polyA-addition site (downstream of the gene)<br>
+	 * @param coord<br>
+	 * @return int[2]<br>
+	 * 0: 距离ATG/UAG多少位的cds, 负数表示距离ATG，正数表示距离UAG
+	 * 1: 当在intron中时，距离头部还是尾部的exon边界
+	 * 两者合并即为 123-4，即exon的边界距离ATG123bp，位点在intron中，距离exon的3'边界4bp
+	 */
+	private int[] getCodOutOfGene2AtgUag(int coord) {
+		int num = iso.getNumCodInEle(coord);
+		//外显子上时
+		if (num != 0) {
+			throw new RuntimeException();
+		}
+		if (!iso.ismRNAFromCds()) {
+			//非cds暂时不知道怎么做
+			return null;
+		}
+		int cod2Site = 0, cod2Bound = 0;
+		if (iso.isCis5to3() && coord < iso.getStart()
+				|| !iso.isCis5to3() && coord > iso.getStart()
+				) {
+			cod2Site = iso.getCod2ATGmRNA(iso.getStart());
+			cod2Bound = -Math.abs(coord - iso.getStart());
+		}	else if (iso.isCis5to3() && coord > iso.getEnd()
+				|| !iso.isCis5to3() && coord < iso.getEnd()
+				) {
+			cod2Site = iso.getCod2UAGmRNA(iso.getEnd());
+			cod2Bound = Math.abs(coord - iso.getEnd());
+		}
+		
+		return new int[]{cod2Site, cod2Bound};
 	}
 	
 	/** 必须为mRNA才能计算
@@ -152,8 +188,7 @@ http://varnomen.hgvs.org/recommendations/general/
 	 * 1: 当在intron中时，距离头部还是尾部的exon边界
 	 * 两者合并即为 123-4，即exon的边界距离ATG123bp，位点在intron中，距离exon的3'边界4bp
 	 */
-	@VisibleForTesting
-	protected int[] getCod2AtgUagMRNA(int coord, boolean isAtg) {
+	private int[] getCod2AtgUagMRNA(int coord, boolean isAtg) {
 		int num = iso.getNumCodInEle(coord);
 		//外显子上时
 		if (num > 0) {
@@ -181,7 +216,7 @@ http://varnomen.hgvs.org/recommendations/general/
 	
 	private int getCodeToAtgUag(int coord, boolean isAtg) {
 		int distance =  isAtg ? iso.getCod2ATGmRNA(coord) : iso.getCod2UAGmRNA(coord);
-		if (distance >= 0) distance = distance + 1;
+		if (distance >= 0 && isAtg) distance = distance + 1;
 		return distance;
 	}
 	
@@ -192,10 +227,10 @@ http://varnomen.hgvs.org/recommendations/general/
  * @author zong0jie
  *
  */
-class SiteSnpIndelInfoInsert extends SnpRefAltIso {
-	private static Logger logger = Logger.getLogger(SiteSnpIndelInfoInsert.class);
+class SnpRefAltIsoInsert extends SnpRefAltIso {
+	private static Logger logger = Logger.getLogger(SnpRefAltIsoInsert.class);
 
-	public SiteSnpIndelInfoInsert(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
+	public SnpRefAltIsoInsert(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
 		if (snpRefAltInfo.getSeqRef().length() > 1 && snpRefAltInfo.getSeqAlt().length() > 1) {
 			throw new ExceptionNbcParamError("Input is not a snp");
@@ -337,6 +372,12 @@ class SiteSnpIndelInfoInsert extends SnpRefAltIso {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	protected EnumVariantClass getVariantClassification() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 	
 }
