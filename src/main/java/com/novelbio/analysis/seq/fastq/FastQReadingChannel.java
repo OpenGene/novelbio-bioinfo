@@ -156,7 +156,7 @@ public class FastQReadingChannel extends RunProcess {
 			executorPool = null;
 			queueResult = null;
 		} catch (Exception e) {
-			closeThread();
+			try { closeThread(); }catch (Exception e2) {}
 			executorPool.shutdown();
 			executorPool = null;
 			queueResult = null;
@@ -165,6 +165,8 @@ public class FastQReadingChannel extends RunProcess {
 	}
 	
 	private void closeThread() {
+		if (!isOutputResult) return;
+		
 		fqWrite[0].fastQwrite.setFinishedRead(true);
 		while (fqWrite[0].fastQwrite.isRunning()) {
 			try { Thread.sleep(100); 	} catch (InterruptedException e) { e.printStackTrace(); }
@@ -258,10 +260,13 @@ public class FastQReadingChannel extends RunProcess {
 	/** 等待处理线程将AbsQueue队列中的记录处理掉 */
 	protected void wait_To_Cope_AbsQueue() {
 		suspendCheck();
-		RunThreadStat stat = fqWrite[0].fastQwrite.getRunThreadStat();
-		if (isOutputResult && (stat == RunThreadStat.finishNormal || stat == RunThreadStat.finishAbnormal)) {
-			throw new ExceptionFastq(fqWrite[0].fastQwrite.getFileName() + " fastq write error", fqWrite[0].fastQwrite.getException());
+		if (isOutputResult) {
+			RunThreadStat stat = fqWrite[0].fastQwrite.getRunThreadStat();
+			if (isOutputResult && (stat == RunThreadStat.finishNormal || stat == RunThreadStat.finishAbnormal)) {
+				throw new ExceptionFastq(fqWrite[0].fastQwrite.getFileName() + " fastq write error", fqWrite[0].fastQwrite.getException());
+			}
 		}
+
 		while (executorPool.getQueue().size() == maxNumReadInLs || (queueResult != null && queueResult.size() == maxNumReadInLs)) {
 			try { Thread.sleep(50); } catch (InterruptedException e) { }
 		}

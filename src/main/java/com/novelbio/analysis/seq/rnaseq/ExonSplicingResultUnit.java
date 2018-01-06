@@ -191,8 +191,8 @@ public class ExonSplicingResultUnit {
 		lsResult.add((psiCond1-psiCond2)+"");
 
 		lsResult.add(pvalueArithmetic+"");
-		lsResult.add(pvalueGeometric+"");
 		lsResult.add(fdrArithmetic+"");
+		lsResult.add(pvalueGeometric+"");
 		lsResult.add(fdrGeometric+"");
 
 
