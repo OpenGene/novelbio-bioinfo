@@ -4,14 +4,14 @@ import org.junit.Test;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
+import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo;
 import com.novelbio.database.model.species.Species;
 
 import junit.framework.TestCase;
 
 public class TestMapInfoSnpIndel_RefAA_ThisAA extends TestCase{
 	RefSiteSnpIndel mapInfoSnpIndel;
-	SiteSnpIndelInfo siteSnpIndelInfo;
+	SnpRefAltInfo siteSnpIndelInfo;
 	GffChrAbs gffChrAbs;
 	String referenceSeq = "GTGGCTC";
 	String thisSeq = "G";

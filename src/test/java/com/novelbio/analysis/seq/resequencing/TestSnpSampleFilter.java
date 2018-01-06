@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq.resequencing;
 
 import junit.framework.TestCase;
 
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
+import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo.SnpIndelType;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.resequencing.SnpIndelHomoHetoType;
 

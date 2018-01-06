@@ -5,7 +5,7 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
+import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo.SnpIndelType;
 
 
 /** 不同的样本的Snp过滤规则，符合该规则的snp会被挑选出来 */
@@ -123,9 +123,9 @@ public class SnpFilter {
 	 * 如果通过质检了，就返回通过质检的那个snp类型
 	 * 否则返回空的list
 	 */
-	public ArrayList<SiteSnpIndelInfo> getFilterdSnp(RefSiteSnpIndel refSiteSnpIndel) {
-		ArrayList<SiteSnpIndelInfo> lsSnpFiltered = new ArrayList<SiteSnpIndelInfo>();
-		for (SiteSnpIndelInfo siteSnpIndelInfo : refSiteSnpIndel.getLsAllenInfoSortBig2Small()) {
+	public ArrayList<SnpRefAltInfo> getFilterdSnp(RefSiteSnpIndel refSiteSnpIndel) {
+		ArrayList<SnpRefAltInfo> lsSnpFiltered = new ArrayList<SnpRefAltInfo>();
+		for (SnpRefAltInfo siteSnpIndelInfo : refSiteSnpIndel.getLsAllenInfoSortBig2Small()) {
 			if (isFilterdSnp(siteSnpIndelInfo)) {
 				lsSnpFiltered.add(siteSnpIndelInfo);
 			}
@@ -140,7 +140,7 @@ public class SnpFilter {
 	 * @param siteSnpIndelInfo 如果输入的snpGroupFilterInfo中有样本名，就鉴定snpGroupFilterInfo中的样本。否则就鉴定siteSnpIndelInfo中设定的样本名
 	 * @return
 	 */
-	public boolean isFilterdSnp(SiteSnpIndelInfo siteSnpIndelInfo) {
+	public boolean isFilterdSnp(SnpRefAltInfo siteSnpIndelInfo) {
 		//TODO 考虑根据情况返回并集或者其他
 		boolean isQualified = true;
 		for (SnpGroupFilterInfo snpGroupFilterInfo : setSampleFilterInfo) {
@@ -159,7 +159,7 @@ public class SnpFilter {
 	
 	/** 输入之前要指定样本名，
 	 * 返回指定的snpindel的信息 */
-	private SnpIndelHomoHetoType getSnpIndelType(SiteSnpIndelInfo siteSnpIndelInfo) {
+	private SnpIndelHomoHetoType getSnpIndelType(SnpRefAltInfo siteSnpIndelInfo) {
 		//TODO 这种合适吗？
 		int numAll = siteSnpIndelInfo.getRefSiteSnpIndelParent().getReadsNumAll();
 		int numThis = siteSnpIndelInfo.getReadsNum();

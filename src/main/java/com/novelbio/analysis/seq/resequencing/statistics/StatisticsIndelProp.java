@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
+import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.resequencing.SnpLevel;
 import com.novelbio.listOperate.HistList;
@@ -50,7 +50,7 @@ public class StatisticsIndelProp implements StatisticsUnit {
 		if (oneSeqInfoLast == null || oneSeqInfoLast.getReadsNumAll() == 0) {
 			return;
 		}
-		ArrayList<SiteSnpIndelInfo> lsSnpSites = snpFilter.getFilterdSnp(oneSeqInfoLast);
+		ArrayList<SnpRefAltInfo> lsSnpSites = snpFilter.getFilterdSnp(oneSeqInfoLast);
 		if (lsSnpSites.size() > 0) {
 			histList.addNum(lsSnpSites.get(0).getReadsNum() * fold/oneSeqInfoLast.getReadsNumAll());
 		}

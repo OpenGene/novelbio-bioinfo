@@ -94,7 +94,7 @@ public class MAFRecord {
 		mafRecord.species = gffChrAbs.getSpecies();
 		mafRecord.refSiteSnpIndel = refSiteSnpIndel;
 		mafRecord.gffGeneIsoInfo = gffGeneIsoInfo;
-		SiteSnpIndelInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(variantContext.getReference().toString().replaceAll("\\*", "") + "",
+		SnpRefAltInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(variantContext.getReference().toString().replaceAll("\\*", "") + "",
 				variantContext.getAlternateAllele(0).toString().replaceAll("\\*", ""));
 		
 		if (siteSnpIndelInfo == null) {
@@ -116,7 +116,7 @@ public class MAFRecord {
 		return mafRecord;
 	}
 	
-	private void setVarClass(SiteSnpIndelInfo siteSnpIndelInfo) {
+	private void setVarClass(SnpRefAltInfo siteSnpIndelInfo) {
 		if (siteSnpIndelInfo.getEnumMrnaLocate() == EnumMrnaLocate.cds) {
 			String refAA = siteSnpIndelInfo.getRefAAnr().toStringAA3();
 			String thisAA = siteSnpIndelInfo.getThisAAnr().toStringAA3();

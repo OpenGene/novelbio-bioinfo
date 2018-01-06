@@ -7,7 +7,7 @@ import junit.framework.TestCase;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
 import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
+import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.resequencing.SnpLevel;
 import com.novelbio.analysis.seq.resequencing.VcfCols;
@@ -38,8 +38,8 @@ public class TestMapInfoSnpIndel extends TestCase {
 		mapInfoSnpIndel = new RefSiteSnpIndel();
 		mapInfoSnpIndel.setGffChrAbs(gffChrAbs);
 		VcfCols vcfCols = new VcfCols();
-		SiteSnpIndelInfo siteSnpIndelInfoA;
-		SiteSnpIndelInfo siteSnpIndelInfoC;
+		SnpRefAltInfo siteSnpIndelInfoA;
+		SnpRefAltInfo siteSnpIndelInfoC;
 		
 		String vcfLine = "chr6	57512711	rs5001484	G	C	3184.04	TruthSensitivityTranche99.90to100.00	AB=0.543;AC=1;AF=0.50;AN=2;BaseQRankSum=6.555;DB;DP=315;DS;Dels=0.00;FS=2.754;HRun=0;HaplotypeScore=101.0346;MQ=57.84;MQ0=0;MQRankSum=-3.354;QD=10.11;ReadPosRankSum=1.348;SB=-513.84;VQSLOD=-218.9126;culprit=HaplotypeScore	GT:AD:DP:GQ:PL	0/1:119,100:315:99:3214,0,3784";
 		mapInfoSnpIndel.setVcfLines("2A", vcfCols, vcfLine);
@@ -70,10 +70,10 @@ public class TestMapInfoSnpIndel extends TestCase {
 		mapInfoSnpIndel.setSamToolsPilup("chr6	57512711	G	591	C$c$c$Caa$aa$c$.CCCCaaaacaaacc,cC.CCCaaC,aaCCCCaccaacca,c,A.Ac.,$a,cAC$cacc,,aaC.,cc,c,,,,A..A.ACCaC..CAacc,a.C,,c,,a,,aCC,a.aacaacacacacaca,A...ca,,.A..cac,,a.CCCaAA,aa,,Aa,caaca,,a,acca.....,,,,,ca,,,c,,aa,,caa,a,,cccC...,,,,.CA.Cc,,,caca,,a,A...,,.ca,a...a,aaa.c,c,,acc,accaccc,,,,,,,,ac,,,c,cca,AC,,a,a..cC.Cac,A,ac,aCa,,,,c.ca,ac,,aaCAcc,,,,cc,,ca,,c,cac,a,ca,c,,,,cACCC,ccac,aaca,C,,,A.AaaA,,,aaaaacc,,ac,a.,aaacCCc,,caaa,aacca,ccc,c,cca,,ccaaa,aac,aaca,ac,,,a,aca,,aaa,a,ccaaaa,ca,,,aaa,,,a,a,,ac,,c,a,,aaaccac,c,ca,ca,,ca,ca,cc,c,,c,cc,ca,c,c,,,ccac,accccac,,,aaaaacaaaacaaa,,acc,,,ac,,,,,,^],	'!!+.#,!!D30=+===@>==,@,C,=DDD=FFDFFFEEECFFFF.FFFFFFD>EFECFFF*!-HDD?HDFECFF,FFFFEHFEEFBD@FFFFFFDHHHHGFFHHDHHFHHDD3DFEJHHHJFHJJJGJJGJIHFFFJHJJ>HHGHHIJIDHHHHHHHJGJCHHJGHHJJJJBJJIJHGAH>EAHHJIJHJHJJJJHJJGJIIIIJII>HJHIJ6JJJGIIIEGIJJGJJJJIJGJJIJHJIJJJJHHJJHIIJJJJJJJJIJI?EJJJJJIJJJJIJJJIJIJJJJJJGGJIJJHJI6JJIFJJIFIHJJJGJIBJIIJBJIIJHJIJJJIIJJIJJIIJFIHDIJJJJDIJHJ@JJGIIFGIJJJIIGBGII?JHIJIJJHICIIJJJIIIJJJHJIHIJIJJIIIJEJEICHJJJJIHIJIHGGD9IHIJJAJIIIJII@HIIJJ;@@<HJG@JHHHAEHHHHJHHHHHFJFIBHIEFDIFFCFDFFGFFFFHDFCADEHHEFDEEFHFBAFBDFFHGEFEE8DDFEEBEB(FCDCFCFDEEDB>;DDBEDBDDDCCCDDC>DC@DDA,DDDDDDADCD==CD@:@D>");
 		assertEquals(591, mapInfoSnpIndel.getReadsNumAll());
 		assertEquals(232, mapInfoSnpIndel.getReadsNumRef());
-		SiteSnpIndelInfo siteSnpIndelInfoA = mapInfoSnpIndel.getLsAllenInfoSortBig2Small().get(0);
+		SnpRefAltInfo siteSnpIndelInfoA = mapInfoSnpIndel.getLsAllenInfoSortBig2Small().get(0);
 		assertEquals("a", siteSnpIndelInfoA.getThisSeq().toLowerCase());
 		assertEquals(183, siteSnpIndelInfoA.getReadsNum());
-		SiteSnpIndelInfo siteSnpIndelInfoC = mapInfoSnpIndel.getLsAllenInfoSortBig2Small().get(1);
+		SnpRefAltInfo siteSnpIndelInfoC = mapInfoSnpIndel.getLsAllenInfoSortBig2Small().get(1);
 		assertEquals("c", siteSnpIndelInfoC.getThisSeq().toLowerCase());
 		assertEquals(176, siteSnpIndelInfoC.getReadsNum());
 	}
@@ -109,7 +109,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HeteroLess, 1, 1);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		ArrayList<SnpRefAltInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
 		result.get(0).setSampleName("2B");
 		System.out.println(result.get(0).getMismatchInfo());
 		assertEquals(6, result.get(0).getReadsNum());
@@ -150,7 +150,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HeteroMid, 1, 1);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		ArrayList<SnpRefAltInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
 		assertEquals(0, result.size());
 	}
 	
@@ -189,7 +189,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HeteroMid, 1, 1);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		ArrayList<SnpRefAltInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
 		assertEquals(0, result.size());
 	}
 	
@@ -227,7 +227,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2B.setSampleSnpRegionUp(SnpLevel.HeteroMid, 1, 1);
 		sampleFilter.addSampleFilterInfo(sampleDetail2B);
 		
-		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		ArrayList<SnpRefAltInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
 		result.get(0).setSampleName("2B");
 		assertEquals(3, result.get(0).getReadsNum());
 		ArrayList<String> lsSample = new ArrayList<String>();
@@ -285,7 +285,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		sampleDetail2CD.setSampleSnpRegionUp(SnpLevel.HeteroLess, 0, 0);
 		sampleFilter.addSampleFilterInfo(sampleDetail2CD);
 		
-		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		ArrayList<SnpRefAltInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
 		assertEquals(1, result.size());
 		mapInfoSnpIndel.setSampleName("2B");
 		assertEquals(4, mapInfoSnpIndel.getLsAllenInfoSortBig2Small().size());
@@ -343,7 +343,7 @@ public class TestMapInfoSnpIndel extends TestCase {
 		
 		sampleFilter.addSampleFilterInfo(sampleDetail2CD);
 		
-		ArrayList<SiteSnpIndelInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
+		ArrayList<SnpRefAltInfo> result = sampleFilter.getFilterdSnp(mapInfoSnpIndel);
 		assertEquals(1, result.size());
 		mapInfoSnpIndel.setSampleName("2B");
 		assertEquals(4, mapInfoSnpIndel.getLsAllenInfoSortBig2Small().size());

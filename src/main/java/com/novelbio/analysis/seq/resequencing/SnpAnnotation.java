@@ -133,7 +133,7 @@ public class SnpAnnotation extends RunProcess {
 		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite).trim());
 
 		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
-		SiteSnpIndelInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
+		SnpRefAltInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
 		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
 		if (siteSnpIndelInfo == null || gffGeneIsoInfo == null) {
 			GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(lsInfo.get(colChrID), refStartSite);
@@ -150,17 +150,18 @@ public class SnpAnnotation extends RunProcess {
 		lsInfo.add(gffGeneIsoInfo.getName());
 		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
 			try {
-				GeneID geneID = new GeneID(gffGeneIsoInfo.getName(), gffChrAbs.getTaxID());
-				if (geneID.getIDtype() == GeneID.IDTYPE_ACCID) {
-					geneID = new GeneID(gffGeneIsoInfo.getParentGffGeneSame().getNameSingle(), gffChrAbs.getTaxID());
-				}
-				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
-					lsInfo.add(gffGeneIsoInfo.getParentGeneName());
-					lsInfo.add(geneID.getDescription());
-				} else {
-					lsInfo.add(gffGeneIsoInfo.getParentGeneName());
-					lsInfo.add("");
-				}
+				lsInfo.add(gffGeneIsoInfo.getParentGeneName());
+				lsInfo.add("");
+//				GeneID geneID = new GeneID(gffGeneIsoInfo.getName(), gffChrAbs.getTaxID());
+//				if (geneID.getIDtype() == GeneID.IDTYPE_ACCID) {
+//					geneID = new GeneID(gffGeneIsoInfo.getParentGffGeneSame().getNameSingle(), gffChrAbs.getTaxID());
+//				}
+//				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
+//					lsInfo.add(gffGeneIsoInfo.getParentGeneName());
+//					lsInfo.add(geneID.getDescription());
+//				} else {
+//	
+//				}
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -195,7 +196,7 @@ public class SnpAnnotation extends RunProcess {
 	
 		lsTitle.add("LocationDescription");
 		lsTitle.add("PropToGeneStart");
-		lsTitle.addAll(SiteSnpIndelInfo.getTitle());
+		lsTitle.addAll(SnpRefAltInfo.getTitle());
 		return lsTitle;
 	}
 }

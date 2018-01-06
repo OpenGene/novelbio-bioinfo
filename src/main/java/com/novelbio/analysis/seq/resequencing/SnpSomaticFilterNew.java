@@ -182,7 +182,7 @@ public class SnpSomaticFilterNew {
 		lsFilteredRefSite.clear();
 		lsFilteredRefSnp.clear();
 		for (RefSiteSnpIndel refSiteSnpIndel : mapSiteInfo2RefSiteSnpIndel.values()) {
-			ArrayList<SiteSnpIndelInfo> lsSiteSnpIndelInfo = snpFilterSamples.getFilterdSnp(refSiteSnpIndel);
+			ArrayList<SnpRefAltInfo> lsSiteSnpIndelInfo = snpFilterSamples.getFilterdSnp(refSiteSnpIndel);
 			if (lsSiteSnpIndelInfo.size() > 0) {
 				lsFilteredRefSite.add(refSiteSnpIndel);
 				RefSiteSnpIndel reSiteSnpIndelFiltered = refSiteSnpIndel.clone();

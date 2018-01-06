@@ -148,7 +148,7 @@ public class SnpCalling extends RunProcess {
 			RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(sampleName);
 			refSiteSnpIndel.setSamToolsPilup(pileupLines);	
 
-			ArrayList<SiteSnpIndelInfo> lsFilteredSnp = snpFilter.getFilterdSnp(refSiteSnpIndel);
+			ArrayList<SnpRefAltInfo> lsFilteredSnp = snpFilter.getFilterdSnp(refSiteSnpIndel);
 			if (lsFilteredSnp.size() > 0) {
 				if(!writeInFile(refSiteSnpIndel, lsFilteredSnp)) {
 					logger.error("出现错误");
@@ -207,7 +207,7 @@ public class SnpCalling extends RunProcess {
 		}
 	}
 	
-	private boolean writeInFile(RefSiteSnpIndel refSiteSnpIndel, ArrayList<SiteSnpIndelInfo> lsFilteredSnp) {
+	private boolean writeInFile(RefSiteSnpIndel refSiteSnpIndel, ArrayList<SnpRefAltInfo> lsFilteredSnp) {
 		if (txtSnpOut == null) {
 			return true;
 		}

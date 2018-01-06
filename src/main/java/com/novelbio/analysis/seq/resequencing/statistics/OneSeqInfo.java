@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.resequencing.statistics;
 
 import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo;
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
+import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo;
+import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo.SnpIndelType;
 
 public class OneSeqInfo extends RefSiteSnpIndel {
 	/** 本位点最多snp的类型 */
@@ -32,7 +32,7 @@ public class OneSeqInfo extends RefSiteSnpIndel {
 	 */
 	public OneSeqInfo(String pileupLines, OneSeqInfo oneSeqInfoLast) {
 		setSamToolsPilup(pileupLines);
-		SiteSnpIndelInfo siteSnpIndelInfo = getSiteSnpInfoBigAllen();
+		SnpRefAltInfo siteSnpIndelInfo = getSiteSnpInfoBigAllen();
 		SnpIndelType snpIndelType = siteSnpIndelInfo.getSnpIndelType();
 		
 		int indelReadsNum = 0;

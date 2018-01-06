@@ -172,7 +172,7 @@ public class GeneFilter {
 			//第一 我们只能找那些筛选出来的snp，没有筛选出来的就不要考虑。
 			//第二 对于筛选出来的snp，我们依然要遍历每一个样本，看该snp是否超过阈值
 			//获得前面筛选通过的snp类型
-			for (SiteSnpIndelInfo siteSnpIndelInfo : refSiteSnpIndel.mapAllen2Num.values()) {
+			for (SnpRefAltInfo siteSnpIndelInfo : refSiteSnpIndel.mapAllen2Num.values()) {
 				for (String treatName : setSampleName) {
 					siteSnpIndelInfo.setSampleName(treatName);
 					if (snpFilterSingleSite.isFilterdSnp(siteSnpIndelInfo)) {

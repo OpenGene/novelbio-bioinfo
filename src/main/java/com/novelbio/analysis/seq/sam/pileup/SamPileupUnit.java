@@ -7,7 +7,7 @@ import htsjdk.samtools.CigarOperator;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfo.SnpIndelType;
+import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo.SnpIndelType;
 import com.novelbio.analysis.seq.resequencing.SiteSnpIndelInfoFactory;
 import com.novelbio.analysis.seq.sam.ExceptionSamError;
 import com.novelbio.analysis.seq.sam.SamRecord;
