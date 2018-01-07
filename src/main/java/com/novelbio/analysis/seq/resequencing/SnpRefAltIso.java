@@ -130,8 +130,8 @@ public abstract class SnpRefAltIso {
 	}
 	
 	private String getCodInMRNA(int coord) {
-		int[] result = iso.getCod2UAG(coord) < 0 ?  getCod2AtgUagMRNA(coord, true) : getCod2AtgUagMRNA(coord, false);
-		String prefix = iso.getCod2UAG(coord) < 0 ? "" : "*";
+		int[] result = iso.getCod2UAG(coord) <= 0 ?  getCod2AtgUagMRNA(coord, true) : getCod2AtgUagMRNA(coord, false);
+		String prefix = iso.getCod2UAG(coord) <= 0 ? "" : "*";
 		String append = "";
 		if (result[1] > 0) {
 			append = "+" + result[1];
@@ -207,8 +207,8 @@ public abstract class SnpRefAltIso {
 		} else if (iso.isCis5to3() && cod2BoundStart > cod2BoundEnd) {
 			cod2Atg = getCodeToAtgUag(coord + cod2BoundEnd, isAtg);
 			cod2Bound = -cod2BoundEnd;
-		} else if (iso.isCis5to3() && cod2BoundStart > cod2BoundEnd) {
-			cod2Atg = getCodeToAtgUag(coord + cod2BoundEnd, isAtg);
+		} else if (!iso.isCis5to3() && cod2BoundStart > cod2BoundEnd) {
+			cod2Atg = getCodeToAtgUag(coord - cod2BoundEnd, isAtg);
 			cod2Bound = -cod2BoundEnd;
 		}
 		return new int[]{cod2Atg, cod2Bound};
