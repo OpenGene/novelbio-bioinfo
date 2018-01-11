@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;

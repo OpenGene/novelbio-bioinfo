@@ -872,7 +872,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				if (ss[8].contains("genome=genomic")) {
 					continue;
 				} else if (ss[8].contains("genome=mitochondrion")) {
-					chrID = "chrM";
+					chrID = "chrMT";
 				} else if (ss[8].contains("genome=chloroplast")) {
 					chrID = "chrC";
 				} else {

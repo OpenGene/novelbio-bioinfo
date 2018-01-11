@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.resequencing.statistics;
 
 import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
-import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo;
-import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo.SnpIndelType;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo.SnpIndelType;
 
 public class OneSeqInfo extends RefSiteSnpIndel {
 	/** 本位点最多snp的类型 */

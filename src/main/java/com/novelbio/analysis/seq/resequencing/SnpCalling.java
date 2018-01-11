@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;

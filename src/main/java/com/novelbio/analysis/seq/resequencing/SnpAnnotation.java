@@ -8,6 +8,7 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;

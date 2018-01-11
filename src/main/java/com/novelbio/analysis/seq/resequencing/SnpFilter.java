@@ -5,7 +5,8 @@ import java.util.HashSet;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo.SnpIndelType;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo.SnpIndelType;
 
 
 /** 不同的样本的Snp过滤规则，符合该规则的snp会被挑选出来 */

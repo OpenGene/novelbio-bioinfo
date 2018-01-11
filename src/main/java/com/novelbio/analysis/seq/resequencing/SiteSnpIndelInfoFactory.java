@@ -3,6 +3,11 @@ package com.novelbio.analysis.seq.resequencing;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.snphgvs.SiteSnpIndelInfoDeletion;
+import com.novelbio.analysis.seq.snphgvs.SiteSnpIndelInfoInsert;
+import com.novelbio.analysis.seq.snphgvs.SiteSnpIndelInfoNoSnp;
+import com.novelbio.analysis.seq.snphgvs.SiteSnpIndelInfoSnp;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
 
 public class SiteSnpIndelInfoFactory {
 	private static Logger logger = Logger.getLogger(SiteSnpIndelInfoFactory.class);

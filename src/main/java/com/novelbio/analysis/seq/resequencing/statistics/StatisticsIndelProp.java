@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.resequencing.SnpLevel;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
 import com.novelbio.listOperate.HistList;
 
 /**

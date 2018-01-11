@@ -7,10 +7,10 @@ import junit.framework.TestCase;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
 import com.novelbio.analysis.seq.resequencing.SnpGroupFilterInfo;
-import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.resequencing.SnpLevel;
 import com.novelbio.analysis.seq.resequencing.VcfCols;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
 
 public class TestMapInfoSnpIndel extends TestCase {
 	RefSiteSnpIndel mapInfoSnpIndel;

@@ -4,7 +4,7 @@ import org.junit.Test;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.RefSiteSnpIndel;
-import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
 import com.novelbio.database.model.species.Species;
 
 import junit.framework.TestCase;

@@ -2,9 +2,9 @@ package com.novelbio.analysis.seq.resequencing;
 
 import junit.framework.TestCase;
 
-import com.novelbio.analysis.seq.resequencing.SnpRefAltInfo.SnpIndelType;
 import com.novelbio.analysis.seq.resequencing.SnpFilter;
 import com.novelbio.analysis.seq.resequencing.SnpIndelHomoHetoType;
+import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo.SnpIndelType;
 
 public class TestSnpSampleFilter extends TestCase{
 	SnpFilter snpSampleFilter = new SnpFilter();
