@@ -1,8 +1,10 @@
 package com.novelbio.analysis.seq.snphgvs;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 
@@ -44,46 +46,14 @@ public abstract class VariantTypeDetermine {
 class ExonLossVar extends VariantTypeDetermine {
 	@Override
 	public boolean isVarClass() {
-		if (startNum == 0 && endNum == 0) {
-			return start < iso.getStartAbs() && end > iso.getEndAbs();
-		}
-		// 一头在iso外面，一头在iso里面的情况
-		if (startNum == 0) {
-			if (startBeforeIsoStrand && (endNum > 1 || endNum < 0)) {
-				return true;
-			} else if (!startBeforeIsoStrand && endNum < iso.getLen()) {
-				return true;
-			}
-			return false;
-		} else if (endNum == 0) {
-			if (!endBeforeIsoStrand && startNum < iso.getLen()) {
-				return true;
-			} else if (endBeforeIsoStrand && (startNum > 1 || startNum < 0)) {
-				return true;
-			}
+		List<ExonInfo> lsExons = iso.getRangeIsoOnExon(start, end);
+		if (lsExons.isEmpty()) {
 			return false;
 		}
-		//两头都在iso里面的情况
-		if (startNum == endNum) {
-			return false;
-		}
-		
-		if (startNum<0 && endNum < 0) {
-			return true;
-		} else if (startNum * endNum < 0 ) {
-			int exonNum = Math.abs(Math.max(startNum, endNum));
-			int intronNum = Math.abs(Math.min(startNum, endNum));
-			if (intronNum > exonNum || exonNum - intronNum > 1) {
-				return true;
-			}
-			return false;
-		} else if (startNum > 0 && endNum > 0) {
-			if (Math.abs(startNum-endNum) > 1) {
-				return true;
-			}
-			return false;
-		}
-		return false;
+		int exon1 = startNum > 0 ? 1: 0;
+		int exon2 = endNum > 0 ? 1: 0;
+		int num = lsExons.size() - exon1 - exon2;
+		return num > 1;
 	}
 }
 
