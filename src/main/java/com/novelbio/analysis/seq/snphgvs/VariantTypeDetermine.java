@@ -68,27 +68,23 @@ class ExonLossVar extends VariantTypeDetermine {
 class FrameShiftVar extends VariantTypeDetermine {
 	@Override
 	public boolean isVarClass() {
-		Range<Integer> result = getValidRange();
-		List<ExonInfo> lsExons = getValidExonList(result);
-		int totalLength = getTotalLength(lsExons);
+		int[] range = getValidRange();
+		if(range == null) return false;
+		
+		List<ExonInfo> lsExons = iso.getRangeIsoOnExon(range[0], range[1]);
+		int totalLength = lsExons.stream()
+				.map(it -> it.getLength())
+				.reduce(0, (pre, cur) -> pre + cur);
 		return totalLength % 3 == 0;
 	}
-
-	private int getTotalLength(List<ExonInfo> lsExons) {
-		int totalLength = lsExons.stream().map(it -> it.getLength()).reduce(0, (pre, cur) -> pre + cur);
-		return totalLength;
-	}
-
-	private List<ExonInfo> getValidExonList(Range<Integer> result) {
-		List<ExonInfo> lsExons = iso.getRangeIsoOnExon(result.lowerEndpoint(), result.upperEndpoint());
-		return lsExons;
-	}
-
-	private Range<Integer> getValidRange() {
-		List<Integer> lsCoordinate = Lists.newArrayList(iso.getATGsite(), iso.getUAGsite());
-		Range<Integer> range1 = Range.closed(Collections.min(lsCoordinate), Collections.max(lsCoordinate));
-		Range<Integer> range2 = Range.closed(this.start, this.end);
-		Range<Integer> result = range1.intersection(range2);
+	
+	private int[] getValidRange() {
+		int[] coords = new int[] {start, end};
+		int[] atguag = new int[] {Math.min(iso.getATGsite(), iso.getUAGsite()), Math.max(iso.getATGsite(), iso.getUAGsite())};
+		int[] result = new int[] {Math.max(coords[0], atguag[0]), Math.min(coords[1], atguag[1])};
+		if(result[1] < result[0]) {
+			return null;
+		}
 		return result;
 	}
 
