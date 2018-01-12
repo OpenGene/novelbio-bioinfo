@@ -34,6 +34,7 @@ allResResult = cbind(allRes[1],allRes[2],allRes[4],allNumSig,allRes[3],allNumBG,
 write.table(allResResult, file = GoResult, sep="\t")
 printGraph(GOdata, resultFis, firstSigNodes = firstSigNodesNum, fn.prefix = GoMapPdfPrefix, useInfo = useInfo, pdfSW = TRUE)
 
+number=min(length(allRes[,1]), GONum)
 write("",file=GOInfoFile)
 for(i in 1:GONum)
 {

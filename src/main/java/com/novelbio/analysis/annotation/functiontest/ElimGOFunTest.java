@@ -21,7 +21,7 @@ public class ElimGOFunTest extends NovelGOFunTest {
 	Set<String> setTestGeneUniID = null;
 	
 	GoAlgorithm goAlgorithm;
-	int numGOid = 300;
+	int numGOid = 10000;
 	TopGO topGO;
 	
 	public void setAlgorithm(GoAlgorithm goAlgorithm) {
