@@ -1,8 +1,5 @@
 package com.novelbio.analysis.seq.snphgvs;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.gffOperate.EnumMrnaLocate;
@@ -14,7 +11,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
  * 在setSampleName()方法中可设定样本名，并获得该样本的信息。
  * @author zong0jie
  */
-public class SnpRefAltIso {
+public class SnpRefAltHgvsc {
 	/** 与剪接位点距离的绝对值，小于该距离才会考虑剪接位点的影响 */
 	static int splitRegion = 2;
 	
@@ -22,42 +19,16 @@ public class SnpRefAltIso {
 	GffGeneIsoInfo iso;
 	
 	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
-	SeqFasta refSeqIntactAA = new SeqFasta();
+	SeqFasta refSeqIntactAA;
+	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
+	SeqFasta altSeqIntactAA;
 	
 	EnumMrnaLocate enumMrnaLocate;
 	
-	int splitDistance = 0;
 	
-	/** 需要将alt替换ref的碱基，这里记录替换ref的起点 */
-	int snpOnReplaceLocStart;
-	/** 需要将alt替换ref的碱基，这里记录替换ref的终点 */
-	int snpOnReplaceLocEnd;
-	
-	public SnpRefAltIso(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
+	public SnpRefAltHgvsc(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		this.snpRefAltInfo = snpRefAltInfo;
 		this.iso = iso;
-	}
-	/** 移码突变，移了几位，一般只有1，2两个。因为三联密码子  */
-//	public abstract int getOrfShift();
-	
-	/**
-	 * 跟方向相关
-	 * 给定序列和起始位点，用snp位点去替换序列，同时将本次替换是否造成移码写入orfshift
-	 * @param thisSeq 给定序列--该序列必须是正向，然后
-	 * @param cis5to3 给定序列的正反向
-	 * @param startLoc  实际位点 在序列的哪一个点开始替换，替换包括该位点 0表示插到最前面。1表示从第一个开始替换
-	 * 如果ref为""，则将序列插入在startBias那个碱基的后面
-	 * @param endLoc 实际位点 在序列的哪一个点结束替换，替换包括该位点
-	 * @return
-	 */
-	private SeqFasta replaceSnpIndel(String replace, int startLoc, int endLoc) {
-		SeqFasta seqFasta = refSeqIntactAA.clone();
-		if (seqFasta.toString().equals("")) {
-			return new SeqFasta();
-		}
-		seqFasta.modifySeq(startLoc, endLoc, replace, false, false);
-		//修改移码
-		return seqFasta;
 	}
 	
 	/**
@@ -76,6 +47,8 @@ public class SnpRefAltIso {
 	}
 	
 //	protected abstract EnumVariantClass getVariantClassification();
+	
+
 	
 	/**
 	 * 返回HGVSc的值
@@ -277,27 +250,9 @@ public class SnpRefAltIso {
 		return distance;
 	}
 	
-	/** 是否影响了蛋白序列，也就是说是否要把p.G234C这种写出来 */
-	private Set<EnumVariantClass> getEnumVariantClass() {
-		return VariantTypeDetermine.getSetVarType(varType, align, iso);
-	}
+	//============= 氨基酸替换 ==============================
 	
-	/** 是否影响了蛋白序列，也就是说是否要把p.G234C这种写出来 */
-	private Set<EnumVariantClass> getEnumVariantClassCis() {
-		Set<EnumVariantClass> setVarClass = new LinkedHashSet<>();
-		if (snpRefAltInfo.getStartPosition() < iso.getStartAbs()) {
-			int num = iso.getNumCodInEle(snpRefAltInfo.getEndPosition());
-			if (num == 1) {
-				setVarClass.add(EnumVariantClass.Five_prime_UTR_variant);
-				if (snpRefAltInfo.getEndPosition() >= iso.getATGsite()) {
-					setVarClass.add(EnumVariantClass.start_lost);
-				}
-			}
-		}
-		
-		
-		return true;
-	}
+	
 }
 
 /** 内部使用的，主要就是看这个区段覆盖的范围 */

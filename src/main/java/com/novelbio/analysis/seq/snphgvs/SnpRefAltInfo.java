@@ -126,10 +126,11 @@ public class SnpRefAltInfo {
 		if (startNum == 0 && endNum == 0) {
 			return;
 		}
-		seqRef = seqRef.substring(startNum, seqRef.length()-endNum);
-		seqAlt = seqAlt.substring(startNum, seqAlt.length()-endNum);
+		seqRef = seqRef.substring(startNum-1, seqRef.length()-endNum);
+		seqAlt = seqAlt.substring(startNum-1, seqAlt.length()-endNum);
 
 		alignRef.setStartEndLoc(alignRef.getStartAbs() + startNum, alignRef.getEndAbs() - endNum);
+		alignRef.setStartAbs(alignRef.getStartAbs());
 		alignRef.setCis5to3(true);
 	}
 	
@@ -143,6 +144,9 @@ public class SnpRefAltInfo {
 	 * @param getSeqLen
 	 */
 	protected void setVarHgvsType() {
+		String seqRef = getSeqRef();
+		String seqAlt = getSeqAlt();
+
 		if (seqRef.length() == seqAlt.length() && seqRef.length() == 1) {
 			varType = EnumHgvsVarType.Substitutions;
 		} else if (seqRef.length() > 1 && seqAlt.length() > 1) {
@@ -198,17 +202,31 @@ public class SnpRefAltInfo {
 	public String getRefId() {
 		return alignRef.getRefID();
 	}
-	public int getStartPosition() {
+	
+	public int getStartReal() {
 		return alignRef.getStartAbs();
 	}
-	public int getEndPosition() {
+	public int getEndReal() {
+		return alignRef.getEndAbs();
+	}
+	
+	protected int getStartPosition() {
+		if (varType == EnumHgvsVarType.Duplications) {
+			return alignRef.getStartAbs() - getSeqAlt().length() + 2;
+		}
+		return alignRef.getStartAbs();
+	}
+	protected int getEndPosition() {
+		if (varType == EnumHgvsVarType.Duplications) {
+			return alignRef.getEndAbs() - 1;
+		}
 		return alignRef.getEndAbs();
 	}
 	public String getSeqAlt() {
-		return seqAlt;
+		return seqAlt.substring(1);
 	}
 	public String getSeqRef() {
-		return seqRef;
+		return seqRef.substring(1);
 	}
 	public Align getAlignRef() {
 		return alignRef;
@@ -216,6 +234,11 @@ public class SnpRefAltInfo {
 	
 	public static enum SnpIndelType {
 		INSERT, DELETION, MISMATCH, CORRECT
+	}
+	
+	public String toString() {
+		//TODO 
+		return null;
 	}
 }
 
