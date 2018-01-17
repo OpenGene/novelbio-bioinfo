@@ -349,14 +349,14 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		}
 		
 		if (iso.getCod2ATGmRNA(startCds)%3 == 0) {
-			isInsertInFrame = true;
+			isDelInFrame = true;
 		}
 		
 		//如果在两个密码子中插入碱基，类似
 		// AT[G] -ACT- AGC，其中start为G
 		//则我们获取 [A]TG-ACT-AG[C] 
 		//最后突变类型变为 ATG_AGCinsACT
-		if (isInsertInFrame && !isFrameShift()) {
+		if (isDelInFrame && !isFrameShift()) {
 			startCds = iso.getLocAAbefore(startCds);
 			endCds = iso.getLocAAendBias(endCds);
 			return;
@@ -366,7 +366,7 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		// ATG-A-ACT AGC
 		//则我们获取 ATG-A-[ACT AGC ....] 一直到结束
 		//最后突变类型变为 [ACT] > [-A-AC] Ter * 其中*是数字
-		if (isInsertInFrame) {
+		if (isDelInFrame) {
 			startCds = endCds;
 			endCds = iso.getEnd();
 			return;
