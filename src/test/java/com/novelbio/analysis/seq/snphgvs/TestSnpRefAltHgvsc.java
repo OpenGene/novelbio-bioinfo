@@ -11,7 +11,7 @@ import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
 import com.novelbio.analysis.seq.snphgvs.SnpRefAltHgvsc;
 import com.novelbio.database.model.modgeneid.GeneType;
 
-public class TestSnpRefAltIso {
+public class TestSnpRefAltHgvsc {
 	
 	@Test
 	public void testGetStartEndCis() {
