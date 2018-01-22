@@ -47,6 +47,10 @@ public class SnpRefAltInfo {
 	String seqAlt;
 
 	EnumHgvsVarType varType;
+	/** 是否为duplicate的类型 */
+	boolean isDup;
+	/** 如果是duplicate的类型，将数据往回移动一次，主要用于剪接位点gt-ag这块 */
+	boolean isDupMoveLast;
 	
 	/**
 	 * 影响到了哪几个转录本
@@ -66,13 +70,23 @@ public class SnpRefAltInfo {
 	public void setSeqHash(SeqHashInt seqHash) {
 		this.seqHash = seqHash;
 	}
-	
+	protected SeqHashInt getSeqHash() {
+		return seqHash;
+	}
 	/** 仅用于测试 */
 	@VisibleForTesting
 	protected void setAlignRef(Align align) {
 		this.alignRef = align;
 	}
-	
+	/** 如果是duplicate的类型，将数据往回移动一次，主要用于剪接位点gt-ag这块<br>
+	 * 譬如插入 T--ACATG[ACATG]T----------AG<br>
+	 * 其中插入在G和T之间，则切换为<br>
+	 * T--[ACATG]-ACATGT----------AG<br>
+	 * @param isDupMoveLast 默认不移动
+	 */
+	public void setIsDupMoveLast(boolean isDupMoveLast) {
+		this.isDupMoveLast = isDupMoveLast;
+	}
 	/** 根据parent，设定GffChrAbs */
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		GffCodGeneDU gffCodGeneDu = gffChrAbs.getGffHashGene().searchLocation(alignRef.getRefID(), alignRef.getStartAbs(), alignRef.getEndAbs());
@@ -133,7 +147,6 @@ public class SnpRefAltInfo {
 		alignRef.setStartAbs(alignRef.getStartAbs());
 		alignRef.setCis5to3(true);
 	}
-	
 	/**
 	 * 检测var的duplication
 	 * 譬如现在有 T [ATC] ATC ATC ATC ATC GCAT 在第一位的T后面插入了ATC
@@ -144,55 +157,12 @@ public class SnpRefAltInfo {
 	 * @param getSeqLen
 	 */
 	protected void setVarHgvsType() {
-		String seqRef = getSeqRef();
-		String seqAlt = getSeqAlt();
-
-		if (seqRef.length() == seqAlt.length() && seqRef.length() == 1) {
-			varType = EnumHgvsVarType.Substitutions;
-		} else if (seqRef.length() > 1 && seqAlt.length() > 1) {
-			varType = EnumHgvsVarType.Indels;
-		}
-		//如果是缺失，如A-TC-G-->"A-G"，此时startAbs是T位，则直接使用startAbs
-		//如果是插入，如AT --> A-CA-T ，此时startAbs是A位，则需要把startAbs+1
-		int startlocation = seqRef.length() > 0 ? alignRef.getStartAbs() : alignRef.getStartAbs() + 1;
-		char[] seqIndel = seqRef.length() == 0 ? seqAlt.toLowerCase().toCharArray() : seqRef.toLowerCase().toCharArray();
-		int lenStep = (int)Math.ceil((double)GetSeqLen/seqIndel.length) * seqIndel.length-1;
-		int startReal = alignRef.getStartAbs();
-		boolean isGetNextSeq = true;
-		while (isGetNextSeq) {
-			SeqFasta seqFasta = seqHash.getSeq(alignRef.getRefID(), startlocation, startlocation + lenStep);
-			char[] seq = seqFasta.toString().toLowerCase().toCharArray();
-		
-			for (int i = 0; i < seq.length; i=i + seqIndel.length) {
-				boolean isSame = true;
-				for (int j = 0; j < seqIndel.length; j++) {
-					if (seq[i+j] != seqIndel[j]) {
-						isSame = false;
-						break;
-					}
-				}
-				if (isSame) {
-					startReal = startReal + seqIndel.length; 
-				} else {
-					isGetNextSeq = false;
-					break;
-				}
-			}
-			startlocation = startlocation + lenStep + 1;
-		}
-		//在if之前，T [ATC] ATC ATC ATC ATC GCAT
-		//startReal在17位也就是GCAT的G位，减去3位变成14位
-		if (seqRef.length() > 0) {
-			startReal = startReal - seqIndel.length;
-		}
-		if (startReal > alignRef.getStartAbs()) {
-			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Duplications;
-		} else {
-			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Insertions;
-		}
-		int length = alignRef.getLength();
-		alignRef.setStartAbs(startReal);
-		alignRef.setEndAbs(startReal + length - 1);		
+		SnpRefAltDuplicate snpRefAltDuplicate = new SnpRefAltDuplicate(alignRef, getSeqRef(), getSeqAlt());
+		snpRefAltDuplicate.initial();
+		snpRefAltDuplicate.modifySeq(seqHash);
+		varType = snpRefAltDuplicate.getVarType();
+		alignRef = snpRefAltDuplicate.getAlignRef();
+		isDup = snpRefAltDuplicate.isDup();
 	}
 	
 	public EnumHgvsVarType getVarType() {
@@ -202,20 +172,55 @@ public class SnpRefAltInfo {
 	public String getRefId() {
 		return alignRef.getRefID();
 	}
-	
+	/**
+	 * 根据{@link #setIsDupMoveLast(boolean)}
+	 * 的不通返回相应的坐标
+	 * @return
+	 */
 	public int getStartReal() {
-		return alignRef.getStartAbs();
+		return isDup && isDupMoveLast ? getMoveDuplicate().getStartAbs() : alignRef.getStartAbs();
 	}
+	/**
+	 * 根据{@link #setIsDupMoveLast(boolean)}
+	 * 的不通返回相应的坐标
+	 * @return
+	 */
 	public int getEndReal() {
-		return alignRef.getEndAbs();
+		return isDup && isDupMoveLast ? getMoveDuplicate().getEndAbs() : alignRef.getEndAbs();
 	}
 	
+	/** 仅用于测试 */
+	@VisibleForTesting
+	protected Align getMoveDuplicate() {
+		if (!isDup) {
+			throw new ExceptionNBCSnpHgvs("cannot move duplicate because it is not a duplicate site");
+		}
+		
+		Align align = new Align(alignRef.toString());
+		int seqLen = varType == EnumHgvsVarType.Duplications ? seqAlt.length() : seqRef.length();
+		seqLen = seqLen - 1;
+		align.setStartEndLoc(alignRef.getStartAbs()-seqLen, alignRef.getEndAbs()-seqLen);
+		return align;
+	}
+	
+	/**
+	 * 目前仅给hgvsc使用，注意如果为Duplication，插入在第二个ATCG之后，如下：
+	 * -ATCG-[A]TCG-[ATCG]-
+	 * 此时本方法返回第二个ATCG的A的位置，也就是加中括弧的那个A
+	 * @return
+	 */
 	protected int getStartPosition() {
 		if (varType == EnumHgvsVarType.Duplications) {
-			return alignRef.getStartAbs() - getSeqAlt().length() + 2;
+			return alignRef.getStartAbs() - getSeqAlt().length() + 1;
 		}
 		return alignRef.getStartAbs();
 	}
+	/**
+	 * 目前仅给hgvsc使用，注意如果为Duplication，插入在第二个ATCG之后，如下：
+	 * -ATCG-ATC[G]-[ATCG]-
+	 * 此时本方法返回第二个ATCG的G的位置，也就是加中括弧的那个G
+	 * @return
+	 */
 	protected int getEndPosition() {
 		if (varType == EnumHgvsVarType.Duplications) {
 			return alignRef.getEndAbs() - 1;

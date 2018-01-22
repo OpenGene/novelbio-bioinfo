@@ -52,21 +52,21 @@ public abstract class SnpRefAltHgvsp {
 	/** 是否需要氨基酸变化注释，有些在内含子中的就不需要氨基酸变化注释 */
 	protected abstract boolean isNeedHgvsp();
 	
-	public String getHgvsp(SeqHash seqHash) {
+	public String getHgvsp() {
 		setStartEndCis();
 		setSiteReplace();
-		fillRefAltNrForAA(seqHash);
+		fillRefAltNrForAA();
 		return getSnpChange();
 	}
 	public abstract String getSnpChange();
 	
 	/** 把refNr和altNr都准备好 */
-	protected void fillRefAltNrForAA(SeqHash seqHash) {
+	protected void fillRefAltNrForAA() {
 		ArrayList<ExonInfo> lsTmp = iso.getRangeIsoOnExon(startCds, endCds);
 		if (ArrayOperate.isEmpty(lsTmp)) {
 			throw new ExceptionNBCSnpHgvs("snp error not in cds " + snpRefAltInfo.toString());
 		}
-		refSeqNrForAA = seqHash.getSeq(StrandType.isoForward, snpRefAltInfo.getRefId(), lsTmp, false);		
+		refSeqNrForAA = snpRefAltInfo.getSeqHash().getSeq(StrandType.isoForward, snpRefAltInfo.getRefId(), lsTmp, false);		
 		altSeqNrForAA = replaceSnpIndel(getSeqAltNrForAA(), snpOnReplaceLocStart, snpOnReplaceLocEnd);
 	}
 	
@@ -441,7 +441,7 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 			terNum++;
 		}
 		String ter = isHaveTer? terNum+"" : "?";
-		return refSeq + getAffectAANum(startCds) + "fsTer" + ter;
+		return refSeq + getAffectAANum(startCds) + "fs*" + ter;
 	}
 	
 }

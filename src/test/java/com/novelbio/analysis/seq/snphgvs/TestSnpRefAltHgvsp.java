@@ -1,44 +1,70 @@
 package com.novelbio.analysis.seq.snphgvs;
 
-import static org.junit.Assert.assertEquals;
-
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
-import com.novelbio.analysis.seq.snphgvs.SnpRefAltHgvsc;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.model.species.Species;
 
-import EDU.oswego.cs.dl.util.concurrent.FJTask.Seq;
+import junit.framework.Assert;
 
 public class TestSnpRefAltHgvsp {
-	GffHashGene gffHashGene = new GffHashGene("/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
-	SeqHash seqHash = new SeqHash("/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/ChromFa/chrAll.fa");
-	
+	// static GffChrAbs gffchrAbs;
+	static GffHashGene gffHashGene;
+	static SeqHash seqHash;
+
+	@BeforeClass
+	public static void beforeClass() {
+		// Species species = new Species(9606, "hg19_GRCh37");
+		gffHashGene = new GffHashGene(
+				"/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
+		seqHash = new SeqHash("/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/ChromFa/chrAll.fa");
+		// gffchrAbs = new GffChrAbs(species);
+		// gffHashGene = gffchrAbs.getGffHashGene();
+		// seqHash = gffchrAbs.getSeqHash();
+	}
+
+	@AfterClass
+	public static void afterClass() {
+		// gffchrAbs.close();
+	}
+
 	@Test
 	public void testAnno() {
-			
+		GffGeneIsoInfo iso = gffHashGene.searchISO("NM_005092");
 		SnpRefAltInfo snpRefAltInfo = new SnpRefAltInfo("chr1", 173010498, "ATCAAGTCTCTA", "A");
 		snpRefAltInfo.setSeqHash(seqHash);
 		snpRefAltInfo.copeInputVar();
 		snpRefAltInfo.setVarHgvsType();
-		SnpRefAltHgvsp snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo,
-				gffHashGene.searchISO("NM_005092"));
-		String value = snpRefAltHgvsp.getHgvsp(seqHash);
-		System.out.println(value);
-		
+		SnpRefAltHgvsc snpRefAltHgvsc = new SnpRefAltHgvsc(snpRefAltInfo, iso);
+		SnpRefAltHgvsp snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		Assert.assertEquals("c.598_*8del", snpRefAltHgvsc.getHgvs());
+		Assert.assertEquals("p.*200fs*?", snpRefAltHgvsp.getHgvsp());
+
+		iso = gffHashGene.searchISO("NM_178527");
 		snpRefAltInfo = new SnpRefAltInfo("chr1", 173470228, "AGTTTTCAACTATAA", "A");
 		snpRefAltInfo.setSeqHash(seqHash);
 		snpRefAltInfo.copeInputVar();
 		snpRefAltInfo.setVarHgvsType();
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo,
-				gffHashGene.searchISO("NM_178527"));
-		value = snpRefAltHgvsp.getHgvsp(seqHash);
-		System.out.println(value);
+		snpRefAltHgvsc = new SnpRefAltHgvsc(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		Assert.assertEquals("c.3372-6_*4del", snpRefAltHgvsc.getHgvs());
+		Assert.assertEquals("p.S1124fs*10", snpRefAltHgvsp.getHgvsp());
+		
+		iso = gffHashGene.searchISO("NM_178527");
+		snpRefAltInfo = new SnpRefAltInfo("chr1", 173470236, "A", "AC");
+		snpRefAltInfo.setSeqHash(seqHash);
+		snpRefAltInfo.copeInputVar();
+		snpRefAltInfo.setVarHgvsType();
+		snpRefAltHgvsc = new SnpRefAltHgvsc(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		Assert.assertEquals("c.3372-1dup", snpRefAltHgvsc.getHgvs());
+		Assert.assertEquals("p.S1124fs*10", snpRefAltHgvsp.getHgvsp());
+		
 	}
-	
+
 }
