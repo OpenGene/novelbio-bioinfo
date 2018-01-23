@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.novelbio.analysis.seq.fasta.CodeInfo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.StrandType;
@@ -16,6 +17,8 @@ import smile.math.Math;
 public abstract class SnpRefAltHgvsp {
 	SnpRefAltInfo snpRefAltInfo;
 	GffGeneIsoInfo iso;
+	
+	boolean isNeedAA3 = true;
 	
 	/** 需要将alt替换ref的碱基，这里记录替换ref的起点 */
 	int snpOnReplaceLocStart;
@@ -36,7 +39,10 @@ public abstract class SnpRefAltHgvsp {
 		this.snpRefAltInfo = snpRefAltInfo;
 		this.iso = iso;
 	}
-	
+	/** 默认返回三字母，可以设定为返回单字母 */
+	public void setNeedAA3(boolean isNeedAA3) {
+		this.isNeedAA3 = isNeedAA3;
+	}
 	public int getStartCis() {
 		return iso.isCis5to3() ? snpRefAltInfo.getStartReal() : snpRefAltInfo.getEndReal();
 	}
@@ -109,6 +115,30 @@ public abstract class SnpRefAltHgvsp {
 		altSeqNrForAA = replaceSnpIndel(getSeqAltNrForAA(), snpOnReplaceLocStart, snpOnReplaceLocEnd);
 	}
 	
+	/**
+	 * 根据需求将AA1转换成AA3
+	 * @param AA1
+	 * @return
+	 */
+	protected String convertAA(String AA1) {
+		if (isNeedAA3) {
+			return CodeInfo.convertToAA3(AA1);
+		}
+		return AA1;
+	}
+	/**
+	 * 根据需求将AA1转换成AA3
+	 * @param AA1
+	 * @return
+	 */
+	protected String convertAA(char AA1) {
+		String AA1str = AA1 + "";
+		if (isNeedAA3) {
+			return CodeInfo.convertToAA3(AA1str);
+		}
+		return AA1str;
+	}
+	
 	protected abstract void setStartEndCis();
 	
 	/**
@@ -175,7 +205,7 @@ public abstract class SnpRefAltHgvsp {
 	
 	/** 读码框外的插入改变 */
 	protected String getInDelChangeFrameShift() {
-		String refSeq = refSeqNrForAA.toStringAA1().substring(0,1);
+		char[] refSeq = refSeqNrForAA.toStringAA1().toCharArray();
 		String aaSeq = altSeqNrForAA.toStringAA1();
 		int terNum = 0;
 		boolean isHaveTer = false;
@@ -187,8 +217,28 @@ public abstract class SnpRefAltHgvsp {
 				break;
 			}
 		}
+		if (refSeq[0] == '*' && aaSeqChr[0] == '*') {
+			return convertAA(refSeq[0]) + getAffectAANum(startCds) + "=";
+		}
+		//如果为 p.Val1106ValfsTer15
+		//则需要向后延长一位为 p.Asn1107ProfsTer14
+		//就是不能氨基酸不变化
+		int num = 0;
+		for (; num < refSeq.length; num++) {
+			if (refSeq[num] != aaSeqChr[num]) {
+				break;
+			}
+		}
+		terNum = terNum - num;
 		String ter = isHaveTer? terNum+"" : "?";
-		return refSeq + getAffectAANum(startCds) + aaSeqChr[0] + "fs*" + ter;
+		StringBuilder sBuilder = new StringBuilder();
+		sBuilder.append(convertAA(refSeq[num]));
+		sBuilder.append(getAffectAANum(startCds)+num);
+		sBuilder.append(convertAA(aaSeqChr[num]));
+		sBuilder.append("fs");
+		sBuilder.append(convertAA("*"));
+		sBuilder.append(ter);
+		return sBuilder.toString();
 	}
 }
 
@@ -217,7 +267,12 @@ class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
 	}
 	
 	public String getSnpChange() {
-		return "p." + refSeqNrForAA.toStringAA1() + getAffectAANum(snpRefAltInfo.getStartReal()) + altSeqNrForAA.toStringAA1();
+		String ref = convertAA(refSeqNrForAA.toStringAA1());
+		String alt = convertAA(altSeqNrForAA.toStringAA1());
+		if (ref.equals(alt)) {
+			return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + "="; 
+		}
+		return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + ">" + ref;
 	}
 
 }
@@ -317,9 +372,10 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 			throw new ExceptionNBCSnpHgvs("error");
 		}
 		StringBuilder sBuilder = new StringBuilder();
-		sBuilder.append(refAA[0] + getAffectAANum(startCds) + "_" + refAA[1] + getAffectAANum(endCds) + "ins");	
+		sBuilder.append(convertAA(refAA[0]) + getAffectAANum(startCds) 
+		+ "_" + convertAA(refAA[1]) + getAffectAANum(endCds) + "ins");	
 		for (int i = 1; i < altAA.length-1; i++) {
-			sBuilder.append(altAA[i]);	
+			sBuilder.append(convertAA(altAA[i]));	
 		}
 		return sBuilder.toString();
 	}
@@ -441,12 +497,12 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 			throw new ExceptionNBCSnpHgvs("error");
 		}
 		StringBuilder sBuilder = new StringBuilder();
-		sBuilder.append(refAA[0] + getAffectAANum(startCds) + "_" + refAA[1] + getAffectAANum(endCds) + "del");
+		sBuilder.append(convertAA(refAA[0]) + getAffectAANum(startCds) + "_" + convertAA(refAA[1]) + getAffectAANum(endCds) + "del");
 		if (altAA.length > 0) {
 			sBuilder.append("ins");
 		}
 		for (int i = 1; i < altAA.length-1; i++) {
-			sBuilder.append(altAA[i]);	
+			sBuilder.append(convertAA(altAA[i]));	
 		}
 		return sBuilder.toString();
 	}
