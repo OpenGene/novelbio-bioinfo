@@ -205,7 +205,7 @@ public class SeqFasta implements Cloneable {
 	 * 如果start比序列长，则不考虑end，直接将序列插到最后面
 	 * @param end 要替换序列的终点，实际位点,并且包含该位点，<br>
 	 * 如果 start == end 那么就是将该点替换成指定序列<br>
-	 * 如果 start > end 说明是插入紧挨着start位点之后<br>
+	 * 如果 start > end 说明是<b>插入</b>，并且插入位点紧挨着start位点之后<br>
 	 * @param seq 要替换的序列
 	 */
 	public void modifySeq(int start, int end, String seq) {
@@ -217,7 +217,7 @@ public class SeqFasta implements Cloneable {
 	 * 如果start比序列长，则不考虑end，直接将序列插到最后面
 	 * @param end 要替换序列的终点，实际位点,并且包含该位点，<br>
 	 * 如果 start == end 那么就是将该点替换成指定序列<br>
-	 * 如果 start > end 说明是插入紧挨着start位点之后<br>
+	 * 如果 start > end 说明是<b>插入</b>，并且插入位点紧挨着start位点之后<br>
 	 * @param seq 要替换的序列
 	 * @param boostart 替换序列的前部是否插入XXX true：插入
 	 * @param booend 替换序列的后部是否插入XXX true：插入

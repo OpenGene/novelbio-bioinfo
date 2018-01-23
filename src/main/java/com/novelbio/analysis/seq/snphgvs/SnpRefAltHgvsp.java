@@ -3,6 +3,7 @@ package com.novelbio.analysis.seq.snphgvs;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.StrandType;
@@ -53,12 +54,50 @@ public abstract class SnpRefAltHgvsp {
 	protected abstract boolean isNeedHgvsp();
 	
 	public String getHgvsp() {
+		if (snpRefAltInfo.isDup() && isNeedMoveDuplicateBefore()) {
+			snpRefAltInfo.setIsDupMoveLast(true);
+		}
 		setStartEndCis();
 		setSiteReplace();
 		fillRefAltNrForAA();
 		return getSnpChange();
 	}
 	public abstract String getSnpChange();
+	
+	/**
+	 * 检测是否需要回移一次
+	 * 如果是duplicate的类型，将数据往回移动一次，主要用于剪接位点gt-ag这块<br>
+	 * 譬如插入 T--ACATG[ACATG]T----------AG<br>
+	 * 其中插入在G和T之间，则切换为<br>
+	 * T--[ACATG]-ACATGT----------AG<br>
+	 * @param isDupMoveLast 默认不移动
+	 */
+	@VisibleForTesting
+	protected boolean isNeedMoveDuplicateBefore() {
+		int startNum = iso.getNumCodInEle(getStartCis());
+		int endNum = iso.getNumCodInEle(getEndCis());
+		if (startNum == 0 || endNum == 0) {
+			return false;
+		}
+		//cover splice site
+		if (startNum < 0 && -startNum+1==endNum
+				|| startNum > 0 && -startNum == endNum
+			) {
+			return true;
+		}
+		//不考虑不在一个exon/intron中的情况
+		if (startNum != endNum || startNum > 0 && endNum > 0) {
+			return false;
+		}
+		//仅考虑内含子中的duplicate
+		int num = snpRefAltInfo.getVarType() == EnumHgvsVarType.Deletions ? 1 : 0;
+		if (iso.getCod2ExInStart(getStartCis()) <= num
+				|| iso.getCod2ExInEnd(getEndCis()) <= num
+				) {
+			return true;
+		}
+		return false;
+	}
 	
 	/** 把refNr和altNr都准备好 */
 	protected void fillRefAltNrForAA() {
@@ -113,7 +152,7 @@ public abstract class SnpRefAltHgvsp {
 	 */
 	protected String getSeqAltNrForAA() {
 		String seq = snpRefAltInfo.getSeqAlt();
-		if (iso.isCis5to3()) {
+		if (!iso.isCis5to3()) {
 			seq = SeqFasta.reverseComplement(seq);
 		}
 		return seq;
@@ -132,6 +171,24 @@ public abstract class SnpRefAltHgvsp {
 			//TODO indel尚未实现
 		}
 		throw new ExceptionNBCSnpHgvs("cannot find such indel conditon");
+	}
+	
+	/** 读码框外的插入改变 */
+	protected String getInDelChangeFrameShift() {
+		String refSeq = refSeqNrForAA.toStringAA1().substring(0,1);
+		String aaSeq = altSeqNrForAA.toStringAA1();
+		int terNum = 0;
+		boolean isHaveTer = false;
+		char[] aaSeqChr = aaSeq.toCharArray();
+		for (char aaChar : aaSeq.toCharArray()) {
+			terNum++;
+			if (aaChar == '*') {
+				isHaveTer = true;
+				break;
+			}
+		}
+		String ter = isHaveTer? terNum+"" : "?";
+		return refSeq + getAffectAANum(startCds) + aaSeqChr[0] + "fs*" + ter;
 	}
 }
 
@@ -198,39 +255,27 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 			endCds = iso.getLsElement().get(Math.abs(endNum)).getStartCis();
 		}
 		
-		if (iso.getCod2ATGmRNA(startCds)%3 == 0) {
-			isInsertInFrame = true;
-		}
-		
-		//如果在两个密码子中插入碱基，类似
+		//如果没有发生移码，类似
 		// AT[G] -ACT- AGC，其中start为G
 		//则我们获取 [A]TG-ACT-AG[C] 
 		//最后突变类型变为 ATG_AGCinsACT
-		if (isInsertInFrame && !isFrameShift()) {
+		if (!isFrameShift()) {
 			startCds = iso.getLocAAbefore(startCds);
 			endCds = iso.getLocAAendBias(endCds);
 			return;
 		}
 		
+		isInsertInFrame = isInsertInFrame();
 		//如果在两个密码子中插入造成移码突变，类似
 		// ATG-A-ACT AGC
 		//则我们获取 ATG-A-[ACT AGC ....] 一直到结束
 		//最后突变类型变为 [ACT] > [-A-AC] Ter * 其中*是数字
 		if (isInsertInFrame) {
 			startCds = endCds;
-			endCds = iso.getEnd();
-			return;
-		}
-		
-		//如果在读码框内插入造成移码突变，类似
-		// A[T]-A-G ACT AGC，其中start为T
-		//则我们获取 [A]T-A-G ACT AGC .... 一直到结束
-		//最后突变类型变为 [ACG] > [AT-A-] Ter * 其中*是数字
-		if (!isInsertInFrame()) {
+		} else {
 			startCds = iso.getLocAAbefore(startCds);
-			endCds = iso.getEnd();
 		}
-		endCds = iso.getLocAAend(startCds);
+		endCds = iso.getEnd();
 		return;
 	}
 	
@@ -251,13 +296,12 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 			snpOnReplaceLocEnd = 0;
 		} else {
 			snpOnReplaceLocStart = -iso.getLocAAbeforeBias(startCds) + 1;
-			snpOnReplaceLocEnd = snpOnReplaceLocStart;
+			snpOnReplaceLocEnd = snpOnReplaceLocStart-1;
 		}
 	}
 	
 	public String getSnpChange() {
-		boolean isFrameShift = snpRefAltInfo.getSeqAlt().length()%3 != 0;
-		String info = isFrameShift ? getInsertionChangeInFrame() : getInsertionChangeFrameShift();
+		String info = isFrameShift() ? getInDelChangeFrameShift() : getInsertionChangeInFrame();
 		return "p." + info;
 	}
 	
@@ -279,29 +323,10 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 		}
 		return sBuilder.toString();
 	}
-
-	/** 读码框外的插入改变 */
-	private String getInsertionChangeFrameShift() {
-		String refSeq = refSeqNrForAA.toStringAA1().substring(0,1);
-		String aaSeq = altSeqNrForAA.toStringAA1();
-		int terNum = 0;
-		boolean isHaveTer = false;
-		char[] aaSeqChr = aaSeq.toCharArray();
-		for (char aaChar : aaSeq.toCharArray()) {
-			if (aaChar == '*') {
-				isHaveTer = true;
-				break;
-			}
-			terNum++;
-		}
-		String ter = isHaveTer? terNum+"" : "?";
-		return refSeq + getAffectAANum(startCds) + aaSeqChr[0] + "fsTer" + ter;
-	}
-
 	
 	/** 插入位置是否在两个aa中间 */
 	private boolean isInsertInFrame() {
-		return iso.getCod2ATGmRNA(startCds)%3 == 0;
+		return iso.getCod2ATGmRNA(endCds)%3 == 0;
 	}
 	
 	/** 插入是否引起了移码 */
@@ -399,8 +424,8 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 	}
 	
 	public String getSnpChange() {
-		boolean isFrameShift = snpRefAltInfo.getSeqAlt().length()%3 != 0;
-		String info = isFrameShift ? getDelChangeInFrame() : getDelChangeFrameShift();
+		boolean isFrameShift = snpRefAltInfo.getSeqRef().length()%3 != 0;
+		String info = isFrameShift ? getInDelChangeFrameShift() : getDelChangeInFrame();
 		return "p." + info;
 	}
 	
@@ -426,22 +451,4 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		return sBuilder.toString();
 	}
 
-	/** 读码框外的插入改变 */
-	private String getDelChangeFrameShift() {
-		String refSeq = refSeqNrForAA.toStringAA1().substring(0,1);
-		String aaSeq = altSeqNrForAA.toStringAA1();
-		int terNum = 0;
-		boolean isHaveTer = false;
-		char[] aaSeqChr = aaSeq.toCharArray();
-		for (char aaChar : aaSeq.toCharArray()) {
-			if (aaChar == '*') {
-				isHaveTer = true;
-				break;
-			}
-			terNum++;
-		}
-		String ter = isHaveTer? terNum+"" : "?";
-		return refSeq + getAffectAANum(startCds) + "fs*" + ter;
-	}
-	
 }

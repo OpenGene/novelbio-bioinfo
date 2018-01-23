@@ -93,7 +93,7 @@ public class SnpRefAltHgvsc {
 				|| snpRefAltInfo.getStartPosition() > iso.getEndAbs() && snpRefAltInfo.getEndPosition() > iso.getEndAbs()
 				) {
 			return EnumCoverGene.Out_of_Gene;
-		} else if (snpRefAltInfo.getStartPosition() < iso.getStartAbs() && snpRefAltInfo.getEndPosition() > iso.getStartAbs()) {
+		} else if (snpRefAltInfo.getStartPosition() < iso.getStartAbs() && snpRefAltInfo.getEndPosition() > iso.getEndAbs()) {
 			return EnumCoverGene.Cover_Gene;
 		} else {
 			return EnumCoverGene.Not;

@@ -78,6 +78,10 @@ public class SnpRefAltInfo {
 	protected void setAlignRef(Align align) {
 		this.alignRef = align;
 	}
+	/** 是否为duplicate类型 */
+	public boolean isDup() {
+		return isDup;
+	}
 	/** 如果是duplicate的类型，将数据往回移动一次，主要用于剪接位点gt-ag这块<br>
 	 * 譬如插入 T--ACATG[ACATG]T----------AG<br>
 	 * 其中插入在G和T之间，则切换为<br>
@@ -189,7 +193,13 @@ public class SnpRefAltInfo {
 		return isDup && isDupMoveLast ? getMoveDuplicate().getEndAbs() : alignRef.getEndAbs();
 	}
 	
-	/** 仅用于测试 */
+	/**
+	 * 如果是duplicate的类型，将数据往回移动一次，主要用于剪接位点gt-ag这块<br>
+	 * 譬如插入 T--ACATG[ACATG]T----------AG<br>
+	 * 其中插入在G和T之间，则切换为<br>
+	 * T--[ACATG]-ACATGT----------AG<br>
+	 * @param isDupMoveLast 默认不移动
+	 */
 	@VisibleForTesting
 	protected Align getMoveDuplicate() {
 		if (!isDup) {

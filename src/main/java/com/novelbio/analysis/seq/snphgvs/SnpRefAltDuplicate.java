@@ -65,15 +65,33 @@ public class SnpRefAltDuplicate {
 	protected void compareSeq(SeqHashInt seqHash, String seqIndel) {
 		int lenStep = (int)Math.ceil((double)GetSeqLen/seqIndel.length()) * seqIndel.length()-1;
 
+		/**
+		 * 插入ATC
+		 * 如果为 ATC-[ATC]-ACAT，也就是插入在duplcation的尾部
+		 * 这种类型，首先跟上一个ATC进行比较，看是否为duplication类型
+		 */
 		SeqFasta seqFasta = seqHash.getSeq(alignRef.getRefID(), startLoc-seqIndel.length(), startLoc + lenStep);
 		String seq = seqFasta.toString();
-		String seqLast = seq.substring(0, seqIndel.length());
-		int startRealThis = startReal;
-		if (seqLast.equalsIgnoreCase(seqIndel)) {
+		if (seq.substring(0, seqIndel.length()).equalsIgnoreCase(seqIndel)) {
 			isDup = true;
-			startRealThis = startReal - seqIndel.length();
 		}
-		String seqRemain = seq.substring(seqIndel.length(), seq.length());
+		/**
+		 * 如果为deletion，此时 seqRef.length() > 0
+		 * ATCAC-[ACTT]-TCAG
+		 * 直接比ref为 [ACTT]-TCAG 一定会发现deletion和ref的[ACTT]一致
+		 * 因此需要把头部的[ACTT]去掉
+		 * 
+		 * 如果为insertion
+		 * ATCAC-[ACTT]-TCAG
+		 * 直接比ref为 TCAG 就不会找到一致
+		 */
+		int startNum = seqIndel.length();
+		if (seqRef.length() > 0) {
+			startNum = seqIndel.length() + seqIndel.length();
+			startReal = startReal + seqIndel.length();
+		}
+		String seqRemain = seq.substring(startNum, seq.length());
+//		String seqRemain = seq.substring(seqIndel.length(), seq.length());
 		char[] seqIndelChr = seqIndel.toLowerCase().toCharArray();
 		boolean isGetNextSeq = true;
 		boolean isFirst = true;
@@ -86,9 +104,6 @@ public class SnpRefAltDuplicate {
 			}
 			isGetNextSeq = compareSeq(seq, seqIndelChr);
 			startLoc = startLoc + lenStep + 1;
-		}
-		if (startReal == 0) {
-			startReal = startRealThis;
 		}
 	}
 	
