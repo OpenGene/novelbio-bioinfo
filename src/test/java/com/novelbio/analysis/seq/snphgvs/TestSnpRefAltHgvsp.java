@@ -92,6 +92,7 @@ public class TestSnpRefAltHgvsp {
 			SnpRefAltHgvsc snpRefAltHgvsc = new SnpRefAltHgvsc(snpRefAltInfo, iso);
 			SnpRefAltHgvsp snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 			snpRefAltHgvsp.setNeedAA3(true);
+			System.out.println(content);
 			if (ss.length >= 5 && !StringOperate.isRealNull(ss[4])) {
 				Assert.assertEquals(ss[4], snpRefAltHgvsc.getHgvs());
 			}

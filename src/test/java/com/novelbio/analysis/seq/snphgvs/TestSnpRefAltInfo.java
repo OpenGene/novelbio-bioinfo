@@ -67,6 +67,18 @@ public class TestSnpRefAltInfo {
 		Assert.assertEquals("", snpRefAltInfo.getSeqRef());
 		Assert.assertEquals("AGACG", snpRefAltInfo.getSeqAlt());
 		Assert.assertEquals(new Align("chr1", 346, 347).toString(), snpRefAltInfo.getAlignRef().toString());
+		
+		snpRefAltInfo = new SnpRefAltInfo("chr1", 345, "AC", "TA");
+		snpRefAltInfo.copeInputVar();
+		Assert.assertEquals("AC", snpRefAltInfo.getSeqRef());
+		Assert.assertEquals("TA", snpRefAltInfo.getSeqAlt());
+		Assert.assertEquals(new Align("chr1", 345, 346).toString(), snpRefAltInfo.getAlignRef().toString());
+		
+		snpRefAltInfo = new SnpRefAltInfo("chr1", 345, "A", "T");
+		snpRefAltInfo.copeInputVar();
+		Assert.assertEquals("A", snpRefAltInfo.getSeqRef());
+		Assert.assertEquals("T", snpRefAltInfo.getSeqAlt());
+		Assert.assertEquals(new Align("chr1", 345, 345).toString(), snpRefAltInfo.getAlignRef().toString());
 	}
 	
 	@Test

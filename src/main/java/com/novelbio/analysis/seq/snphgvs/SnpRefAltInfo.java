@@ -40,12 +40,28 @@ public class SnpRefAltInfo {
 	
 	/** ref的坐标区间 */
 	Align alignRef;
+	
 	/** reference的序列 */
 	String seqRef;
-	
 	/** 改变之后的序列 */
 	String seqAlt;
-
+	/**
+	 * insertion和deletion的头部是一样的，这里我们要去掉
+	 * chr1	2343	ACATC	ACCTA
+	 * seqStart=2
+	 * chr1 2345	A	T
+	 * seqStart=0
+	 */
+	int seqStart;
+	/**
+	 * insertion和deletion的尾部是一样的，这里我们要去掉
+	 * chr1	2343	ACATCTT	ACCTATT
+	 * seqEnd=2
+	 * chr1 2345	AC	TA
+	 * seqEnd=0
+	 */
+	int seqEnd;
+	
 	EnumHgvsVarType varType;
 	/** 是否为duplicate的类型 */
 	boolean isDup;
@@ -119,35 +135,33 @@ public class SnpRefAltInfo {
 	 */
 	@VisibleForTesting
 	protected void copeInputVar() {
-		int startNum = 0, endNum = 0;
+		seqStart = 0; seqEnd = 0;
 		char[] refChr = seqRef.toCharArray();
 		char[] altChr = seqAlt.toCharArray();
 		for (int i = 0; i < refChr.length; i++) {
 			if (i > altChr.length-1) break;
 			if (refChr[i] == altChr[i]) {
-				startNum++;
+				seqStart++;
 			} else {
 				break;
 			}
 		}
-		if (startNum < Math.min(seqRef.length(), seqAlt.length())) {
+		if (seqStart < Math.min(seqRef.length(), seqAlt.length())) {
 			for (int i = 0; i < refChr.length; i++) {
 				if (i > altChr.length-1) break;
 				if (refChr[refChr.length-i-1] == altChr[altChr.length-i-1]) {
-					endNum++;
+					seqEnd++;
 				} else {
 					break;
 				}
 			}
 		}
 		
-		if (startNum == 0 && endNum == 0) {
+		if (seqStart == 0 && seqEnd == 0) {
 			return;
 		}
-		seqRef = seqRef.substring(startNum-1, seqRef.length()-endNum);
-		seqAlt = seqAlt.substring(startNum-1, seqAlt.length()-endNum);
 
-		alignRef.setStartEndLoc(alignRef.getStartAbs() + startNum, alignRef.getEndAbs() - endNum);
+		alignRef.setStartEndLoc(alignRef.getStartAbs() + seqStart, alignRef.getEndAbs() - seqEnd);
 		alignRef.setStartAbs(alignRef.getStartAbs());
 		alignRef.setCis5to3(true);
 	}
@@ -161,6 +175,23 @@ public class SnpRefAltInfo {
 	 * @param getSeqLen
 	 */
 	protected void setVarHgvsType() {
+		if (getSeqRef().length() == 0 && getSeqAlt().length() == 0) {
+			//不可能出现的错误
+			throw new ExceptionNBCSnpHgvs("error ref and alt cannot both be empty!");
+		}
+		if (getSeqRef().length() == 1 && getSeqAlt().length() == 1) {
+			varType = EnumHgvsVarType.Substitutions;
+		} else if (getSeqRef().length() == 0) {
+			varType = EnumHgvsVarType.Insertions;
+		} else if (getSeqAlt().length() == 0) {
+			varType = EnumHgvsVarType.Deletions;
+		} else {
+			varType = EnumHgvsVarType.Indels;
+		}
+		
+		if (varType != EnumHgvsVarType.Insertions && varType != EnumHgvsVarType.Deletions) {
+			return;
+		}
 		SnpRefAltDuplicate snpRefAltDuplicate = new SnpRefAltDuplicate(alignRef, getSeqRef(), getSeqAlt());
 		snpRefAltDuplicate.initial();
 		snpRefAltDuplicate.modifySeq(seqHash);
@@ -238,10 +269,10 @@ public class SnpRefAltInfo {
 		return alignRef.getEndAbs();
 	}
 	public String getSeqAlt() {
-		return seqAlt.substring(1);
+		return seqAlt.substring(seqStart, seqAlt.length()-seqEnd);
 	}
 	public String getSeqRef() {
-		return seqRef.substring(1);
+		return seqRef.substring(seqStart, seqRef.length()-seqEnd);
 	}
 	public Align getAlignRef() {
 		return alignRef;

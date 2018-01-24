@@ -272,7 +272,7 @@ class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
 		if (ref.equals(alt)) {
 			return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + "="; 
 		}
-		return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + ">" + ref;
+		return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + alt;
 	}
 
 }
