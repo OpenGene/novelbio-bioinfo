@@ -12,8 +12,6 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
-import smile.math.Math;
-
 public abstract class SnpRefAltHgvsp {
 	SnpRefAltInfo snpRefAltInfo;
 	GffGeneIsoInfo iso;
@@ -200,7 +198,7 @@ public abstract class SnpRefAltHgvsp {
 		} else if (refLen > 1 && altLen > 1) {
 			//TODO indel尚未实现
 		}
-		throw new ExceptionNBCSnpHgvs("cannot find such indel conditon");
+		throw new ExceptionNBCSnpHgvs("cannot find such indel conditon " + snpRefAltInfo.toString());
 	}
 	
 	/** 读码框外的插入改变 */
@@ -243,7 +241,7 @@ public abstract class SnpRefAltHgvsp {
 }
 
 class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
-	
+	boolean isATG = false;
 	public SnpRefAltIsoSnp(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
 	}
@@ -256,6 +254,9 @@ class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
 		int position = getStartCis();
 		startCds = iso.getLocAAbefore(position);
 		endCds = iso.getLocAAend(position);
+		if (iso.getCod2ATG(startCds) == 0) {
+			isATG = true;
+		}
 		if (startCds <0) {
 			throw new ExceptionNBCSnpHgvs("snp error not in cds " + snpRefAltInfo.toString());
 		}
@@ -271,6 +272,9 @@ class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
 		String alt = convertAA(altSeqNrForAA.toStringAA1());
 		if (ref.equals(alt)) {
 			return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + "="; 
+		}
+		if (isATG) {
+			return "p." + ref + "1?";
 		}
 		return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + alt;
 	}
@@ -433,14 +437,12 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		int atgEnd = iso.getLocAAend(iso.getATGsite());
 		int uagEnd = iso.getUAGsite();
 		int uagStart = iso.getLocAAend(iso.getUAGsite());
-		int atgBefore = Math.min(atgStart, atgEnd);
-		int uagBefore = Math.min(uagStart, uagEnd);
 
-		if (getStartAbs() <= atgBefore && getEndAbs()>= atgBefore) {
+		if (getStartAbs() <= Math.max(atgStart, atgEnd) && getEndAbs()>= Math.min(atgStart, atgEnd)) {
 			isMetDel = true;
-			return;
 		}
-		if (getStartAbs() <= uagBefore && getEndAbs()>= uagBefore) {
+		//影响到了UAG，那么就当成移码处理，会一直延长到iso的结尾并获取新的UAG位点
+		if (getStartAbs() <= Math.max(uagStart, uagEnd) && getEndAbs()>= Math.min(uagStart, uagEnd)) {
 			isDelInFrame = false;
 		}
 		startCds = getStartCis();
@@ -451,12 +453,21 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		int endNum = iso.getNumCodInEle(endCds);
 		if (startNum < 0) {
 			startCds = iso.getLsElement().get(Math.abs(startNum)).getStartCis();
+		} else if (startNum == 0) {
+			startCds = iso.getStart();
 		}
-		startCds = iso.getLocAAbefore(startCds);
+		int startCdsTmp = iso.getLocAAbefore(startCds);
+		if (startCdsTmp > 0) {
+			startCds = startCdsTmp;
+		}
+		
 		if (endNum < 0) {
 			endCds = iso.getLsElement().get(Math.abs(endNum)-1).getEndCis();
+		} else if (endNum == 0) {
+			endCds = iso.getEnd();
 		}
-		endCds = iso.getLocAAendBias(endCds);
+		
+		endCds = iso.getLocAAend(endCds);
 		if (!isDelInFrame) {
 			endCds = iso.getEnd();
 		} 
@@ -480,28 +491,65 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 	}
 	
 	public String getSnpChange() {
-		boolean isFrameShift = snpRefAltInfo.getSeqRef().length()%3 != 0;
-		String info = isFrameShift ? getInDelChangeFrameShift() : getDelChangeInFrame();
+		if (isMetDel) {
+			return "p." + convertAA("M") +"1?";
+		}
+		
+		String info =  isFramShift() ? getInDelChangeFrameShift() : getDelChangeInFrame();
 		return "p." + info;
+	}
+	
+	private boolean isFramShift() {
+		int startCds = getStartCis();
+		int endCds = getEndCis();
+		int startNum = iso.getNumCodInEle(startCds);
+		int endNum = iso.getNumCodInEle(endCds);
+		if (startNum < 0) {
+			startCds = iso.getLsElement().get(Math.abs(startNum)).getStartCis();
+		}
+		if (endNum < 0) {
+			endCds = iso.getLsElement().get(Math.abs(endNum)-1).getEndCis();
+		}
+		ArrayList<ExonInfo> lsTmp = iso.getRangeIsoOnExon(startCds, endCds);
+		int totalLength = lsTmp.stream()
+				.map(it -> it.getLength())
+				.reduce(0, (result, element) -> result + element);
+		return totalLength % 3 != 0;
 	}
 	
 	/** 读码框内的插入改变 */
 	private String getDelChangeInFrame() {
 		char[] refAA = refSeqNrForAA.toStringAA1().toCharArray();
-		//应该都是2
-		if (refAA.length != 2) {
-			throw new ExceptionNBCSnpHgvs("error");
-		}
 		char[] altAA = altSeqNrForAA.toStringAA1().toCharArray();
-		if (altAA[0] != refAA[0] || altAA[altAA.length-1] != refAA[1]) {
-			throw new ExceptionNBCSnpHgvs("error");
+		
+		int start = getAffectAANum(startCds);
+		int end = getAffectAANum(endCds);
+
+		int refStart = 0;
+		int len = Math.min(refAA.length, altAA.length);
+		for (int i = 0; i < len; i++) {
+			if (refAA[i] == altAA[i]) {
+				refStart++;
+			}
 		}
+		
+		int refEnd = 0;
+		for (int i = 0; i < len; i++) {
+			if (refAA[refAA.length-i-1] == altAA[altAA.length-i-1]) {
+				refEnd++;
+			}
+		}
+		
 		StringBuilder sBuilder = new StringBuilder();
-		sBuilder.append(convertAA(refAA[0]) + getAffectAANum(startCds) + "_" + convertAA(refAA[1]) + getAffectAANum(endCds) + "del");
+		if (start+refStart == end-refEnd) {
+			sBuilder.append(convertAA(refAA[refStart]) + (start+refStart) + "del");
+		} else {
+			sBuilder.append(convertAA(refAA[refStart]) + (start+refStart) + "_" + convertAA(refAA[refAA.length-refEnd-1]) + (end-refEnd) + "del");
+		}
 		if (altAA.length > 0) {
 			sBuilder.append("ins");
 		}
-		for (int i = 1; i < altAA.length-1; i++) {
+		for (int i = refStart; i < altAA.length-refEnd; i++) {
 			sBuilder.append(convertAA(altAA[i]));	
 		}
 		return sBuilder.toString();

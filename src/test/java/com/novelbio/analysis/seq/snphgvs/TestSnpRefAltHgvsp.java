@@ -1,19 +1,18 @@
 package com.novelbio.analysis.seq.snphgvs;
 
+import java.util.Set;
+
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modgeneid.GeneType;
-import com.novelbio.database.model.species.Species;
 
 import junit.framework.Assert;
 
@@ -80,19 +79,39 @@ public class TestSnpRefAltHgvsp {
 	public void testAnnoVep() {
 		TxtReadandWrite txtRead = new TxtReadandWrite("src/test/resources/test_file/hgvs/snp-types26.vep.txt");
 		for (String content : txtRead.readlines()) {
+			System.out.println(content);
 			if (content.trim().startsWith("#")) {
 				continue;
 			}
+			if (content.contains("226187012")) {
+				System.out.println();
+			}
 			String[] ss = content.split("\t");
 			SnpRefAltInfo snpRefAltInfo = new SnpRefAltInfo(ss[0], Integer.parseInt(ss[1]), ss[2], ss[3]);
-			GffGeneIsoInfo iso = gffHashGene.searchLocation(snpRefAltInfo.getRefId(), snpRefAltInfo.getStartReal(), snpRefAltInfo.getEndReal()).getCoveredOverlapGffGene().iterator().next().getLongestSplitMrna();
+			GffCodGeneDU gffCodDu = gffHashGene.searchLocation(snpRefAltInfo.getRefId(), snpRefAltInfo.getStartReal(), snpRefAltInfo.getEndReal());
+			Set<GffDetailGene> setGene = gffCodDu.getCoveredOverlapGffGene();
+			if (setGene.isEmpty()) {
+				gffCodDu.setTss(new int[]{-1000, 1000}); gffCodDu.setTes(new int[]{-1000, 1000});
+				 setGene = gffCodDu.getCoveredOverlapGffGene();
+			}
+			GffDetailGene gene = setGene.iterator().next();
+			
+			GffGeneIsoInfo iso = gene.getLongestSplitMrna();
+			if (!iso.getName().startsWith("NM")) {
+				int len = 0;
+				for (GffGeneIsoInfo iso2 : gene.getLsCodSplit()) {
+					if (iso2.getName().startsWith("NM") && iso2.getLenExon(0) > len) {
+						iso = iso2;
+					}
+				}
+			}
+		
 			snpRefAltInfo.setSeqHash(seqHash);
 			snpRefAltInfo.copeInputVar();
 			snpRefAltInfo.setVarHgvsType();
 			SnpRefAltHgvsc snpRefAltHgvsc = new SnpRefAltHgvsc(snpRefAltInfo, iso);
 			SnpRefAltHgvsp snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 			snpRefAltHgvsp.setNeedAA3(true);
-			System.out.println(content);
 			if (ss.length >= 5 && !StringOperate.isRealNull(ss[4])) {
 				Assert.assertEquals(ss[4], snpRefAltHgvsc.getHgvs());
 			}

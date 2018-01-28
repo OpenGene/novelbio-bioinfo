@@ -283,8 +283,7 @@ public class SnpRefAltInfo {
 	}
 	
 	public String toString() {
-		//TODO 
-		return null;
+		return alignRef.getRefID() + "\t" + alignRef.getStartAbs() + "\t" + seqRef + "\t" + seqAlt;
 	}
 }
 
