@@ -7,7 +7,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
@@ -38,6 +37,8 @@ public class SnpRefAltInfo {
 		GetSeqLen = getSeqLen;
 	}
 	
+	/** ref的坐标区间 */
+	Align alignRefRaw;
 	/** ref的坐标区间 */
 	Align alignRef;
 	
@@ -78,9 +79,10 @@ public class SnpRefAltInfo {
 	
 	public SnpRefAltInfo(String refId, int position, String seqRef, String seqAlt) {
 		int positionEnd = position + seqRef.length() - 1;
-		alignRef = new Align(refId, position, positionEnd);
+		alignRefRaw = new Align(refId, position, positionEnd);
 		this.seqRef = seqRef;
 		this.seqAlt = seqAlt;
+		alignRef = alignRefRaw;
 	}
 	/** 设定序列 */
 	public void setSeqHash(SeqHashInt seqHash) {
@@ -120,24 +122,66 @@ public class SnpRefAltInfo {
 		this.seqHash = gffChrAbs.getSeqHash();
 	}
 	
+	/**
+	 * 这里主要考虑一种情况<br>
+	 * ref GGGG[A]TCGGGG<br>
+	 * chr1	2345	A	ATCA //这是头尾相同的，都是A<br>
+	 * 插入之后为<br>
+	 * ref GGGGA[TCA]TCGGGG<br>
+	 * 这时候时检测不到duplicate的<br>
+	 * <br>
+	 * 但是如果写成<br>
+	 *  chr1	2344	G	GATC <br>
+	 *  ref GGGG[ATC]ATCGGGG<br>
+	 * 则会标记duplicate<br>
+	 * <br>
+	 * 那么20180129版本snpeff不标记duplicate而vep标记duplicate，我个人认为这里确实应该标记为duplicate<br>
+	 * 因此如果存在这种情况，先比尾部看有没有duplicate，再比头部<br>
+	 */
 	public void initial() {
-		copeInputVar();
+		copeInputVar(true);
 		setVarHgvsType();
+		setDuplicate();
 	}
-	
+
 	/**
 	 * 部分输入的indel类型如下：
-	 * ATACTACTG
-	 * ATAGCATTG
+	 * chr1	1234	ATACTACTG	ATAGCATTG
 	 * 那么这个实际上可以合并为
-	 * CTAC
-	 * GCAT
+	 * chr1	1237	CTAC	GCAT
+	 * 
+	 * @param isCompareStart 是否从头比到尾部
+	 * 譬如存在
+	 * ref ATA
+	 *  ATACGCAT
+	 * 
 	 */
 	@VisibleForTesting
-	protected void copeInputVar() {
+	protected void copeInputVar(boolean isCompareStart) {
 		seqStart = 0; seqEnd = 0;
 		char[] refChr = seqRef.toCharArray();
 		char[] altChr = seqAlt.toCharArray();
+		if (isCompareStart) {
+			compareStart(refChr, altChr);
+			if (seqStart < Math.min(seqRef.length(), seqAlt.length())) {
+				compareEnd(refChr, altChr);
+			}
+		} else {
+			compareEnd(refChr, altChr);
+			if (seqEnd < Math.min(seqRef.length(), seqAlt.length())) {
+				compareStart(refChr, altChr);
+			}
+		}
+		
+		if (seqStart == 0 && seqEnd == 0) {
+			return;
+		}
+		alignRef = new Align(alignRefRaw.toString());
+		alignRef.setStartEndLoc(alignRefRaw.getStartAbs() + seqStart, alignRefRaw.getEndAbs() - seqEnd);
+		alignRef.setCis5to3(true);
+	}
+	
+	private void compareStart(char[] refChr, char[] altChr) {
 		for (int i = 0; i < refChr.length; i++) {
 			if (i > altChr.length-1) break;
 			if (refChr[i] == altChr[i]) {
@@ -146,25 +190,19 @@ public class SnpRefAltInfo {
 				break;
 			}
 		}
-		if (seqStart < Math.min(seqRef.length(), seqAlt.length())) {
-			for (int i = 0; i < refChr.length; i++) {
-				if (i > altChr.length-1) break;
-				if (refChr[refChr.length-i-1] == altChr[altChr.length-i-1]) {
-					seqEnd++;
-				} else {
-					break;
-				}
+	}
+	
+	private void compareEnd(char[] refChr, char[] altChr) {
+		for (int i = 0; i < refChr.length; i++) {
+			if (i > altChr.length-1) break;
+			if (refChr[refChr.length-i-1] == altChr[altChr.length-i-1]) {
+				seqEnd++;
+			} else {
+				break;
 			}
 		}
-		
-		if (seqStart == 0 && seqEnd == 0) {
-			return;
-		}
-
-		alignRef.setStartEndLoc(alignRef.getStartAbs() + seqStart, alignRef.getEndAbs() - seqEnd);
-		alignRef.setStartAbs(alignRef.getStartAbs());
-		alignRef.setCis5to3(true);
 	}
+	
 	/**
 	 * 检测var的duplication
 	 * 譬如现在有 T [ATC] ATC ATC ATC ATC GCAT 在第一位的T后面插入了ATC
@@ -188,15 +226,20 @@ public class SnpRefAltInfo {
 		} else {
 			varType = EnumHgvsVarType.Indels;
 		}
-		
-		if (varType != EnumHgvsVarType.Insertions && varType != EnumHgvsVarType.Deletions) {
+	}
+	
+	protected void setDuplicate() {
+		if (varType != EnumHgvsVarType.Insertions 
+				&& varType != EnumHgvsVarType.Deletions
+				&& varType != EnumHgvsVarType.Duplications) {
 			return;
 		}
 		SnpRefAltDuplicate snpRefAltDuplicate = new SnpRefAltDuplicate(alignRef, getSeqRef(), getSeqAlt());
+		snpRefAltDuplicate.setSeqLen(GetSeqLen);
 		snpRefAltDuplicate.initial();
 		snpRefAltDuplicate.modifySeq(seqHash);
 		varType = snpRefAltDuplicate.getVarType();
-		alignRef = snpRefAltDuplicate.getAlignRef();
+		this.alignRef = snpRefAltDuplicate.getAlignRef();
 		isDup = snpRefAltDuplicate.isDup();
 	}
 	

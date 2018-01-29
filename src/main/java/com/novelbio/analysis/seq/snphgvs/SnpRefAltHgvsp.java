@@ -202,7 +202,7 @@ public abstract class SnpRefAltHgvsp {
 	}
 	
 	/** 读码框外的插入改变 */
-	protected String getInDelChangeFrameShift() {
+	protected String getInDelChangeFrameShift(boolean isExtend) {
 		char[] refSeq = refSeqNrForAA.toStringAA1().toCharArray();
 		String aaSeq = altSeqNrForAA.toStringAA1();
 		int terNum = 0;
@@ -228,12 +228,21 @@ public abstract class SnpRefAltHgvsp {
 			}
 		}
 		terNum = terNum - num;
+		//如果是 TerfsTer3，则计算位点从Ter开始算1
+		//如果是Ter225TyrextTer3，则计算位点从原来Ter的后一位开始算1
+		if (isExtend) {
+			terNum--;
+		}
 		String ter = isHaveTer? terNum+"" : "?";
 		StringBuilder sBuilder = new StringBuilder();
 		sBuilder.append(convertAA(refSeq[num]));
 		sBuilder.append(getAffectAANum(startCds)+num);
 		sBuilder.append(convertAA(aaSeqChr[num]));
-		sBuilder.append("fs");
+		if (isExtend) {
+			sBuilder.append("ext");
+		} else {
+			sBuilder.append("fs");
+		}
 		sBuilder.append(convertAA("*"));
 		sBuilder.append(ter);
 		return sBuilder.toString();
@@ -242,6 +251,8 @@ public abstract class SnpRefAltHgvsp {
 
 class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
 	boolean isATG = false;
+	boolean isUAG = false;
+
 	public SnpRefAltIsoSnp(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
 	}
@@ -257,6 +268,12 @@ class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
 		if (iso.getCod2ATG(startCds) == 0) {
 			isATG = true;
 		}
+		if (iso.getCod2UAG(endCds) == 0) {
+			isUAG = true;
+		}
+		if (isUAG) {
+			endCds = iso.getEnd();
+		}
 		if (startCds <0) {
 			throw new ExceptionNBCSnpHgvs("snp error not in cds " + snpRefAltInfo.toString());
 		}
@@ -268,8 +285,12 @@ class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
 	}
 	
 	public String getSnpChange() {
-		String ref = convertAA(refSeqNrForAA.toStringAA1());
-		String alt = convertAA(altSeqNrForAA.toStringAA1());
+		String ref = convertAA(refSeqNrForAA.toStringAA1().substring(0, 1));
+		String alt = convertAA(altSeqNrForAA.toStringAA1().substring(0, 1));
+		if (isUAG && !ref.equals(alt)) {
+			return "p." + getInDelChangeFrameShift(true);
+		}
+		
 		if (ref.equals(alt)) {
 			return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + "="; 
 		}
@@ -360,7 +381,7 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 	}
 	
 	public String getSnpChange() {
-		String info = isFrameShift() ? getInDelChangeFrameShift() : getInsertionChangeInFrame();
+		String info = isFrameShift() ? getInDelChangeFrameShift(false) : getInsertionChangeInFrame();
 		return "p." + info;
 	}
 	
@@ -495,7 +516,7 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 			return "p." + convertAA("M") +"1?";
 		}
 		
-		String info =  isFramShift() ? getInDelChangeFrameShift() : getDelChangeInFrame();
+		String info =  isFramShift() ? getInDelChangeFrameShift(false) : getDelChangeInFrame();
 		return "p." + info;
 	}
 	

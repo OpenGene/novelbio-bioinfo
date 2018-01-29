@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.chipseq.ExceptionNBCChIPAlignError;
+import com.novelbio.base.ExceptionNbcBean;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -14,7 +15,7 @@ import com.novelbio.base.dataStructure.PatternOperate;
  * @author zong0jie
  * 重写了hashcode和equals方法，为 chrID+start+end
  */
-public class Align implements Alignment {
+public class Align implements Alignment, Cloneable {
 	static PatternOperate patternOperate = new PatternOperate("(-{0,1}\\d+)-(-{0,1}\\d+)");
 	int start, end;
 	String chrID;
@@ -223,5 +224,15 @@ public class Align implements Alignment {
 			}
 		}
 		return alignResult;
+	}
+	
+	@Override
+	public Align clone() {
+		try {
+			return (Align) super.clone();
+		} catch (CloneNotSupportedException e) {
+			//应该不会报错
+			throw new ExceptionNbcBean(e);
+		}
 	}
 }
