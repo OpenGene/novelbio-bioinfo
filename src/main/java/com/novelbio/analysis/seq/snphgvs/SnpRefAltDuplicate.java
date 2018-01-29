@@ -68,8 +68,10 @@ public class SnpRefAltDuplicate {
 	 * ref: TTT-ATCAC-GCGCAGATC-TTTT<br>
 	 * <br>
 	 * 插入 chr1	8	C	CGCGCAGATC-ATCAC<br>
-	 * 产生 TTT-ATCAC-[GCGCAGATCATCAC]-GCGCAGATC-TTTT<br>
+	 * 产生 TTT-ATCAC-[GCGCAGATC-ATCAC]-GCGCAGATC-TTTT<br>
 	 * 实际上为 TTT-ATCACGCGCAGATC-ATCACGCGCAGATC-TTTT<br>
+	 * 将其变换为<b>chr1	17	C	CATCACGCGCAGATC</b><br>
+	 * 也就是我们最后所需要的结果<br>
 	 * <br>
 	 * 我们虽然插入的是GCGCAGATCATCAC 但是产生的结果却是ATCACGCGCAGATC的duplicate<br>
 	 * 因此我们需要用一定的算法把这种duplicate给鉴定出来<br>
