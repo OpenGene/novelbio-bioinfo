@@ -172,7 +172,7 @@ public class TestGffGeneIsoInfo {
 		
 
 		
-		GffGeneIsoInfo gffSub = isoRaw.subGffGeneIso(500, 8300);
+		GffGeneIsoInfo gffSub = isoRaw.getSubGffGeneIso(500, 8300);
 		Assert.assertEquals(gffGeneIsoInfoSubExpected, gffSub);
 		
 		//=================================================//
@@ -194,7 +194,7 @@ public class TestGffGeneIsoInfo {
 		gffGeneIsoInfoSubExpected.add(new ExonInfo(false, 1500, 2000));
 		gffGeneIsoInfoSubExpected.sort();
 		
-		gffSub = isoRaw.subGffGeneIso(1500, 7800);
+		gffSub = isoRaw.getSubGffGeneIso(1500, 7800);
 		Assert.assertEquals(gffGeneIsoInfoSubExpected, gffSub);
 		Assert.assertEquals(gffGeneIsoInfoSubExpected.getLsElement(), isoRaw.getRangeIsoOnExon(1500, 7800));
 
@@ -220,7 +220,7 @@ public class TestGffGeneIsoInfo {
 		gffGeneIsoInfoSubExpected.add(new ExonInfo(false, 9500, 9600));
 		gffGeneIsoInfoSubExpected.sort();
 		
-		gffSub = isoRaw.subGffGeneIso(20, 9600);
+		gffSub = isoRaw.getSubGffGeneIso(20, 9600);
 		Assert.assertEquals(gffGeneIsoInfoSubExpected, gffSub);
 		
 		isoRaw = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, false);
@@ -233,7 +233,7 @@ public class TestGffGeneIsoInfo {
 		gffGeneIsoInfoSubExpected = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, false);
 		gffGeneIsoInfoSubExpected.sort();
 		
-		gffSub = isoRaw.subGffGeneIso(20, 30);
+		gffSub = isoRaw.getSubGffGeneIso(20, 30);
 		Assert.assertEquals(0, gffSub.size());
 		//=================================================//
 		isoRaw = GffGeneIsoInfo.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
@@ -254,7 +254,7 @@ public class TestGffGeneIsoInfo {
 		gffGeneIsoInfoSubExpected.add(new ExonInfo(false, 1500, 2000));
 		gffGeneIsoInfoSubExpected.sort();
 		
-		gffSub = isoRaw.subGffGeneIso(1500, 7800);
+		gffSub = isoRaw.getSubGffGeneIso(1500, 7800);
 		Assert.assertEquals(gffGeneIsoInfoSubExpected, gffSub);
 		
 		//=================================================//
@@ -276,7 +276,7 @@ public class TestGffGeneIsoInfo {
 		gffGeneIsoInfoSubExpected.add(new ExonInfo(false, 1500, 2000));
 		gffGeneIsoInfoSubExpected.sort();
 		
-		gffSub = isoRaw.subGffGeneIso(1500, 7800);
+		gffSub = isoRaw.getSubGffGeneIso(1500, 7800);
 		Assert.assertEquals(gffGeneIsoInfoSubExpected, gffSub);
 	}
 

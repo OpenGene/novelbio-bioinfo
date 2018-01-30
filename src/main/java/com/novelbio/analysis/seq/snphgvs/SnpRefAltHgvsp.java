@@ -36,6 +36,9 @@ public abstract class SnpRefAltHgvsp {
 	public SnpRefAltHgvsp(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		this.snpRefAltInfo = snpRefAltInfo;
 		this.iso = iso;
+		if (snpRefAltInfo.isDup() && isNeedMoveDuplicateBefore()) {
+			snpRefAltInfo.setIsDupMoveLast(true);
+		}
 	}
 	/** 默认返回三字母，可以设定为返回单字母 */
 	public void setNeedAA3(boolean isNeedAA3) {
@@ -58,9 +61,6 @@ public abstract class SnpRefAltHgvsp {
 	protected abstract boolean isNeedHgvsp();
 	
 	public String getHgvsp() {
-		if (snpRefAltInfo.isDup() && isNeedMoveDuplicateBefore()) {
-			snpRefAltInfo.setIsDupMoveLast(true);
-		}
 		setStartEndCis();
 		setSiteReplace();
 		fillRefAltNrForAA();
@@ -105,11 +105,11 @@ public abstract class SnpRefAltHgvsp {
 	
 	/** 把refNr和altNr都准备好 */
 	protected void fillRefAltNrForAA() {
-		ArrayList<ExonInfo> lsTmp = iso.getRangeIsoOnExon(startCds, endCds);
-		if (ArrayOperate.isEmpty(lsTmp)) {
+		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(startCds, endCds);
+		if (isoSub.isEmpty()) {
 			throw new ExceptionNBCSnpHgvs("snp error not in cds " + snpRefAltInfo.toString());
 		}
-		refSeqNrForAA = snpRefAltInfo.getSeqHash().getSeq(StrandType.isoForward, snpRefAltInfo.getRefId(), lsTmp, false);		
+		refSeqNrForAA = snpRefAltInfo.getSeqHash().getSeq(isoSub, false);		
 		altSeqNrForAA = replaceSnpIndel(getSeqAltNrForAA(), snpOnReplaceLocStart, snpOnReplaceLocEnd);
 	}
 	
@@ -202,22 +202,16 @@ public abstract class SnpRefAltHgvsp {
 	}
 	
 	/** 读码框外的插入改变 */
-	protected String getInDelChangeFrameShift(boolean isExtend) {
+	protected String getInDelChangeFrameShift(boolean isExtend, boolean isDelete) {
 		char[] refSeq = refSeqNrForAA.toStringAA1().toCharArray();
-		String aaSeq = altSeqNrForAA.toStringAA1();
-		int terNum = 0;
-		boolean isHaveTer = false;
-		char[] aaSeqChr = aaSeq.toCharArray();
-		for (char aaChar : aaSeq.toCharArray()) {
-			terNum++;
-			if (aaChar == '*') {
-				isHaveTer = true;
-				break;
-			}
-		}
+		char[] aaSeqChr = altSeqNrForAA.toStringAA1().toCharArray();
 		if (refSeq[0] == '*' && aaSeqChr[0] == '*') {
 			return convertAA(refSeq[0]) + getAffectAANum(startCds) + "=";
 		}
+		
+		int terNumAlt = getTerNum(aaSeqChr);
+		int terNumRef = getTerNum(refSeq);
+
 		//如果为 p.Val1106ValfsTer15
 		//则需要向后延长一位为 p.Asn1107ProfsTer14
 		//就是不能氨基酸不变化
@@ -227,17 +221,26 @@ public abstract class SnpRefAltHgvsp {
 				break;
 			}
 		}
-		terNum = terNum - num;
+		int terNumAltReal = terNumAlt - num;
 		//如果是 TerfsTer3，则计算位点从Ter开始算1
 		//如果是Ter225TyrextTer3，则计算位点从原来Ter的后一位开始算1
 		if (isExtend) {
-			terNum--;
+			terNumAltReal = terNumAlt - terNumRef;
 		}
-		String ter = isHaveTer? terNum+"" : "?";
+		String ter = terNumAlt>0 ? terNumAltReal+"" : "?";
 		StringBuilder sBuilder = new StringBuilder();
 		sBuilder.append(convertAA(refSeq[num]));
 		sBuilder.append(getAffectAANum(startCds)+num);
-		sBuilder.append(convertAA(aaSeqChr[num]));
+		if (!isDelete) {
+			sBuilder.append(convertAA(aaSeqChr[num]));
+		} else {
+			//仅用于ter删除
+			if (terNumRef > 1) {
+				sBuilder.append("_"+convertAA(refSeq[terNumRef-1]));
+				sBuilder.append(getAffectAANum(startCds)+terNumRef-1);
+			}
+			sBuilder.append("del");
+		}
 		if (isExtend) {
 			sBuilder.append("ext");
 		} else {
@@ -246,6 +249,45 @@ public abstract class SnpRefAltHgvsp {
 		sBuilder.append(convertAA("*"));
 		sBuilder.append(ter);
 		return sBuilder.toString();
+	}
+	
+	private int getTerNum(char[] aaSeqChr) {
+		int terNum = 0;
+		boolean isHaveTer = false;
+		for (char aaChar : aaSeqChr) {
+			terNum++;
+			if (aaChar == '*') {
+				isHaveTer = true;
+				break;
+			}
+		}
+		return isHaveTer? terNum : 0;
+	}
+	
+	@VisibleForTesting
+	protected static int getStartSame(char[] refAA, char[] altAA) {
+		int startNum = 0;
+		int len = Math.min(refAA.length, altAA.length);
+		for (int i = 0; i < len; i++) {
+			if (refAA[i] != altAA[i]) {
+				break;
+			}
+			startNum++;
+		}
+		return startNum;
+	}
+	
+	@VisibleForTesting
+	protected static int getEndSame(char[] refAA, char[] altAA) {
+		int endNum = 0;
+		int len = Math.min(refAA.length, altAA.length);
+		for (int i = 1; i <= len; i++) {
+			if (refAA[refAA.length-i] != altAA[altAA.length-i]) {
+				break;
+			}
+			endNum++;
+		}
+		return endNum;
 	}
 }
 
@@ -288,7 +330,7 @@ class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
 		String ref = convertAA(refSeqNrForAA.toStringAA1().substring(0, 1));
 		String alt = convertAA(altSeqNrForAA.toStringAA1().substring(0, 1));
 		if (isUAG && !ref.equals(alt)) {
-			return "p." + getInDelChangeFrameShift(true);
+			return "p." + getInDelChangeFrameShift(true, false);
 		}
 		
 		if (ref.equals(alt)) {
@@ -303,6 +345,7 @@ class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
 }
 
 class SnpRefAltIsoIns extends SnpRefAltHgvsp {
+	/** 插入位置是否在两个aa中间 */
 	boolean isInsertInFrame = false;
 	
 	public SnpRefAltIsoIns(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
@@ -325,6 +368,7 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 	protected void setStartEndCis() {
 		startCds = getStartCis();
 		endCds = getEndCis();
+		isInsertInFrame = isInsertInFrame();
 		
 		int startNum = iso.getNumCodInEle(startCds);
 		if (startNum < 0) {
@@ -341,11 +385,20 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 		//最后突变类型变为 ATG_AGCinsACT
 		if (!isFrameShift()) {
 			startCds = iso.getLocAAbefore(startCds);
-			endCds = iso.getLocAAendBias(endCds);
+			endCds = iso.getLocAAend(endCds);
+			if (isInsertInFrame) {
+				return;
+			}
+			if (endCds-startCds == 2 && endCds != iso.getUAGsite()) {
+				endCds = iso.getLocAANextEnd(endCds);
+			}
+			if (startCds != iso.getATGsite()) {
+				startCds = iso.getLocAALastStart(startCds);
+			}
+
 			return;
 		}
 		
-		isInsertInFrame = isInsertInFrame();
 		//如果在两个密码子中插入造成移码突变，类似
 		// ATG-A-ACT AGC
 		//则我们获取 ATG-A-[ACT AGC ....] 一直到结束
@@ -374,6 +427,12 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 			// 因此就只需要简单的将插入序列添加到ref序列的头部即可
 			snpOnReplaceLocStart = 0;
 			snpOnReplaceLocEnd = 0;
+		} else if(!isFrameShift() && !isInsertInFrame) {
+			snpOnReplaceLocStart = -iso.getLocAAbeforeBias(startCds) + 1;
+			if (startCds != iso.getATGsite()) {
+				snpOnReplaceLocStart = snpOnReplaceLocStart + 3;
+			}
+			snpOnReplaceLocEnd = snpOnReplaceLocStart-1;
 		} else {
 			snpOnReplaceLocStart = -iso.getLocAAbeforeBias(startCds) + 1;
 			snpOnReplaceLocEnd = snpOnReplaceLocStart-1;
@@ -381,18 +440,20 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 	}
 	
 	public String getSnpChange() {
-		String info = isFrameShift() ? getInDelChangeFrameShift(false) : getInsertionChangeInFrame();
+		String info = isFrameShift() ? getInDelChangeFrameShift(false, false) : getInsertionChangeInFrame();
 		return "p." + info;
 	}
 	
 	/** 读码框内的插入改变 */
 	private String getInsertionChangeInFrame() {
 		char[] refAA = refSeqNrForAA.toStringAA1().toCharArray();
-		//应该都是2
-		if (refAA.length != 2) {
-			throw new ExceptionNBCSnpHgvs("error");
-		}
 		char[] altAA = altSeqNrForAA.toStringAA1().toCharArray();
+		
+		return isInsertInFrame ? getInsertionBetweenAA(refAA, altAA) : getInsertionInAA(refAA, altAA);
+	}
+	
+	/** insertion在两个aa中间 */
+	private String getInsertionBetweenAA(char[] refAA, char[] altAA) {
 		if (altAA[0] != refAA[0] || altAA[altAA.length-1] != refAA[1]) {
 			throw new ExceptionNBCSnpHgvs("error");
 		}
@@ -404,7 +465,30 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 		}
 		return sBuilder.toString();
 	}
-	
+	/** insertion在某个aa内部 */
+	private String getInsertionInAA(char[] refAA, char[] altAA) {
+		StringBuilder sBuilder = new StringBuilder();
+		int startNum = getAffectAANum(startCds);
+		if (refAA[1] == altAA[1]) {
+			sBuilder.append(convertAA(refAA[1]) + (startNum +1)
+			+ "_" + convertAA(refAA[2]) + (startNum+2) + "ins");	
+			for (int i = 2; i < altAA.length-1; i++) {
+				sBuilder.append(convertAA(altAA[i]));	
+			}
+		} else if (refAA[1] == altAA[altAA.length-2]) {
+			sBuilder.append(convertAA(refAA[0]) + startNum 
+			+ "_" + convertAA(refAA[1]) + (startNum+1) + "ins");	
+			for (int i = 1; i < altAA.length-2; i++) {
+				sBuilder.append(convertAA(altAA[i]));	
+			}
+		} else {
+			sBuilder.append(convertAA(refAA[1]) + (startNum +1) + "delins");	
+			for (int i = 1; i < altAA.length-1; i++) {
+				sBuilder.append(convertAA(altAA[i]));	
+			}
+		}
+		return sBuilder.toString();
+	}
 	/** 插入位置是否在两个aa中间 */
 	private boolean isInsertInFrame() {
 		return iso.getCod2ATGmRNA(endCds)%3 == 0;
@@ -420,6 +504,7 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 
 class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 	boolean isDelInFrame = false;
+	boolean isAffectUAG = false;
 	boolean isNeedAAanno = false;
 	
 	/** 有这个标记的直接返回Met1?或者Met1fs */
@@ -430,13 +515,9 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		
 		int[] region = getValidRange(new int[]{getStartCis(), getEndCis()}, new int[]{iso.getATGsite(), iso.getUAGsite()});
 		if(region == null) return;
-		List<ExonInfo> lsExons = iso.getRangeIsoOnExon(region[0], region[1]);
-		isNeedAAanno = !lsExons.isEmpty();
-		
-		int totalLength = lsExons.stream()
-				.map(it -> it.getLength())
-				.reduce(0, (result, element) -> result + element);
-		isDelInFrame = totalLength % 3 == 0;
+		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(region[0], region[1]);
+		isNeedAAanno = !isoSub.isEmpty();
+		isDelInFrame = isoSub.getLenExon() % 3 == 0;
 	}
 	
 	public boolean isNeedHgvsp() {
@@ -464,7 +545,7 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		}
 		//影响到了UAG，那么就当成移码处理，会一直延长到iso的结尾并获取新的UAG位点
 		if (getStartAbs() <= Math.max(uagStart, uagEnd) && getEndAbs()>= Math.min(uagStart, uagEnd)) {
-			isDelInFrame = false;
+			isAffectUAG = true;
 		}
 		startCds = getStartCis();
 		endCds = getEndCis();
@@ -489,7 +570,7 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		}
 		
 		endCds = iso.getLocAAend(endCds);
-		if (!isDelInFrame) {
+		if (!isDelInFrame || isAffectUAG) {
 			endCds = iso.getEnd();
 		} 
 		return;
@@ -516,7 +597,7 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 			return "p." + convertAA("M") +"1?";
 		}
 		
-		String info =  isFramShift() ? getInDelChangeFrameShift(false) : getDelChangeInFrame();
+		String info =  isDelInFrame? getDelChangeInFrame() : getInDelChangeFrameShift(false, false);
 		return "p." + info;
 	}
 	
@@ -531,35 +612,27 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		if (endNum < 0) {
 			endCds = iso.getLsElement().get(Math.abs(endNum)-1).getEndCis();
 		}
-		ArrayList<ExonInfo> lsTmp = iso.getRangeIsoOnExon(startCds, endCds);
-		int totalLength = lsTmp.stream()
-				.map(it -> it.getLength())
-				.reduce(0, (result, element) -> result + element);
-		return totalLength % 3 != 0;
+		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(startCds, endCds);
+		return isoSub.getLenExon() % 3 != 0;
 	}
 	
 	/** 读码框内的插入改变 */
 	private String getDelChangeInFrame() {
 		char[] refAA = refSeqNrForAA.toStringAA1().toCharArray();
 		char[] altAA = altSeqNrForAA.toStringAA1().toCharArray();
-		
 		int start = getAffectAANum(startCds);
 		int end = getAffectAANum(endCds);
-
-		int refStart = 0;
-		int len = Math.min(refAA.length, altAA.length);
-		for (int i = 0; i < len; i++) {
-			if (refAA[i] == altAA[i]) {
-				refStart++;
-			}
+		
+		if (refAA[0] == '*' && altAA[0] == '*') {
+			//TODO 未测试
+			return convertAA(refAA[0]) + start + "=";
+		} else if (isDelInFrame && isAffectUAG) {
+			//说明终止密码子被删掉了
+			return getInDelChangeFrameShift(true, true);
 		}
 		
-		int refEnd = 0;
-		for (int i = 0; i < len; i++) {
-			if (refAA[refAA.length-i-1] == altAA[altAA.length-i-1]) {
-				refEnd++;
-			}
-		}
+		int refStart = getStartSame(refAA, altAA);
+		int refEnd = getEndSame(refAA, altAA);
 		
 		StringBuilder sBuilder = new StringBuilder();
 		if (start+refStart == end-refEnd) {
@@ -567,7 +640,7 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		} else {
 			sBuilder.append(convertAA(refAA[refStart]) + (start+refStart) + "_" + convertAA(refAA[refAA.length-refEnd-1]) + (end-refEnd) + "del");
 		}
-		if (altAA.length > 0) {
+		if (altAA.length-refStart-refEnd > 0) {
 			sBuilder.append("ins");
 		}
 		for (int i = refStart; i < altAA.length-refEnd; i++) {

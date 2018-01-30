@@ -55,7 +55,7 @@ public class SnpRefAltHgvsc {
 	 * @return
 	 */
 	//TODO 待测试
-	public String getHgvs() {
+	public String getHgvsc() {
 		String start = getStartPosCis();
 		String end = getEndPosCis();
 		String position = start;

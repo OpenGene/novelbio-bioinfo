@@ -1,9 +1,7 @@
 package com.novelbio.analysis.seq.snphgvs;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.novelbio.analysis.seq.fasta.ChrSeqHash;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.mapping.Align;
 
@@ -30,16 +28,44 @@ public class SnpRefAltDuplicate {
 	/** 经过校正后的起点 */
 	int startReal;
 	boolean isDup;
-
-	public SnpRefAltDuplicate(Align alignRef, String seqRef, String seqAlt) {
+	
+	/**
+	 * ref ATGCCG
+	 * chr1 2	T	TGCAG
+	 * chr1	4	C	CAGGC
+	 * 
+	 * ATGCAGGCCG
+	 * 这两个是等价的，这时候 {@link #convertSeqNum}为2
+	 */
+	int  convertSeqNum;
+	/**
+	 * 这里只可能是insertion或deletion，因此只有一条序列存在，另一条为空
+	 * 根据 {@link #convertSeqNum} 来修改序列
+	 * 最后获得 AGGC
+	 */
+	String seqChange;
+	/**
+	 * 同上
+	 * 最后获得 C
+	 */
+	String seqChangeShort;
+	
+	public SnpRefAltDuplicate(Align alignRef, String seqRef, String seqAlt, String seqShort) {
 		this.alignRef = alignRef;
 		this.seqRef = seqRef;
 		this.seqAlt = seqAlt;
+		this.seqChangeShort = seqShort;
 	}
 	
 	/** {@link #compareSeq(String, char[])}比较结束后可以获得修正后的align */
 	public Align getAlignRef() {
 		return alignRef;
+	}
+	public String getSeqChange() {
+		return seqChange;
+	}
+	public String getSeqChangeShort() {
+		return seqChangeShort;
 	}
 	public EnumHgvsVarType getVarType() {
 		return varType;
@@ -61,6 +87,7 @@ public class SnpRefAltDuplicate {
 		String seqIndel = seqRef.length() == 0 ? seqAlt : seqRef;
 		compareSeq(seqHash, seqIndel);
 		generateNewAlign(seqIndel);
+		changeSeq();
 	}
 	
 	/**
@@ -211,6 +238,12 @@ public class SnpRefAltDuplicate {
 				break;
 			}
 		}
+		
+		if (!isNext && samNum > 0 && samNum < seqIndel.length) {
+			convertSeqNum = samNum;
+			startReal = startReal + samNum; 
+		}
+		
 		if (!isNext && (samNum > 0 || !isDup)) {
 			boolean isDupBefore = true;
 			for (int i = samNum; i < seqIndel.length; i++) {
@@ -221,10 +254,19 @@ public class SnpRefAltDuplicate {
 			}
 			if (isDupBefore) {
 				isDup = true;
-				startReal = startReal + samNum; 
 			}
 		}
 		return isNext;
+	}
+	
+	private void changeSeq() {
+		String seq = seqRef.length() > 0 ? seqRef : seqAlt;
+		if (convertSeqNum <= 0) {
+			seqChange = seq;
+			return;
+		}
+		seqChange = seq.substring(convertSeqNum) + seq.substring(0, convertSeqNum);
+		seqChangeShort = seq.substring(convertSeqNum-1, convertSeqNum);
 	}
 	
 }

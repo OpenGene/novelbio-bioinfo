@@ -39,29 +39,27 @@ public class SnpRefAltInfo {
 	
 	/** ref的坐标区间 */
 	Align alignRefRaw;
-	/** ref的坐标区间 */
-	Align alignRef;
+	/** reference的序列 */
+	String seqRefRaw;
+	/** 改变之后的序列 */
+	String seqAltRaw;
 	
+	//==经过修改的坐标==
+	/** 修改后的ref的坐标区间
+	 * 如<br>
+	 * ref:TTCGATTC<br>
+	 * chr1	2	TC	TCGATG<br>
+	 * TTC[GATG]GATTC<br>
+	 *修改为<br>
+	 * chr1 4	A	ATGGA<br>
+	 * TTCGA[TGGA]TTC<br>
+	 */
+	Align alignRef;
 	/** reference的序列 */
 	String seqRef;
 	/** 改变之后的序列 */
 	String seqAlt;
-	/**
-	 * insertion和deletion的头部是一样的，这里我们要去掉
-	 * chr1	2343	ACATC	ACCTA
-	 * seqStart=2
-	 * chr1 2345	A	T
-	 * seqStart=0
-	 */
-	int seqStart;
-	/**
-	 * insertion和deletion的尾部是一样的，这里我们要去掉
-	 * chr1	2343	ACATCTT	ACCTATT
-	 * seqEnd=2
-	 * chr1 2345	AC	TA
-	 * seqEnd=0
-	 */
-	int seqEnd;
+	String seqShort;
 	
 	EnumHgvsVarType varType;
 	/** 是否为duplicate的类型 */
@@ -80,8 +78,8 @@ public class SnpRefAltInfo {
 	public SnpRefAltInfo(String refId, int position, String seqRef, String seqAlt) {
 		int positionEnd = position + seqRef.length() - 1;
 		alignRefRaw = new Align(refId, position, positionEnd);
-		this.seqRef = seqRef;
-		this.seqAlt = seqAlt;
+		this.seqRefRaw = seqRef;
+		this.seqAltRaw = seqAlt;
 		alignRef = alignRefRaw;
 	}
 	/** 设定序列 */
@@ -139,8 +137,7 @@ public class SnpRefAltInfo {
 	 * 因此如果存在这种情况，先比尾部看有没有duplicate，再比头部<br>
 	 */
 	public void initial() {
-		copeInputVar(true);
-		setVarHgvsType();
+		copeInputVar();
 		setDuplicate();
 	}
 
@@ -157,49 +154,42 @@ public class SnpRefAltInfo {
 	 * 
 	 */
 	@VisibleForTesting
-	protected void copeInputVar(boolean isCompareStart) {
-		seqStart = 0; seqEnd = 0;
-		char[] refChr = seqRef.toCharArray();
-		char[] altChr = seqAlt.toCharArray();
-		if (isCompareStart) {
-			compareStart(refChr, altChr);
-			if (seqStart < Math.min(seqRef.length(), seqAlt.length())) {
-				compareEnd(refChr, altChr);
-			}
-		} else {
-			compareEnd(refChr, altChr);
-			if (seqEnd < Math.min(seqRef.length(), seqAlt.length())) {
-				compareStart(refChr, altChr);
+	protected void copeInputVar() {
+		int seqStart = 0, seqEnd = 0;
+		int seqLenMax = Math.max(seqRefRaw.length(), seqAltRaw.length());
+		int seqLenMin = Math.min(seqRefRaw.length(), seqAltRaw.length());
+
+		char[] refChr = seqRefRaw.toCharArray();
+		char[] altChr = seqAltRaw.toCharArray();
+		seqStart = SnpRefAltHgvsp.getStartSame(refChr, altChr);
+		if (seqStart < seqLenMin) {
+			seqEnd = SnpRefAltHgvsp.getEndSame(refChr, altChr);
+			if (seqEnd+seqStart >= seqLenMax) {
+				seqEnd = seqLenMin - seqStart;
 			}
 		}
-		
 		if (seqStart == 0 && seqEnd == 0) {
+			alignRef = new Align(alignRefRaw.toString());
+			seqRef = seqRefRaw;
+			seqAlt = seqAltRaw;
+			setVarHgvsType();
 			return;
 		}
+		seqRef = seqRefRaw.substring(seqStart, seqRefRaw.length() - seqEnd);
+		seqAlt = seqAltRaw.substring(seqStart, seqAltRaw.length() - seqEnd);
+		setVarHgvsType();
 		alignRef = new Align(alignRefRaw.toString());
-		alignRef.setStartEndLoc(alignRefRaw.getStartAbs() + seqStart, alignRefRaw.getEndAbs() - seqEnd);
-		alignRef.setCis5to3(true);
-	}
-	
-	private void compareStart(char[] refChr, char[] altChr) {
-		for (int i = 0; i < refChr.length; i++) {
-			if (i > altChr.length-1) break;
-			if (refChr[i] == altChr[i]) {
-				seqStart++;
-			} else {
-				break;
-			}
+		
+		int startSiteSubSeq = seqStart-1;
+		if (seqStart == 0) {
+			startSiteSubSeq = seqLenMax - seqEnd;
 		}
-	}
-	
-	private void compareEnd(char[] refChr, char[] altChr) {
-		for (int i = 0; i < refChr.length; i++) {
-			if (i > altChr.length-1) break;
-			if (refChr[refChr.length-i-1] == altChr[altChr.length-i-1]) {
-				seqEnd++;
-			} else {
-				break;
-			}
+		if (varType == EnumHgvsVarType.Insertions) {
+			alignRef.setStartEndLoc(alignRefRaw.getStartAbs() + seqStart-1, alignRefRaw.getStartAbs() + seqStart);
+			seqShort = seqAltRaw.substring(startSiteSubSeq, startSiteSubSeq+1);
+		} else {
+			alignRef.setStartEndLoc(alignRefRaw.getStartAbs() + seqStart, alignRefRaw.getEndAbs() - seqEnd);
+			seqShort = seqRefRaw.substring(startSiteSubSeq, startSiteSubSeq+1);
 		}
 	}
 	
@@ -234,13 +224,21 @@ public class SnpRefAltInfo {
 				&& varType != EnumHgvsVarType.Duplications) {
 			return;
 		}
-		SnpRefAltDuplicate snpRefAltDuplicate = new SnpRefAltDuplicate(alignRef, getSeqRef(), getSeqAlt());
+		SnpRefAltDuplicate snpRefAltDuplicate = new SnpRefAltDuplicate(alignRef, seqRef, seqAlt, seqShort);
 		snpRefAltDuplicate.setSeqLen(GetSeqLen);
 		snpRefAltDuplicate.initial();
 		snpRefAltDuplicate.modifySeq(seqHash);
 		varType = snpRefAltDuplicate.getVarType();
-		this.alignRef = snpRefAltDuplicate.getAlignRef();
+		alignRef = snpRefAltDuplicate.getAlignRef();
 		isDup = snpRefAltDuplicate.isDup();
+		seqShort = snpRefAltDuplicate.getSeqChangeShort();
+		if (varType == EnumHgvsVarType.Deletions) {
+			seqRef = snpRefAltDuplicate.getSeqChange();
+			seqAlt = "";
+		} else {
+			seqAlt = snpRefAltDuplicate.getSeqChange();
+			seqRef = "";
+		}
 	}
 	
 	public EnumHgvsVarType getVarType() {
@@ -282,7 +280,6 @@ public class SnpRefAltInfo {
 		
 		Align align = new Align(alignRef.toString());
 		int seqLen = varType == EnumHgvsVarType.Duplications ? seqAlt.length() : seqRef.length();
-		seqLen = seqLen - 1;
 		align.setStartEndLoc(alignRef.getStartAbs()-seqLen, alignRef.getEndAbs()-seqLen);
 		return align;
 	}
@@ -312,21 +309,31 @@ public class SnpRefAltInfo {
 		return alignRef.getEndAbs();
 	}
 	public String getSeqAlt() {
-		return seqAlt.substring(seqStart, seqAlt.length()-seqEnd);
+		return seqAlt;
 	}
 	public String getSeqRef() {
-		return seqRef.substring(seqStart, seqRef.length()-seqEnd);
+		return seqRef;
 	}
 	public Align getAlignRef() {
 		return alignRef;
 	}
-	
+	/** 修正过的位点信息 */
+	public String toStringModify() {
+		StringBuilder sBuilder = new StringBuilder();
+		sBuilder.append(alignRef.getRefID() + "\t");
+		int startLen = varType == EnumHgvsVarType.Deletions ? 1 : 0;
+		sBuilder.append(alignRef.getStartAbs() - startLen);
+		sBuilder.append("\t");
+		sBuilder.append(seqShort + seqRef + "\t");
+		sBuilder.append(seqShort + seqAlt);
+		return sBuilder.toString();		
+	}
 	public static enum SnpIndelType {
 		INSERT, DELETION, MISMATCH, CORRECT
 	}
 	
 	public String toString() {
-		return alignRef.getRefID() + "\t" + alignRef.getStartAbs() + "\t" + seqRef + "\t" + seqAlt;
+		return alignRefRaw.getRefID() + "\t" + alignRefRaw.getStartAbs() + "\t" + seqRefRaw + "\t" + seqAltRaw;
 	}
 }
 
