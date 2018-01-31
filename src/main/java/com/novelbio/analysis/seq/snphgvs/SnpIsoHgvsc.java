@@ -11,11 +11,11 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
  * 在setSampleName()方法中可设定样本名，并获得该样本的信息。
  * @author zong0jie
  */
-public class SnpRefAltHgvsc {
+public class SnpIsoHgvsc {
 	/** 与剪接位点距离的绝对值，小于该距离才会考虑剪接位点的影响 */
 	static int splitRegion = 2;
 	
-	SnpRefAltInfo snpRefAltInfo;
+	SnpInfo snpRefAltInfo;
 	GffGeneIsoInfo iso;
 	
 	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
@@ -26,7 +26,7 @@ public class SnpRefAltHgvsc {
 	EnumMrnaLocate enumMrnaLocate;
 	
 	
-	public SnpRefAltHgvsc(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
+	public SnpIsoHgvsc(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		this.snpRefAltInfo = snpRefAltInfo;
 		this.iso = iso;
 	}

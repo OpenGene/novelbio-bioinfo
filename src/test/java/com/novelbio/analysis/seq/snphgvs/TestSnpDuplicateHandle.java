@@ -7,7 +7,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
 
 import junit.framework.Assert;
 
-public class TestSnpRefAltHgvspMoveDuplicate {
+public class TestSnpDuplicateHandle {
 	
 	public void testIsNeedMoveDuplicateBefore() {
 		GffGeneIsoInfo isoCis = getIsoCis();
@@ -17,62 +17,62 @@ public class TestSnpRefAltHgvspMoveDuplicate {
 	}
 	
 	protected void testIsNeedMoveDuplicateBefore(GffGeneIsoInfo iso) {
-		SnpRefAltInfo snpRefAltInfo = new SnpRefAltInfo("chr1", 173470236, "A", "AC");
+		SnpInfo snpRefAltInfo = new SnpInfo("chr1", 173470236, "A", "AC");
 		snpRefAltInfo.isDup = true;
 		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
 		snpRefAltInfo.setAlignRef(new Align("chr1:31-33"));
-		SnpRefAltHgvsp snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		SnpIsoHgvsp snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 		
 		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
 		snpRefAltInfo.setAlignRef(new Align("chr1:32-33"));
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 		
 		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
 		snpRefAltInfo.setAlignRef(new Align("chr1:33-33"));
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertFalse(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 		
 		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
 		snpRefAltInfo.setAlignRef(new Align("chr1:31-33"));
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 		
 		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
 		snpRefAltInfo.setAlignRef(new Align("chr1:32-33"));
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertFalse(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 		
 		//==================================================
 		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
 		snpRefAltInfo.setAlignRef(new Align("chr1:36-39"));
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 		
 		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
 		snpRefAltInfo.setAlignRef(new Align("chr1:36-38"));
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 		
 		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
 		snpRefAltInfo.setAlignRef(new Align("chr1:36-37"));
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertFalse(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 		
 		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
 		snpRefAltInfo.setAlignRef(new Align("chr1:36-40"));
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 		
 		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
 		snpRefAltInfo.setAlignRef(new Align("chr1:36-39"));
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 		
 		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
 		snpRefAltInfo.setAlignRef(new Align("chr1:36-38"));
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		Assert.assertFalse(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
 	}
 		

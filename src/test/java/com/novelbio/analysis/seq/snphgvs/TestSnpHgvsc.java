@@ -7,11 +7,11 @@ import org.junit.Test;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.snphgvs.SnpRefAltInfo;
-import com.novelbio.analysis.seq.snphgvs.SnpRefAltHgvsc;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo;
+import com.novelbio.analysis.seq.snphgvs.SnpIsoHgvsc;
 import com.novelbio.database.model.modgeneid.GeneType;
 
-public class TestSnpRefAltHgvsc {
+public class TestSnpHgvsc {
 	
 	@Test
 	public void testGetStartEndCis() {
@@ -26,45 +26,45 @@ public class TestSnpRefAltHgvsc {
 		isoCis.setATG(65);
 		isoCis.setUAG(85);
 
-		SnpRefAltInfo snpRefAltInfo = new SnpRefAltInfo("chr1", 10, "A", "T");
+		SnpInfo snpRefAltInfo = new SnpInfo("chr1", 10, "A", "T");
 		snpRefAltInfo.setAlignRef(new Align("chr1", 10, 24));
-		SnpRefAltHgvsc snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoCis);
+		SnpIsoHgvsc snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoCis);
 		assertEquals("-27-u10", snpRefAltIso.getStartPosCis());
 		assertEquals("-23", snpRefAltIso.getEndPosCis());
 		
 		snpRefAltInfo.setAlignRef(new Align("chr1", 33, 37));
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoCis);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoCis);
 		assertEquals("-17+3", snpRefAltIso.getStartPosCis());
 		assertEquals("-16-3", snpRefAltIso.getEndPosCis());
 		
 		snpRefAltInfo.setAlignRef(new Align("chr1", 45, 65));
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoCis);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoCis);
 		assertEquals("-11", snpRefAltIso.getStartPosCis());
 		assertEquals("1", snpRefAltIso.getEndPosCis());
 		
 		snpRefAltInfo.setAlignRef(new Align("chr1", 75, 105));
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoCis);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoCis);
 		assertEquals("6+5", snpRefAltIso.getStartPosCis());
 		assertEquals("*11", snpRefAltIso.getEndPosCis());
 		
 		snpRefAltInfo.setAlignRef(new Align("chr1", 112, 119));
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoCis);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoCis);
 		assertEquals("*16+2", snpRefAltIso.getStartPosCis());
 		assertEquals("*17-1", snpRefAltIso.getEndPosCis());
 		
 		snpRefAltInfo.setAlignRef(new Align("chr1", 122, 127));
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoCis);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoCis);
 		assertEquals("*19", snpRefAltIso.getStartPosCis());
 		assertEquals("*22+d2", snpRefAltIso.getEndPosCis());
 		
 		//TAGAC(30)----TAGAC----A(31)
-		snpRefAltInfo = new SnpRefAltInfo("chr1", 30, "C", "CTAGAC");
+		snpRefAltInfo = new SnpInfo("chr1", 30, "C", "CTAGAC");
 		snpRefAltInfo.setAlignRef(new Align("chr1", 30, 31));
 		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
 		assertEquals(26, snpRefAltInfo.getStartPosition());
 		assertEquals(30, snpRefAltInfo.getEndPosition());
 
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoCis);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoCis);
 		assertEquals("-21", snpRefAltIso.getStartPosCis());
 		assertEquals("-17", snpRefAltIso.getEndPosCis());
 	}
@@ -83,34 +83,34 @@ public class TestSnpRefAltHgvsc {
 		isoTrans.setATG(85);
 		isoTrans.setUAG(65);
 
-		SnpRefAltInfo snpRefAltInfo = new SnpRefAltInfo("chr1", 10, "A", "T");
+		SnpInfo snpRefAltInfo = new SnpInfo("chr1", 10, "A", "T");
 		snpRefAltInfo.setAlignRef(new Align("chr1", 10, 24));
-		SnpRefAltHgvsc snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoTrans);
+		SnpIsoHgvsc snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoTrans);
 		assertEquals("*23", snpRefAltIso.getStartPosCis());
 		assertEquals("*27+d10", snpRefAltIso.getEndPosCis());
 		
 		snpRefAltInfo.setAlignRef(new Align("chr1", 33, 37));
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoTrans);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoTrans);
 		assertEquals("*16+3", snpRefAltIso.getStartPosCis());
 		assertEquals("*17-3", snpRefAltIso.getEndPosCis());
 		
 		snpRefAltInfo.setAlignRef(new Align("chr1", 45, 65));
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoTrans);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoTrans);
 		assertEquals("12", snpRefAltIso.getStartPosCis());
 		assertEquals("*11", snpRefAltIso.getEndPosCis());
 		
 		snpRefAltInfo.setAlignRef(new Align("chr1", 75, 105));
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoTrans);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoTrans);
 		assertEquals("-11", snpRefAltIso.getStartPosCis());
 		assertEquals("6+5", snpRefAltIso.getEndPosCis());
 		
 		snpRefAltInfo.setAlignRef(new Align("chr1", 112, 119));
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoTrans);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoTrans);
 		assertEquals("-17+1", snpRefAltIso.getStartPosCis());
 		assertEquals("-16-2", snpRefAltIso.getEndPosCis());
 		
 		snpRefAltInfo.setAlignRef(new Align("chr1", 122, 127));
-		snpRefAltIso = new SnpRefAltHgvsc(snpRefAltInfo, isoTrans);
+		snpRefAltIso = new SnpIsoHgvsc(snpRefAltInfo, isoTrans);
 		assertEquals("-22-u2", snpRefAltIso.getStartPosCis());
 		assertEquals("-19", snpRefAltIso.getEndPosCis());
 	}

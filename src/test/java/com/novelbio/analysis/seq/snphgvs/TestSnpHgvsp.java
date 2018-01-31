@@ -16,7 +16,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 import junit.framework.Assert;
 
-public class TestSnpRefAltHgvsp {
+public class TestSnpHgvsp {
 	// static GffChrAbs gffchrAbs;
 	static GffHashGene gffHashGene;
 	static SeqHash seqHash;
@@ -40,34 +40,31 @@ public class TestSnpRefAltHgvsp {
 	@Test
 	public void testAnno() {
 		GffGeneIsoInfo iso = gffHashGene.searchISO("NM_005092");
-		SnpRefAltInfo snpRefAltInfo = new SnpRefAltInfo("chr1", 173010498, "ATCAAGTCTCTA", "A");
-		snpRefAltInfo.setSeqHash(seqHash);
-		snpRefAltInfo.initial();
-		SnpRefAltHgvsc snpRefAltHgvsc = new SnpRefAltHgvsc(snpRefAltInfo, iso);
-		SnpRefAltHgvsp snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		SnpInfo snpRefAltInfo = new SnpInfo("chr1", 173010498, "ATCAAGTCTCTA", "A");
+		snpRefAltInfo.initial(seqHash);
+		SnpIsoHgvsc snpRefAltHgvsc = new SnpIsoHgvsc(snpRefAltInfo, iso);
+		SnpIsoHgvsp snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 		snpRefAltHgvsp.setNeedAA3(false);
 		Assert.assertEquals("c.598_*8del", snpRefAltHgvsc.getHgvsc());
 		Assert.assertEquals("p.*200delext*?", snpRefAltHgvsp.getHgvsp());
 		
 		iso = gffHashGene.searchISO("NM_178527");
-		snpRefAltInfo = new SnpRefAltInfo("chr1", 173470236, "A", "AC");
-		snpRefAltInfo.setSeqHash(seqHash);
-		snpRefAltInfo.initial();
+		snpRefAltInfo = new SnpInfo("chr1", 173470236, "A", "AC");
+		snpRefAltInfo.initial(seqHash);
 
-		snpRefAltHgvsc = new SnpRefAltHgvsc(snpRefAltInfo, iso);
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsc = new SnpIsoHgvsc(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 		snpRefAltHgvsp.setNeedAA3(false);
 		Assert.assertEquals("c.3372-1dup", snpRefAltHgvsc.getHgvsc());
 		Assert.assertEquals("p.S1124Rfs*13", snpRefAltHgvsp.getHgvsp());
 		
 		iso = gffHashGene.searchISO("NM_178527");
-		snpRefAltInfo = new SnpRefAltInfo("chr1", 173472459, "A", "ACTGAGGC");
-		snpRefAltInfo.setSeqHash(seqHash);
-		snpRefAltInfo.initial();
+		snpRefAltInfo = new SnpInfo("chr1", 173472459, "A", "ACTGAGGC");
+		snpRefAltInfo.initial(seqHash);
 
-		snpRefAltHgvsc = new SnpRefAltHgvsc(snpRefAltInfo, iso);
+		snpRefAltHgvsc = new SnpIsoHgvsc(snpRefAltInfo, iso);
 		snpRefAltHgvsp.setNeedAA3(false);
-		snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 		snpRefAltHgvsp.setNeedAA3(false);
 		Assert.assertEquals("c.3311-1_3316dup", snpRefAltHgvsc.getHgvsc());
 		Assert.assertEquals("p.V1106Gfs*8", snpRefAltHgvsp.getHgvsp());
@@ -82,11 +79,11 @@ public class TestSnpRefAltHgvsp {
 			if (content.trim().startsWith("#")) {
 				continue;
 			}
-			if (content.contains("chr1	172635150	GCTCTAA	G")) {
+			if (content.contains("chr1	173470237	C	A")) {
 				System.out.println();
 			}
 			String[] ss = content.split("\t");
-			SnpRefAltInfo snpRefAltInfo = new SnpRefAltInfo(ss[0], Integer.parseInt(ss[1]), ss[2], ss[3]);
+			SnpInfo snpRefAltInfo = new SnpInfo(ss[0], Integer.parseInt(ss[1]), ss[2], ss[3]);
 			GffCodGeneDU gffCodDu = gffHashGene.searchLocation(snpRefAltInfo.getRefId(), snpRefAltInfo.getStartReal(), snpRefAltInfo.getEndReal());
 			Set<GffDetailGene> setGene = gffCodDu.getCoveredOverlapGffGene();
 			if (setGene.isEmpty()) {
@@ -105,11 +102,10 @@ public class TestSnpRefAltHgvsp {
 				}
 			}
 		
-			snpRefAltInfo.setSeqHash(seqHash);
-			snpRefAltInfo.initial();
+			snpRefAltInfo.initial(seqHash);
 
-			SnpRefAltHgvsc snpRefAltHgvsc = new SnpRefAltHgvsc(snpRefAltInfo, iso);
-			SnpRefAltHgvsp snpRefAltHgvsp = SnpRefAltHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+			SnpIsoHgvsc snpRefAltHgvsc = new SnpIsoHgvsc(snpRefAltInfo, iso);
+			SnpIsoHgvsp snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 			snpRefAltHgvsp.setNeedAA3(true);
 			if (ss.length >= 5 && !StringOperate.isRealNull(ss[4])) {
 				Assert.assertEquals(ss[4], snpRefAltHgvsc.getHgvsc());

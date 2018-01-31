@@ -128,4 +128,3 @@ chr1	15578287	G	GACT	c.7_8insACT	p.Ala3delinsAspSer
 chr1	15578288	C	CACT	c.8_9insACT	p.Ala3_Tyr4insLeu
 chr1	15578365	G	GCATAGT	c.85_86insCATAGT	p.Val29delinsAlaTerPhe
 chr1	15578294	T	TCAG	c.14_15insCAG	p.Leu5_Lys6insArg
-#´ý²åÈë chr1	173457000	TAAGTCT	T

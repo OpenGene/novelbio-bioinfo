@@ -1,19 +1,13 @@
 package com.novelbio.analysis.seq.snphgvs;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.CodeInfo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.fasta.StrandType;
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
+import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.base.dataStructure.ArrayOperate;
 
-public abstract class SnpRefAltHgvsp {
-	SnpRefAltInfo snpRefAltInfo;
+public abstract class SnpIsoHgvsp {
+	SnpInfo snpRefAltInfo;
 	GffGeneIsoInfo iso;
 	
 	boolean isNeedAA3 = true;
@@ -33,7 +27,7 @@ public abstract class SnpRefAltHgvsp {
 	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
 	SeqFasta altSeqNrForAA;
 	
-	public SnpRefAltHgvsp(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
+	public SnpIsoHgvsp(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		this.snpRefAltInfo = snpRefAltInfo;
 		this.iso = iso;
 		if (snpRefAltInfo.isDup() && isNeedMoveDuplicateBefore()) {
@@ -58,12 +52,15 @@ public abstract class SnpRefAltHgvsp {
 	}
 	
 	/** 是否需要氨基酸变化注释，有些在内含子中的就不需要氨基酸变化注释 */
-	protected abstract boolean isNeedHgvsp();
+	public abstract boolean isNeedHgvsp();
 	
-	public String getHgvsp() {
+	private void initial(SeqHashInt seqHash) {
 		setStartEndCis();
 		setSiteReplace();
-		fillRefAltNrForAA();
+		fillRefAltNrForAA(seqHash);
+	}
+	
+	public String getHgvsp() {
 		return getSnpChange();
 	}
 	public abstract String getSnpChange();
@@ -104,12 +101,12 @@ public abstract class SnpRefAltHgvsp {
 	}
 	
 	/** 把refNr和altNr都准备好 */
-	protected void fillRefAltNrForAA() {
+	protected void fillRefAltNrForAA(SeqHashInt seqHash) {
 		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(startCds, endCds);
 		if (isoSub.isEmpty()) {
 			throw new ExceptionNBCSnpHgvs("snp error not in cds " + snpRefAltInfo.toString());
 		}
-		refSeqNrForAA = snpRefAltInfo.getSeqHash().getSeq(isoSub, false);		
+		refSeqNrForAA = seqHash.getSeq(isoSub, false);		
 		altSeqNrForAA = replaceSnpIndel(getSeqAltNrForAA(), snpOnReplaceLocStart, snpOnReplaceLocEnd);
 	}
 	
@@ -186,19 +183,33 @@ public abstract class SnpRefAltHgvsp {
 		return seq;
 	}
 	
-	public static SnpRefAltHgvsp generateSnpRefAltHgvsp(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
+	public static SnpIsoHgvsp generateSnpRefAltHgvsp(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso, SeqHashInt seqHash) {
+		SnpIsoHgvsp snpIsoHgvsp = generateSnpRefAltHgvsp(snpRefAltInfo, iso);
+		if (snpIsoHgvsp.isNeedHgvsp()) {
+			snpIsoHgvsp.initial(seqHash);
+		}
+		return snpIsoHgvsp;
+	}
+	
+	/** 仅用于测试，正式项目不能使用 */
+	@VisibleForTesting
+	protected static SnpIsoHgvsp generateSnpRefAltHgvsp(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
+		SnpIsoHgvsp snpIsoHgvsp = null;
 		int refLen = snpRefAltInfo.getSeqRef().length();
 		int altLen = snpRefAltInfo.getSeqAlt().length();
 		if (refLen == 1 && altLen == 1) {
-			return new SnpRefAltIsoSnp(snpRefAltInfo, iso);
+			snpIsoHgvsp = new SnpRefAltIsoSnp(snpRefAltInfo, iso);
 		} else if (refLen == 0 && altLen >= 1) {
-			return new SnpRefAltIsoIns(snpRefAltInfo, iso);
+			snpIsoHgvsp = new SnpRefAltIsoIns(snpRefAltInfo, iso);
 		} else if (refLen >= 1 && altLen == 0) {
-			return new SnpRefAltIsoDel(snpRefAltInfo, iso);
+			snpIsoHgvsp = new SnpRefAltIsoDel(snpRefAltInfo, iso);
 		} else if (refLen > 1 && altLen > 1) {
 			//TODO indel尚未实现
 		}
-		throw new ExceptionNBCSnpHgvs("cannot find such indel conditon " + snpRefAltInfo.toString());
+		if (snpIsoHgvsp == null) {
+			throw new ExceptionNBCSnpHgvs("cannot find such indel conditon " + snpRefAltInfo.toString());
+		}
+		return snpIsoHgvsp;
 	}
 	
 	/** 读码框外的插入改变 */
@@ -291,15 +302,15 @@ public abstract class SnpRefAltHgvsp {
 	}
 }
 
-class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
+class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 	boolean isATG = false;
 	boolean isUAG = false;
 
-	public SnpRefAltIsoSnp(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
+	public SnpRefAltIsoSnp(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
 	}
 	
-	protected boolean isNeedHgvsp() {
+	public boolean isNeedHgvsp() {
 		return iso.isCodInAAregion(getStartCis());
 	}
 	
@@ -344,11 +355,11 @@ class SnpRefAltIsoSnp extends SnpRefAltHgvsp {
 
 }
 
-class SnpRefAltIsoIns extends SnpRefAltHgvsp {
+class SnpRefAltIsoIns extends SnpIsoHgvsp {
 	/** 插入位置是否在两个aa中间 */
 	boolean isInsertInFrame = false;
 	
-	public SnpRefAltIsoIns(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
+	public SnpRefAltIsoIns(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
 	}
 	
@@ -502,22 +513,22 @@ class SnpRefAltIsoIns extends SnpRefAltHgvsp {
 }
 
 
-class SnpRefAltIsoDel extends SnpRefAltHgvsp {
-	boolean isDelInFrame = false;
+class SnpRefAltIsoDel extends SnpIsoHgvsp {
+	boolean isFrameShift = false;
 	boolean isAffectUAG = false;
 	boolean isNeedAAanno = false;
 	
 	/** 有这个标记的直接返回Met1?或者Met1fs */
 	boolean isMetDel = false;
 	
-	public SnpRefAltIsoDel(SnpRefAltInfo snpRefAltInfo, GffGeneIsoInfo iso) {
+	public SnpRefAltIsoDel(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
 		
 		int[] region = getValidRange(new int[]{getStartCis(), getEndCis()}, new int[]{iso.getATGsite(), iso.getUAGsite()});
 		if(region == null) return;
 		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(region[0], region[1]);
 		isNeedAAanno = !isoSub.isEmpty();
-		isDelInFrame = isoSub.getLenExon() % 3 == 0;
+		isFrameShift = isoSub.getLenExon() % 3 != 0;
 	}
 	
 	public boolean isNeedHgvsp() {
@@ -570,7 +581,7 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		}
 		
 		endCds = iso.getLocAAend(endCds);
-		if (!isDelInFrame || isAffectUAG) {
+		if (isFrameShift || isAffectUAG) {
 			endCds = iso.getEnd();
 		} 
 		return;
@@ -597,23 +608,8 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 			return "p." + convertAA("M") +"1?";
 		}
 		
-		String info =  isDelInFrame? getDelChangeInFrame() : getInDelChangeFrameShift(false, false);
+		String info =  isFrameShift? getInDelChangeFrameShift(false, false) : getDelChangeInFrame();
 		return "p." + info;
-	}
-	
-	private boolean isFramShift() {
-		int startCds = getStartCis();
-		int endCds = getEndCis();
-		int startNum = iso.getNumCodInEle(startCds);
-		int endNum = iso.getNumCodInEle(endCds);
-		if (startNum < 0) {
-			startCds = iso.getLsElement().get(Math.abs(startNum)).getStartCis();
-		}
-		if (endNum < 0) {
-			endCds = iso.getLsElement().get(Math.abs(endNum)-1).getEndCis();
-		}
-		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(startCds, endCds);
-		return isoSub.getLenExon() % 3 != 0;
 	}
 	
 	/** 读码框内的插入改变 */
@@ -626,7 +622,7 @@ class SnpRefAltIsoDel extends SnpRefAltHgvsp {
 		if (refAA[0] == '*' && altAA[0] == '*') {
 			//TODO 未测试
 			return convertAA(refAA[0]) + start + "=";
-		} else if (isDelInFrame && isAffectUAG) {
+		} else if (!isFrameShift && isAffectUAG) {
 			//说明终止密码子被删掉了
 			return getInDelChangeFrameShift(true, true);
 		}

@@ -1,17 +1,19 @@
 package com.novelbio.analysis.seq.snphgvs;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.Align;
 
 
@@ -20,8 +22,8 @@ import com.novelbio.analysis.seq.mapping.Align;
  * 在setSampleName()方法中可设定样本名，并获得该样本的信息。
  * @author zong0jie
  */
-public class SnpRefAltInfo {
-	private static final Logger logger = Logger.getLogger(SnpRefAltInfo.class);
+public class SnpInfo {
+	private static final Logger logger = Logger.getLogger(SnpInfo.class);
 	static int GetSeqLen = 100;
 	/**
 	 * 用于检测var的duplication
@@ -72,22 +74,15 @@ public class SnpRefAltInfo {
 	 * 本版本不考虑横跨多个基因的超长deletion
 	 */
 	List<GffGeneIsoInfo> lsIsos = new ArrayList<>();
+	Map<GffGeneIsoInfo, SnpIsoHgvsc> mapIso2Hgvsc = new HashMap<>();
+	Map<GffGeneIsoInfo, SnpIsoHgvsp> mapIso2Hgvsp = new HashMap<>();
 	
-	SeqHashInt seqHash;
-	
-	public SnpRefAltInfo(String refId, int position, String seqRef, String seqAlt) {
+	public SnpInfo(String refId, int position, String seqRef, String seqAlt) {
 		int positionEnd = position + seqRef.length() - 1;
 		alignRefRaw = new Align(refId, position, positionEnd);
 		this.seqRefRaw = seqRef;
 		this.seqAltRaw = seqAlt;
 		alignRef = alignRefRaw;
-	}
-	/** 设定序列 */
-	public void setSeqHash(SeqHashInt seqHash) {
-		this.seqHash = seqHash;
-	}
-	protected SeqHashInt getSeqHash() {
-		return seqHash;
 	}
 	/** 仅用于测试 */
 	@VisibleForTesting
@@ -108,8 +103,8 @@ public class SnpRefAltInfo {
 		this.isDupMoveLast = isDupMoveLast;
 	}
 	/** 根据parent，设定GffChrAbs */
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		GffCodGeneDU gffCodGeneDu = gffChrAbs.getGffHashGene().searchLocation(alignRef.getRefID(), alignRef.getStartAbs(), alignRef.getEndAbs());
+	public void setGffHashGene(GffHashGene gffHashGene) {
+		GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(alignRef.getRefID(), alignRef.getStartAbs(), alignRef.getEndAbs());
 		if (gffCodGeneDu == null) {
 			return;
 		}
@@ -117,7 +112,19 @@ public class SnpRefAltInfo {
 		for (GffDetailGene gffDetailGene : setGenes) {
 			lsIsos.addAll(gffDetailGene.getLsCodSplit());
 		}
-		this.seqHash = gffChrAbs.getSeqHash();
+	}
+	
+	/**
+	 * 所影响的iso
+	 */
+	public List<GffGeneIsoInfo> getLsIsos() {
+		return lsIsos;
+	}
+	public Map<GffGeneIsoInfo, SnpIsoHgvsc> getMapIso2Hgvsc() {
+		return mapIso2Hgvsc;
+	}
+	public Map<GffGeneIsoInfo, SnpIsoHgvsp> getMapIso2Hgvsp() {
+		return mapIso2Hgvsp;
 	}
 	
 	/**
@@ -136,9 +143,20 @@ public class SnpRefAltInfo {
 	 * 那么20180129版本snpeff不标记duplicate而vep标记duplicate，我个人认为这里确实应该标记为duplicate<br>
 	 * 因此如果存在这种情况，先比尾部看有没有duplicate，再比头部<br>
 	 */
-	public void initial() {
+	public void initial(SeqHashInt seqHash) {
 		copeInputVar();
-		setDuplicate();
+		setDuplicate(seqHash);
+		
+		mapIso2Hgvsc.clear();
+		mapIso2Hgvsp.clear();
+		for (GffGeneIsoInfo iso : lsIsos) {
+			SnpIsoHgvsc snpIsoHgvsc = new SnpIsoHgvsc(this, iso);
+			mapIso2Hgvsc.put(iso, snpIsoHgvsc);
+		}
+		for (GffGeneIsoInfo iso : lsIsos) {
+			SnpIsoHgvsp snpIsoHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(this, iso, seqHash);
+			mapIso2Hgvsp.put(iso, snpIsoHgvsp);
+		}
 	}
 
 	/**
@@ -161,9 +179,9 @@ public class SnpRefAltInfo {
 
 		char[] refChr = seqRefRaw.toCharArray();
 		char[] altChr = seqAltRaw.toCharArray();
-		seqStart = SnpRefAltHgvsp.getStartSame(refChr, altChr);
+		seqStart = SnpIsoHgvsp.getStartSame(refChr, altChr);
 		if (seqStart < seqLenMin) {
-			seqEnd = SnpRefAltHgvsp.getEndSame(refChr, altChr);
+			seqEnd = SnpIsoHgvsp.getEndSame(refChr, altChr);
 			if (seqEnd+seqStart >= seqLenMax) {
 				seqEnd = seqLenMin - seqStart;
 			}
@@ -218,16 +236,15 @@ public class SnpRefAltInfo {
 		}
 	}
 	
-	protected void setDuplicate() {
+	protected void setDuplicate(SeqHashInt seqHash) {
 		if (varType != EnumHgvsVarType.Insertions 
 				&& varType != EnumHgvsVarType.Deletions
 				&& varType != EnumHgvsVarType.Duplications) {
 			return;
 		}
-		SnpRefAltDuplicate snpRefAltDuplicate = new SnpRefAltDuplicate(alignRef, seqRef, seqAlt, seqShort);
+		SnpIndelRealignHandle snpRefAltDuplicate = new SnpIndelRealignHandle(alignRef, seqRef, seqAlt, seqShort);
 		snpRefAltDuplicate.setSeqLen(GetSeqLen);
-		snpRefAltDuplicate.initial();
-		snpRefAltDuplicate.modifySeq(seqHash);
+		snpRefAltDuplicate.handleSeqAlign(seqHash);
 		varType = snpRefAltDuplicate.getVarType();
 		alignRef = snpRefAltDuplicate.getAlignRef();
 		isDup = snpRefAltDuplicate.isDup();

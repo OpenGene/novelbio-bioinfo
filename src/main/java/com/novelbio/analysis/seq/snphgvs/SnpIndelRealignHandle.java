@@ -12,9 +12,18 @@ import com.novelbio.analysis.seq.mapping.Align;
  * 也就是重复区域放到最后的位置
  * 那么我就要去提取染色体的序列并且把这个给对起来。
  * 然后每次提取100bp的长度来做这个工作
+ * 
+ * 本类还有一个工作，譬如
+ * ref ACTGCATCATGGCG
+ * chr1 3	T	TGCGT
+ * ACT-[GCGT]-GCATCATGGCG
+ * 等价于
+ * chr1 5	C	CGTGC
+ * ACTGC-[GTGC]-ATCATGGCG
+ * 把这种可以滚动的都滚到最右侧
  * @author zongjie
  */
-public class SnpRefAltDuplicate {
+public class SnpIndelRealignHandle {
 	int seqLen = 100;
 
 	String seqRef;
@@ -50,7 +59,7 @@ public class SnpRefAltDuplicate {
 	 */
 	String seqChangeShort;
 	
-	public SnpRefAltDuplicate(Align alignRef, String seqRef, String seqAlt, String seqShort) {
+	public SnpIndelRealignHandle(Align alignRef, String seqRef, String seqAlt, String seqShort) {
 		this.alignRef = alignRef;
 		this.seqRef = seqRef;
 		this.seqAlt = seqAlt;
@@ -78,13 +87,11 @@ public class SnpRefAltDuplicate {
 		seqLen = getSeqLen;
 	}
 	
-	protected void initial() {
+	protected void handleSeqAlign(SeqHashInt seqHash) {
 		startLoc = seqRef.length() > 0 ? alignRef.getStartAbs() : alignRef.getStartAbs() + 1;
 		startReal = alignRef.getStartAbs();
-	}
-	
-	protected void modifySeq(SeqHashInt seqHash) {
 		String seqIndel = seqRef.length() == 0 ? seqAlt : seqRef;
+		
 		compareSeq(seqHash, seqIndel);
 		generateNewAlign(seqIndel);
 		changeSeq();
@@ -165,32 +172,6 @@ public class SnpRefAltDuplicate {
 		}
 	}
 
-	/**
-	 * 插入ATCGACGT
-	 * 如果为 TT-ATCGAC-[GTATCGAC]-GT，也就是插入在中间或者尾部
-	 * 这种类型，需要将前面的 TT-ATCGAC 拿出来比一次这样才能获得最好的结果
-	 * 
-	 * 但是可能头部就是 [ATCGAC]-GTATCGAC-GT，也就是前面没有TT了
-	 * 我们在这里用空位补齐，反正后面也用不到，最后返回 [--ATCGAC]
-	 * 那么直接提取会报错，所以这里要处理下
-	 */
-	private char[] getSeqBefore(SeqHashInt seqHash, String seqIndel, int lenStep) {
-		int startReal = startLoc - seqIndel.length();
-		int start = startReal <= 0? 1 : startReal;
-		SeqFasta seqFasta = seqHash.getSeq(alignRef.getRefID(), start, startLoc + lenStep);
-		String seq = seqFasta.toString();
-		
-		int beforeSpace = startReal < 0 ? Math.abs(startReal) : 0;
-		
-		char[] before = new char[beforeSpace + seq.length()];
-		char[] beforeTmp = seq.substring(0, seqIndel.length()).toLowerCase().toCharArray();
-
-		for (int i = beforeSpace; i < before.length; i++) {
-			before[i] = beforeTmp[i-beforeSpace];
-		}
-		return before;
-	}
-	
 	private void generateNewAlign(String seqIndel) {
 		//在if之前，T [ATC] ATC ATC ATC ATC GCAT
 		//startReal在17位也就是GCAT的G位，减去3位变成14位

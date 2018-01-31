@@ -1,7 +1,9 @@
 package com.novelbio.test;
 
 
+import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -25,6 +27,8 @@ import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
+import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -32,9 +36,12 @@ import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo;
+import com.novelbio.analysis.seq.snphgvs.SnpIsoHgvsc;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
 import com.novelbio.database.domain.kegg.KGentry;
@@ -54,41 +61,58 @@ import smile.stat.hypothesis.ChiSqTest;
 public class mytest {
 	private static final Logger logger = LoggerFactory.getLogger(mytest.class);
 	static boolean is;
+	
+	public static void main(String[] args) {
+		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/下载/snp-types27.vep.vcf");
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/下载/snp-types27.vep.txt", true);
+		for (String content : txtRead.readlines()) {
+			if (content.startsWith("#")) {
+				continue;
+			}
+			
+			String[] ss = content.split("\t");
+			List<String> lsResult = new ArrayList<>();
+			lsResult.add(ss[0]); lsResult.add(ss[1]); lsResult.add(ss[3]); lsResult.add(ss[4]);
+			String[] sss = ss[7].split("\\|");
+			Set<String> setHgvsc = new HashSet<>();
+			Set<String> setHgvsp = new HashSet<>();
 
-	public static void main(String[] args) throws Exception {
-		GffHashGene gffHashGene = new GffHashGene("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.1.gtf");
-		gffHashGene.writeToGTF("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.2.gtf");
-//		
-//		gffHashGene = new GffHashGene("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.2.gtf");
-//		gffHashGene.writeToGTF("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.3.gtf");
+			for (String hgvs : sss) {
+				if (hgvs.contains("c.")) {
+					setHgvsc.add(hgvs.split(":")[1]);
+				} else if (hgvs.contains("p.")) {
+					setHgvsp.add(hgvs.split(":")[1]);
+				}
+			}
+			String hgvsc = setHgvsc.isEmpty() ? "" : setHgvsc.iterator().next();
+			String hgvsp = setHgvsp.isEmpty() ? "" : setHgvsp.iterator().next();
+			lsResult.add(hgvsc);
+			lsResult.add(hgvsp);
+			txtWrite.writefileln(lsResult.toArray(new String[0]));
+		}
+		txtRead.close();
+		txtWrite.close();
 		
-		TxtReadandWrite txtRead1 = new TxtReadandWrite("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.2.gtf");
-		TxtReadandWrite txtRead2 = new TxtReadandWrite("/home/novelbio/NBCresource/www/grch38/gencode.v19.annotation.A.R.3.gtf");
-		Iterator<String> it2 = txtRead2.readlines().iterator();
-		for (String content : txtRead1.readlines()) {
-			String content2 = it2.next();
-			if (!content.equals(content2)) {
-				System.out.println(content + "\n" + content2);
-				System.out.println();
+	}
+	
+	public static void main2(String[] args) throws Exception {
+		SeqHash seqHash = new SeqHash("/home/novelbio/NBCresource/genome/species/tigr7/chrAll.fa");
+		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/test/29mio-alt-ref");
+		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/test/29mio-alt-ref.error", true);
+		for (String content : txtRead.readlines(2)) {
+			String[] ss = content.split(" +|\t");
+			String chrId = "chr" + ss[0];
+			int position = Integer.parseInt(ss[2]);
+			String ref = ss[4];
+			String refReal = seqHash.getSeq(chrId, position, position).toString();
+			if (!ref.equals(refReal)) {
+				System.out.println(content + "\t" + refReal);
+				txtWrite.writefileln(content + "\t" + refReal);
 			}
 		}
-		txtRead1.close();
-		txtRead2.close();
-		
-//		ChrBaseIter chrBaseIter = new ChrBaseIter("/home/novelbio/NBCresource/gwas/gwas/test.fa");
-//		StringBuilder stringBuilder = new StringBuilder();
-//		for (Base base : chrBaseIter.readBase("Contig2")) {
-//			stringBuilder.append(base.getBase());
-//		}
-//		System.out.println(stringBuilder.toString());
-		
-//		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/NBCresource/gwas/gwas/test.fa");
-//		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/NBCresource/gwas/gwas/test2.fa", true);
-//		for (String string : txtRead.readlines()) {
-//			txtWrite.writefileln(string);
-//		}
-//		txtRead.close();
-//		txtWrite.close();
+		seqHash.close();
+		txtRead.close();
+		txtWrite.close();
 	}
 	
 	public static void geneBody(GffHashGene gffHashGene, String parentPath) throws Exception {

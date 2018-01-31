@@ -210,6 +210,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 因为可能会有多个gffDetailGene合并为一个gffDetailGene，这时候直接用gffDetailGeneParent的名字就无法进行区分
 	 */
 	public String getParentGeneName() {
+		if (gffDetailGeneParent != null) {
+			return gffDetailGeneParent.getNameSingle();
+		}
 		return geneParentName;
 	}
 	/**
