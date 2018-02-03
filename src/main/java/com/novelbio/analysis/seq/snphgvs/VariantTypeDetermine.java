@@ -14,6 +14,7 @@ import com.google.common.collect.Range;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.StringOperate;
 
 import smile.math.Math;
 
@@ -21,7 +22,7 @@ public abstract class VariantTypeDetermine {
 	GffGeneIsoInfo iso;
 	List<ExonInfo> lsExons;
 	
-	SnpRefAltInfo snpRefAltInfo;
+	SnpInfo snpRefAltInfo;
 	/** 不考虑方向，start < end */
 	int start;
 	int end;
@@ -58,17 +59,27 @@ public abstract class VariantTypeDetermine {
 class ExonLossVar extends VariantTypeDetermine {
 	@Override
 	public boolean isVarClass() {
-		if (start-end < 2) return false;
-		
-		List<ExonInfo> lsExons = iso.getRangeIsoOnExon(start, end);
-		if (lsExons.isEmpty()) {
-			return false;
+		boolean isHaveStart = false, isHaveEnd = false;
+		for (ExonInfo exonInfo : iso) {
+			if (start > exonInfo.getEndAbs()) {
+				continue;
+			}
+			if (end < exonInfo.getStartAbs()) {
+				break;
+			}
+			if (start <= exonInfo.getStartAbs()) {
+				isHaveStart = true;
+			}
+			if (end >= exonInfo.getEndAbs()) {
+				isHaveEnd = true;
+			}
+			if (isHaveStart && isHaveEnd) {
+				break;
+			}
 		}
-		int exon1 = startNum > 0 ? 1 : 0;
-		int exon2 = endNum > 0 ? 1 : 0;
-		int num = lsExons.size() - exon1 - exon2;
-		return num > 1;
+		return isHaveStart&&isHaveEnd;
 	}
+	
 }
 
 /** {@link EnumVariantClass#frameshift_variant} */
@@ -149,7 +160,7 @@ class FrameShiftVar extends VariantTypeDetermine {
  *
  */
 enum EnumVariantClass {
-	chromosome_number_variation,
+	//chromosome_number_variation,
 	exon_loss_variant,
 	frameshift_variant,
 	//===== 这几个最好在氨基酸突变的时候看========
@@ -159,33 +170,50 @@ enum EnumVariantClass {
 	//==========================================
 	splice_acceptor_variant,
 	splice_donor_variant,
-	rare_amino_acid_variant,
-	missense_variant, disruptive_inframe_insertion,
+	//rare_amino_acid_variant,
+	missense_variant,
+	disruptive_inframe_insertion,
 	conservative_inframe_insertion,
 	disruptive_inframe_deletion,
 	conservative_inframe_deletion,
-	Five_prime_UTR_truncation_And_exon_loss_variant,
-	Three_prime_UTR_truncation_And_exon_loss,
-	splice_branch_variant, splice_region_variant,
-	stop_retained_variant, initiator_codon_variant,
+	//splice_branch_variant,
+	splice_region_variant,
+	stop_retained_variant,
+	initiator_codon_variant,
+	//non_canonical_start_codon,
 	synonymous_variant,
-	initiator_codon_variant_And_non_canonical_start_codon,
 	coding_sequence_variant,
-	Five_prime_UTR_variant,
-	Three_prime_UTR_variant,
-	Five_prime_UTR_premature_start_codon_gain_variant,
-	upstream_gene_variant, downstream_gene_variant,
-	TF_binding_site_variant,
-	regulatory_region_variant, miRNA,
-	custom, sequence_feature,
-	conserved_intron_variant,
-	intron_variant, intragenic_variant,
-	conserved_intergenic_variant,
+	Five_prime_UTR_variant("5_prime_UTR_variant"),
+	Three_prime_UTR_variant("3_prime_UTR_variant"),
+	//Five_prime_UTR_premature_start_codon_gain_variant("5_prime_UTR_premature_start_codon_gain_variant"),
+	upstream_gene_variant,
+	downstream_gene_variant,
+	//TF_binding_site_variant,
+	//regulatory_region_variant,
+	miRNA,
+	//custom, 
+	//sequence_feature,
+	////=====//conserved_intron_variant,
+	intron_variant,
+	intragenic_variant,
+	//conserved_intergenic_variant,
 	intergenic_region,
 	non_coding_exon_variant,
 	nc_transcript_variant,
-	gene_variant, chromosome,
+	//gene_variant,
+	//chromosome,
 	/** 自己加的，意思在基因外部没啥变化 */
-	None,
-
+	None;
+	
+	String name;
+	private EnumVariantClass(String name) {
+		this.name = name;
+	}
+	private EnumVariantClass() {}
+	public String toString() {
+		if (!StringOperate.isRealNull(name)) {
+			return name;
+		}
+		return super.toString();
+	}
 }

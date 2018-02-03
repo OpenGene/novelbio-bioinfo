@@ -821,9 +821,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			throw new ExceptionNbcGFF("cannot get coord not on CDS");
 		}
 		int startCoord = getLocAAbefore(coord);
-		if (startCoord == getATGsite()) {
-			throw new ExceptionNbcGFF("cannot get the next coord while coord on stop code");
-		}
+//		if (startCoord == getATGsite()) {
+//			throw new ExceptionNbcGFF("cannot get the next coord while coord on stop code");
+//		}
 		return getLocDistmRNASite(startCoord, -3);
 	}
 	/**

@@ -68,6 +68,34 @@ public class TestSnpHgvsp {
 		snpRefAltHgvsp.setNeedAA3(false);
 		Assert.assertEquals("c.3311-1_3316dup", snpRefAltHgvsc.getHgvsc());
 		Assert.assertEquals("p.V1106Gfs*8", snpRefAltHgvsp.getHgvsp());
+		
+		iso = gffHashGene.searchISO("NM_014458");
+		snpRefAltInfo = new SnpInfo("chr1", 173685183, "A", "AGCGA");
+		snpRefAltInfo.initial(seqHash);
+
+		snpRefAltHgvsc = new SnpIsoHgvsc(snpRefAltInfo, iso);
+		snpRefAltHgvsp.setNeedAA3(false);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
+		snpRefAltHgvsp.setNeedAA3(false);
+//		Assert.assertFalse(snpRefAltHgvsp.isNeedHgvsp());
+		
+		snpRefAltInfo = new SnpInfo("chr1", 173685184, "T", "TACCGAT");
+		snpRefAltInfo.initial(seqHash);
+		snpRefAltHgvsc = new SnpIsoHgvsc(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
+//		Assert.assertFalse(snpRefAltHgvsp.isNeedHgvsp());
+		System.out.println(snpRefAltHgvsp.getHgvsp());
+		snpRefAltInfo = new SnpInfo("chr1", 173685183, "A", "AGCGA");
+		snpRefAltInfo.initial(seqHash);
+		snpRefAltHgvsc = new SnpIsoHgvsc(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
+		Assert.assertFalse(snpRefAltHgvsp.isNeedHgvsp());
+
+		snpRefAltInfo = new SnpInfo("chr1", 173685185, "G", "GGCATG");
+		snpRefAltInfo.initial(seqHash);
+		snpRefAltHgvsc = new SnpIsoHgvsc(snpRefAltInfo, iso);
+		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
+		Assert.assertFalse(snpRefAltHgvsp.isNeedHgvsp());
 	}
 	
 	/** 从vep的结果文件中读取相应的信息并比较 */
