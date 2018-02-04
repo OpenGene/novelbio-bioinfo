@@ -83,37 +83,28 @@ class ExonLossVar extends VariantTypeDetermine {
 }
 
 /** {@link EnumVariantClass#frameshift_variant} */
-class FrameShiftVar extends VariantTypeDetermine {
+class Splice_Acceptor_Variant extends VariantTypeDetermine {
 	@Override
 	public boolean isVarClass() {
-		int[] range = getValidRange();
-		if(range == null) return false;
-		
-		if (varType == EnumHgvsVarType.Substitutions) {
-			return false;
+		boolean isHaveStart = false, isHaveEnd = false;
+		for (ExonInfo exonInfo : iso) {
+			if (start > exonInfo.getEndAbs()) {
+				continue;
+			}
+			if (end < exonInfo.getStartAbs()) {
+				break;
+			}
+			if (start <= exonInfo.getStartAbs()) {
+				isHaveStart = true;
+			}
+			if (end >= exonInfo.getEndAbs()) {
+				isHaveEnd = true;
+			}
+			if (isHaveStart && isHaveEnd) {
+				break;
+			}
 		}
-		
-		if (varType == EnumHgvsVarType.Insertions 
-				|| varType == EnumHgvsVarType.Duplications
-				) {
-			return iso.isCodInAAregion(start) && snpRefAltInfo.getSeqAlt().length() %3 != 0;
-		}
-		
-		List<ExonInfo> lsExons = iso.getRangeIsoOnExon(range[0], range[1]);
-		int totalLength = lsExons.stream()
-				.map(it -> it.getLength())
-				.reduce(0, (result, element) -> result + element);
-		return totalLength % 3 == 0;
-	}
-	
-	private int[] getValidRange() {
-		int[] coords = new int[] {start, end};
-		int[] atguag = new int[] {Math.min(iso.getATGsite(), iso.getUAGsite()), Math.max(iso.getATGsite(), iso.getUAGsite())};
-		int[] result = new int[] {Math.max(coords[0], atguag[0]), Math.min(coords[1], atguag[1])};
-		if(result[1] < result[0]) {
-			return null;
-		}
-		return result;
+		return isHaveStart&&isHaveEnd;
 	}
 }
 
