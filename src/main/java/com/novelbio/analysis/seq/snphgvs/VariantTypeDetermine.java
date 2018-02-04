@@ -83,12 +83,12 @@ class ExonLossVar extends VariantTypeDetermine {
 }
 
 /** {@link EnumVariantClass#frameshift_variant} */
-class Splice_Acceptor_Variant extends VariantTypeDetermine {
+class SpliceVariant extends VariantTypeDetermine {
 	@Override
 	public boolean isVarClass() {
-		boolean isHaveStart = false, isHaveEnd = false;
+		boolean isSpliceAcceptor = false, isSplice
 		for (ExonInfo exonInfo : iso) {
-			if (start > exonInfo.getEndAbs()) {
+			if (start <= exonInfo.getEndCis()+2 && endBeforeIsoStrand >= exonInfo.getEndCis()) {
 				continue;
 			}
 			if (end < exonInfo.getStartAbs()) {
@@ -161,14 +161,16 @@ enum EnumVariantClass {
 	//==========================================
 	splice_acceptor_variant,
 	splice_donor_variant,
+	//splice_branch_variant,
+	splice_region_variant,
+	
 	//rare_amino_acid_variant,
 	missense_variant,
 	disruptive_inframe_insertion,
 	conservative_inframe_insertion,
 	disruptive_inframe_deletion,
 	conservative_inframe_deletion,
-	//splice_branch_variant,
-	splice_region_variant,
+
 	stop_retained_variant,
 	initiator_codon_variant,
 	//non_canonical_start_codon,
