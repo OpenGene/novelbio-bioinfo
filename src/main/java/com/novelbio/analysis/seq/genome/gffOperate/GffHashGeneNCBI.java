@@ -127,6 +127,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** 设定mRNA和gene的类似名，在gff文件里面出现的 */
 	private void setGeneName() {
 		if (setIsGene.isEmpty()) {
+			setIsGene.add("ncRNA_gene");
 			setIsGene.add("gene");
 			setIsGene.add("transposable_element_gene");
 			setIsGene.add("protein_coding_gene");
@@ -190,6 +191,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			fillDuplicateNameSet();
 		}
 		for (String content : txtgff.readlines()) {
+//			if (content.contains("RNU1-116P")) {
+//				logger.info("stop");
+//			}
+			
 			if (content.trim().equals("") || content.charAt(0) == '#')
 				continue;
 
@@ -200,15 +205,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				continue;
 			}
 			ss[8] = StringOperate.decode(ss[8]);
-//			if (content.contains("rna54067")) {
-//				logger.info("stop");
-//			}
 			ss[0] = gffGetChrId.getChrID(ss);
 			if (ss[2].equals("region"))
 				continue;
 
 			// 读取到gene
-			if (setIsGene.contains(ss[2])) {
+			if (isGene(ss[2])) {
 				thisGeneIDandName = addNewGene(ss);
 			}
 			/**
@@ -265,6 +267,14 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		txtgff.close();
 
 		clear();
+	}
+	
+	private boolean isGene(String geneType) {
+		boolean isGene = setIsGene.contains(geneType);
+		if (!isGene) {
+			isGene = geneType.toLowerCase().contains("gene");
+		}
+		return isGene;
 	}
 	
 	private void fillDuplicateNameSet() {
@@ -553,14 +563,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				continue;
 			}
 			String[] info = string.trim().split("=");
-			try {
-				mapID2value.put(info[0], info[1]);
-			} catch (Exception e) {
-				mapID2value.put(info[0], info[1]);
-			}
-
+			mapID2value.put(info[0], info[1]);
 		}
-		String gbkey = mapID2value.get("gbkey");
+		String key = getMRNATypeKey(mapID2value);
+		String gbkey = mapID2value.get(key);
 		boolean ncRNA = false;
 		if (gbkey != null) {
 			String ncRNAclass = null;
@@ -592,7 +598,36 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		}
 		return geneType;
 	}
-
+	
+	int num = 0;
+	int numAll = 30;
+	String gbKey = null;
+	private String getMRNATypeKey(Map<String, String> mapID2value) {
+		if (gbKey != null) {
+			return gbKey;
+		}
+		if (num > numAll) {
+			return "";
+		}
+		num++;
+		if (mapID2value.containsKey("gbkey")) {
+			gbKey = "gbkey";
+			return gbKey;
+		}
+		if (mapID2value.containsKey("biotype")) {
+			gbKey = "gbkey";
+			return gbKey;
+		}
+		for (String id : mapID2value.keySet()) {
+			String value = mapID2value.get(id);
+			if (GeneType.getGeneType(value) != null) {
+				gbKey = id;
+				break;
+			}
+		}
+		return gbKey;
+	}
+	
 	/**
 	 * 设定taxID
 	 * 
