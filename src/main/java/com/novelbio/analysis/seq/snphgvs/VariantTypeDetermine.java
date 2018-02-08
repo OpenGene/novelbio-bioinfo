@@ -82,10 +82,14 @@ class UtrVariant extends VariantTypeDetermine {
 		int startNum = iso.getNumCodInEle(start);
 		int endNum = iso.getNumCodInEle(end);
 		if (startNum == endNum && startNum < 0) {
-			setVariantClass.add(EnumVariantClass.intron_variant);
+			if (iso.ismRNAFromCds()) {
+				setVariantClass.add(EnumVariantClass.intron_variant);
+			} else {
+				setVariantClass.add(EnumVariantClass.non_coding_transcript_intron_variant);
+			}
 		}
 		if (!iso.ismRNAFromCds() && startNum == endNum && startNum > 0) {
-			setVariantClass.add(EnumVariantClass.non_coding_exon_variant);
+			setVariantClass.add(EnumVariantClass.non_coding_transcript_exon_variant);
 		}
 		if (iso.isCis5to3() && start < iso.getStartAbs()) {
 			setVariantClass.add(EnumVariantClass.upstream_gene_variant);
@@ -253,8 +257,10 @@ enum EnumVariantClass {
 	//intragenic_variant,
 	//conserved_intergenic_variant,
 	intergenic_region,
-	non_coding_exon_variant,
-	nc_transcript_variant,
+	non_coding_transcript_variant,
+	non_coding_transcript_exon_variant,
+	non_coding_transcript_intron_variant,
+	
 	//gene_variant,
 	//chromosome,
 	/** 自己加的，意思在基因外部没啥变化 */
