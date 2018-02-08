@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.snphgvs;
 
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -8,10 +8,9 @@ import com.novelbio.analysis.seq.fasta.CodeInfo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.base.StringOperate;
 
 public abstract class SnpIsoHgvsp {
-	Set<EnumVariantClass> setVarType = new HashSet<>();
+	Set<EnumVariantClass> setVarType = new LinkedHashSet<>();
 	
 	SnpInfo snpRefAltInfo;
 	GffGeneIsoInfo iso;
@@ -58,7 +57,14 @@ public abstract class SnpIsoHgvsp {
 	}
 	
 	/** 是否需要氨基酸变化注释，有些在内含子中的就不需要氨基酸变化注释 */
-	public abstract boolean isNeedHgvsp();
+	public boolean isNeedHgvsp() {
+		if (!iso.ismRNAFromCds()) {
+			return false;
+		}
+		return isNeedHgvspDetail();
+	}
+	/** 是否需要氨基酸变化注释，有些在内含子中的就不需要氨基酸变化注释 */
+	protected abstract boolean isNeedHgvspDetail();
 	
 	private void initial(SeqHashInt seqHash) {
 		setStartEndCis();
@@ -316,7 +322,7 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 		super(snpRefAltInfo, iso);
 	}
 	
-	public boolean isNeedHgvsp() {
+	public boolean isNeedHgvspDetail() {
 		return iso.isCodInAAregion(getStartCis());
 	}
 	
@@ -360,6 +366,7 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 		}
 		if (isATG) {
 			setVarType.add(EnumVariantClass.start_lost);
+			setVarType.add(EnumVariantClass.initiator_codon_variant);
 			return "p." + ref + "1?";
 		}
 		setVarType.add(EnumVariantClass.missense_variant);
@@ -378,7 +385,7 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		super(snpRefAltInfo, iso);
 	}
 	
-	public boolean isNeedHgvsp() {
+	public boolean isNeedHgvspDetail() {
 		boolean isNeedAAanno = true;
 		int start = getStartCis();
 		int end = getEndCis();
@@ -518,7 +525,7 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		
 		int stopNumRef = getStopNum(refAA);
 		int stopNumAlt = getStopNum(altAA);
-
+		
 		if (stopNumRef > 0 && stopNumAlt == 0) {
 			setVarType.add(EnumVariantClass.stop_lost);
 		} else if (stopNumRef == 0 && stopNumAlt > 0) {
@@ -553,6 +560,7 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		if (altAA[0] != refAA[0] || altAA[altAA.length-1] != refAA[1]) {
 			throw new ExceptionNBCSnpHgvs("error");
 		}
+		setVarType.add(EnumVariantClass.conservative_inframe_insertion);
 		StringBuilder sBuilder = new StringBuilder();
 		sBuilder.append(convertAA(refAA[0]) + getAffectAANum(startCds) 
 		+ "_" + convertAA(refAA[1]) + getAffectAANum(endCds) + "ins");	
@@ -583,21 +591,27 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 			sBuilder.append(convertAA(refAA[1]) + (startNum+1) + "=");
 		} else if (refAA[1] == altAA[1]) {
 			sBuilder.append(convertAA(refAA[1]) + (startNum +1)
-			+ "_" + convertAA(refAA[2]) + (startNum+2) + "ins");	
+			+ "_" + convertAA(refAA[2]) + (startNum+2) + "ins");
 			for (int i = 2; i < altAA.length-1; i++) {
 				sBuilder.append(convertAA(altAA[i]));	
 			}
+			setVarType.add(EnumVariantClass.conservative_inframe_insertion);
 		} else if (refAA[1] == altAA[altAA.length-2]) {
 			sBuilder.append(convertAA(refAA[0]) + startNum 
 			+ "_" + convertAA(refAA[1]) + (startNum+1) + "ins");	
 			for (int i = 1; i < altAA.length-2; i++) {
 				sBuilder.append(convertAA(altAA[i]));	
 			}
+			//TODO 这里需要考虑是不是同义突变
+			//譬如 ATC-CGC-CAG
+			//变为 ATC-CG[TAG]-CCAG
+			setVarType.add(EnumVariantClass.conservative_inframe_insertion);
 		} else {
 			sBuilder.append(convertAA(refAA[1]) + (startNum +1) + "delins");	
 			for (int i = 1; i < altAA.length-1; i++) {
 				sBuilder.append(convertAA(altAA[i]));	
 			}
+			setVarType.add(EnumVariantClass.disruptive_inframe_insertion);
 		}
 		return sBuilder.toString();
 	}
@@ -636,7 +650,7 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 		}
 	}
 	
-	public boolean isNeedHgvsp() {
+	public boolean isNeedHgvspDetail() {
 		return isNeedAAanno;
 	}
 	
@@ -747,6 +761,9 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 		}
 		if (altAA.length-refStart-refEnd > 0) {
 			sBuilder.append("ins");
+			setVarType.add(EnumVariantClass.disruptive_inframe_deletion);
+		} else {
+			setVarType.add(EnumVariantClass.conservative_inframe_deletion);
 		}
 		for (int i = refStart; i < altAA.length-refEnd; i++) {
 			sBuilder.append(convertAA(altAA[i]));	

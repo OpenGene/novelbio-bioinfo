@@ -1,16 +1,9 @@
 package com.novelbio.analysis.seq.snphgvs;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.math3.util.MathUtils;
-
-import com.google.common.collect.Lists;
-import com.google.common.collect.Range;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -19,9 +12,7 @@ import com.novelbio.base.StringOperate;
 import smile.math.Math;
 
 public abstract class VariantTypeDetermine {
-	GffGeneIsoInfo iso;
-	List<ExonInfo> lsExons;
-	
+	GffGeneIsoInfo iso;	
 	SnpInfo snpRefAltInfo;
 	/** 不考虑方向，start < end */
 	int start;
@@ -35,9 +26,9 @@ public abstract class VariantTypeDetermine {
 	/** endNum如果为0，end是不是在iso的5-端外 */
 	boolean endBeforeIsoStrand;
 	
-	EnumHgvsVarType varType;
+	Set<EnumVariantClass> setVariantClass = new LinkedHashSet<>();
 	
-	public abstract boolean isVarClass();
+	public abstract void fillVarClass();
 
 	protected boolean isCoordInRegion(int coord, int[] region) {
 		return coord >= Math.min(region[0], region[1]) && coord <= Math.max(region[0], region[1]);
@@ -54,11 +45,10 @@ public abstract class VariantTypeDetermine {
 		return new HashSet<>();
 	}
 }
-
 /** {@link EnumVariantClass#exon_loss_variant} */
-class ExonLossVar extends VariantTypeDetermine {
+class ExonLossVaration extends VariantTypeDetermine {
 	@Override
-	public boolean isVarClass() {
+	public void fillVarClass() {
 		boolean isHaveStart = false, isHaveEnd = false;
 		for (ExonInfo exonInfo : iso) {
 			if (start > exonInfo.getEndAbs()) {
@@ -77,7 +67,68 @@ class ExonLossVar extends VariantTypeDetermine {
 				break;
 			}
 		}
-		return isHaveStart&&isHaveEnd;
+		if( isHaveStart&&isHaveEnd) {
+			setVariantClass.add(EnumVariantClass.exon_loss_variant);
+		}
+	}
+	
+}
+
+/** {@link EnumVariantClass#exon_loss_variant} */
+class UtrVariant extends VariantTypeDetermine {
+	@Override
+	public void fillVarClass() {
+		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(start, end);
+		int startNum = iso.getNumCodInEle(start);
+		int endNum = iso.getNumCodInEle(end);
+		if (startNum == endNum && startNum < 0) {
+			setVariantClass.add(EnumVariantClass.intron_variant);
+		}
+		if (!iso.ismRNAFromCds() && startNum == endNum && startNum > 0) {
+			setVariantClass.add(EnumVariantClass.non_coding_exon_variant);
+		}
+		if (iso.isCis5to3() && start < iso.getStartAbs()) {
+			setVariantClass.add(EnumVariantClass.upstream_gene_variant);
+		} else if (!iso.isCis5to3() && start < iso.getStartAbs()) {
+			setVariantClass.add(EnumVariantClass.downstream_gene_variant);
+		}
+		if (iso.isCis5to3() && end > iso.getEndAbs()) {
+			setVariantClass.add(EnumVariantClass.downstream_gene_variant);
+		} else if (!iso.isCis5to3() && end > iso.getEndAbs()) {
+			setVariantClass.add(EnumVariantClass.upstream_gene_variant);
+		}
+		if (!iso.ismRNAFromCds()) {
+			return;
+		}
+		for (ExonInfo exonInfo : isoSub) {
+			if (iso.isCis5to3()) {
+				if (exonInfo.getStartAbs() < iso.getATGsite()) {
+					setVariantClass.add(EnumVariantClass.Five_prime_UTR_variant);
+					if (startNum <= 0 || endNum <= 0) {
+						setVariantClass.add(EnumVariantClass.exon_loss_variant);
+					}
+				}
+				if (exonInfo.getEndAbs() > iso.getUAGsite()) {
+					setVariantClass.add(EnumVariantClass.Three_prime_UTR_variant);
+					if (startNum <= 0 || endNum <= 0) {
+						setVariantClass.add(EnumVariantClass.exon_loss_variant);
+					}
+				}
+			} else {
+				if (exonInfo.getEndAbs() > iso.getATGsite()) {
+					setVariantClass.add(EnumVariantClass.Five_prime_UTR_variant);
+					if (startNum <= 0 || endNum <= 0) {
+						setVariantClass.add(EnumVariantClass.exon_loss_variant);
+					}
+				}
+				if (exonInfo.getStartAbs() < iso.getUAGsite()) {
+					setVariantClass.add(EnumVariantClass.Three_prime_UTR_variant);
+					if (startNum <= 0 || endNum <= 0) {
+						setVariantClass.add(EnumVariantClass.exon_loss_variant);
+					}
+				}
+			}
+		}
 	}
 	
 }
@@ -85,61 +136,72 @@ class ExonLossVar extends VariantTypeDetermine {
 /** {@link EnumVariantClass#frameshift_variant} */
 class SpliceVariant extends VariantTypeDetermine {
 	@Override
-	public boolean isVarClass() {
-		boolean isSpliceAcceptor = false, isSplice
-		for (ExonInfo exonInfo : iso) {
-			if (start <= exonInfo.getEndCis()+2 && endBeforeIsoStrand >= exonInfo.getEndCis()) {
-				continue;
+	public void fillVarClass() {
+		int[] startEnd = new int[] {start, end};
+		boolean isSpliceAcceptor = false, isSpliceDonor = false, isSpliceRegion = false;
+		for (int i = 0; i < iso.getLen(); i++) {
+			ExonInfo exonInfo = iso.get(i);
+			if (end < exonInfo.getStartAbs() -10) break;
+			if (start > exonInfo.getEndAbs() + 10) continue;
+			int[] spliceAcceptor = null, spliceDonor = null;
+			int[] spliceRegion1 = null, spliceRegion2 = null;
+						
+			if (iso.isCis5to3()) {
+				if (i > 0) {
+					spliceAcceptor = new int[]{exonInfo.getStartCis()-2, exonInfo.getStartCis()-1};
+					spliceRegion1 = new int[] {exonInfo.getStartCis(), exonInfo.getStartCis()+2};
+					spliceRegion2 = new int[] {exonInfo.getStartCis()-8, exonInfo.getStartCis()-3};
+					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd) || isRegionOverlap(spliceRegion2, startEnd);
+				}
+				if (i < iso.getLen()-1) {
+					spliceDonor = new int[]{exonInfo.getEndCis()+1, exonInfo.getEndCis()+2};
+					spliceRegion1 = new int[] {exonInfo.getEndCis()-2, exonInfo.getEndCis()};
+					spliceRegion2 = new int[] {exonInfo.getEndCis()+3, exonInfo.getEndCis()+8};
+					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd) || isRegionOverlap(spliceRegion2, startEnd);
+				}
+			} else {
+				if (i > 0) {
+					spliceDonor = new int[]{exonInfo.getStartAbs()-2, exonInfo.getStartAbs()-1};
+					spliceRegion1 = new int[] {exonInfo.getStartAbs(), exonInfo.getStartAbs()+2};
+					spliceRegion2 = new int[] {exonInfo.getStartAbs()-8, exonInfo.getStartAbs()-3};
+					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd) || isRegionOverlap(spliceRegion2, startEnd);
+				}
+				if (i < iso.getLen()-1) {
+					spliceAcceptor = new int[]{exonInfo.getEndAbs()+1, exonInfo.getEndAbs()+2};
+					spliceRegion1 = new int[] {exonInfo.getEndAbs()-2, exonInfo.getEndAbs()};
+					spliceRegion2 = new int[] {exonInfo.getEndAbs()+3, exonInfo.getEndAbs()+8};
+					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd) || isRegionOverlap(spliceRegion2, startEnd);
+				}
 			}
-			if (end < exonInfo.getStartAbs()) {
-				break;
-			}
-			if (start <= exonInfo.getStartAbs()) {
-				isHaveStart = true;
-			}
-			if (end >= exonInfo.getEndAbs()) {
-				isHaveEnd = true;
-			}
-			if (isHaveStart && isHaveEnd) {
-				break;
-			}
+			isSpliceAcceptor = isSpliceAcceptor || isRegionOverlap(spliceAcceptor, startEnd);
+			isSpliceDonor = isSpliceDonor || isRegionOverlap(spliceDonor, startEnd);
 		}
-		return isHaveStart&&isHaveEnd;
-	}
-}
-
-/** {@link EnumVariantClass#frameshift_variant} */
-class FrameShiftVar extends VariantTypeDetermine {
-	@Override
-	public boolean isVarClass() {
-		int[] range = getValidRange();
-		if(range == null) return false;
-		
-		if (varType == EnumHgvsVarType.Substitutions) {
-			return false;
+		if (isSpliceAcceptor) {
+			setVariantClass.add(EnumVariantClass.splice_acceptor_variant);
 		}
-		
-		if (varType == EnumHgvsVarType.Insertions 
-				|| varType == EnumHgvsVarType.Duplications
-				) {
-			return iso.isCodInAAregion(start) && snpRefAltInfo.getSeqAlt().length() %3 != 0;
+		if (isSpliceDonor) {
+			setVariantClass.add(EnumVariantClass.splice_donor_variant);
 		}
-		
-		List<ExonInfo> lsExons = iso.getRangeIsoOnExon(range[0], range[1]);
-		int totalLength = lsExons.stream()
-				.map(it -> it.getLength())
-				.reduce(0, (result, element) -> result + element);
-		return totalLength % 3 == 0;
+		if (isSpliceRegion) {
+			setVariantClass.add(EnumVariantClass.splice_region_variant);
+		}
 	}
 	
-	private int[] getValidRange() {
-		int[] coords = new int[] {start, end};
-		int[] atguag = new int[] {Math.min(iso.getATGsite(), iso.getUAGsite()), Math.max(iso.getATGsite(), iso.getUAGsite())};
-		int[] result = new int[] {Math.max(coords[0], atguag[0]), Math.min(coords[1], atguag[1])};
-		if(result[1] < result[0]) {
-			return null;
+	private boolean isRegionOverlap(int[] region, int[] startEnd) {
+		if (region == null) {
+			return false;
 		}
-		return result;
+		boolean isOverlap = false;
+		if (snpRefAltInfo.getVarType() != EnumHgvsVarType.Insertions) {
+			if (startEnd[0] <= region[1] && startEnd[1] >= region[0]) {
+				isOverlap = true;
+			}
+		} else {
+			if (startEnd[0] < region[1] && startEnd[1] > region[0]) {
+				isOverlap = true;
+			}
+		}
+		return isOverlap;
 	}
 }
 
@@ -188,7 +250,7 @@ enum EnumVariantClass {
 	//sequence_feature,
 	////=====//conserved_intron_variant,
 	intron_variant,
-	intragenic_variant,
+	//intragenic_variant,
 	//conserved_intergenic_variant,
 	intergenic_region,
 	non_coding_exon_variant,
