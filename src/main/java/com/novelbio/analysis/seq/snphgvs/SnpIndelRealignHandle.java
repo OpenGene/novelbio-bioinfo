@@ -32,24 +32,20 @@ public class SnpIndelRealignHandle {
 	Align alignRef;
 	
 	EnumHgvsVarType varType;
-	
+
 	int startLoc;
-	/** 经过校正后的起点 */
-	int startReal;
+	/** 经过校正后，最靠右侧的起点 */
+	int startAfter;
+	/** 经过校正后，最靠左侧的起点 */
+	int startBefore;
+	/** 最左侧的在duplicate之前的base */
+	char beforeBase;
+
 	boolean isDup;
-	
+
 	/**
-	 * ref ATGCCG
-	 * chr1 2	T	TGCAG
-	 * chr1	4	C	CAGGC
-	 * 
-	 * ATGCAGGCCG
-	 * 这两个是等价的，这时候 {@link #convertSeqNum}为2
-	 */
-	int  convertSeqNum;
-	/**
-	 * 这里只可能是insertion或deletion，因此只有一条序列存在，另一条为空
-	 * 根据 {@link #convertSeqNum} 来修改序列
+	 * 这里只可能是insertion或deletion，因此只有一条序列存在，另一条为空<br>
+	 * 根据 {@link #convertSeqNum} 来修改序列<br>
 	 * 最后获得 AGGC
 	 */
 	String seqChange;
@@ -65,10 +61,16 @@ public class SnpIndelRealignHandle {
 		this.seqAlt = seqAlt;
 		this.seqChangeShort = seqShort;
 	}
-	
-	/** {@link #compareSeq(String, char[])}比较结束后可以获得修正后的align */
-	public Align getAlignRef() {
-		return alignRef;
+	/** 如果本align可以前后移动，则最后侧的坐标 */
+	protected int getStartBefore() {
+		return startBefore;
+	}
+	/** 如果本align可以前后移动，则最前侧的坐标 */
+	protected int getStartAfter() {
+		return startAfter;
+	}
+	protected char getBeforeBase() {
+		return beforeBase;
 	}
 	public String getSeqChange() {
 		return seqChange;
@@ -83,20 +85,35 @@ public class SnpIndelRealignHandle {
 		return isDup;
 	}
 	@VisibleForTesting
-	public void setSeqLen(int getSeqLen) {
+	protected void setSeqLen(int getSeqLen) {
 		seqLen = getSeqLen;
 	}
 	
 	protected void handleSeqAlign(SeqHashInt seqHash) {
-		startLoc = seqRef.length() > 0 ? alignRef.getStartAbs() : alignRef.getStartAbs() + 1;
-		startReal = alignRef.getStartAbs();
+		startLoc = alignRef.getStartAbs();
+		startBefore = startAfter = alignRef.getStartAbs();
 		String seqIndel = seqRef.length() == 0 ? seqAlt : seqRef;
-		
-		compareSeq(seqHash, seqIndel);
-		generateNewAlign(seqIndel);
-		changeSeq();
+		int startLocModify = seqRef.length() > 0 ? alignRef.getStartAbs() : alignRef.getStartAbs() + 1;
+		compareSeq(startLocModify, seqHash, seqIndel);
 	}
 	
+	/** 可以向前移动几位，恒返回负数 */
+	protected int getMoveBefore() {
+		return startBefore - startLoc;
+	}
+	/** 可以向后移动几位 */
+	protected int getMoveAfter() {
+		return startAfter - startLoc;
+	}
+	
+	protected Align moveAlign(int moveNum) {
+		changeSeq(moveNum);
+		return generateNewAlign(moveNum);
+	}
+	protected Align moveAlignToAfter() {
+		changeSeq(getMoveAfter());
+		return generateNewAlign(getMoveAfter());
+	}
 	/**
 	 * indel有这种类型比较难处理（符号-主要用来断字，没什么实际意义）<br>
 	 * ref: TTT-ATCAC-GCGCAGATC-TTTT<br>
@@ -124,19 +141,23 @@ public class SnpIndelRealignHandle {
 	 * <br>
 	 * 为了方便比对，我们对于头部的 TTT-ATCAC，会用空格将其补充为 ______TTT-ATCAC。注意前面有6个空位<br>
 	 * 这6个空位也就是代码中的变量 beforeSpace<br>
+	 * 
+	 * @param startLocModify 如果是deletion 则为当前位，如果是 insertion，则为 插入的后一位
+	 * ATC-[GCT]-GCT
+	 * 则插入位原来是3，修改为4
 	 */
-	protected void compareSeq(SeqHashInt seqHash, String seqIndel) {
+	protected void compareSeq(int startLocModify, SeqHashInt seqHash, String seqIndel) {
 		//获取步长
 		int lenStep = (int)Math.ceil((double)seqLen/seqIndel.length()) * seqIndel.length()-1;
-		int startBefore = startLoc - seqIndel.length();
+		int startBefore = startLocModify - seqIndel.length();
 		int start = startBefore <= 0? 1 : startBefore;
-		SeqFasta seqFasta = seqHash.getSeq(alignRef.getRefID(), start, startLoc + lenStep);
+		SeqFasta seqFasta = seqHash.getSeq(alignRef.getRefID(), start, startLocModify + lenStep);
 		String seq = seqFasta.toString();
 		
 		int beforeSpace = startBefore < 0 ? Math.abs(startBefore)+1 : 0;
 		
 		char[] before = new char[seqIndel.length()];
-		char[] beforeTmp = seq.substring(0, seqIndel.length()-beforeSpace).toLowerCase().toCharArray();
+		char[] beforeTmp = seq.substring(0, seqIndel.length()-beforeSpace).toUpperCase().toCharArray();
 
 		for (int i = beforeSpace; i < before.length; i++) {
 			before[i] = beforeTmp[i-beforeSpace];
@@ -157,9 +178,10 @@ public class SnpIndelRealignHandle {
 			startBefore = startBefore + seqIndel.length();
 		}
 		String seqRemain = seq.substring(startNum-beforeSpace, seq.length());
-		char[] seqIndelChr = seqIndel.toLowerCase().toCharArray();
+		char[] seqIndelChr = seqIndel.toUpperCase().toCharArray();
 		boolean isGetNextSeq = true;
 		boolean isFirst = true;
+		int startLoc = startLocModify;
 		while (isGetNextSeq) {
 			if (isFirst) {
 				seq = seqRemain;
@@ -167,27 +189,23 @@ public class SnpIndelRealignHandle {
 			} else {
 				seq = seqHash.getSeq(alignRef.getRefID(), startLoc, startLoc + lenStep).toString();
 			}
-			isGetNextSeq = compareSeq(seq, seqIndelChr, before);
+			isGetNextSeq = compareSeqAfter(seq, seqIndelChr, before);
 			startLoc = startLoc + lenStep + 1;
 		}
-	}
-
-	private void generateNewAlign(String seqIndel) {
-		//在if之前，T [ATC] ATC ATC ATC ATC GCAT
-		//startReal在17位也就是GCAT的G位，减去3位变成14位
-//		if (seqRef.length() > 0) {
-//			startReal = startReal - seqIndel.length();
-//		}
+		
+		startLoc = startLocModify;
+		boolean isGetBeforeSeq = true;
+		while (isGetBeforeSeq) {
+			seq = seqHash.getSeq(alignRef.getRefID(), startLoc-lenStep-1, startLoc-1).toString();
+			isGetBeforeSeq = compareSeqBefore(seq, seqIndelChr);
+			startLoc = startLoc - lenStep - 1;
+		}
+		
 		if (isDup) {
 			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Duplications;
 		} else {
 			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Insertions;
 		}
-		int length = alignRef.getLength();
-		Align alignNew = new Align(alignRef.toString());
-		alignNew.setStartAbs(startReal);
-		alignNew.setEndAbs(startReal + length - 1);
-		alignRef = alignNew;
 	}
 	
 	/**
@@ -195,12 +213,14 @@ public class SnpIndelRealignHandle {
 	 * 并返回是否需要继续比较
 	 * @param seq
 	 * @param seqIndel
+	 * @param seqIndelBefore 根前面比，主要是看是否为duplicate
+	 * 因为存在类型  GC-[ATC]-AT 可以改写为  GCAT-[CAT] 需要获得前面的C才能判定是否为duplicate
 	 * @return 是否需要继续提取序列并进行比较
 	 */
-	private boolean compareSeq(String seqstr, char[] seqIndel, char[] seqIndelBefore) {
+	private boolean compareSeqAfter(String seqstr, char[] seqIndel, char[] seqIndelBefore) {
 		boolean isNext = true;
 		int samNum = 0;
-		char[] seq = seqstr.toLowerCase().toCharArray();
+		char[] seq = seqstr.toUpperCase().toCharArray();
 		for (int i = 0; i < seq.length; i=i + seqIndel.length) {
 			boolean isSame = true;
 			for (int j = 0; j < seqIndel.length; j++) {
@@ -212,7 +232,7 @@ public class SnpIndelRealignHandle {
 			}
 			if (isSame) {
 				isDup = true;
-				startReal = startReal + samNum; 
+				startAfter = startAfter + samNum; 
 				samNum = 0;
 			} else {
 				isNext = false;
@@ -221,8 +241,7 @@ public class SnpIndelRealignHandle {
 		}
 		
 		if (!isNext && samNum > 0 && samNum < seqIndel.length) {
-			convertSeqNum = samNum;
-			startReal = startReal + samNum; 
+			startAfter = startAfter + samNum; 
 		}
 		
 		if (!isNext && (samNum > 0 || !isDup)) {
@@ -240,14 +259,80 @@ public class SnpIndelRealignHandle {
 		return isNext;
 	}
 	
-	private void changeSeq() {
+	/**
+	 * 将indel和提取出来的序列进行比较
+	 * 并返回是否需要继续比较
+	 * @param seq
+	 * @param seqIndel
+	 * @param seqIndelBefore 根前面比，主要是看是否为duplicate
+	 * 因为存在类型  GC-[ATC]-AT 可以改写为  GCAT-[CAT] 需要获得前面的C才能判定是否为duplicate
+	 * @return 是否需要继续提取序列并进行比较
+	 */
+	private boolean compareSeqBefore(String seqstr, char[] seqIndel) {
+		boolean isBefore = true;
+		int samNum = 0;
+		char[] seq = seqstr.toUpperCase().toCharArray();
+		for (int i = seq.length-seqIndel.length; i >= 0; i=i - seqIndel.length) {
+			boolean isSame = true;
+			for (int j = seqIndel.length - 1; j >= 0; j--) {
+				if (seq[i+j] != seqIndel[j]) {
+					isSame = false;
+					beforeBase = seq[i+j];
+					break;
+				}
+				samNum++;
+			}
+			if (isSame) {
+				startBefore = startBefore - samNum; 
+				samNum = 0;
+			} else {
+				isBefore = false;
+				break;
+			}
+		}
+		
+		if (!isBefore && samNum > 0 && samNum < seqIndel.length) {
+			startBefore = startBefore - samNum; 
+		}
+		return isBefore;
+	}
+	
+	/**
+	 * 根据需要偏移的位置，重新进行align
+	 * @param moveNumber 偏移数量，负数为向做偏移，正数为向右偏移
+	 * @return
+	 */
+	private Align generateNewAlign(int moveNumber) {
+		int length = alignRef.getLength();
+		Align alignNew = new Align(alignRef.toString());
+		int site = startLoc + moveNumber;
+		alignNew.setStartAbs(site);
+		alignNew.setEndAbs(site + length - 1);
+		return alignNew;
+	}
+	
+	private void changeSeq(int moveNumber) {
+		//理论上不可能发生的错误
+		if (moveNumber < startBefore-startLoc || moveNumber > startAfter-startLoc) {
+			throw new ExceptionNBCSnpHgvs("move number error!");
+		}
+		
 		String seq = seqRef.length() > 0 ? seqRef : seqAlt;
-		if (convertSeqNum <= 0) {
+		int shiftNum = moveNumber%seq.length();
+		if (moveNumber == startBefore - startLoc) {
+			seqChangeShort = beforeBase+"";
+		}
+		if (shiftNum == 0) {
 			seqChange = seq;
 			return;
 		}
-		seqChange = seq.substring(convertSeqNum) + seq.substring(0, convertSeqNum);
-		seqChangeShort = seq.substring(convertSeqNum-1, convertSeqNum);
+		if (shiftNum < 0) {
+			shiftNum += seq.length();
+		}
+		seqChange = seq.substring(shiftNum) + seq.substring(0, shiftNum);
+		if (moveNumber != startBefore - startLoc) {
+			seqChangeShort = seq.substring(shiftNum-1, shiftNum);
+		}
 	}
 	
 }

@@ -7,12 +7,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.database.model.species.Species;
 
 import junit.framework.Assert;
 
@@ -23,13 +25,15 @@ public class TestSnpHgvsp {
 
 	@BeforeClass
 	public static void beforeClass() {
-		// Species species = new Species(9606, "hg19_GRCh37");
-		gffHashGene = new GffHashGene(
-				"/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
-		seqHash = new SeqHash("/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/ChromFa/chrAll.fa");
-		// gffchrAbs = new GffChrAbs(species);
-		// gffHashGene = gffchrAbs.getGffHashGene();
-		// seqHash = gffchrAbs.getSeqHash();
+		 Species species = new Species(9606, "hg19_GRCh37");
+		 GffChrAbs gffchrAbs = new GffChrAbs(species);
+		 gffHashGene = gffchrAbs.getGffHashGene();
+		 seqHash = gffchrAbs.getSeqHash();
+		 
+//		gffHashGene = new GffHashGene(
+//				"/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/gff/ref_GRCh37.p13_top_level.gff3.gz");
+//		seqHash = new SeqHash("/home/novelbio/NBCresource/genome/species/9606/hg19_GRCh37/ChromFa/chrAll.fa");
+
 	}
 
 	@AfterClass

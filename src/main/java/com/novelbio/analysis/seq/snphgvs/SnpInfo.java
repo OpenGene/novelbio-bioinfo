@@ -246,7 +246,7 @@ public class SnpInfo {
 		snpRefAltDuplicate.setSeqLen(GetSeqLen);
 		snpRefAltDuplicate.handleSeqAlign(seqHash);
 		varType = snpRefAltDuplicate.getVarType();
-		alignRef = snpRefAltDuplicate.getAlignRef();
+		alignRef = snpRefAltDuplicate.moveAlignToAfter();
 		isDup = snpRefAltDuplicate.isDup();
 		seqShort = snpRefAltDuplicate.getSeqChangeShort();
 		if (varType == EnumHgvsVarType.Deletions) {

@@ -76,6 +76,9 @@ public class SeqHashStub implements SeqHashInt {
 		if (endlocation > seq.length()) {
 			endlocation = seq.length();
 		}
+		if (startlocation < 1) {
+			startlocation = 1;
+		}
 		return new SeqFasta(seq.substring((int)startlocation-1, (int)endlocation));
 	}
 

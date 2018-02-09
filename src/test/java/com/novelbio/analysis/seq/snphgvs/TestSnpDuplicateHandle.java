@@ -1,106 +1,77 @@
 package com.novelbio.analysis.seq.snphgvs;
 
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.database.model.modgeneid.GeneType;
+import static org.junit.Assert.assertEquals;
 
-import junit.framework.Assert;
+import org.junit.Test;
+
+import com.novelbio.analysis.seq.mapping.Align;
 
 public class TestSnpDuplicateHandle {
-	
-	public void testIsNeedMoveDuplicateBefore() {
-		GffGeneIsoInfo isoCis = getIsoCis();
-		testIsNeedMoveDuplicateBefore(isoCis);
-		GffGeneIsoInfo isoTrans = getIsoTrans();
-		testIsNeedMoveDuplicateBefore(isoTrans);
+	SeqHashStub seqHashStub = new SeqHashStub();
+
+	@Test
+	public void testRealign() {
+		testRealignInsertion(4);
+		testRealignDeletion(4);
+		testRealignInsertion(100);
+		testRealignDeletion(100);
 	}
 	
-	protected void testIsNeedMoveDuplicateBefore(GffGeneIsoInfo iso) {
-		SnpInfo snpRefAltInfo = new SnpInfo("chr1", 173470236, "A", "AC");
-		snpRefAltInfo.isDup = true;
-		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
-		snpRefAltInfo.setAlignRef(new Align("chr1:31-33"));
-		SnpIsoHgvsp snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
+	private void testRealignInsertion(int seqLen) {
+		String seq = "ATCGCCCTACC AGCT GATCAAGCT GATCAAGCT GATCAAGCT GAT ACACCCTACCC";
+		seqHashStub.setSeq(seq.replace(" ", ""));
 		
-		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
-		snpRefAltInfo.setAlignRef(new Align("chr1:32-33"));
-		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
+		SnpIndelRealignHandle snpIndelRealignHandle = new SnpIndelRealignHandle(new Align("chr1:30-31"), "", "GCT GATCAA".replace(" ", ""), "A");		
+		snpIndelRealignHandle.setSeqLen(seqLen);
+		snpIndelRealignHandle.handleSeqAlign(seqHashStub);
+		assertEquals(EnumHgvsVarType.Duplications, snpIndelRealignHandle.getVarType());
+		assertEquals(EnumHgvsVarType.Duplications, snpIndelRealignHandle.getVarType());
+		assertEquals(11, snpIndelRealignHandle.getStartBefore());
+		assertEquals(45, snpIndelRealignHandle.getStartAfter());
+		assertEquals('C', snpIndelRealignHandle.getBeforeBase());
 		
-		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
-		snpRefAltInfo.setAlignRef(new Align("chr1:33-33"));
-		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertFalse(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
+		assertEquals(-19, snpIndelRealignHandle.getMoveBefore());
+		assertEquals(15, snpIndelRealignHandle.getMoveAfter());
 		
-		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
-		snpRefAltInfo.setAlignRef(new Align("chr1:31-33"));
-		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
+		Align alignRealign = snpIndelRealignHandle.moveAlign(snpIndelRealignHandle.getMoveBefore());
+		assertEquals("chr1:11-12", alignRealign.toString());
+		assertEquals("C", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("AGCTGATCA", snpIndelRealignHandle.getSeqChange());
 		
-		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
-		snpRefAltInfo.setAlignRef(new Align("chr1:32-33"));
-		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertFalse(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
-		
-		//==================================================
-		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
-		snpRefAltInfo.setAlignRef(new Align("chr1:36-39"));
-		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
-		
-		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
-		snpRefAltInfo.setAlignRef(new Align("chr1:36-38"));
-		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
-		
-		snpRefAltInfo.varType = EnumHgvsVarType.Deletions;
-		snpRefAltInfo.setAlignRef(new Align("chr1:36-37"));
-		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertFalse(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
-		
-		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
-		snpRefAltInfo.setAlignRef(new Align("chr1:36-40"));
-		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
-		
-		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
-		snpRefAltInfo.setAlignRef(new Align("chr1:36-39"));
-		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertTrue(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
-		
-		snpRefAltInfo.varType = EnumHgvsVarType.Duplications;
-		snpRefAltInfo.setAlignRef(new Align("chr1:36-38"));
-		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso);
-		Assert.assertFalse(snpRefAltHgvsp.isNeedMoveDuplicateBefore());
+		alignRealign = snpIndelRealignHandle.moveAlign(snpIndelRealignHandle.getMoveAfter());
+		assertEquals("chr1:45-46", alignRealign.toString());
+		assertEquals("T", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("CAAGCTGAT", snpIndelRealignHandle.getSeqChange());
 	}
+	
+	private void testRealignDeletion(int seqLen) {
+		String seq = "ATCGCCCTACC AGCT GATCAAGCT GATCAAGCT GATCAAGCT GAT ACACCCTACCC";
+		seqHashStub.setSeq(seq.replace(" ", ""));
 		
-	private GffGeneIsoInfo getIsoCis() {
-		GffGeneIsoInfo isoCis = GffGeneIsoInfo.createGffGeneIso("Iso1", "geneCis", null, GeneType.mRNA, true);
-		//<---20-30------40-50-------60-70-------80-90-----100-110-----120-125<
-		isoCis.add(new ExonInfo( true, 20, 30));
-		isoCis.add(new ExonInfo( true, 40, 50));
-		isoCis.add(new ExonInfo( true, 60, 70));
-		isoCis.add(new ExonInfo( true, 80, 90));
-		isoCis.add(new ExonInfo( true, 100, 110));
-		isoCis.add(new ExonInfo( true, 120, 125));
-		isoCis.setATG(65);
-		isoCis.setUAG(85);
-		return isoCis;
-	}
-	private GffGeneIsoInfo getIsoTrans() {
-		GffGeneIsoInfo isoTrans = GffGeneIsoInfo.createGffGeneIso("Iso1", "geneTrans", null, GeneType.mRNA, false);
-		//>---20-30------40-50-------60-65-70-------80-85-90-----100-110-----120-125-->
-		//>---125-120------110-100-------90-85-80-------70-65-60----50-40-----30-20-->
-		isoTrans.add(new ExonInfo( false, 120, 125));
-		isoTrans.add(new ExonInfo( false, 100, 110));
-		isoTrans.add(new ExonInfo( false, 80, 90));
-		isoTrans.add(new ExonInfo( false, 60, 70));
-		isoTrans.add(new ExonInfo( false, 40, 50));
-		isoTrans.add(new ExonInfo( false, 20, 30));
-		isoTrans.setATG(85);
-		isoTrans.setUAG(65);
-		return isoTrans;
+		SnpIndelRealignHandle snpIndelRealignHandle = new SnpIndelRealignHandle(new Align("chr1:31-39"), "GCT GATCAA".replace(" ", ""), "", "A");
+		snpIndelRealignHandle.setSeqLen(seqLen);
+		snpIndelRealignHandle.handleSeqAlign(seqHashStub);
+		assertEquals(EnumHgvsVarType.Deletions, snpIndelRealignHandle.getVarType());
+		assertEquals(12, snpIndelRealignHandle.getStartBefore());
+		assertEquals(37, snpIndelRealignHandle.getStartAfter());
+		assertEquals('C', snpIndelRealignHandle.getBeforeBase());
+		
+		assertEquals(-19, snpIndelRealignHandle.getMoveBefore());
+		assertEquals(6, snpIndelRealignHandle.getMoveAfter());
+		
+		Align alignRealign = snpIndelRealignHandle.moveAlign(-1);
+		assertEquals("chr1:30-38", alignRealign.toString());
+		assertEquals("A", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("AGCTGATCA", snpIndelRealignHandle.getSeqChange());
+
+		alignRealign = snpIndelRealignHandle.moveAlign(snpIndelRealignHandle.getMoveBefore());
+		assertEquals("chr1:12-20", alignRealign.toString());
+		assertEquals("C", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("AGCTGATCA", snpIndelRealignHandle.getSeqChange());
+		
+		alignRealign = snpIndelRealignHandle.moveAlign(snpIndelRealignHandle.getMoveAfter());
+		assertEquals("chr1:37-45", alignRealign.toString());
+		assertEquals("T", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("CAAGCTGAT", snpIndelRealignHandle.getSeqChange());
 	}
 }
