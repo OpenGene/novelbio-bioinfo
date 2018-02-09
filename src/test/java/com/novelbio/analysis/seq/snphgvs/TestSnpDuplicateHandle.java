@@ -15,6 +15,8 @@ public class TestSnpDuplicateHandle {
 		testRealignDeletion(4);
 		testRealignInsertion(100);
 		testRealignDeletion(100);
+		
+		testRealignSimple();
 	}
 	
 	private void testRealignInsertion(int seqLen) {
@@ -73,5 +75,25 @@ public class TestSnpDuplicateHandle {
 		assertEquals("chr1:37-45", alignRealign.toString());
 		assertEquals("T", snpIndelRealignHandle.getSeqChangeShort());
 		assertEquals("CAAGCTGAT", snpIndelRealignHandle.getSeqChange());
+	}
+	
+	private void testRealignSimple() {
+		String seq = "ATCGCCCTACATGCAGAG";
+		seqHashStub.setSeq(seq.replace(" ", ""));
+		
+		SnpIndelRealignHandle snpIndelRealignHandle = new SnpIndelRealignHandle(new Align("chr1:11-12"), "", "CTGA", "A");
+		snpIndelRealignHandle.handleSeqAlign(seqHashStub);
+		assertEquals(EnumHgvsVarType.Insertions, snpIndelRealignHandle.getVarType());
+		assertEquals(10, snpIndelRealignHandle.getStartBefore());
+		assertEquals(11, snpIndelRealignHandle.getStartAfter());
+		assertEquals('C', snpIndelRealignHandle.getBeforeBase());
+		
+		assertEquals(-1, snpIndelRealignHandle.getMoveBefore());
+		assertEquals(0, snpIndelRealignHandle.getMoveAfter());
+		
+		Align alignRealign = snpIndelRealignHandle.moveAlign(-1);
+		assertEquals("chr1:10-11", alignRealign.toString());
+		assertEquals("C", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("ACTG", snpIndelRealignHandle.getSeqChange());
 	}
 }
