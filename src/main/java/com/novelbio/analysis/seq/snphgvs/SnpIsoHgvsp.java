@@ -35,8 +35,9 @@ public abstract class SnpIsoHgvsp {
 	public SnpIsoHgvsp(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		this.snpRefAltInfo = snpRefAltInfo;
 		this.iso = iso;
-		if (snpRefAltInfo.isDup() && isNeedMoveDuplicateBefore()) {
-			snpRefAltInfo.setIsDupMoveLast(true);
+		int moveNumber = moveBeforeNum();
+		if (moveNumber > 0) {
+			snpRefAltInfo.setMoveBeforeNum(moveNumber);
 		}
 	}
 	/** 默认返回三字母，可以设定为返回单字母 */
@@ -84,34 +85,9 @@ public abstract class SnpIsoHgvsp {
 	 * 其中插入在G和T之间，则切换为<br>
 	 * T--[ACATG]-ACATGT----------AG<br>
 	 * @param isDupMoveLast 默认不移动
-	 */
-	@VisibleForTesting
-	protected boolean isNeedMoveDuplicateBefore() {
-		int startNum = iso.getNumCodInEle(getStartCis());
-		int endNum = iso.getNumCodInEle(getEndCis());
-		if (startNum == 0 || endNum == 0) {
-			return false;
-		}
-		//cover splice site
-		if (startNum < 0 && -startNum+1==endNum
-				|| startNum > 0 && -startNum == endNum
-			) {
-			return true;
-		}
-		//不考虑不在一个exon/intron中的情况
-		if (startNum != endNum || startNum > 0 && endNum > 0) {
-			return false;
-		}
-		//仅考虑内含子中的duplicate
-		int num = snpRefAltInfo.getVarType() == EnumHgvsVarType.Deletions ? 1 : 0;
-		if (iso.getCod2ExInStart(getStartCis()) <= num
-				|| iso.getCod2ExInEnd(getEndCis()) <= num
-				) {
-			return true;
-		}
-		return false;
-	}
-	
+	 */	
+	protected abstract int moveBeforeNum();
+
 	/** 把refNr和altNr都准备好 */
 	protected void fillRefAltNrForAA(SeqHashInt seqHash) {
 		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(startCds, endCds);
@@ -321,6 +297,10 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 	public SnpRefAltIsoSnp(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
 	}
+	@Override
+	protected int moveBeforeNum() {
+		return 0;
+	}
 	
 	public boolean isNeedHgvspDetail() {
 		return iso.isCodInAAregion(getStartCis());
@@ -383,6 +363,45 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 	
 	public SnpRefAltIsoIns(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
+	}
+
+	@Override
+	protected int moveBeforeNum() {
+		int moveMax = snpRefAltInfo.moveBeforeNum();
+		if (moveMax == 0) {
+			return 0;
+		}
+		int site = snpRefAltInfo.getStartReal();
+		int coordExonNum = iso.getNumCodInEle(site);
+		if (coordExonNum == 0) {
+			return 0;
+		}
+		int moveNum = 0;
+		if (coordExonNum <0) {
+			int coord2BoundStart = iso.getCod2ExInStart(site)+1;
+			int coord2BoundEnd = iso.getCod2ExInEnd(site)+1;
+			if (iso.isCis5to3() && (coord2BoundStart == 1 || coord2BoundEnd == 2)
+					|| !iso.isCis5to3() && (coord2BoundStart == 2 || coord2BoundEnd == 1)
+					) {
+				moveNum = 1;
+				snpRefAltInfo.setMoveBeforeNum(1);
+				site = snpRefAltInfo.getStartReal();
+				coordExonNum = iso.getNumCodInEle(site);
+			}
+		}
+		if (!iso.isCodInAAregion(site)) {
+			return moveNum;
+		}
+		if (coordExonNum > 0) {
+			int beforeSite = iso.getLocAAbefore(site);
+			int afterSite = iso.getLocAAend(site);
+			if (iso.isCis5to3() && site != afterSite && site - beforeSite + 1 <= moveMax - moveNum) {
+				moveNum = moveNum + site - beforeSite + 1;
+			} else if (!iso.isCis5to3() && site != beforeSite && site-afterSite+1 <= moveMax-moveNum) {
+				moveNum = moveNum + site - afterSite + 1;
+			}
+		}
+		return moveNum;
 	}
 	
 	public boolean isNeedHgvspDetail() {
@@ -628,7 +647,6 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 	
 }
 
-
 class SnpRefAltIsoDel extends SnpIsoHgvsp {
 	boolean isFrameShift = false;
 	boolean isAffectUAG = false;
@@ -648,6 +666,105 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 		if (isNeedAAanno && isFrameShift) {
 			setVarType.add(EnumVariantClass.frameshift_variant);
 		}
+	}
+
+	@Override
+	protected int moveBeforeNum() {
+		int moveMax = snpRefAltInfo.moveBeforeNum();
+		if (moveMax == 0) {
+			return 0;
+		}
+		
+		int siteStart = getStartCis();
+		int siteEnd = getEndCis();
+		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(siteStart, siteEnd);
+		if (isoSub.size() > 1) {
+			return 0;
+		}
+		if (isoSub.size() == 0) {
+			int start2Start = iso.getCod2ExInStart(siteStart)+1;
+			int end2End = iso.getCod2ExInEnd(siteEnd)+1;
+			if (start2Start == 1 && end2End == 1 || start2Start > 2 && end2End > 2) {
+				return 0;
+			}
+			//---10==20-----start-------end--30===40--------------------
+			if (iso.isCis5to3()) {
+				int end2Start = iso.getCod2ExInStart(siteEnd) + 1;
+				if (start2Start <= 2 && end2Start <= moveMax) {
+					return end2Start;
+				} else if (end2End <= 2 && start2Start > 3-end2End && 3-end2End <= moveMax) {
+					return 3-end2End;
+				}
+				return 0;
+			} else {
+				//---10==20----end-------start--30===40--------------------
+				int start2End = iso.getCod2ExInEnd(siteStart) + 1;
+				if (end2End <= 2 && start2End <= moveMax) {
+					return start2End;
+				} else if (start2Start <= 2 && end2End > 3-start2Start && 3-start2Start <= moveMax) {
+					return 3-start2Start;
+				}
+				return 0;
+			}
+		}
+		
+		int startExNum = iso.getNumCodInEle(siteStart);
+		int endExNum = iso.getNumCodInEle(siteEnd);
+		if (startExNum < 0 && endExNum < 0 || startExNum == 0 || endExNum == 0) {
+			return 0;
+		}
+		if (startExNum < 0) {
+			if (iso.isCis5to3()) {
+				//--------start-------10====end====20----------------------
+				int start2Start = iso.getCod2ExInStart(siteStart)+1;
+				int end2Start = iso.getCod2ExInStart(siteEnd)+1;
+				if (end2Start <= moveMax && start2Start >= end2Start) {
+					return end2Start;
+				}
+			} else {
+				//--10====end====20------------start----------
+				//TODO 这种情况可能还要再分析下外显子中是否移码
+				int start2End = iso.getCod2ExInStart(siteStart)+1;
+				if (start2End <= moveMax) {
+					return start2End;
+				}
+			}
+		} else if (endExNum < 0) {
+			if (iso.isCis5to3()) {
+				//----10====start====20-------end---------------
+				int end2Start = iso.getCod2ExInStart(siteEnd)+1;
+				if (end2Start <= moveMax) {
+					return end2Start;
+				}
+			} else {
+				//--------end-------10====start====20----------------------
+				//TODO 这种情况可能还要再分析下外显子中是否移码
+				int end2End = iso.getCod2ExInEnd(siteEnd)+1;
+				int start2End = iso.getCod2ExInEnd(siteStart)+1;
+				if (start2End <= moveMax && end2End >= start2End) {
+					return start2End;
+				}
+			}
+		} else {
+			if (Math.abs(siteStart - siteEnd) + 1 %3 != 0) {
+				return 0;
+			}
+			if (iso.isCis5to3()) {
+				//----------10==start====end==20----------------------
+				int siteBefore = iso.getLocAAbefore(siteStart);
+				if (siteBefore - siteStart < 3 && siteBefore - siteStart < moveMax) {
+					return siteBefore - siteStart;
+				}
+			} else {
+				//----------10==end====start==20----------------------
+				int siteAfter = iso.getLocAAend(siteEnd);
+				if (siteAfter - siteEnd < 3 && siteAfter - siteEnd < moveMax) {
+					return siteAfter - siteEnd ;
+				}
+			}
+		}
+
+		return 0;
 	}
 	
 	public boolean isNeedHgvspDetail() {

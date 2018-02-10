@@ -32,7 +32,8 @@ public class SnpIndelRealignHandle {
 	Align alignRef;
 	
 	EnumHgvsVarType varType;
-
+	
+	/** 传入的坐标 */
 	int startLoc;
 	/** 经过校正后，最靠右侧的起点 */
 	int startAfter;
@@ -43,6 +44,8 @@ public class SnpIndelRealignHandle {
 
 	boolean isDup;
 
+	/** 移动之后的realign */
+	Align realign;
 	/**
 	 * 这里只可能是insertion或deletion，因此只有一条序列存在，另一条为空<br>
 	 * 根据 {@link #convertSeqNum} 来修改序列<br>
@@ -75,9 +78,17 @@ public class SnpIndelRealignHandle {
 	public String getSeqChange() {
 		return seqChange;
 	}
-	public String getSeqChangeShort() {
+	public String getSeqHead() {
 		return seqChangeShort;
 	}
+	
+	public String getSeqRef() {
+		return varType == EnumHgvsVarType.Deletions ? seqChange : "";
+	}
+	public String getSeqAlt() {
+		return varType == EnumHgvsVarType.Deletions ? "" : seqChange;
+	}
+	
 	public EnumHgvsVarType getVarType() {
 		return varType;
 	}
@@ -97,22 +108,39 @@ public class SnpIndelRealignHandle {
 		compareSeq(startLocModify, seqHash, seqIndel);
 	}
 	
-	/** 可以向前移动几位，恒返回负数 */
+	/** 可以向前移动几位，恒返回正数，从startAfter开始算 */
 	protected int getMoveBefore() {
-		return startBefore - startLoc;
+		return startAfter - startBefore;
 	}
-	/** 可以向后移动几位 */
-	protected int getMoveAfter() {
-		return startAfter - startLoc;
+	/** 在方法{@link #moveAlignBefore(int)}
+	 * 和 {@link #moveAlignToAfter()}
+	 * 执行后会跟着调整
+	 * @return
+	 */
+	public Align getRealign() {
+		return realign;
 	}
 	
-	protected Align moveAlign(int moveNum) {
-		changeSeq(moveNum);
-		return generateNewAlign(moveNum);
+	/** 我们假定默认将align移动到最右端，这样我们只需要将align
+	 * 向左端移动即可
+	 * @param moveNum 恒为正数
+	 * @return
+	 */
+	protected Align moveAlignBefore(int moveNum) {		
+		int moveEnd = startAfter-startLoc;
+		int move = moveEnd-moveNum;
+		if (move < startBefore-startLoc || move > startAfter-startLoc) {
+			throw new ExceptionNBCSnpHgvs("cannot move to such before "+moveNum + ". Max move number is " + (startAfter-startBefore));
+		}
+		changeSeq(move);
+		generateNewAlign(move);
+		return realign;
 	}
 	protected Align moveAlignToAfter() {
-		changeSeq(getMoveAfter());
-		return generateNewAlign(getMoveAfter());
+		int moveEnd = startAfter-startLoc;
+		changeSeq(moveEnd);
+		generateNewAlign(moveEnd);
+		return realign;
 	}
 	/**
 	 * indel有这种类型比较难处理（符号-主要用来断字，没什么实际意义）<br>
@@ -188,6 +216,10 @@ public class SnpIndelRealignHandle {
 				isFirst = false;
 			} else {
 				seq = seqHash.getSeq(alignRef.getRefID(), startLoc, startLoc + lenStep).toString();
+				if (seq.length() < lenStep+1) {
+					seq = fillSeq(seq, lenStep+1, false);
+					isGetNextSeq = false;
+				}
 			}
 			isGetNextSeq = compareSeqAfter(seq, seqIndelChr, before);
 			startLoc = startLoc + lenStep + 1;
@@ -195,10 +227,23 @@ public class SnpIndelRealignHandle {
 		
 		startLoc = startLocModify;
 		boolean isGetBeforeSeq = true;
-		while (isGetBeforeSeq) {
+		int loopNum = 0;//最多循环三次，三次都找不到头部就可以不找了
+		while (isGetBeforeSeq ) {
 			seq = seqHash.getSeq(alignRef.getRefID(), startLoc-lenStep-1, startLoc-1).toString();
+			if (seq.length() < lenStep+1) {
+				seq = fillSeq(seq, lenStep+1, true);
+			}
+			
+			if (loopNum++ >= 3) {
+				beforeBase = seq.charAt(seq.length()-1);
+				break;
+			}
+			
 			isGetBeforeSeq = compareSeqBefore(seq, seqIndelChr);
 			startLoc = startLoc - lenStep - 1;
+			if (startLoc < 0) {
+				break;
+			}
 		}
 		
 		if (isDup) {
@@ -206,6 +251,24 @@ public class SnpIndelRealignHandle {
 		} else {
 			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Insertions;
 		}
+	}
+	
+	/** 如果序列太短，则把序列补齐，一般在序列的头部和尾部会出现问题
+	 * 正式项目中应该不会出现
+	 * 测试中出现的问题
+	 * @return
+	 */
+	private String fillSeq(String seq, int len, boolean fillHead) {
+		char[] tmp = new char[len - seq.length()];
+		for (int i = 0; i < tmp.length; i++) {
+			tmp[i] = ' ';
+		}
+		if (fillHead) {
+			seq = new String(tmp) + seq;
+		} else {
+			seq = seq + new String(tmp);
+		}
+		return seq;
 	}
 	
 	/**
@@ -299,18 +362,24 @@ public class SnpIndelRealignHandle {
 	
 	/**
 	 * 根据需要偏移的位置，重新进行align
+	 * 注意0点位startLoc，负数表示向前移动，正数表示向后移动
 	 * @param moveNumber 偏移数量，负数为向做偏移，正数为向右偏移
 	 * @return
 	 */
-	private Align generateNewAlign(int moveNumber) {
+	private void generateNewAlign(int moveNumber) {
 		int length = alignRef.getLength();
 		Align alignNew = new Align(alignRef.toString());
 		int site = startLoc + moveNumber;
 		alignNew.setStartAbs(site);
 		alignNew.setEndAbs(site + length - 1);
-		return alignNew;
+		realign = alignNew;
 	}
 	
+	/**
+	 * 根据需要偏移的位置，重新进行align
+	 * 注意0点位startLoc，负数表示向前移动，正数表示向后移动
+	 * @param moveNumber
+	 */
 	private void changeSeq(int moveNumber) {
 		//理论上不可能发生的错误
 		if (moveNumber < startBefore-startLoc || moveNumber > startAfter-startLoc) {

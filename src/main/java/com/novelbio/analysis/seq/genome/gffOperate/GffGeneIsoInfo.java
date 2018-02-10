@@ -790,7 +790,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	public int getLocAAbeforeBias(int location) {
 		int startLen = getLocDistmRNA(ATGsite,location);
-		return   -startLen%3;
+		return -startLen%3;
 	}
 	/**
 	 * 返回能和本loc组成一个氨基酸的尾部nr的坐标，从1开始计算

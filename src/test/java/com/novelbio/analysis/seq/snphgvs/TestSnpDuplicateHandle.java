@@ -17,6 +17,7 @@ public class TestSnpDuplicateHandle {
 		testRealignDeletion(100);
 		
 		testRealignSimple();
+		testRealignSimple2();
 	}
 	
 	private void testRealignInsertion(int seqLen) {
@@ -32,17 +33,16 @@ public class TestSnpDuplicateHandle {
 		assertEquals(45, snpIndelRealignHandle.getStartAfter());
 		assertEquals('C', snpIndelRealignHandle.getBeforeBase());
 		
-		assertEquals(-19, snpIndelRealignHandle.getMoveBefore());
-		assertEquals(15, snpIndelRealignHandle.getMoveAfter());
+		assertEquals(34, snpIndelRealignHandle.getMoveBefore());
 		
-		Align alignRealign = snpIndelRealignHandle.moveAlign(snpIndelRealignHandle.getMoveBefore());
+		Align alignRealign = snpIndelRealignHandle.moveAlignBefore(snpIndelRealignHandle.getMoveBefore());
 		assertEquals("chr1:11-12", alignRealign.toString());
-		assertEquals("C", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("C", snpIndelRealignHandle.getSeqHead());
 		assertEquals("AGCTGATCA", snpIndelRealignHandle.getSeqChange());
 		
-		alignRealign = snpIndelRealignHandle.moveAlign(snpIndelRealignHandle.getMoveAfter());
+		alignRealign = snpIndelRealignHandle.moveAlignToAfter();
 		assertEquals("chr1:45-46", alignRealign.toString());
-		assertEquals("T", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("T", snpIndelRealignHandle.getSeqHead());
 		assertEquals("CAAGCTGAT", snpIndelRealignHandle.getSeqChange());
 	}
 	
@@ -58,22 +58,21 @@ public class TestSnpDuplicateHandle {
 		assertEquals(37, snpIndelRealignHandle.getStartAfter());
 		assertEquals('C', snpIndelRealignHandle.getBeforeBase());
 		
-		assertEquals(-19, snpIndelRealignHandle.getMoveBefore());
-		assertEquals(6, snpIndelRealignHandle.getMoveAfter());
+		assertEquals(25, snpIndelRealignHandle.getMoveBefore());
 		
-		Align alignRealign = snpIndelRealignHandle.moveAlign(-1);
+		Align alignRealign = snpIndelRealignHandle.moveAlignBefore(7);
 		assertEquals("chr1:30-38", alignRealign.toString());
-		assertEquals("A", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("A", snpIndelRealignHandle.getSeqHead());
 		assertEquals("AGCTGATCA", snpIndelRealignHandle.getSeqChange());
 
-		alignRealign = snpIndelRealignHandle.moveAlign(snpIndelRealignHandle.getMoveBefore());
+		alignRealign = snpIndelRealignHandle.moveAlignBefore(snpIndelRealignHandle.getMoveBefore());
 		assertEquals("chr1:12-20", alignRealign.toString());
-		assertEquals("C", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("C", snpIndelRealignHandle.getSeqHead());
 		assertEquals("AGCTGATCA", snpIndelRealignHandle.getSeqChange());
 		
-		alignRealign = snpIndelRealignHandle.moveAlign(snpIndelRealignHandle.getMoveAfter());
+		alignRealign = snpIndelRealignHandle.moveAlignToAfter();
 		assertEquals("chr1:37-45", alignRealign.toString());
-		assertEquals("T", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("T", snpIndelRealignHandle.getSeqHead());
 		assertEquals("CAAGCTGAT", snpIndelRealignHandle.getSeqChange());
 	}
 	
@@ -88,12 +87,30 @@ public class TestSnpDuplicateHandle {
 		assertEquals(11, snpIndelRealignHandle.getStartAfter());
 		assertEquals('C', snpIndelRealignHandle.getBeforeBase());
 		
-		assertEquals(-1, snpIndelRealignHandle.getMoveBefore());
-		assertEquals(0, snpIndelRealignHandle.getMoveAfter());
+		assertEquals(1, snpIndelRealignHandle.getMoveBefore());
 		
-		Align alignRealign = snpIndelRealignHandle.moveAlign(-1);
+		Align alignRealign = snpIndelRealignHandle.moveAlignBefore(1);
 		assertEquals("chr1:10-11", alignRealign.toString());
-		assertEquals("C", snpIndelRealignHandle.getSeqChangeShort());
+		assertEquals("C", snpIndelRealignHandle.getSeqHead());
 		assertEquals("ACTG", snpIndelRealignHandle.getSeqChange());
 	}
+	
+	private void testRealignSimple2() {
+		String seq = "AT CG CG CG CG CG CG CG CG";
+		seqHashStub.setSeq(seq.replace(" ", ""));
+		
+		SnpIndelRealignHandle snpIndelRealignHandle = new SnpIndelRealignHandle(new Align("chr1:14-15"), "", "CG", "G");
+		snpIndelRealignHandle.setSeqLen(2);
+		snpIndelRealignHandle.handleSeqAlign(seqHashStub);
+		assertEquals(EnumHgvsVarType.Duplications, snpIndelRealignHandle.getVarType());
+		assertEquals(8, snpIndelRealignHandle.getStartBefore());
+		assertEquals(18, snpIndelRealignHandle.getStartAfter());
+		assertEquals('G', snpIndelRealignHandle.getBeforeBase());
+		
+		assertEquals(10, snpIndelRealignHandle.getMoveBefore());
+		snpIndelRealignHandle.moveAlignBefore(10);
+		assertEquals("chr1:8-9", snpIndelRealignHandle.getRealign().toString());
+		assertEquals("CG", snpIndelRealignHandle.getSeqAlt());
+	}
+	
 }

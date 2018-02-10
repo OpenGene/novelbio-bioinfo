@@ -98,39 +98,46 @@ public class TestSnpInfo {
 			snpRefAltInfo.initial(seqHashStub);
 			assertEquals(new Align("chr1", 29, 30).toString(), snpRefAltInfo.getAlignRef().toString());
 			assertEquals("chr1\t29\tG\tGCAG", snpRefAltInfo.toStringModify());
-			assertEquals(new Align("chr1", 26, 27).toString(), snpRefAltInfo.getMoveDuplicate().toString());
 			assertEquals(27, snpRefAltInfo.getStartPosition());
 			assertEquals(29, snpRefAltInfo.getEndPosition());
+			snpRefAltInfo.setMoveBeforeNum(3);
+			assertEquals(new Align("chr1", 26, 27).toString(), snpRefAltInfo.getAlignRef().toString());
+
 
 			snpRefAltInfo = new SnpInfo("chr1", 17, "GCAG", "G");
 			snpRefAltInfo.initial(seqHashStub);
 			assertEquals(new Align("chr1", 27, 29).toString(), snpRefAltInfo.getAlignRef().toString());
-			assertEquals(new Align("chr1", 24, 26).toString(), snpRefAltInfo.getMoveDuplicate().toString());
+			snpRefAltInfo.setMoveBeforeNum(3);
+			assertEquals(new Align("chr1", 24, 26).toString(), snpRefAltInfo.getAlignRef().toString());
 			
 			snpRefAltInfo.getStartPosition();
 			snpRefAltInfo = new SnpInfo("chr1", 10, "AGCA", "A");
 			snpRefAltInfo.initial(seqHashStub);
-			assertEquals(new Align("chr1", 27, 29).toString(), snpRefAltInfo.getAlignRef().toString());
-			assertEquals(new Align("chr1", 24, 26).toString(), snpRefAltInfo.getMoveDuplicate().toString());
 			assertEquals(27, snpRefAltInfo.getStartPosition());
 			assertEquals(29, snpRefAltInfo.getEndPosition());
+			assertEquals(new Align("chr1", 27, 29).toString(), snpRefAltInfo.getAlignRef().toString());
+			snpRefAltInfo.setMoveBeforeNum(3);
+			assertEquals(new Align("chr1", 24, 26).toString(), snpRefAltInfo.getAlignRef().toString());
+
 		}
 		
 		for (Integer stepLen : lsNum) {
 			SnpInfo.setGetSeqLen(stepLen);
 			SnpInfo snpRefAltInfo = new SnpInfo("chr1", 29, "G", "GCAG");
 			snpRefAltInfo.initial(seqHashStub);
-			assertEquals(new Align("chr1", 29, 30).toString(), snpRefAltInfo.getAlignRef().toString());
-			assertEquals(new Align("chr1", 26, 27).toString(), snpRefAltInfo.getMoveDuplicate().toString());
 			assertEquals(27, snpRefAltInfo.getStartPosition());
 			assertEquals(29, snpRefAltInfo.getEndPosition());
+			assertEquals(new Align("chr1", 29, 30).toString(), snpRefAltInfo.getAlignRef().toString());
+			snpRefAltInfo.setMoveBeforeNum(3);
+			assertEquals(new Align("chr1", 26, 27).toString(), snpRefAltInfo.getAlignRef().toString());
 			
 			snpRefAltInfo = new SnpInfo("chr1", 28, "A", "AGCA");
 			snpRefAltInfo.initial(seqHashStub);
-			assertEquals(new Align("chr1", 29, 30).toString(), snpRefAltInfo.getAlignRef().toString());
-			assertEquals(new Align("chr1", 26, 27).toString(), snpRefAltInfo.getMoveDuplicate().toString());
 			assertEquals(27, snpRefAltInfo.getStartPosition());
 			assertEquals(29, snpRefAltInfo.getEndPosition());
+			assertEquals(new Align("chr1", 29, 30).toString(), snpRefAltInfo.getAlignRef().toString());
+			snpRefAltInfo.setMoveBeforeNum(3);
+			assertEquals(new Align("chr1", 26, 27).toString(), snpRefAltInfo.getAlignRef().toString());
 			
 			snpRefAltInfo = new SnpInfo("chr1", 26, "GCAG", "G");
 			snpRefAltInfo.initial(seqHashStub);
@@ -148,13 +155,12 @@ public class TestSnpInfo {
 				
 		snpRefAltInfo = new SnpInfo("chr1", 3, "G", "GG");
 		snpRefAltInfo.initial(seqHashStub);
-		assertEquals(new Align("chr1", 3, 4).toString(), snpRefAltInfo.getAlignRef().toString());
-		assertEquals(new Align("chr1", 2, 3).toString(), snpRefAltInfo.getMoveDuplicate().toString());
 		assertEquals(3, snpRefAltInfo.getStartPosition());
 		assertEquals(3, snpRefAltInfo.getEndPosition());
-		snpRefAltInfo.setIsDupMoveLast(true);
-		assertEquals(2, snpRefAltInfo.getStartReal());
-		assertEquals(3, snpRefAltInfo.getEndReal());
+		assertEquals(new Align("chr1", 3, 4).toString(), snpRefAltInfo.getAlignRef().toString());
+		snpRefAltInfo.setMoveBeforeNum(1);
+		assertEquals(new Align("chr1", 2, 3).toString(), snpRefAltInfo.getAlignRef().toString());
+
 	}
 	
 	@Test
@@ -166,11 +172,13 @@ public class TestSnpInfo {
 		seqHashStub.setSeq("TTTATCACGCGCAGATCTTTT");
 		SnpInfo snpRefAltInfo = new SnpInfo("chr1", 8, "C", "CGCGCAGATCATCAC");
 		snpRefAltInfo.initial(seqHashStub);
-		Assert.assertTrue(snpRefAltInfo.isDup());
-		assertEquals(new Align("chr1", 17, 18).toString(), snpRefAltInfo.getAlignRef().toString());
-		assertEquals(new Align("chr1", 3, 4).toString(), snpRefAltInfo.getMoveDuplicate().toString());
 		assertEquals(4, snpRefAltInfo.getStartPosition());
 		assertEquals(17, snpRefAltInfo.getEndPosition());
+		Assert.assertTrue(snpRefAltInfo.isDup());
+		assertEquals(new Align("chr1", 17, 18).toString(), snpRefAltInfo.getAlignRef().toString());
+		snpRefAltInfo.setMoveBeforeNum(14);
+		assertEquals(new Align("chr1", 3, 4).toString(), snpRefAltInfo.getAlignRef().toString());
+
 		
 		//CGCGCAGATCATCA
 		//TTT-[ATCACGCGCAGATC]-ATCACGCGCAGATC-TTTT
@@ -180,10 +188,12 @@ public class TestSnpInfo {
 		snpRefAltInfo = new SnpInfo("chr1", 3, "TATCACGCGCAGATC", "T");
 		snpRefAltInfo.initial(seqHashStub);
 		Assert.assertTrue(snpRefAltInfo.isDup());
-		assertEquals(new Align("chr1", 18, 31).toString(), snpRefAltInfo.getAlignRef().toString());
-		assertEquals(new Align("chr1", 4, 17).toString(), snpRefAltInfo.getMoveDuplicate().toString());
 		assertEquals(18, snpRefAltInfo.getStartPosition());
 		assertEquals(31, snpRefAltInfo.getEndPosition());
+		assertEquals(new Align("chr1", 18, 31).toString(), snpRefAltInfo.getAlignRef().toString());
+		snpRefAltInfo.setMoveBeforeNum(14);
+		assertEquals(new Align("chr1", 4, 17).toString(), snpRefAltInfo.getAlignRef().toString());
+
 		
 		//TTT-ATCA-[CGCGCAGATC-ATCA]-CGCGCAGATC-TTTT
 		//TTT-ATCACGCGCAGATC-TTTT
@@ -192,10 +202,11 @@ public class TestSnpInfo {
 		snpRefAltInfo = new SnpInfo("chr1", 7, "ACGCGCAGATCATCA", "A");
 		snpRefAltInfo.initial(seqHashStub);
 		Assert.assertTrue(snpRefAltInfo.isDup());
-		assertEquals(new Align("chr1", 18, 31).toString(), snpRefAltInfo.getAlignRef().toString());
-		assertEquals(new Align("chr1", 4, 17).toString(), snpRefAltInfo.getMoveDuplicate().toString());
 		assertEquals(18, snpRefAltInfo.getStartPosition());
 		assertEquals(31, snpRefAltInfo.getEndPosition());
+		assertEquals(new Align("chr1", 18, 31).toString(), snpRefAltInfo.getAlignRef().toString());
+		snpRefAltInfo.setMoveBeforeNum(14);
+		assertEquals(new Align("chr1", 4, 17).toString(), snpRefAltInfo.getAlignRef().toString());
 		
 		//TTT-ATCA-[CGCGCAGATC-ATCA]-CGCGCAGATC-TTTT
 		//TTT-ATCACGCGCAGATC-TTTT
@@ -203,11 +214,13 @@ public class TestSnpInfo {
 		seqHashStub.setSeq("TTTATCACGCGCAGATCATCACGCGCAGATCTTTT");
 		snpRefAltInfo = new SnpInfo("chr1", 17, "CATCACGCGCAGATC", "C");
 		snpRefAltInfo.initial(seqHashStub);
-		Assert.assertTrue(snpRefAltInfo.isDup());
-		assertEquals(new Align("chr1", 18, 31).toString(), snpRefAltInfo.getAlignRef().toString());
-		assertEquals(new Align("chr1", 4, 17).toString(), snpRefAltInfo.getMoveDuplicate().toString());
 		assertEquals(18, snpRefAltInfo.getStartPosition());
 		assertEquals(31, snpRefAltInfo.getEndPosition());
+		Assert.assertTrue(snpRefAltInfo.isDup());
+		assertEquals(new Align("chr1", 18, 31).toString(), snpRefAltInfo.getAlignRef().toString());
+		snpRefAltInfo.setMoveBeforeNum(14);
+		assertEquals(new Align("chr1", 4, 17).toString(), snpRefAltInfo.getAlignRef().toString());
+
 		
 		
 		//TTT-ATCA-[CGCGCAGATC-ATCA]-CGCGCAGATC-TTTT
@@ -217,9 +230,11 @@ public class TestSnpInfo {
 		snpRefAltInfo = new SnpInfo("chr1", 26, "CATCACGCGCAGATC", "C");
 		snpRefAltInfo.initial(seqHashStub);
 		Assert.assertTrue(snpRefAltInfo.isDup());
-		assertEquals(new Align("chr1", 27, 40).toString(), snpRefAltInfo.getAlignRef().toString());
-		assertEquals(new Align("chr1", 13, 26).toString(), snpRefAltInfo.getMoveDuplicate().toString());
 		assertEquals(27, snpRefAltInfo.getStartPosition());
 		assertEquals(40, snpRefAltInfo.getEndPosition());
+		assertEquals(new Align("chr1", 27, 40).toString(), snpRefAltInfo.getAlignRef().toString());
+		snpRefAltInfo.setMoveBeforeNum(14);
+		assertEquals(new Align("chr1", 13, 26).toString(), snpRefAltInfo.getAlignRef().toString());
+
 	}
 }
