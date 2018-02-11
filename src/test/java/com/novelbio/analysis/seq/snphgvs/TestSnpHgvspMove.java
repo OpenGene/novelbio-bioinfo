@@ -162,8 +162,8 @@ public class TestSnpHgvspMove {
 		String seq = "AAATGATTAT"//10
 				+ "ATAAAGATTG"//20
 				+ "TTACTGTAAA"//30
-				+ "GAT ATG TTT C"//40
-				+ "GTGGTAGAG C"//50
+				+ "GAT ATG GGT G"//40
+				+ "GTGCCAGAG C"//50
 				+ "G AAG AAG AGC"//60
 				+ "GTAAGCTAG C"//70
 				+ "TT TAG ATTTA"//80
@@ -181,6 +181,12 @@ public class TestSnpHgvspMove {
 		assertEquals(2, moveNum);
 		
 		snpRefAltInfo = new SnpInfo("chr1", 67, "TAGCT", "T");
+		snpRefAltInfo.initial(seqHash);
+		snpIsoHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, getIsoCis());
+		moveNum = snpIsoHgvsp.moveBeforeNum();
+		assertEquals(4, moveNum);
+		
+		snpRefAltInfo = new SnpInfo("chr1", 40, "GGTG", "G");
 		snpRefAltInfo.initial(seqHash);
 		snpIsoHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, getIsoCis());
 		moveNum = snpIsoHgvsp.moveBeforeNum();
@@ -208,6 +214,12 @@ public class TestSnpHgvspMove {
 		assertEquals(2, moveNum);
 		
 		snpRefAltInfo = new SnpInfo("chr1", 67, "TAGCT", "T");
+		snpRefAltInfo.initial(seqHash);
+		snpIsoHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, getIsoTrans());
+		moveNum = snpIsoHgvsp.moveBeforeNum();
+		assertEquals(4, moveNum);
+		
+		snpRefAltInfo = new SnpInfo("chr1", 40, "GGTG", "G");
 		snpRefAltInfo.initial(seqHash);
 		snpIsoHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, getIsoTrans());
 		moveNum = snpIsoHgvsp.moveBeforeNum();
