@@ -93,6 +93,14 @@ public class SnpInfo {
 		return isDup;
 	}
 	
+	/** 移动到最后，仅用于测试 */
+	@VisibleForTesting
+	protected void moveToAfter() {
+		if (snpRealignHandler != null) {
+			snpRealignHandler.moveAlignToAfter();
+		}
+	}
+	
 	/** 可以向前移动几位，恒返回正数，从startAfter开始算 */
 	public int moveBeforeNum() {
 		return snpRealignHandler == null ? 0 : snpRealignHandler.getMoveBefore();
