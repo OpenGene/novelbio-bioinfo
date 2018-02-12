@@ -2,6 +2,7 @@ package com.novelbio.analysis.seq.snphgvs;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -42,9 +43,9 @@ public class SnpAnnoFactory {
 		lsResult.add(iso.getParentGeneName());
 		lsResult.add(snpIsoHgvsc.getHgvsc());
 		String hgvsp = snpIsoHgvsp.isNeedHgvsp() ? snpIsoHgvsp.getHgvsp() : "";
-		if (snpIsoHgvsp.isNeedHgvsp()) {
-			lsResult.add(hgvsp);
-		}
+		lsResult.add(hgvsp);
+		Set<EnumVariantClass> setVar = VariantTypeDetector.getSetVarType(iso, snpInfo);
+		setVar.addAll(snpIsoHgvsp.getSetVarType());
 		return lsResult;
 	}
 	
@@ -52,8 +53,9 @@ public class SnpAnnoFactory {
 		List<String> lsTitle = new ArrayList<>();
 		lsTitle.add("IsoName");
 		lsTitle.add("GeneName");
-		lsTitle.add("hgvsc");
-		lsTitle.add("hgvsp");
+		lsTitle.add("HGVS.c");
+		lsTitle.add("HGVS.p");
+		lsTitle.add("VariationType");
 		return lsTitle;
 	}
 }

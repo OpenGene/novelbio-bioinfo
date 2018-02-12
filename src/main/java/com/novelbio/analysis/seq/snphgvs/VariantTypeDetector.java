@@ -1,52 +1,82 @@
 package com.novelbio.analysis.seq.snphgvs;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.StringOperate;
 
 import smile.math.Math;
 
-public abstract class VariantTypeDetermine {
-	GffGeneIsoInfo iso;	
-	SnpInfo snpRefAltInfo;
+public abstract class VariantTypeDetector {
+	GffGeneIsoInfo iso;
+	EnumHgvsVarType varType;
 	/** 不考虑方向，start < end */
 	int start;
 	int end;
-
-	/** start在哪个exon/intron上 */
-	int startNum;
-	/** startNum如果为0，start是不是在iso的5-端外 */
-	boolean startBeforeIsoStrand;
-	int endNum;
-	/** endNum如果为0，end是不是在iso的5-端外 */
-	boolean endBeforeIsoStrand;
 	
 	Set<EnumVariantClass> setVariantClass = new LinkedHashSet<>();
 	
-	public abstract void fillVarClass();
-
+	public void setInfo(GffGeneIsoInfo iso, SnpInfo snpInfo) {
+		this.iso = iso;
+		this.varType = snpInfo.getVarType();
+		this.start = snpInfo.getStartReal();
+		this.end = snpInfo.getEndReal();
+	}
+	
 	protected boolean isCoordInRegion(int coord, int[] region) {
 		return coord >= Math.min(region[0], region[1]) && coord <= Math.max(region[0], region[1]);
 	}
-
+	
+	public abstract void fillVarClass();
+	
+	public Set<EnumVariantClass> getSetVariantClass() {
+		return setVariantClass;
+	}
+	
 	/**
 	 * 给定区段
-	 * 
 	 * @param align
 	 * @param iso
 	 * @return
 	 */
-	public static Set<EnumVariantClass> getSetVarType(EnumHgvsVarType varType, Align align, GffGeneIsoInfo iso) {
-		return new HashSet<>();
+	public static Set<EnumVariantClass> getSetVarType(GffGeneIsoInfo iso, SnpInfo snpInfo) {
+		List<VariantTypeDetector> lsVariantTypeDetectors = new ArrayList<>();
+		lsVariantTypeDetectors.add(new ExonLossVaration());
+		lsVariantTypeDetectors.add(new UtrVariant());
+		lsVariantTypeDetectors.add(new SpliceVariant());
+		for (VariantTypeDetector variantTypeDetector : lsVariantTypeDetectors) {
+			variantTypeDetector.setInfo(iso, snpInfo);
+		}
+		
+		Set<EnumVariantClass> setVarResult = new HashSet<>();
+		for (VariantTypeDetector variantTypeDetector : lsVariantTypeDetectors) {
+			variantTypeDetector.fillVarClass();
+			setVarResult.addAll(variantTypeDetector.getSetVariantClass());
+		}
+		return setVarResult;
 	}
+	
+	/** 合并Var注释 */
+	public static String mergeVars(Set<EnumVariantClass> setVarResult) {
+		StringBuilder sBuilder = new StringBuilder();
+		int i = 0;
+		for (EnumVariantClass enumVariantClass : setVarResult) {
+			if (i++ > 0) {
+				sBuilder.append("&");
+			}
+			sBuilder.append(enumVariantClass.toString());
+		}
+		return sBuilder.toString();
+	}
+	
 }
 /** {@link EnumVariantClass#exon_loss_variant} */
-class ExonLossVaration extends VariantTypeDetermine {
+class ExonLossVaration extends VariantTypeDetector {
 	@Override
 	public void fillVarClass() {
 		boolean isHaveStart = false, isHaveEnd = false;
@@ -75,7 +105,7 @@ class ExonLossVaration extends VariantTypeDetermine {
 }
 
 /** {@link EnumVariantClass#exon_loss_variant} */
-class UtrVariant extends VariantTypeDetermine {
+class UtrVariant extends VariantTypeDetector {
 	@Override
 	public void fillVarClass() {
 		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(start, end);
@@ -138,7 +168,7 @@ class UtrVariant extends VariantTypeDetermine {
 }
 
 /** {@link EnumVariantClass#frameshift_variant} */
-class SpliceVariant extends VariantTypeDetermine {
+class SpliceVariant extends VariantTypeDetector {
 	@Override
 	public void fillVarClass() {
 		int[] startEnd = new int[] {start, end};
@@ -196,7 +226,7 @@ class SpliceVariant extends VariantTypeDetermine {
 			return false;
 		}
 		boolean isOverlap = false;
-		if (snpRefAltInfo.getVarType() != EnumHgvsVarType.Insertions) {
+		if (varType != EnumHgvsVarType.Insertions) {
 			if (startEnd[0] <= region[1] && startEnd[1] >= region[0]) {
 				isOverlap = true;
 			}

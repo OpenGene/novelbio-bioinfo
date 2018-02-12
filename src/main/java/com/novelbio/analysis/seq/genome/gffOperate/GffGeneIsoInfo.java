@@ -826,6 +826,17 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 //		}
 		return getLocDistmRNASite(startCoord, -3);
 	}
+	/** 获取上一个aa的终点的坐标 */
+	public int getLocAALastEnd(int coord) {
+		if (!isSiteInCds(coord)) {
+			throw new ExceptionNbcGFF("cannot get coord not on CDS");
+		}
+		int startCoord = getLocAAbefore(coord);
+//		if (startCoord == getATGsite()) {
+//			throw new ExceptionNbcGFF("cannot get the next coord while coord on stop code");
+//		}
+		return getLocDistmRNASite(startCoord, -1);
+	}
 	/**
 	 * 返回能和本loc组成一个氨基酸的尾部nr的偏移，也就是向后偏移几个碱基，不考虑内含子
 	 * 恒为正数，负数就说明出错了

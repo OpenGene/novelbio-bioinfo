@@ -302,7 +302,7 @@ public class SnpInfo {
 	 * @return
 	 */
 	protected int getStartPosition() {
-		Align align = snpRealignHandler == null ? alignChange : snpRealignHandler.getRealign();
+		Align align = snpRealignHandler == null ? alignChange : snpRealignHandler.getAlignEnd();
 		if (varType == EnumHgvsVarType.Duplications) {
 			return align.getStartAbs() - getSeqAlt().length() + 1;
 		}
@@ -319,7 +319,7 @@ public class SnpInfo {
 	 * @return
 	 */
 	protected int getEndPosition() {
-		Align align = snpRealignHandler == null ? alignChange : snpRealignHandler.getRealign();
+		Align align = snpRealignHandler == null ? alignChange : snpRealignHandler.getAlignEnd();
 		if (varType == EnumHgvsVarType.Duplications) {
 			return align.getEndAbs() - 1;
 		}

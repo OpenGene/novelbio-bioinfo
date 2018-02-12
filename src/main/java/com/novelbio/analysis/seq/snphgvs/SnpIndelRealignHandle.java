@@ -31,6 +31,9 @@ public class SnpIndelRealignHandle {
 	/** 插入或缺失在reference上的位置 */
 	Align alignRef;
 	
+	/** 偏移到最尾部的align */
+	Align alignEnd;
+	
 	EnumHgvsVarType varType;
 	
 	/** 传入的坐标 */
@@ -120,7 +123,10 @@ public class SnpIndelRealignHandle {
 	public Align getRealign() {
 		return realign;
 	}
-	
+	/** 移动到尾部的align，主要给hgvsc使用 */
+	public Align getAlignEnd() {
+		return alignEnd;
+	}
 	/** 我们假定默认将align移动到最右端，这样我们只需要将align
 	 * 向左端移动即可
 	 * @param moveNum 恒为正数
@@ -133,14 +139,15 @@ public class SnpIndelRealignHandle {
 			throw new ExceptionNBCSnpHgvs("cannot move to such before "+moveNum + ". Max move number is " + (startAfter-startBefore));
 		}
 		changeSeq(move);
-		generateNewAlign(move);
+		realign = generateNewAlign(move);
 		return realign;
 	}
 	protected Align moveAlignToAfter() {
 		int moveEnd = startAfter-startLoc;
 		changeSeq(moveEnd);
-		generateNewAlign(moveEnd);
-		return realign;
+		realign = generateNewAlign(moveEnd);
+		alignEnd = realign.clone();
+		return alignEnd;
 	}
 	/**
 	 * indel有这种类型比较难处理（符号-主要用来断字，没什么实际意义）<br>
@@ -366,13 +373,13 @@ public class SnpIndelRealignHandle {
 	 * @param moveNumber 偏移数量，负数为向做偏移，正数为向右偏移
 	 * @return
 	 */
-	private void generateNewAlign(int moveNumber) {
+	private Align generateNewAlign(int moveNumber) {
 		int length = alignRef.getLength();
 		Align alignNew = new Align(alignRef.toString());
 		int site = startLoc + moveNumber;
 		alignNew.setStartAbs(site);
 		alignNew.setEndAbs(site + length - 1);
-		realign = alignNew;
+		return alignNew;
 	}
 	
 	/**
