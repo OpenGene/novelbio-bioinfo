@@ -45,16 +45,11 @@ public class SnpIsoHgvsc {
 	private String getHgvscPrefix() {
 		return iso.ismRNAFromCds() ? "c." : "n.";
 	}
-	
-//	protected abstract EnumVariantClass getVariantClassification();
-	
 
-	
 	/**
 	 * 返回HGVSc的值
 	 * @return
 	 */
-	//TODO 待测试
 	public String getHgvsc() {
 		String start = getStartPosCis();
 		String end = getEndPosCis();

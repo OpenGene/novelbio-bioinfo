@@ -14,6 +14,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 
 public abstract class SnpIsoHgvsp {
+	//TODO 可以对蛋白查找做缓存
 //	ConcurrentWeakKeyHashMap<K, V>
 	
 	Set<EnumVariantClass> setVarType = new LinkedHashSet<>();
@@ -34,8 +35,7 @@ public abstract class SnpIsoHgvsp {
 	
 	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
 	SeqFasta refSeqNrForAA;
-	/** 仅用于insertion，因为可能是潜在的duplicate */
-//	SeqFasta refSeqNrForAABefore;
+	/** 全长蛋白序列，主要用于查找蛋白层面的duplicate */
 	SeqFasta aa;
 	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
 	SeqFasta altSeqNrForAA;
