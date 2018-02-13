@@ -127,7 +127,7 @@ public class SnpIndelRealignHandle {
 	public Align getAlignEnd() {
 		return alignEnd;
 	}
-	/** 我们假定默认将align移动到最右端，这样我们只需要将align
+	/** 我们假定默认<b>align已经移动到最右端<b>，这样我们只需要将align
 	 * 向左端移动即可
 	 * @param moveNum 恒为正数
 	 * @return
@@ -142,12 +142,33 @@ public class SnpIndelRealignHandle {
 		realign = generateNewAlign(move);
 		return realign;
 	}
+	/** 我们假定默认<b>align已经移动到最左端<b>，这样我们只需要将align
+	 * 向右端移动即可
+	 * @param moveNum 恒为正数
+	 * @return
+	 */
+	protected Align moveAlignAfter(int moveNum) {		
+		int moveBefore = startBefore-startLoc;
+		int move = moveBefore+moveNum;
+		if (move < startBefore-startLoc || move > startAfter-startLoc) {
+			throw new ExceptionNBCSnpHgvs("cannot move to such before "+moveNum + ". Max move number is " + (startAfter-startBefore));
+		}
+		changeSeq(move);
+		realign = generateNewAlign(move);
+		return realign;
+	}
 	protected Align moveAlignToAfter() {
 		int moveEnd = startAfter-startLoc;
 		changeSeq(moveEnd);
 		realign = generateNewAlign(moveEnd);
 		alignEnd = realign.clone();
 		return alignEnd;
+	}
+	protected Align moveAlignToBefore() {
+		int moveEnd = startBefore-startLoc;
+		changeSeq(moveEnd);
+		realign = generateNewAlign(moveEnd);
+		return realign;
 	}
 	/**
 	 * indel有这种类型比较难处理（符号-主要用来断字，没什么实际意义）<br>

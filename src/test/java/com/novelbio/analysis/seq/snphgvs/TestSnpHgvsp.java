@@ -44,12 +44,14 @@ public class TestSnpHgvsp {
 		// gffchrAbs.close();
 	}
 	
-//	@Test
+	@Test
 	public void testAnno() {
 		GffGeneIsoInfo iso = gffHashGene.searchISO("NM_005092");
 		SnpInfo snpRefAltInfo = new SnpInfo("chr1", 173010498, "ATCAAGTCTCTA", "A");
 		snpRefAltInfo.initial(seqHash);
 		SnpIsoHgvsc snpRefAltHgvsc = new SnpIsoHgvsc(snpRefAltInfo, iso);
+		Assert.assertEquals("c.598_*8del", snpRefAltHgvsc.getHgvsc());
+
 		SnpIsoHgvsp snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 		snpRefAltHgvsp.setNeedAA3(false);
 		Assert.assertEquals("c.598_*8del", snpRefAltHgvsc.getHgvsc());
@@ -137,7 +139,7 @@ public class TestSnpHgvsp {
 			if (content.trim().startsWith("#") || content.trim().equals("")) {
 				continue;
 			}
-			if (content.contains("chr1	173470234	C")) {
+			if (content.contains("chr1	225971007	TGTG")) {
 				System.out.println();
 			}
 			String[] ss = content.split("\t");

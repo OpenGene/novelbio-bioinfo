@@ -54,7 +54,7 @@ public abstract class SnpIsoHgvsp {
 	protected void realignByAA() {
 		int moveNumber = moveBeforeNum();
 		if (moveNumber > 0) {
-			snpRefAltInfo.setMoveBeforeNum(moveNumber);
+			snpRefAltInfo.moveAlign(moveNumber, iso.isCis5to3());
 		}
 	}
 	
@@ -421,8 +421,12 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 
 	@Override
 	protected int moveBeforeNum() {
-		snpRefAltInfo.moveToAfter();
-		int moveMax = snpRefAltInfo.moveBeforeNum();
+		if (iso.isCis5to3()) {
+			snpRefAltInfo.moveToAfter();
+		} else {
+			snpRefAltInfo.moveToBefore();
+		}
+		int moveMax = snpRefAltInfo.moveNumMax();
 		if (moveMax == 0) {
 			return 0;
 		}
@@ -439,7 +443,7 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 					|| !iso.isCis5to3() && (coord2BoundStart == 2 || coord2BoundEnd == 1)
 					) {
 				moveNum = 1;
-				snpRefAltInfo.setMoveBeforeNum(1);
+				snpRefAltInfo.moveAlign(1, iso.isCis5to3());
 				site = snpRefAltInfo.getStartReal();
 				coordExonNum = iso.getNumCodInEle(site);
 			}
@@ -452,29 +456,25 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		int afterSite = iso.getLocAAend(site);
 		boolean isInFrame = snpRefAltInfo.getSeqAlt().length() %3 == 0;
 		//如果可以移动出iso，则移出去
-		if (iso.isCis5to3() && site - iso.getATGsite() + 1 <= moveMax - moveNum) {
-			return moveNum + site - iso.getATGsite() + 1;
+		int siteToAtg = iso.isCis5to3() ? site-iso.getATGsite() + 1 : iso.getATGsite() - site;
+		if ( siteToAtg > 0 && siteToAtg <= moveMax - moveNum) {
+			return moveNum + siteToAtg;
 		}
-		if (!iso.isCis5to3() && site - iso.getUAGsite() + 1 <= moveMax - moveNum) {
-			return moveNum + site - iso.getUAGsite() + 1;
-		}
-		//如果是引起移码突变的insertion，则不移动
-//		if (!iso.isCis5to3() && !isInFrame) {
-//			int num = Math.min(moveMax-moveNum, iso.getCod2ExInEnd(site)+1);
-//			return moveNum + num;
-//		}
+
 		//正方向，最多移动一位
 		if (isInFrame && iso.isCis5to3() && site != afterSite && site - beforeSite + 1 <= moveMax - moveNum) {
 			moveNum = moveNum + site - beforeSite + 1;
-		} else if (isInFrame && !iso.isCis5to3() && site != beforeSite && site-afterSite+1 <= moveMax-moveNum) {
+		} else if (isInFrame && !iso.isCis5to3() && site != beforeSite && beforeSite-site <= moveMax-moveNum) {
 //			moveNum = moveNum + site - afterSite + 1; //这是老版本，仅向右移动一位
 			//新版本做法是，如果为 ATC-ACG-ACG-ACG-[ACG]-ACC
 			//则移动为 ATC-[ACG]-ACG-ACG-ACG-ACC
 			//意思移动到iso的最后部
-			int remain = Math.min(moveMax-moveNum, iso.getCod2ExInEnd(site)+1);
-			int num = site - afterSite + 1;
-			num = (remain - num)/3 * 3 + num;
-			moveNum = moveNum + num;
+//			int remain = Math.min(moveMax-moveNum, iso.getCod2ExInEnd(site)+1);
+//			int num = site - afterSite + 1;
+//			num = (remain - num)/3 * 3 + num;
+//			moveNum = moveNum + num;
+			
+			moveNum = moveNum + beforeSite-site;
 		}
 		
 		return moveNum;
@@ -860,9 +860,15 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 
 	@Override
 	protected int moveBeforeNum() {
-		int moveMax = snpRefAltInfo.moveBeforeNum();
+		int moveMax = snpRefAltInfo.moveNumMax();
 		if (moveMax == 0) {
 			return 0;
+		}
+		
+		if (iso.isCis5to3()) {
+			snpRefAltInfo.moveToAfter();
+		} else {
+			snpRefAltInfo.moveToBefore();
 		}
 		
 		int siteStart = getStartCis();
@@ -878,7 +884,7 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			if (moveNum == 0 || moveNum == moveMax) {
 				return moveNum;
 			}
-			snpRefAltInfo.setMoveBeforeNum(moveNum);
+			snpRefAltInfo.moveAlign(moveNum, iso.isCis5to3());
 			siteStart = getStartCis();
 			siteEnd = getEndCis();
 			isoSub = iso.getSubGffGeneIso(siteStart, siteEnd);
@@ -898,7 +904,7 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			if (num == 0 || moveNum == moveMax) {
 				return moveNum;
 			}
-			snpRefAltInfo.setMoveBeforeNum(moveNum);
+			snpRefAltInfo.moveAlign(moveNum, iso.isCis5to3());
 			siteStart = getStartCis();
 			siteEnd = getEndCis();
 		} else if (endExNum < 0) {
@@ -907,7 +913,7 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			if (num == 0 || moveNum == moveMax) {
 				return moveNum;
 			}
-			snpRefAltInfo.setMoveBeforeNum(moveNum);
+			snpRefAltInfo.moveAlign(moveNum, iso.isCis5to3());
 			siteStart = getStartCis();
 			siteEnd = getEndCis();
 		}
@@ -924,7 +930,7 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			if (num == 0 || moveNum == moveMax) {
 				return moveNum;
 			}
-			snpRefAltInfo.setMoveBeforeNum(moveNum);
+			snpRefAltInfo.moveAlign(moveNum, iso.isCis5to3());
 			siteStart = getStartCis();
 			siteEnd = getEndCis();
 			isoSub = iso.getSubGffGeneIso(siteStart, siteEnd);
@@ -948,61 +954,33 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 		if (start2Start == 1 && end2End == 1 || start2Start > 2 && end2End > 2) {
 			return 0;
 		}
-		//---10==20-----start-------end--30===40--------------------
-		if (iso.isCis5to3()) {
-			int end2Start = iso.getCod2ExInStart(siteEnd) + 1;
-			if (start2Start <= 2 && end2Start <= moveMax) {
-				return end2Start;
-			} else if (end2End <= 2 && start2Start > 3-end2End && 3-end2End <= moveMax) {
-				return 3-end2End;
-			}
-		} else {
-			//---10==20----end-------start--30===40--------------------
-			int start2End = iso.getCod2ExInEnd(siteStart) + 1;
-			if (end2End <= 2 && start2End <= moveMax) {
-				return start2End;
-			} else if (start2Start <= 2 && end2End > 3-start2Start && 3-start2Start <= moveMax) {
-				return 3-start2Start;
-			}
+		int end2Start = iso.getCod2ExInStart(siteEnd) + 1;
+		if (start2Start <= 2 && end2Start <= moveMax) {
+			return end2Start;
+		} else if (end2End <= 2 && start2Start > 3-end2End && 3-end2End <= moveMax) {
+			return 3-end2End;
 		}
 		return 0;
 	}
 	
 	/** start 在intron中，end在exon中 */
 	private int getMoveNumStartIntronEndExon(int moveMax, int siteStart, int siteEnd) {
-		if (iso.isCis5to3()) {
-			//--------start-------10====end====20----------------------
-			int start2Start = iso.getCod2ExInStart(siteStart)+1;
-			int end2Start = iso.getCod2ExInStart(siteEnd)+1;
-			if (end2Start <= moveMax && start2Start >= end2Start) {
-				return end2Start;
-			}
-		} else {
-			//--10====end====20------------start----------
-			int start2End = iso.getCod2ExInStart(siteStart)+1;
-			if (start2End <= moveMax) {
-				return start2End;
-			}
+		//--------start-------10====end====20----------------------
+		//--10====end====20------------start----------
+		int start2Start = iso.getCod2ExInStart(siteStart)+1;
+		int end2Start = iso.getCod2ExInStart(siteEnd)+1;
+		if (end2Start <= moveMax && start2Start >= end2Start) {
+			return end2Start;
 		}
 		return 0;
 	}
 	
 	/** start 在exon中，end在intron中 */
 	private int getMoveNumStartExonEndIntron(int moveMax, int siteStart, int siteEnd) {
-		if (iso.isCis5to3()) {
-			//----10====start====20-------end---------------
-			int end2Start = iso.getCod2ExInStart(siteEnd)+1;
-			if (end2Start <= moveMax) {
-				return end2Start;
-			}
-		} else {
-			//--------end-------10====start====20----------------------
-			//TODO 这种情况可能还要再分析下外显子中是否移码
-			int end2End = iso.getCod2ExInEnd(siteEnd)+1;
-			int start2End = iso.getCod2ExInEnd(siteStart)+1;
-			if (start2End <= moveMax && end2End >= start2End) {
-				return start2End;
-			}
+		//----10====start====20-------end---------------
+		int end2Start = iso.getCod2ExInStart(siteEnd)+1;
+		if (end2Start <= moveMax) {
+			return end2Start;
 		}
 		return 0;
 	}
@@ -1016,46 +994,28 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 	 */
 	private int getMoveNumExon(int moveMax, int siteStart, int siteEnd) {
 		//直接移动出exon
-		if (iso.isCis5to3()) {
-			//----------10==start====end==20----------------------
-			int end2Start = iso.getCod2ExInStart(siteEnd) + 1;
-			if (end2Start + 2 <= moveMax) {
-				return end2Start+2;
-			}
-		} else {
-			//----------10==end====start==20----------------------
-			int start2End = iso.getCod2ExInEnd(siteStart) + 1;
-			if (start2End + 2 <= moveMax) {
-				return start2End + 2;
-			}
+		//----------10==start====end==20----------------------
+		int end2Start = iso.getCod2ExInStart(siteEnd) + 1;
+		boolean isAfterUAG = iso.isCis5to3() ? siteStart > iso.getUAGsite() : siteEnd < iso.getUAGsite();
+		if (!isAfterUAG && end2Start + 2 <= moveMax) {
+			return end2Start+2;
 		}
 		
 		//覆盖到ATG和UAG的处理方式
-		if (iso.isCis5to3() && siteEnd - iso.getATGsite() + 1<= moveMax) {
+		if (Math.abs(siteEnd - iso.getATGsite()) + 1<= moveMax) {
 			// ---ATG==start==end====||---------------
-			return siteEnd - iso.getATGsite() + 1;
-		} else if (!iso.isCis5to3() && siteStart - iso.getUAGsite() + 1<= moveMax) {
-			// ---GAU==end==start====||---------------
-			//TODO 感觉这个可以不需要
-			return siteStart - iso.getUAGsite() + 1;
+			return Math.abs(siteEnd - iso.getATGsite()) + 1;
 		}
 		
 		if ((Math.abs(siteStart - siteEnd) + 1) %3 != 0) {
 			return 0;
 		}
 		//仅移动到两个密码子中间
-		if (iso.isCis5to3()) {
-			//----------10==start====end==20----------------------
-			int siteBefore = iso.getLocAAbefore(siteStart);
-			if (siteBefore - siteStart < 3 && siteBefore - siteStart < moveMax) {
-				return siteStart - siteBefore;
-			}
-		} else {
-			//----------10==end====start==20----------------------
-			int siteAfter = iso.getLocAAend(siteEnd);
-			if (siteAfter - siteEnd < 3 && siteAfter - siteEnd < moveMax) {
-				return siteEnd - siteAfter;
-			}
+		//----------10==start====end==20----------------------
+		int siteBefore = iso.getLocAAbefore(siteStart);
+		int distanceToSiteBefore = Math.abs(siteBefore - siteStart);
+		if (distanceToSiteBefore < 3 && distanceToSiteBefore < moveMax) {
+			return distanceToSiteBefore;
 		}
 		return 0;
 	}
@@ -1162,9 +1122,16 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			return getInDelChangeFrameShift(true, true);
 		}
 		setIsStopGain(refAA, altAA);
-		
+		int seqLenMin = Math.min(refAA.length, altAA.length);
+		int seqLenMax = Math.min(refAA.length, altAA.length);
 		int refStart = getStartSame(refAA, altAA);
-		int refEnd = getEndSame(refAA, altAA);
+		int refEnd = 0;
+		if (refStart < seqLenMin) {
+			refEnd = SnpIsoHgvsp.getEndSame(refAA, altAA);
+			if (refEnd+refStart >= seqLenMax) {
+				refEnd = seqLenMin - refStart;
+			}
+		}
 		
 		if (isStartAtAAstart) {
 			setVarType.add(EnumVariantClass.conservative_inframe_deletion);

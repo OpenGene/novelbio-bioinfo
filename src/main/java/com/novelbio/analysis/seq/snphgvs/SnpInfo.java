@@ -100,11 +100,41 @@ public class SnpInfo {
 			snpRealignHandler.moveAlignToAfter();
 		}
 	}
-	
-	/** 可以向前移动几位，恒返回正数，从startAfter开始算 */
-	public int moveBeforeNum() {
+	/** 移动到最后，仅用于测试 */
+	@VisibleForTesting
+	protected void moveToBefore() {
+		if (snpRealignHandler != null) {
+			snpRealignHandler.moveAlignToBefore();
+		}
+	}
+	/** 可以最多移动几位，恒返回正数 */
+	public int moveNumMax() {
 		return snpRealignHandler == null ? 0 : snpRealignHandler.getMoveBefore();
 	}
+	
+	/** 如果是duplicate的类型，将数据往回移动若干位，<br>
+	 * 主要用于剪接位点gt-ag，起始密码子ATG，三联密码子中间等<br>
+	 * 譬如插入 T--ACATG[ACATG]T----------AG<br>
+	 * 其中插入在G和T之间，则切换为<br>
+	 * T--[ACATG]-ACATGT----------AG<br>
+	 * @param moveBefore 移动几位
+	 * @param isCis
+	 * true表示iso正向，此时align默认在最后，则向前移动
+	 * false表示iso反向，此时align默认在最前，向后移动
+	 * 
+	 */
+	public void moveAlign(int moveNum, boolean isCis) {
+		//理论上不能发生的错误
+		if (snpRealignHandler == null || moveNum < 0) {
+			throw new ExceptionNBCSnpHgvs("error");
+		}
+		if (isCis) {
+			snpRealignHandler.moveAlignBefore(moveNum);
+		} else {
+			snpRealignHandler.moveAlignAfter(moveNum);
+		}
+	}
+	
 	/** 如果是duplicate的类型，将数据往回移动若干位，<br>
 	 * 主要用于剪接位点gt-ag，起始密码子ATG，三联密码子中间等<br>
 	 * 譬如插入 T--ACATG[ACATG]T----------AG<br>
@@ -112,12 +142,26 @@ public class SnpInfo {
 	 * T--[ACATG]-ACATGT----------AG<br>
 	 * @param moveBefore 向前移动几位
 	 */
-	public void setMoveBeforeNum(int moveBefore) {
+	public void moveAlignBefore(int moveBefore) {
 		//理论上不能发生的错误
 		if (snpRealignHandler == null || moveBefore < 0) {
 			throw new ExceptionNBCSnpHgvs("error");
 		}
 		snpRealignHandler.moveAlignBefore(moveBefore);
+	}
+	/** 如果是duplicate的类型且iso为反相，此时默认align移动到最靠前，则将align往后移动若干位，<br>
+	 * 主要用于剪接位点gt-ag，起始密码子ATG，三联密码子中间等<br>
+	 * 譬如插入 T--ACATG[ACATG]T----------AG<br>
+	 * 其中插入在G和T之间，则切换为<br>
+	 * T--[ACATG]-ACATGT----------AG<br>
+	 * @param moveBefore 向前移动几位
+	 */
+	public void moveAlignAfter(int moveBefore) {
+		//理论上不能发生的错误
+		if (snpRealignHandler == null || moveBefore < 0) {
+			throw new ExceptionNBCSnpHgvs("error");
+		}
+		snpRealignHandler.moveAlignAfter(moveBefore);
 	}
 	/** 根据parent，设定GffChrAbs */
 	public void setGffHashGene(GffHashGene gffHashGene) {
@@ -297,7 +341,7 @@ public class SnpInfo {
 	 * 此时本方法返回第二个ATCG的A的位置，也就是加中括弧的那个A
 	 * 
 	 * <br>
-	 * <b>注意：</b>当调用{@link #setMoveBeforeNum(int)}之后本返回值会变，只有不设置或当{@link #setMoveBeforeNum(int)}为0才能获得正确的值
+	 * <b>注意：</b>当调用{@link #moveAlignBefore(int)}之后本返回值会变，只有不设置或当{@link #moveAlignBefore(int)}为0才能获得正确的值
 	 * <br>
 	 * @return
 	 */
@@ -314,7 +358,7 @@ public class SnpInfo {
 	 * 此时本方法返回第二个ATCG的G的位置，也就是加中括弧的那个G
 	 * 
 	 * <br>
-	 * <b>注意：</b>当调用{@link #setMoveBeforeNum(int)}之后本返回值会变，只有不设置或当{@link #setMoveBeforeNum(int)}为0才能获得正确的值
+	 * <b>注意：</b>当调用{@link #moveAlignBefore(int)}之后本返回值会变，只有不设置或当{@link #moveAlignBefore(int)}为0才能获得正确的值
 	 * <br>
 	 * @return
 	 */
