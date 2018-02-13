@@ -1,8 +1,10 @@
 package com.novelbio.analysis.seq.snphgvs;
 
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Set;
+import java.util.WeakHashMap;
+
+import org.jboss.netty.util.internal.ConcurrentWeakKeyHashMap;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.CodeInfo;
@@ -10,11 +12,11 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.base.StringOperate;
 
 public abstract class SnpIsoHgvsp {
-	Set<EnumVariantClass> setVarType = new LinkedHashSet<>();
+//	ConcurrentWeakKeyHashMap<K, V>
 	
+	Set<EnumVariantClass> setVarType = new LinkedHashSet<>();
 	SnpInfo snpRefAltInfo;
 	GffGeneIsoInfo iso;
 	
@@ -119,16 +121,20 @@ public abstract class SnpIsoHgvsp {
 			throw new ExceptionNBCSnpHgvs("snp error not in cds " + snpRefAltInfo.toString());
 		}
 		/** 很可能是蛋白层面的duplicate */
-		if (snpRefAltInfo.getVarType() == EnumHgvsVarType.Insertions || snpRefAltInfo.getVarType() == EnumHgvsVarType.Duplications && startCds != iso.getATGsite()) {
-//			GffGeneIsoInfo isoBefore = iso.getSubGffGeneIso(iso.getATGsite(), iso.getLocAALastEnd(startCds));
-//			refSeqNrForAABefore = seqHash.getSeq(isoBefore, false);
+		if (isGetAllLenAA()) {
 			GffGeneIsoInfo isoAA = iso.getSubGffGeneIso(iso.getATGsite(), iso.getUAGsite());
 			aa = seqHash.getSeq(isoAA, false);
+			int startAA = iso.getCod2ATGmRNA(startCds);
+			int endAA = iso.getCod2ATGmRNA(endCds);
+			refSeqNrForAA = aa.getSubSeq(startAA+1, endAA+1, true);
+		} else {
+			refSeqNrForAA = seqHash.getSeq(isoSub, false);		
 		}
-		
-		refSeqNrForAA = seqHash.getSeq(isoSub, false);		
 		altSeqNrForAA = replaceSnpIndel(getSeqAltNrForAA(), snpOnReplaceLocStart, snpOnReplaceLocEnd);
 	}
+	
+	/** 必须在 {@link #setStartEndCis()} 运行之后调用 */
+	protected abstract boolean isGetAllLenAA();
 	
 	/**
 	 * 根据需求将AA1转换成AA3
@@ -243,6 +249,7 @@ public abstract class SnpIsoHgvsp {
 		char[] refSeq = refSeqNrForAA.toStringAA1().toCharArray();
 		char[] aaSeqChr = altSeqNrForAA.toStringAA1().toCharArray();
 		if (refSeq[0] == '*' && aaSeqChr[0] == '*') {
+			setVarType.add(EnumVariantClass.stop_retained_variant);
 			return convertAA(refSeq[0]) + getAffectAANum(startCds) + "=";
 		}
 		
@@ -335,6 +342,11 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 	public SnpRefAltIsoSnp(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
 	}
+	
+	protected boolean isGetAllLenAA() {
+		return false;
+	}
+	
 	@Override
 	protected int moveBeforeNum() {
 		return 0;
@@ -401,6 +413,10 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 	
 	public SnpRefAltIsoIns(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
+	}
+	
+	protected boolean isGetAllLenAA() {
+		return snpRefAltInfo.getSeqAlt().length() %3 == 0;
 	}
 
 	@Override
@@ -809,6 +825,25 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 	
 	/** 有这个标记的直接返回Met1?或者Met1fs */
 	boolean isMetDel = false;
+		
+	protected boolean isGetAllLenAA() {
+		int siteStart = getStartCis();
+		int siteEnd = getEndCis();
+		
+		int startExNum = iso.getNumCodInEle(siteStart);
+		int endExNum = iso.getNumCodInEle(siteEnd);
+		
+		if (startExNum != endExNum || startExNum <= 0) {
+			return false;
+		}
+		if (siteStart < iso.getATGsite() || isFrameShift || isAffectUAG) {
+			return false;
+		}
+		if ((Math.abs(siteEnd - siteStart) + 1) %3 != 0) {
+			return false;
+		}
+		return true;
+	}
 	
 	public SnpRefAltIsoDel(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
 		super(snpRefAltInfo, iso);
@@ -1137,6 +1172,15 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			setVarType.add(EnumVariantClass.disruptive_inframe_deletion);
 		}
 		
+		StringBuilder sBuilderDelDup = new StringBuilder();
+		int startDup = start+refStart, endDup = end-refEnd;
+		for (int i = refStart; i < refAA.length-refEnd; i++) {
+			sBuilderDelDup.append(refAA[i]);
+		}
+		if (altAA.length-refStart-refEnd <= 0 && isGetAllLenAA()) {
+			return getDeletionDuplicate(sBuilderDelDup.toString(), startDup, endDup);
+		}
+		
 		StringBuilder sBuilder = new StringBuilder();
 		if (start+refStart == end-refEnd) {
 			sBuilder.append(convertAA(refAA[refStart]) + (start+refStart) + "del");
@@ -1150,6 +1194,25 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			sBuilder.append(convertAA(altAA[i]));	
 		}
 		return sBuilder.toString();
+	}
+	
+	private String getDeletionDuplicate(String indelAA, int startAA, int endAA) {
+		String aaSeq = aa.toStringAA1();
+		char[] aaChr = aaSeq.toCharArray();
+		SnpIndelRealignHandle snpIndelRealignHandle = new SnpIndelRealignHandle(new Align("", startAA, endAA), indelAA, "", "");
+		snpIndelRealignHandle.handleSeqAlign(new SeqHashAAforHgvs(aaSeq));
+		snpIndelRealignHandle.moveAlignToAfter();
+		Align reAlign = snpIndelRealignHandle.getRealign();
+		StringBuilder sBuilderResult = new StringBuilder();
+		sBuilderResult.append(convertAA(aaChr[reAlign.getStartAbs()-1]));
+		sBuilderResult.append(reAlign.getStartAbs());
+		if (reAlign.getStartAbs() != reAlign.getEndAbs()) {
+			sBuilderResult.append("_");
+			sBuilderResult.append(convertAA(aaChr[reAlign.getEndAbs()-1]));
+			sBuilderResult.append(reAlign.getEndAbs());
+		}
+		sBuilderResult.append("del");
+		return sBuilderResult.toString();
 	}
 	
 	private void setIsStopGain(char[] refAA, char[] altAA) {

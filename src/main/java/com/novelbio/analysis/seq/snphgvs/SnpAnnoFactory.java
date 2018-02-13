@@ -58,4 +58,5 @@ public class SnpAnnoFactory {
 		lsTitle.add("VariationType");
 		return lsTitle;
 	}
+	
 }

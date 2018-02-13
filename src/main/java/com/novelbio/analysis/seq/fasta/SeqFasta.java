@@ -148,18 +148,15 @@ public class SeqFasta implements Cloneable {
 		}
 		if (startlocation < 1 || startlocation > length || endlocation < 1
 				|| endlocation > length) {
-			logger.error("location error "+SeqName+" "+startlocation+" "+endlocation);
-			return "location error "+SeqName+" "+startlocation+" "+endlocation;
+			throw new ExceptionSeqFasta("location error "+SeqName+" "+startlocation+" "+endlocation);
 		}
 
 		if (endlocation < startlocation) {
-			logger.error("location error "+SeqName+" "+startlocation+" "+endlocation);
-			return "location error "+SeqName+" "+startlocation+" "+endlocation;
+			throw new ExceptionSeqFasta("location error "+SeqName+" "+startlocation+" "+endlocation);
 		}
 		
 		if (endlocation - startlocation > 1000000) {
-			logger.error("can extract less than 20000bp "+SeqName+" "+startlocation+" "+endlocation);
-			return "can extract less than 20000bp "+SeqName+" "+startlocation+" "+endlocation;
+			throw new ExceptionSeqFasta("can extract less than 20000bp "+SeqName+" "+startlocation+" "+endlocation);
 		}
 		return SeqSequence.substring(startlocation - 1, endlocation);// substring方法返回找到的序列
 	}

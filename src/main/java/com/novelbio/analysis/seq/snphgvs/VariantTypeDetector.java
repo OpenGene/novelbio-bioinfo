@@ -81,12 +81,22 @@ class ExonLossVaration extends VariantTypeDetector {
 	public void fillVarClass() {
 		boolean isHaveStart = false, isHaveEnd = false;
 		for (ExonInfo exonInfo : iso) {
-			if (start > exonInfo.getEndAbs()) {
-				continue;
+			if (iso.isCis5to3()) {
+				if (start > exonInfo.getEndAbs()) {
+					continue;
+				}
+				if (end < exonInfo.getStartAbs()) {
+					break;
+				}
+			} else {
+				if (end < exonInfo.getStartAbs()) {
+					continue;
+				}
+				if (start > exonInfo.getEndAbs()) {
+					break;
+				}
 			}
-			if (end < exonInfo.getStartAbs()) {
-				break;
-			}
+			
 			if (start <= exonInfo.getStartAbs()) {
 				isHaveStart = true;
 			}
@@ -111,11 +121,17 @@ class UtrVariant extends VariantTypeDetector {
 		GffGeneIsoInfo isoSub = iso.getSubGffGeneIso(start, end);
 		int startNum = iso.getNumCodInEle(start);
 		int endNum = iso.getNumCodInEle(end);
-		if (startNum == endNum && startNum < 0) {
-			if (iso.ismRNAFromCds()) {
-				setVariantClass.add(EnumVariantClass.intron_variant);
+		if (startNum < 0 || endNum < 0) {
+			if ((varType == EnumHgvsVarType.Insertions || varType == EnumHgvsVarType.Duplications)
+					&&
+					startNum*endNum < 0 && Math.abs(start-end) == 1) {
+				//TODO 这种就是在exon边界处插入，这种不引起intron变化
 			} else {
-				setVariantClass.add(EnumVariantClass.non_coding_transcript_intron_variant);
+				if (iso.ismRNAFromCds()) {
+					setVariantClass.add(EnumVariantClass.intron_variant);
+				} else {
+					setVariantClass.add(EnumVariantClass.non_coding_transcript_intron_variant);
+				}
 			}
 		}
 		if (!iso.ismRNAFromCds() && startNum == endNum && startNum > 0) {
@@ -138,28 +154,28 @@ class UtrVariant extends VariantTypeDetector {
 			if (iso.isCis5to3()) {
 				if (exonInfo.getStartAbs() < iso.getATGsite()) {
 					setVariantClass.add(EnumVariantClass.Five_prime_UTR_variant);
-					if (startNum <= 0 || endNum <= 0) {
-						setVariantClass.add(EnumVariantClass.exon_loss_variant);
-					}
+//					if (startNum <= 0 || endNum <= 0) {
+//						setVariantClass.add(EnumVariantClass.exon_loss_variant);
+//					}
 				}
 				if (exonInfo.getEndAbs() > iso.getUAGsite()) {
 					setVariantClass.add(EnumVariantClass.Three_prime_UTR_variant);
-					if (startNum <= 0 || endNum <= 0) {
-						setVariantClass.add(EnumVariantClass.exon_loss_variant);
-					}
+//					if (startNum <= 0 || endNum <= 0) {
+//						setVariantClass.add(EnumVariantClass.exon_loss_variant);
+//					}
 				}
 			} else {
 				if (exonInfo.getEndAbs() > iso.getATGsite()) {
 					setVariantClass.add(EnumVariantClass.Five_prime_UTR_variant);
-					if (startNum <= 0 || endNum <= 0) {
-						setVariantClass.add(EnumVariantClass.exon_loss_variant);
-					}
+//					if (startNum <= 0 || endNum <= 0) {
+//						setVariantClass.add(EnumVariantClass.exon_loss_variant);
+//					}
 				}
 				if (exonInfo.getStartAbs() < iso.getUAGsite()) {
 					setVariantClass.add(EnumVariantClass.Three_prime_UTR_variant);
-					if (startNum <= 0 || endNum <= 0) {
-						setVariantClass.add(EnumVariantClass.exon_loss_variant);
-					}
+//					if (startNum <= 0 || endNum <= 0) {
+//						setVariantClass.add(EnumVariantClass.exon_loss_variant);
+//					}
 				}
 			}
 		}
@@ -173,10 +189,25 @@ class SpliceVariant extends VariantTypeDetector {
 	public void fillVarClass() {
 		int[] startEnd = new int[] {start, end};
 		boolean isSpliceAcceptor = false, isSpliceDonor = false, isSpliceRegion = false;
-		for (int i = 0; i < iso.getLen(); i++) {
+		for (int i = 0; i < iso.size(); i++) {
 			ExonInfo exonInfo = iso.get(i);
-			if (end < exonInfo.getStartAbs() -10) break;
-			if (start > exonInfo.getEndAbs() + 10) continue;
+			
+			if (iso.isCis5to3()) {
+				if (start > exonInfo.getEndAbs() + 10) {
+					continue;
+				}
+				if (end < exonInfo.getStartAbs() - 10) {
+					break;
+				}
+			} else {
+				if (end < exonInfo.getStartAbs() - 10) {
+					continue;
+				}
+				if (start > exonInfo.getEndAbs() + 10) {
+					break;
+				}
+			}
+			
 			int[] spliceAcceptor = null, spliceDonor = null;
 			int[] spliceRegion1 = null, spliceRegion2 = null;
 						
@@ -185,30 +216,30 @@ class SpliceVariant extends VariantTypeDetector {
 					spliceAcceptor = new int[]{exonInfo.getStartCis()-2, exonInfo.getStartCis()-1};
 					spliceRegion1 = new int[] {exonInfo.getStartCis(), exonInfo.getStartCis()+2};
 					spliceRegion2 = new int[] {exonInfo.getStartCis()-8, exonInfo.getStartCis()-3};
-					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd) || isRegionOverlap(spliceRegion2, startEnd);
+					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd, false , true) || isRegionOverlap(spliceRegion2, startEnd, true, false);
 				}
 				if (i < iso.getLen()-1) {
 					spliceDonor = new int[]{exonInfo.getEndCis()+1, exonInfo.getEndCis()+2};
 					spliceRegion1 = new int[] {exonInfo.getEndCis()-2, exonInfo.getEndCis()};
 					spliceRegion2 = new int[] {exonInfo.getEndCis()+3, exonInfo.getEndCis()+8};
-					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd) || isRegionOverlap(spliceRegion2, startEnd);
+					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd, true, false) || isRegionOverlap(spliceRegion2, startEnd, false , true);
 				}
 			} else {
 				if (i > 0) {
 					spliceDonor = new int[]{exonInfo.getStartAbs()-2, exonInfo.getStartAbs()-1};
 					spliceRegion1 = new int[] {exonInfo.getStartAbs(), exonInfo.getStartAbs()+2};
 					spliceRegion2 = new int[] {exonInfo.getStartAbs()-8, exonInfo.getStartAbs()-3};
-					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd) || isRegionOverlap(spliceRegion2, startEnd);
+					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd, false, true) || isRegionOverlap(spliceRegion2, startEnd, true, false);
 				}
 				if (i < iso.getLen()-1) {
 					spliceAcceptor = new int[]{exonInfo.getEndAbs()+1, exonInfo.getEndAbs()+2};
 					spliceRegion1 = new int[] {exonInfo.getEndAbs()-2, exonInfo.getEndAbs()};
 					spliceRegion2 = new int[] {exonInfo.getEndAbs()+3, exonInfo.getEndAbs()+8};
-					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd) || isRegionOverlap(spliceRegion2, startEnd);
+					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd, true, false) || isRegionOverlap(spliceRegion2, startEnd, false , true);
 				}
 			}
-			isSpliceAcceptor = isSpliceAcceptor || isRegionOverlap(spliceAcceptor, startEnd);
-			isSpliceDonor = isSpliceDonor || isRegionOverlap(spliceDonor, startEnd);
+			isSpliceAcceptor = isSpliceAcceptor || isRegionOverlap(spliceAcceptor, startEnd, false, false);
+			isSpliceDonor = isSpliceDonor || isRegionOverlap(spliceDonor, startEnd, false, false);
 		}
 		if (isSpliceAcceptor) {
 			setVariantClass.add(EnumVariantClass.splice_acceptor_variant);
@@ -221,21 +252,28 @@ class SpliceVariant extends VariantTypeDetector {
 		}
 	}
 	
-	private boolean isRegionOverlap(int[] region, int[] startEnd) {
+	private boolean isRegionOverlap(int[] region, int[] startEnd, boolean isInsertionStart, boolean isInsertionEnd) {
 		if (region == null) {
 			return false;
 		}
 		boolean isOverlap = false;
-		if (varType != EnumHgvsVarType.Insertions) {
+		if (varType != EnumHgvsVarType.Insertions && varType != EnumHgvsVarType.Duplications) {
 			if (startEnd[0] <= region[1] && startEnd[1] >= region[0]) {
 				isOverlap = true;
 			}
 		} else {
-			if (startEnd[0] < region[1] && startEnd[1] > region[0]) {
+			if (isSmaller(startEnd[0], region[1], isInsertionStart) && isBigger(startEnd[1], region[0], isInsertionEnd)) {
 				isOverlap = true;
 			}
 		}
 		return isOverlap;
+	}
+	
+	private boolean isSmaller(int a, int b, boolean isEqual) {
+		return isEqual ? a<=b : a<b;
+	}
+	private boolean isBigger(int a, int b, boolean isEqual) {
+		return isEqual ? a>=b : a>b;
 	}
 }
 
