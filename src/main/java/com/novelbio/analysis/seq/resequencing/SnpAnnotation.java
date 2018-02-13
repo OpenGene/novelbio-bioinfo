@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
+import com.google.common.collect.Lists;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
@@ -99,10 +100,15 @@ public class SnpAnnotation extends RunProcess {
 				}
 				//////
 				String tmpResult = snpInfo;
-				try { tmpResult = annoSnp(snpInfo); } catch (Exception e) {
+				try {
+					List<String> lsResult = annoSnp(snpInfo);
+					for (String anno : lsResult) {
+						txtWrite.writefileln(anno);
+					}
+				} catch (Exception e) {
 					e.printStackTrace();
+					txtWrite.writefileln(tmpResult);
 				}
-				txtWrite.writefileln(tmpResult);
 				readLines ++;
 				readByte = readByte + snpInfo.getBytes().length;
 			}
@@ -115,18 +121,20 @@ public class SnpAnnotation extends RunProcess {
 	private void setTitle(TxtReadandWrite txtRead, TxtReadandWrite txtWrite) {
 		String firstLine = txtRead.readFirstLine();
 		try {
-			String anno = annoSnp(firstLine);
-			txtWrite.writefileln(anno);
+			List<String> lsAnno = annoSnp(firstLine);
+			for (String anno : lsAnno) {
+				txtWrite.writefileln(anno);
+			}
 		} catch (Exception e) {
 			txtWrite.writefileln(firstLine + "\t" + ArrayOperate.cmbString(ArrayOperate.converList2Array(getTitleLs()), "\t"));
 		}
 	}
 	
 	/** 注释结果 */
-	public String annoSnp(String input) {
+	public List<String> annoSnp(String input) {
 		input = input.trim();
 		if (input.startsWith("#")) {
-			return input;
+			return Lists.newArrayList(input);
 		}
 		
 		ArrayList<String> lsInfo = ArrayOperate.converArray2List(input.split("\t"));
@@ -134,56 +142,15 @@ public class SnpAnnotation extends RunProcess {
 		
 		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo(lsInfo.get(colChrID), refStartSite, lsInfo.get(colRefNr), lsInfo.get(colThisNr));
 		List<List<String>> lsLsAnno = snpAnnoFactory.getLsAnnotation(snpInfo);
-		
-		
-		RefSiteSnpIndel   = new RefSiteSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
-		SnpInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
-		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
-		if (siteSnpIndelInfo == null || gffGeneIsoInfo == null) {
-			GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(lsInfo.get(colChrID), refStartSite);
-			if (gffCodGene == null) {
-				return input;
-			}
-			//TODO 5000bp以内的基因都注释起来
-			GffDetailGene gffDetailGene = gffCodGene.getNearestGffGene(5000);
-			if (gffDetailGene == null) {
-				return input;
-			}
-			gffGeneIsoInfo = gffDetailGene.getLongestSplitMrna();
+		List<String> lsResult = new ArrayList<>();
+		for (List<String> lsAnno : lsLsAnno) {
+			List<String> lsResultUnit = new ArrayList<>();
+			lsResultUnit.addAll(lsInfo);
+			lsResultUnit.addAll(lsAnno);
+			String result = ArrayOperate.cmbString(lsResultUnit, "\t");
+			lsResult.add(result);
 		}
-		lsInfo.add(gffGeneIsoInfo.getName());
-		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
-			try {
-				lsInfo.add(gffGeneIsoInfo.getParentGeneName());
-				lsInfo.add("");
-//				GeneID geneID = new GeneID(gffGeneIsoInfo.getName(), gffChrAbs.getTaxID());
-//				if (geneID.getIDtype() == GeneID.IDTYPE_ACCID) {
-//					geneID = new GeneID(gffGeneIsoInfo.getParentGffGeneSame().getNameSingle(), gffChrAbs.getTaxID());
-//				}
-//				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
-//					lsInfo.add(gffGeneIsoInfo.getParentGeneName());
-//					lsInfo.add(geneID.getDescription());
-//				} else {
-//	
-//				}
-			} catch (Exception e) {
-				// TODO: handle exception
-			}
-		}
-
-		lsInfo.add(gffGeneIsoInfo.toStringCodLocStr(new int[]{0,0}, refStartSite));
-		
-		//如果snp落在了intron里面，本项目就不计数了
-		double prop = refSiteSnpIndel.getProp();
-		if (prop >= 0) {
-			lsInfo.add(refSiteSnpIndel.getProp() + "");
-		} else {
-			lsInfo.add("");
-		}
-		
-		lsInfo.addAll(siteSnpIndelInfo.toStrings());
-		String[] result = ArrayOperate.converList2Array(lsInfo);
-		return ArrayOperate.cmbString(result, "\t");
+		return lsResult;
 	}
 	
 	/** tilte和annoSnp方法中一致 */
@@ -197,7 +164,7 @@ public class SnpAnnotation extends RunProcess {
 	
 		lsTitle.add("LocationDescription");
 		lsTitle.add("PropToGeneStart");
-		lsTitle.addAll(SnpInfo.getTitle());
+		lsTitle.addAll(SnpAnnoFactory.getLsTitle());
 		return lsTitle;
 	}
 }
