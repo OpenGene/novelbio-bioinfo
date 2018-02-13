@@ -240,6 +240,9 @@ public class GffDetailGene extends ListDetailAbs {
 
 	/** 根据mRNA的值重新设定起点和终点，因为NCBI的gff可能会出现起点终点与该起点终点不一致的情况 */
 	protected void resetStartEnd() {
+		if (lsGffGeneIsoInfos.isEmpty()) {
+			return;
+		}
 		int startAbs = Integer.MAX_VALUE, endAbs = Integer.MIN_VALUE;
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			if (startAbs > gffGeneIsoInfo.getStartAbs()) {

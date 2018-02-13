@@ -148,18 +148,15 @@ public class SeqFasta implements Cloneable {
 		}
 		if (startlocation < 1 || startlocation > length || endlocation < 1
 				|| endlocation > length) {
-			logger.error("location error "+SeqName+" "+startlocation+" "+endlocation);
-			return "location error "+SeqName+" "+startlocation+" "+endlocation;
+			throw new ExceptionSeqFasta("location error "+SeqName+" "+startlocation+" "+endlocation);
 		}
 
 		if (endlocation < startlocation) {
-			logger.error("location error "+SeqName+" "+startlocation+" "+endlocation);
-			return "location error "+SeqName+" "+startlocation+" "+endlocation;
+			throw new ExceptionSeqFasta("location error "+SeqName+" "+startlocation+" "+endlocation);
 		}
 		
 		if (endlocation - startlocation > 1000000) {
-			logger.error("can extract less than 20000bp "+SeqName+" "+startlocation+" "+endlocation);
-			return "can extract less than 20000bp "+SeqName+" "+startlocation+" "+endlocation;
+			throw new ExceptionSeqFasta("can extract less than 20000bp "+SeqName+" "+startlocation+" "+endlocation);
 		}
 		return SeqSequence.substring(startlocation - 1, endlocation);// substring方法返回找到的序列
 	}
@@ -200,13 +197,24 @@ public class SeqFasta implements Cloneable {
 		return seqFasta;
 	}
 	/**
-	 * 待测试
 	 * 指定范围，然后用指定的序列去替换原来的序列
 	 * @param start 要替换序列的起点，实际位点,并且包含该位点 如果start<= 0，则不考虑end，直接将序列插到最前面
 	 * 如果start比序列长，则不考虑end，直接将序列插到最后面
 	 * @param end 要替换序列的终点，实际位点,并且包含该位点，<br>
 	 * 如果 start == end 那么就是将该点替换成指定序列<br>
-	 * 如果 start > end 说明是插入紧挨着start位点之后<br>
+	 * 如果 start > end 说明是<b>插入</b>，并且插入位点紧挨着start位点之后<br>
+	 * @param seq 要替换的序列
+	 */
+	public void modifySeq(int start, int end, String seq) {
+		modifySeq(start, end, seq, false, false);
+	}
+	/**
+	 * 指定范围，然后用指定的序列去替换原来的序列
+	 * @param start 要替换序列的起点，实际位点,并且包含该位点 如果start<= 0，则不考虑end，直接将序列插到最前面
+	 * 如果start比序列长，则不考虑end，直接将序列插到最后面
+	 * @param end 要替换序列的终点，实际位点,并且包含该位点，<br>
+	 * 如果 start == end 那么就是将该点替换成指定序列<br>
+	 * 如果 start > end 说明是<b>插入</b>，并且插入位点紧挨着start位点之后<br>
 	 * @param seq 要替换的序列
 	 * @param boostart 替换序列的前部是否插入XXX true：插入
 	 * @param booend 替换序列的后部是否插入XXX true：插入

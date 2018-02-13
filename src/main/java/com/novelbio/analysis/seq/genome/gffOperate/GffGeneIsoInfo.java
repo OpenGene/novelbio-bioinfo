@@ -17,6 +17,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.base.SepSign;
@@ -209,6 +210,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 因为可能会有多个gffDetailGene合并为一个gffDetailGene，这时候直接用gffDetailGeneParent的名字就无法进行区分
 	 */
 	public String getParentGeneName() {
+		if (gffDetailGeneParent != null) {
+			return gffDetailGeneParent.getNameSingle();
+		}
 		return geneParentName;
 	}
 	/**
@@ -472,6 +476,13 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			return Math.abs(super.getLocDistmRNA(this.UAGsite, getTESsite() ) );
 		}
 		return 0;
+	}
+	/**
+	 * 获取全长exon长度
+	 * @return
+	 */
+	public int getLenExon() {
+		return getLenExon(0);
 	}
 	 /**
      * @param num 指定第几个，如果超出或小于0，则返回-1000000000, 
@@ -748,13 +759,27 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	public int getCod2TESmRNA(int coord) {
 		return getLocDistmRNA(getTESsite(), coord);
 	}
+	
+	private boolean isSiteInCds(int location) {
+		if (location < Math.min(ATGsite, UAGsite) || location > Math.max(ATGsite, UAGsite)) {
+			return false;
+		}
+		if (getNumCodInEle(location) <= 0) {
+			return false;
+		}
+		return true;
+	}
 	/**
 	 * 返回能和本loc组成一个氨基酸的头部nr的坐标，从1开始计算
 	 * @param location
-	 * @return
+	 * @return 如果location不在cds中，则返回-1
 	 */
 	public int getLocAAbefore(int location) {
+		if (!isSiteInCds(location)) {
+			return -1;
+		}
 		int startLen = getLocDistmRNA(ATGsite, location);
+		
 		return  getLocDistmRNASite(location, -startLen%3);
 	}
 	/**
@@ -765,16 +790,52 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 */
 	public int getLocAAbeforeBias(int location) {
 		int startLen = getLocDistmRNA(ATGsite,location);
-		return   -startLen%3;
+		return -startLen%3;
 	}
 	/**
 	 * 返回能和本loc组成一个氨基酸的尾部nr的坐标，从1开始计算
 	 * @param location
-	 * @return
+	 * @return 如果location不在cds中，则返回-1
 	 */
 	public int getLocAAend(int location) {
+		if (!isSiteInCds(location)) {
+			return -1;
+		}
 		int startLen = getLocDistmRNA(ATGsite, location);
 		return  getLocDistmRNASite(location, 2 - startLen%3);
+	}
+	/** 获取下一个aa的终点的坐标 */
+	public int getLocAANextEnd(int coord) {
+		if (!isSiteInCds(coord)) {
+			throw new ExceptionNbcGFF("cannot get coord not on CDS");
+		}
+		int endCoord = getLocAAend(coord);
+		if (endCoord == getUAGsite()) {
+			throw new ExceptionNbcGFF("cannot get the next coord while coord on stop code");
+		}
+		return getLocDistmRNASite(endCoord, 3);
+	}
+	/** 获取上一个aa的起点的坐标 */
+	public int getLocAALastStart(int coord) {
+		if (!isSiteInCds(coord)) {
+			throw new ExceptionNbcGFF("cannot get coord not on CDS");
+		}
+		int startCoord = getLocAAbefore(coord);
+//		if (startCoord == getATGsite()) {
+//			throw new ExceptionNbcGFF("cannot get the next coord while coord on stop code");
+//		}
+		return getLocDistmRNASite(startCoord, -3);
+	}
+	/** 获取上一个aa的终点的坐标 */
+	public int getLocAALastEnd(int coord) {
+		if (!isSiteInCds(coord)) {
+			throw new ExceptionNbcGFF("cannot get coord not on CDS");
+		}
+		int startCoord = getLocAAbefore(coord);
+//		if (startCoord == getATGsite()) {
+//			throw new ExceptionNbcGFF("cannot get the next coord while coord on stop code");
+//		}
+		return getLocDistmRNASite(startCoord, -1);
 	}
 	/**
 	 * 返回能和本loc组成一个氨基酸的尾部nr的偏移，也就是向后偏移几个碱基，不考虑内含子
@@ -835,7 +896,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		if (exonNumStart < 0 || exonNumEnd < 0) {
 			return new ArrayList<>();
 		}
-		return subGffGeneIso(startLoc, endLoc).getLsElement();
+		return getSubGffGeneIso(startLoc, endLoc).getLsElement();
 	}
 
 	/**
@@ -1250,7 +1311,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return lsTmp;
 	}
 	
-	public GffGeneIsoInfo subGffGeneIso(int startLoc, int endLoc) {
+	public GffGeneIsoInfo getSubGffGeneIso(int startLoc, int endLoc) {
 		int startAbs = Math.min(startLoc, endLoc);
 		int endAbs = Math.max(startLoc, endLoc);
 		GffGeneIsoInfo gffGeneIsoInfoResult = this.clone();

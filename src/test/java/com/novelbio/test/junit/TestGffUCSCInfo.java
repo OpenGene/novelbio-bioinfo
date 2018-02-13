@@ -64,9 +64,6 @@ public class TestGffUCSCInfo extends TestCase{
 			GffGeneIsoInfo gffGeneIsoSearch = gffDetailGene.getLongestSplitMrna();
 			
 			if ( gffDetailGene.getLongestSplitMrna().ismRNA()) {
-				if (gffGeneIsoSearch.getLocDistmRNA(tsssite, atgsite) == 0 && gffGeneIsoSearch.getLenUTR5() == 1) {
-					System.out.println("stop");
-				}
 				assertEquals(gffGeneIsoSearch.getLocDistmRNA(tsssite, atgsite), gffGeneIsoSearch.getLenUTR5());
 				assertEquals(gffGeneIsoSearch.getLocDistmRNA(uagsite,tessite), gffGeneIsoSearch.getLenUTR3());
 			}

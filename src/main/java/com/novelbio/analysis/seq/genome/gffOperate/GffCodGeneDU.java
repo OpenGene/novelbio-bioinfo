@@ -264,15 +264,16 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	
 	
 	/**
-	 * 不查询数据库，直接返回gffDetailGene
-	 * 如果一个基因的某些iso没有和两个位点区域有交集，则去除这些iso
-	 * 譬如转录本为
-	 * chr1 30366 30900 
-	 * chr1 30350 31200
-	 * 不扩展tes区域
-	 * 
-	 * 而left位点为chr1 31000
-	 * 则返回基因时将chr1 30366 30900 这个转录本删掉
+	 * 不查询数据库，直接返回gffDetailGene<br>
+	 * 如果一个基因的某些iso没有和两个位点区域有交集，则去除这些iso<br>
+	 * <br>
+	 * 譬如转录本为<br>
+	 * chr1 30366 30900 <br>
+	 * chr1 30350 31200<br>
+	 * 不扩展tes区域<br>
+	 * <br>
+	 * 而left位点为chr1 31000<br>
+	 * 则返回基因时将chr1 30366 30900 这个转录本删掉<br>
 	 * 
 	 * @return LinkedHashSet
 	 * 不需要调用 {@link GffDetailGene#getlsGffDetailGenes()}
@@ -348,18 +349,7 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	}
 	/**
 	 * 将覆盖到指定区域的基因全部提取出来并保存至setGffDetailGenesLeft和setGffDetailGenesRight
-	 * 
-	 * @param Tss
-	 *            Tss上下游多少bp，上游为负数下游为正数， 两个都为正数表示只选取Tss下游，两个都为负数表示只选取Tss上游
-	 * @param Tes
-	 *            同Tss
-	 * @param geneBody
-	 *            是否在genebody
-	 * @param Exon
-	 *            当genebody为false时，是否覆盖exon
-	 * @param Intron
-	 *            当genebody为false时，是否覆盖exon
-	 * @return 没有则返回一个size为0的set
+	 * 其中不符合的iso都会被过滤掉
 	 */
 	private void setStructureGene_And_Remove_IsoNotBeFiltered() {
 		if (flagSearch) {
@@ -468,9 +458,6 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 	 * @return
 	 */
 	public List<Set<GeneStructure>> getLsIso2Structure(int coord1, int coord2, GffDetailGene gffDetailGene) {
-		// 一个是起点，一个是终点
-		int coordStart = 0;
-		int coordEnd = 0;
 		/** 标记，0表示需要去除，1表示保留 */
 		List<Set<GeneStructure>> lsIso2GeneStructure = new ArrayList<>();
 		for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {

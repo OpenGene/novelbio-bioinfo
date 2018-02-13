@@ -60,26 +60,39 @@ public class GffGeneIsoTest extends TestCase {
 		aa = gffGeneIsoCis.getNumCodInEle(4);
 		assertEquals(-1, aa);
 	}
-	
+
 	@Test
 	public void testGffGeneIsoTrans() {
-		GffDetailGene gffDetailGene = new GffDetailGene("chr1","sefes", true);
-		GffGeneIsoInfo gffGeneIsoCis = GffGeneIsoInfo.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, false);
+		GffDetailGene gffDetailGene = new GffDetailGene("chr1","sefes", false);
+		GffGeneIsoInfo gffGeneIsoTrans = GffGeneIsoInfo.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, false);
 
-		gffGeneIsoCis.add(new ExonInfo(false, 50, 40));
-		gffGeneIsoCis.add(new ExonInfo(false, 30, 10));
-		gffGeneIsoCis.add(new ExonInfo(false, 10, 5));
-		gffGeneIsoCis.add(new ExonInfo(false, 3, 0));
+		gffGeneIsoTrans.add(new ExonInfo(false, 50, 40));
+		gffGeneIsoTrans.add(new ExonInfo(false, 30, 20));
+		gffGeneIsoTrans.add(new ExonInfo(false, 10, 5));
+		gffGeneIsoTrans.add(new ExonInfo(false, 3, 0));
 		int aa = 0;
-				aa = gffGeneIsoCis.getCod2ExInEnd(37);
+				aa = gffGeneIsoTrans.getCod2ExInEnd(37);
 		assertEquals(6, aa);
-		aa = gffGeneIsoCis.getCod2ExInStart(37);
+		aa = gffGeneIsoTrans.getCod2ExInStart(37);
 		assertEquals(2, aa);
 
-		aa = gffGeneIsoCis.getCod2ExInEnd(23);
-		assertEquals(13, aa);
-		aa = gffGeneIsoCis.getCod2ExInStart(23);
+		aa = gffGeneIsoTrans.getCod2ExInEnd(23);
+		assertEquals(3, aa);
+		
+		aa = gffGeneIsoTrans.getCod2ExInStart(23);
 		assertEquals(7, aa);
+		
+		aa = gffGeneIsoTrans.getNumCodInEle(3);
+		assertEquals(4, aa);
+		
+		aa = gffGeneIsoTrans.getNumCodInEle(4);
+		assertEquals(-3, aa);
+		
+		aa = gffGeneIsoTrans.getNumCodInEle(15);
+		assertEquals(-2, aa);
+		
+		aa = gffGeneIsoTrans.getNumCodInEle(35);
+		assertEquals(-1, aa);
 	}
 	
 	

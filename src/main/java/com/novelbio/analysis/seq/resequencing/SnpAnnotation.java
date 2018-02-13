@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.resequencing;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 
@@ -8,6 +9,8 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.snphgvs.SnpAnnoFactory;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -26,8 +29,7 @@ import com.novelbio.generalConf.TitleFormatNBC;
 public class SnpAnnotation extends RunProcess {
 	Logger logger = Logger.getLogger(SnpAnnotation.class);
 	
-	GffChrAbs gffChrAbs;
-	
+	SnpAnnoFactory snpAnnoFactory = new SnpAnnoFactory();
 	int colChrID;
 	int colRefStartSite;
 	int colRefNr;
@@ -38,7 +40,7 @@ public class SnpAnnotation extends RunProcess {
 	
 	ArrayList<String[]> lsTxtFile = new ArrayList<String[]>();
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		this.gffChrAbs = gffChrAbs;
+		snpAnnoFactory.setGffChrAbs(gffChrAbs);
 	}
 	public void addTxtSnpFile(String txtFile, String txtOut) {
 		lsTxtFile.add(new String[]{txtFile, txtOut});
@@ -126,14 +128,16 @@ public class SnpAnnotation extends RunProcess {
 		if (input.startsWith("#")) {
 			return input;
 		}
-//		if (input.contains("120317577")) {
-//			logger.debug("stop");
-//		}
+		
 		ArrayList<String> lsInfo = ArrayOperate.converArray2List(input.split("\t"));
 		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite).trim());
-
-		RefSiteSnpIndel refSiteSnpIndel = new RefSiteSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
-		SiteSnpIndelInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
+		
+		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo(lsInfo.get(colChrID), refStartSite, lsInfo.get(colRefNr), lsInfo.get(colThisNr));
+		List<List<String>> lsLsAnno = snpAnnoFactory.getLsAnnotation(snpInfo);
+		
+		
+		RefSiteSnpIndel   = new RefSiteSnpIndel(gffChrAbs, lsInfo.get(colChrID), refStartSite);
+		SnpInfo siteSnpIndelInfo = refSiteSnpIndel.getAndAddAllenInfo(lsInfo.get(colRefNr), lsInfo.get(colThisNr));
 		GffGeneIsoInfo gffGeneIsoInfo = refSiteSnpIndel.getGffIso();
 		if (siteSnpIndelInfo == null || gffGeneIsoInfo == null) {
 			GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(lsInfo.get(colChrID), refStartSite);
@@ -150,17 +154,18 @@ public class SnpAnnotation extends RunProcess {
 		lsInfo.add(gffGeneIsoInfo.getName());
 		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
 			try {
-				GeneID geneID = new GeneID(gffGeneIsoInfo.getName(), gffChrAbs.getTaxID());
-				if (geneID.getIDtype() == GeneID.IDTYPE_ACCID) {
-					geneID = new GeneID(gffGeneIsoInfo.getParentGffGeneSame().getNameSingle(), gffChrAbs.getTaxID());
-				}
-				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
-					lsInfo.add(gffGeneIsoInfo.getParentGeneName());
-					lsInfo.add(geneID.getDescription());
-				} else {
-					lsInfo.add(gffGeneIsoInfo.getParentGeneName());
-					lsInfo.add("");
-				}
+				lsInfo.add(gffGeneIsoInfo.getParentGeneName());
+				lsInfo.add("");
+//				GeneID geneID = new GeneID(gffGeneIsoInfo.getName(), gffChrAbs.getTaxID());
+//				if (geneID.getIDtype() == GeneID.IDTYPE_ACCID) {
+//					geneID = new GeneID(gffGeneIsoInfo.getParentGffGeneSame().getNameSingle(), gffChrAbs.getTaxID());
+//				}
+//				if (geneID.getIDtype() != GeneID.IDTYPE_ACCID) {
+//					lsInfo.add(gffGeneIsoInfo.getParentGeneName());
+//					lsInfo.add(geneID.getDescription());
+//				} else {
+//	
+//				}
 			} catch (Exception e) {
 				// TODO: handle exception
 			}
@@ -181,9 +186,6 @@ public class SnpAnnotation extends RunProcess {
 		return ArrayOperate.cmbString(result, "\t");
 	}
 	
-	public RefSiteSnpIndel getSnpSite(String chrID, int site) {
-		return new RefSiteSnpIndel(gffChrAbs, chrID, site);
-	}
 	/** tilte和annoSnp方法中一致 */
 	public static ArrayList<String> getTitleLs() {
 		ArrayList<String> lsTitle = new ArrayList<String>();
@@ -195,7 +197,7 @@ public class SnpAnnotation extends RunProcess {
 	
 		lsTitle.add("LocationDescription");
 		lsTitle.add("PropToGeneStart");
-		lsTitle.addAll(SiteSnpIndelInfo.getTitle());
+		lsTitle.addAll(SnpInfo.getTitle());
 		return lsTitle;
 	}
 }

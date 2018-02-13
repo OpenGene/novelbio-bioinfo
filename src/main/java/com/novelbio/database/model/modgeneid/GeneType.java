@@ -123,6 +123,7 @@ public enum GeneType {
 			mapMRNA2GeneType.put("primary_transcript".toLowerCase(), ncRNA);
 			mapMRNA2GeneType.put("precursor_RNA".toLowerCase(), Precursor_RNA);
 			mapMRNA2GeneType.put("Precursor_miRNA".toLowerCase(), Precursor_miRNA);
+			mapMRNA2GeneType.put("Pre_miRNA".toLowerCase(), Precursor_miRNA);
 			mapMRNA2GeneType.put("antisense_RNA".toLowerCase(), antisense_RNA);
 			mapMRNA2GeneType.put("telomerase_RNA".toLowerCase(), telomerase_RNA);
 			mapMRNA2GeneType.put("RNase_P_RNA".toLowerCase(), RNase_P_RNA);

@@ -25,7 +25,7 @@ public class CodeInfo {
 	public static final String AA3_Tyr = "Tyr";
 	public static final String AA3_Val = "Val";
 	/** 用X表示 */
-	public static final String AA3_STOP = "***";
+	public static final String AA3_STOP = "Ter";
 	
 	public static final String AA1_Ala = "A";
 	public static final String AA1_Arg = "R";
@@ -264,7 +264,6 @@ public class CodeInfo {
 		mapAA1toAA3 = new HashMap<String, String>();
 		mapAA1toAA3.put( AA1_Asp, AA3_Asp);     mapAA1toAA3.put( AA3_Asp, AA1_Asp);
 		mapAA1toAA3.put( AA1_Arg, AA3_Arg);     mapAA1toAA3.put( AA3_Arg, AA1_Arg);
-		mapAA1toAA3.put( AA1_Asp, AA3_Asp);     mapAA1toAA3.put( AA3_Asp, AA1_Asp);
 		mapAA1toAA3.put( AA1_Cys, AA3_Cys);     mapAA1toAA3.put( AA3_Cys, AA1_Cys);
 		mapAA1toAA3.put( AA1_Gln, AA3_Gln);     mapAA1toAA3.put( AA3_Gln, AA1_Gln);
 		mapAA1toAA3.put( AA1_Glu, AA3_Glu);     mapAA1toAA3.put( AA3_Glu, AA1_Glu);
@@ -282,6 +281,9 @@ public class CodeInfo {
 		mapAA1toAA3.put( AA1_Trp, AA3_Trp);     mapAA1toAA3.put( AA3_Trp, AA1_Trp);
 		mapAA1toAA3.put( AA1_Tyr, AA3_Tyr);     mapAA1toAA3.put( AA3_Tyr, AA1_Tyr);
 		mapAA1toAA3.put( AA1_Val, AA3_Val);     mapAA1toAA3.put( AA3_Val, AA1_Val);
+		mapAA1toAA3.put( AA1_Ala, AA3_Ala);     mapAA1toAA3.put( AA3_Ala, AA1_Ala);
+
+		mapAA1toAA3.put( AA1_STOP, AA3_STOP);     mapAA1toAA3.put( AA3_STOP, AA1_STOP);
 
 		return mapAA1toAA3;
 	}
@@ -410,6 +412,26 @@ public class CodeInfo {
 		String AA1 = CodeInfo.convertDNACode2AA(DNAcode1, true);
 		String AA2 = CodeInfo.convertDNACode2AA(DNAcode2, true);
 		return compareAAquality(AA1, AA2);
+	}
+	/**
+	 * 将氨基酸转换为单字母
+	 */
+	public static String convertToAA1(String AA3) {
+		AA3 = getAAformate(AA3);
+		if (AA3.length() == 1) {
+			return AA3;
+		}
+		return setMapAA1toAA3().get(AA3);
+	}
+	/**
+	 * 将氨基酸转换为3字母
+	 */
+	public static String convertToAA3(String AA1) {
+		AA1 = getAAformate(AA1);
+		if (AA1.length() == 3) {
+			return AA1;
+		}
+		return setMapAA1toAA3().get(AA1);
 	}
 	/**
 	 * 将氨基酸在单字母和三字母之间转换

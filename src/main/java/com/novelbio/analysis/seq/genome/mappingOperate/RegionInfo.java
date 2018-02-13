@@ -168,13 +168,7 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 
 	public RegionInfo clone() {
 		RegionInfo mapInfo = null;
-		try {
-			mapInfo = (RegionInfo) super.clone();
-		} catch (CloneNotSupportedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			throw new RuntimeException("MapInfo clone error", e);
-		}
+		mapInfo = (RegionInfo) super.clone();
 		double[] value2 = null;
 		if (value != null) {
 			value2 = new double[value.length];

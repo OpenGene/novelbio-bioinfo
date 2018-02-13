@@ -32,7 +32,7 @@ public class CufflinksReconstruct implements IntCmdSoft {
 	
 	List<String> lsCmd = new ArrayList<>();
 	/** 用额外的GTF辅助重建转录本<br>
-	 * 和{@link #setGffChrAbs(gffChrAbs)} 两者选一
+	 * 和{@link #setGffHashGene(gffChrAbs)} 两者选一
 	 * 优先级高于gffChrAbs
 	 * @param gtfFile
 	 */
