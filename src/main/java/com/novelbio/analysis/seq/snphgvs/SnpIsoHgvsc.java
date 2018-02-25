@@ -15,7 +15,7 @@ public class SnpIsoHgvsc {
 	/** 与剪接位点距离的绝对值，小于该距离才会考虑剪接位点的影响 */
 	static int splitRegion = 2;
 	
-	SnpInfo snpRefAltInfo;
+	SnpInfo snpInfo;
 	GffGeneIsoInfo iso;
 	
 	/** 如果snp落在了exon上，则该类来保存ref所影响到的氨基酸的序列 */
@@ -27,7 +27,7 @@ public class SnpIsoHgvsc {
 	
 	
 	public SnpIsoHgvsc(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
-		this.snpRefAltInfo = snpRefAltInfo;
+		this.snpInfo = snpRefAltInfo;
 		this.iso = iso;
 	}
 	
@@ -64,7 +64,7 @@ public class SnpIsoHgvsc {
 	@VisibleForTesting
 	public String getStartPosCis() {
 		if (getCoverGeneType() != EnumCoverGene.Not) {
-			return snpRefAltInfo.getStartPosition() + "";
+			return snpInfo.getStartPosition() + "";
 		} else {
 			//暂时不清楚n怎么弄
 			//http://varnomen.hgvs.org/bg-material/numbering/
@@ -75,7 +75,7 @@ public class SnpIsoHgvsc {
 	@VisibleForTesting
 	public String getEndPosCis() {
 		if (getCoverGeneType() != EnumCoverGene.Not) {
-			return snpRefAltInfo.getEndPosition() + "";
+			return snpInfo.getEndPosition() + "";
 		} else {
 			//暂时不清楚n怎么弄
 			//http://varnomen.hgvs.org/bg-material/numbering/
@@ -84,11 +84,11 @@ public class SnpIsoHgvsc {
 	}
 	
 	private EnumCoverGene getCoverGeneType() {
-		if (snpRefAltInfo.getStartPosition() < iso.getStartAbs() && snpRefAltInfo.getEndPosition() < iso.getStartAbs()
-				|| snpRefAltInfo.getStartPosition() > iso.getEndAbs() && snpRefAltInfo.getEndPosition() > iso.getEndAbs()
+		if (snpInfo.getStartPosition() < iso.getStartAbs() && snpInfo.getEndPosition() < iso.getStartAbs()
+				|| snpInfo.getStartPosition() > iso.getEndAbs() && snpInfo.getEndPosition() > iso.getEndAbs()
 				) {
 			return EnumCoverGene.Out_of_Gene;
-		} else if (snpRefAltInfo.getStartPosition() < iso.getStartAbs() && snpRefAltInfo.getEndPosition() > iso.getEndAbs()) {
+		} else if (snpInfo.getStartPosition() < iso.getStartAbs() && snpInfo.getEndPosition() > iso.getEndAbs()) {
 			return EnumCoverGene.Cover_Gene;
 		} else {
 			return EnumCoverGene.Not;
@@ -104,24 +104,24 @@ public class SnpIsoHgvsc {
 	//TODO 待测试
 	@VisibleForTesting
 	public String getHGVStail() {
-		if (snpRefAltInfo.getVarType() == EnumHgvsVarType.Substitutions) {
+		if (snpInfo.getVarType() == EnumHgvsVarType.Substitutions) {
 			return getRefSeqIso() + ">" + getAltSeqIso();
-		} else if (snpRefAltInfo.getVarType() == EnumHgvsVarType.Deletions) {
+		} else if (snpInfo.getVarType() == EnumHgvsVarType.Deletions) {
 			return "del";
-		} else if (snpRefAltInfo.getVarType() == EnumHgvsVarType.Insertions) {
+		} else if (snpInfo.getVarType() == EnumHgvsVarType.Insertions) {
 			return "ins" + getAltSeqIso();
-		} else if (snpRefAltInfo.getVarType() == EnumHgvsVarType.Duplications) {
+		} else if (snpInfo.getVarType() == EnumHgvsVarType.Duplications) {
 			return "dup";
-		} else if (snpRefAltInfo.getVarType() == EnumHgvsVarType.Duplications) {
+		} else if (snpInfo.getVarType() == EnumHgvsVarType.Indels) {
 			return "delins" + getAltSeqIso();
 		} else {
-			throw new ExceptionNBCSnpHgvs("does not support varation type " + snpRefAltInfo.getVarType());
+			throw new ExceptionNBCSnpHgvs("does not support varation type " + snpInfo.getVarType());
 		}
 	}
 	
 	/** 根据方向来提取序列 */
 	private String getRefSeqIso() {
-		SeqFasta seqFasta = new SeqFasta(snpRefAltInfo.getSeqRef());
+		SeqFasta seqFasta = new SeqFasta(snpInfo.getSeqRef());
 		if (!iso.isCis5to3()) {
 			seqFasta = seqFasta.reservecom();
 		}
@@ -129,7 +129,7 @@ public class SnpIsoHgvsc {
 	}
 	/** 根据方向来提取序列 */
 	private String getAltSeqIso() {
-		SeqFasta seqFasta = new SeqFasta(snpRefAltInfo.getSeqAlt());
+		SeqFasta seqFasta = new SeqFasta(snpInfo.getSeqAlt());
 		if (!iso.isCis5to3()) {
 			seqFasta = seqFasta.reservecom();
 		}
@@ -137,12 +137,12 @@ public class SnpIsoHgvsc {
 	}
 	
 	private String getCodeStartInMRNA() {
-		int coord = iso.isCis5to3() ? snpRefAltInfo.getStartPosition() : snpRefAltInfo.getEndPosition();
+		int coord = iso.isCis5to3() ? snpInfo.getStartPosition() : snpInfo.getEndPosition();
 		return iso.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_OUT ? getCodOutMRNA(coord) : getCodInMRNA(coord);
 	}
 	
 	private String getCodeEndInMRNA() {
-		int coord = iso.isCis5to3() ? snpRefAltInfo.getEndPosition() : snpRefAltInfo.getStartPosition();
+		int coord = iso.isCis5to3() ? snpInfo.getEndPosition() : snpInfo.getStartPosition();
 		return iso.getCodLoc(coord) == GffGeneIsoInfo.COD_LOC_OUT ? getCodOutMRNA(coord) : getCodInMRNA(coord);
 	}
 	

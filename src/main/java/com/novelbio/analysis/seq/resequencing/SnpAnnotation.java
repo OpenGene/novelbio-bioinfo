@@ -136,7 +136,9 @@ public class SnpAnnotation extends RunProcess {
 		if (input.startsWith("#")) {
 			return Lists.newArrayList(input);
 		}
-		
+//		if (input.contains("173469559")) {
+//			logger.info("stop");
+//		}
 		ArrayList<String> lsInfo = ArrayOperate.converArray2List(input.split("\t"));
 		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite).trim());
 		
