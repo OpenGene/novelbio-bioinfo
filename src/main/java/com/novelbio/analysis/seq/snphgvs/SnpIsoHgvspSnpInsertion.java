@@ -58,6 +58,7 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 		if (ref.equals(alt)) {
 			setVarType.add(EnumVariantClass.synonymous_variant);
 			if (isUAG) {
+				setVarType.remove(EnumVariantClass.stop_lost);
 				setVarType.add(EnumVariantClass.stop_retained_variant);
 			}
 			return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + "="; 
@@ -225,13 +226,25 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 			if (isInsertInFrame) {
 				return;
 			}
-			//在一个aa内部
-			if (Math.abs(endCds-startCds) == 2 && endCds != iso.getUAGsite()) {
+			//在一个aa内部，不直接用endCds-startCds是因为一个氨基酸可能横跨intron，这时候直接减就会出问题
+			if (iso.getLocDistmRNA(startCds, endCds) == 2 && endCds != iso.getUAGsite()) {
+				/**
+				 * 如果插入在一个aa内部，end会向后提取一个氨基酸
+				 * 可能会出现场景 GTC-CT[CAG]G-AGC
+				 * 实际插入为 L-R-S
+				 * 而正常取是不会把AGC(S)取到的，所以要向后取一个氨基酸
+				 */
 				endCds = iso.getLocAANextEnd(endCds);
 				if (startCds == iso.getATGsite()) {
 					isInsertInStartAndInFrame = true;
 				}
 			}
+			/**
+			 * 默认insertion都会向前提取一个氨基酸
+			 * 可能会出现场景 GTC-C[AGT]TG-AGC
+			 * 实际插入为 V-Q-L
+			 * 而正常取是不会把GTC(V)取到的，所以要向前取一个氨基酸
+			 */
 			startCds = iso.getLocAALastStart(startCds);
 			return;
 		}
@@ -266,9 +279,13 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 			snpOnReplaceLocEnd = 0;
 		} else if(!isFrameShift() && !isInsertInFrame) {
 			snpOnReplaceLocStart = -iso.getLocAAbeforeBias(startCds) + 1;
-//			if (!isInsertInStartAndInFrame) {
-				snpOnReplaceLocStart = snpOnReplaceLocStart + 3;
-//			}
+			/**
+			 * 默认insertion都会向前提取一个氨基酸
+			 * 可能会出现场景 GTC-C[AGT]TG-AGC
+			 * 实际插入为 V-Q-L
+			 * 而正常取是不会把GTC(V)取到的，所以要向前取一个氨基酸，这时候这里就要加上3，意思往后偏移3
+			 */
+			snpOnReplaceLocStart = snpOnReplaceLocStart + 3;
 			snpOnReplaceLocEnd = snpOnReplaceLocStart-1;
 		} else {
 			snpOnReplaceLocStart = -iso.getLocAAbeforeBias(startCds) + 1;
@@ -294,6 +311,7 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		} else if (stopNumRef == 0 && stopNumAlt > 0) {
 			setVarType.add(EnumVariantClass.stop_gained);
 		} else if (stopNumRef == 2 && stopNumAlt == 2) {
+			setVarType.remove(EnumVariantClass.stop_lost);
 			setVarType.add(EnumVariantClass.stop_retained_variant);
 		} else if (stopNumRef == 2 && stopNumAlt > 0 && stopNumAlt < altAA.length - 1) {
 			setVarType.add(EnumVariantClass.stop_gained);
@@ -347,6 +365,7 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		
 		if(refAA[1] == '*' && altAA[1] == '*') {
 			sBuilder.append(convertAA(refAA[1]) + (startNum+1) + "=");
+			setVarType.remove(EnumVariantClass.stop_lost);
 			setVarType.add(EnumVariantClass.stop_retained_variant);
 		} else if (refAA[1] == altAA[1]) {					
 			sBuilder.append(convertAA(refAA[1]) + (startNum +1)
@@ -416,6 +435,7 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		
 		if(refAA[1] == '*' && altAA[1] == '*') {
 			sBuilder.append(convertAA(refAA[1]) + (startNum+1) + "=");
+			setVarType.remove(EnumVariantClass.stop_lost);
 			setVarType.add(EnumVariantClass.stop_retained_variant);
 		} else if (refAA[1] == altAA[1]) {
 			setVarType.add(EnumVariantClass.disruptive_inframe_insertion);
@@ -441,35 +461,6 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		}
 		
 		return sBuilder.toString();
-	}
-	
-	private String getInsertionDuplicate(String indelAA, int startAA, int endAA) {
-		String aaSeq = aa.toStringAA1();
-		char[] aaChr = aaSeq.toCharArray();
-		SnpIndelRealignHandle snpIndelRealignHandle = new SnpIndelRealignHandle(new Align("", startAA, endAA), "", indelAA, "");
-		snpIndelRealignHandle.handleSeqAlign(new SeqHashAAforHgvs(aaSeq));
-		snpIndelRealignHandle.moveAlignToAfter();
-		Align reAlign = snpIndelRealignHandle.getRealign();
-		StringBuilder sBuilderResult = new StringBuilder();
-		if (snpIndelRealignHandle.isDup()) {
-			int startDup = reAlign.getStartAbs()-indelAA.length()+1;
-			int endDup = reAlign.getStartAbs();
-			sBuilderResult.append(convertAA(aaChr[startDup - 1]));
-			sBuilderResult.append(startDup);
-			sBuilderResult.append("_");
-			sBuilderResult.append(convertAA(aaChr[endDup-1]));
-			sBuilderResult.append(endDup);
-			sBuilderResult.append("dup");
-		} else {
-			sBuilderResult.append(convertAA(aaChr[reAlign.getStartAbs()-1]));
-			sBuilderResult.append(reAlign.getStartAbs());
-			sBuilderResult.append("_");
-			sBuilderResult.append(convertAA(aaChr[reAlign.getEndAbs()-1]));
-			sBuilderResult.append(reAlign.getEndAbs());
-			sBuilderResult.append("ins");
-			sBuilderResult.append(convertAA(indelAA));
-		}
-		return sBuilderResult.toString();
 	}
 	
 	/** 插入位置是否在两个aa中间 */

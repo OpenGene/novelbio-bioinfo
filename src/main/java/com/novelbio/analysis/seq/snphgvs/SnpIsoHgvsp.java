@@ -8,6 +8,7 @@ import com.novelbio.analysis.seq.fasta.CodeInfo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.mapping.Align;
 
 public abstract class SnpIsoHgvsp {
 	//TODO 可以对蛋白查找做缓存
@@ -129,7 +130,10 @@ public abstract class SnpIsoHgvsp {
 		altSeqNrForAA = replaceSnpIndel(getSeqAltNrForAA(), snpOnReplaceLocStart, snpOnReplaceLocEnd);
 	}
 	
-	/** 必须在 {@link #setStartEndCis()} 运行之后调用 */
+	/** 必须在 {@link #setStartEndCis()} 运行之后调用
+	 * 用于蛋白层面的duplication
+	 * @return
+	 */
 	protected abstract boolean isGetAllLenAA();
 	
 	/**
@@ -177,6 +181,7 @@ public abstract class SnpIsoHgvsp {
 	 * @param startLoc  实际位点 在序列的哪一个点开始替换，替换包括该位点 0表示插到最前面。1表示从第一个开始替换
 	 * 如果ref为""，则将序列插入在startBias那个碱基的后面
 	 * @param endLoc 实际位点 在序列的哪一个点结束替换，替换包括该位点
+	 * 如果 startLoc > endLoc 说明是<b>插入</b>，并且插入位点紧挨着start位点之后<br>
 	 * @return
 	 */
 	private SeqFasta replaceSnpIndel(String replace, int startLoc, int endLoc) {
@@ -221,21 +226,21 @@ public abstract class SnpIsoHgvsp {
 	
 	/** 仅用于测试，正式项目不能使用 */
 	@VisibleForTesting
-	protected static SnpIsoHgvsp generateSnpRefAltHgvsp(SnpInfo snpRefAltInfo, GffGeneIsoInfo iso) {
+	protected static SnpIsoHgvsp generateSnpRefAltHgvsp(SnpInfo snpInfo, GffGeneIsoInfo iso) {
 		SnpIsoHgvsp snpIsoHgvsp = null;
-		int refLen = snpRefAltInfo.getSeqRef().length();
-		int altLen = snpRefAltInfo.getSeqAlt().length();
+		int refLen = snpInfo.getSeqRef().length();
+		int altLen = snpInfo.getSeqAlt().length();
 		if (refLen == 1 && altLen == 1) {
-			snpIsoHgvsp = new SnpRefAltIsoSnp(snpRefAltInfo, iso);
+			snpIsoHgvsp = new SnpRefAltIsoSnp(snpInfo, iso);
 		} else if (refLen == 0 && altLen >= 1) {
-			snpIsoHgvsp = new SnpRefAltIsoIns(snpRefAltInfo, iso);
+			snpIsoHgvsp = new SnpRefAltIsoIns(snpInfo, iso);
 		} else if (refLen >= 1 && altLen == 0) {
-			snpIsoHgvsp = new SnpRefAltIsoDel(snpRefAltInfo, iso);
-		} else if (refLen > 1 && altLen > 1) {
-			//TODO indel尚未实现
+			snpIsoHgvsp = new SnpRefAltIsoDel(snpInfo, iso);
+		} else if (refLen >= 1 && altLen >= 1) {
+			snpIsoHgvsp = new SnpRefAltIsoIndel(snpInfo, iso);
 		}
 		if (snpIsoHgvsp == null) {
-			throw new ExceptionNBCSnpHgvs("cannot find such indel conditon " + snpRefAltInfo.toString());
+			throw new ExceptionNBCSnpHgvs("cannot find such indel conditon " + snpInfo.toString());
 		}
 		return snpIsoHgvsp;
 	}
@@ -250,6 +255,7 @@ public abstract class SnpIsoHgvsp {
 		char[] refSeq = refSeqNrForAA.toStringAA1().toCharArray();
 		char[] altSeqChr = altSeqNrForAA.toStringAA1().toCharArray();
 		if (refSeq[0] == '*' && altSeqChr[0] == '*') {
+			setVarType.remove(EnumVariantClass.stop_lost);
 			setVarType.add(EnumVariantClass.stop_retained_variant);
 			return convertAA(refSeq[0]) + getAffectAANum(startCds) + "=";
 		}
@@ -343,4 +349,59 @@ public abstract class SnpIsoHgvsp {
 		}
 		return result;
 	}
+	
+	//============= 氨基酸层面的duplication =================
+	protected String getDeletionDuplicate(String indelAA, int startAA, int endAA) {
+		String aaSeq = aa.toStringAA1();
+		char[] aaChr = aaSeq.toCharArray();
+		SnpIndelRealignHandle snpIndelRealignHandle = new SnpIndelRealignHandle(new Align("", startAA, endAA), indelAA, "", "");
+		snpIndelRealignHandle.handleSeqAlign(new SeqHashAAforHgvs(aaSeq));
+		snpIndelRealignHandle.moveAlignToAfter();
+		Align reAlign = snpIndelRealignHandle.getRealign();
+		StringBuilder sBuilderResult = new StringBuilder();
+		
+		int startDup = reAlign.getStartAbs()-indelAA.length()+1;
+		int endDup = reAlign.getStartAbs();
+		sBuilderResult.append(convertAA(aaChr[startDup-1]));
+		sBuilderResult.append(startDup);
+		if (endDup > startDup) {
+			sBuilderResult.append("_");
+			sBuilderResult.append(convertAA(aaChr[endDup-1]));
+			sBuilderResult.append(endDup);
+		}
+		sBuilderResult.append("del");
+		return sBuilderResult.toString();
+	}
+	
+	protected String getInsertionDuplicate(String indelAA, int startAA, int endAA) {
+		String aaSeq = aa.toStringAA1();
+		char[] aaChr = aaSeq.toCharArray();
+		SnpIndelRealignHandle snpIndelRealignHandle = new SnpIndelRealignHandle(new Align("", startAA, endAA), "", indelAA, "");
+		snpIndelRealignHandle.handleSeqAlign(new SeqHashAAforHgvs(aaSeq));
+		snpIndelRealignHandle.moveAlignToAfter();
+		Align reAlign = snpIndelRealignHandle.getRealign();
+		StringBuilder sBuilderResult = new StringBuilder();
+		if (snpIndelRealignHandle.isDup()) {
+			int startDup = reAlign.getStartAbs()-indelAA.length()+1;
+			int endDup = reAlign.getStartAbs();
+			sBuilderResult.append(convertAA(aaChr[startDup - 1]));
+			sBuilderResult.append(startDup);
+			if (endDup > startDup) {
+				sBuilderResult.append("_");
+				sBuilderResult.append(convertAA(aaChr[endDup-1]));
+				sBuilderResult.append(endDup);
+			}
+			sBuilderResult.append("dup");
+		} else {
+			sBuilderResult.append(convertAA(aaChr[reAlign.getStartAbs()-1]));
+			sBuilderResult.append(reAlign.getStartAbs());
+			sBuilderResult.append("_");
+			sBuilderResult.append(convertAA(aaChr[reAlign.getEndAbs()-1]));
+			sBuilderResult.append(reAlign.getEndAbs());
+			sBuilderResult.append("ins");
+			sBuilderResult.append(convertAA(indelAA));
+		}
+		return sBuilderResult.toString();
+	}
+	
 }

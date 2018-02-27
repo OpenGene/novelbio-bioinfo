@@ -107,3 +107,4 @@ chr1	15578288	C	CACT	inframe_insertion
 chr1	15578365	G	GCATAGT	stop_gained&protein_altering_variant
 chr1	15578294	T	TCAG	inframe_insertion
 chr1	225971007	TGTG	T	inframe_deletion
+chr1	15578289	C	ACGG	inframe_insertion

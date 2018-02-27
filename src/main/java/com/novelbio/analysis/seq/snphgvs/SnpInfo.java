@@ -234,41 +234,36 @@ public class SnpInfo {
 	 */
 	@VisibleForTesting
 	protected void copeInputVar() {
-		int seqStart = 0, seqEnd = 0;
-		int seqLenMax = Math.max(seqRefRaw.length(), seqAltRaw.length());
-		int seqLenMin = Math.min(seqRefRaw.length(), seqAltRaw.length());
-
 		char[] refChr = seqRefRaw.toCharArray();
 		char[] altChr = seqAltRaw.toCharArray();
-		seqStart = SnpIsoHgvsp.getStartSame(refChr, altChr);
-		if (seqStart < seqLenMin) {
-			seqEnd = SnpIsoHgvsp.getEndSame(refChr, altChr);
-			if (seqEnd+seqStart >= seqLenMax) {
-				seqEnd = seqLenMin - seqStart;
-			}
-		}
-		if (seqStart == 0 && seqEnd == 0) {
+		int seqLenMax = Math.max(refChr.length, altChr.length);
+
+		int[] startEndSameIndex = SnpInfo.getStartEndSameIndex(refChr, altChr);
+		int startSameIndex = startEndSameIndex[0], endSameIndex = startEndSameIndex[1];
+		
+	
+		if (startSameIndex == 0 && endSameIndex == 0) {
 			alignChange = new Align(alignRefRaw.toString());
 			seqRef = seqRefRaw;
 			seqAlt = seqAltRaw;
 			setVarHgvsType(seqRef, seqAlt);
 			return;
 		}
-		seqRef = seqRefRaw.substring(seqStart, seqRefRaw.length() - seqEnd);
-		seqAlt = seqAltRaw.substring(seqStart, seqAltRaw.length() - seqEnd);
+		seqRef = seqRefRaw.substring(startSameIndex, seqRefRaw.length() - endSameIndex);
+		seqAlt = seqAltRaw.substring(startSameIndex, seqAltRaw.length() - endSameIndex);
 		setVarHgvsType(seqRef, seqAlt);
 		alignChange = new Align(alignRefRaw.toString());
 		
-		int startSiteSubSeq = seqStart-1;
-		if (seqStart == 0) {
-			startSiteSubSeq = seqLenMax - seqEnd;
-		}
+		int startSiteSubSeq = startSameIndex > 0 ? startSameIndex-1 : seqLenMax - endSameIndex;
+		
 		if (varType == EnumHgvsVarType.Insertions) {
-			alignChange.setStartEndLoc(alignRefRaw.getStartAbs() + seqStart-1, alignRefRaw.getStartAbs() + seqStart);
+			alignChange.setStartEndLoc(alignRefRaw.getStartAbs() + startSameIndex-1, alignRefRaw.getStartAbs() + startSameIndex);
 			seqHead = seqAltRaw.substring(startSiteSubSeq, startSiteSubSeq+1);
 		} else {
-			alignChange.setStartEndLoc(alignRefRaw.getStartAbs() + seqStart, alignRefRaw.getEndAbs() - seqEnd);
-			seqHead = seqRefRaw.substring(startSiteSubSeq, startSiteSubSeq+1);
+			alignChange.setStartEndLoc(alignRefRaw.getStartAbs() + startSameIndex, alignRefRaw.getEndAbs() - endSameIndex);
+			if (varType == EnumHgvsVarType.Deletions) {
+				seqHead = seqRefRaw.substring(startSiteSubSeq, startSiteSubSeq+1);
+			}
 		}
 	}
 	
@@ -401,6 +396,31 @@ public class SnpInfo {
 	
 	public String toString() {
 		return alignRefRaw.getRefID() + "\t" + alignRefRaw.getStartAbs() + "\t" + seqRefRaw + "\t" + seqAltRaw;
+	}
+	
+	/**
+	 * 给定ref和alt，返回他们有几个相同的start和几个相同的end<br>
+	 * 譬如<br>
+	 *  ref P-M-AE<br>
+	 *  alt P-CAAY-AE<br>
+	 *  则返回<br>
+	 *  0: 1      1: 2 <br>
+	 * @param ref
+	 * @param alt
+	 */
+	protected static int[] getStartEndSameIndex(char[] ref, char[] alt) {
+		int startSameIndex = 0, endSameIndex = 0;
+		int seqLenMax = Math.max(ref.length, alt.length);
+		int seqLenMin = Math.min(ref.length, alt.length);
+
+		startSameIndex = SnpIsoHgvsp.getStartSame(ref, alt);
+		if (startSameIndex < seqLenMin) {
+			endSameIndex = SnpIsoHgvsp.getEndSame(ref, alt);
+			if (endSameIndex+startSameIndex >= seqLenMax) {
+				endSameIndex = seqLenMin - startSameIndex;
+			}
+		}
+		return new int[]{startSameIndex, endSameIndex};
 	}
 }
 

@@ -300,6 +300,7 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			return convertAA(refAA[0]) + start + "_" + convertAA(refAA[refAA.length-1]) + end + "=";
 		} else if (refAA[0] == '*' && altAA[0] == '*') {
 			//TODO 未测试
+			setVarType.remove(EnumVariantClass.stop_lost);
 			setVarType.add(EnumVariantClass.stop_retained_variant);
 			return convertAA(refAA[0]) + start + "=";
 		} else if (!isFrameShift && isAffectUAG) {
@@ -308,16 +309,9 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			return getInDelChangeFrameShift(true, true);
 		}
 		setIsStopGain(refAA, altAA);
-		int seqLenMin = Math.min(refAA.length, altAA.length);
-		int seqLenMax = Math.min(refAA.length, altAA.length);
-		int refStart = getStartSame(refAA, altAA);
-		int refEnd = 0;
-		if (refStart < seqLenMin) {
-			refEnd = SnpIsoHgvsp.getEndSame(refAA, altAA);
-			if (refEnd+refStart >= seqLenMax) {
-				refEnd = seqLenMin - refStart;
-			}
-		}
+		
+		int[] startEndSameIndex = SnpInfo.getStartEndSameIndex(refAA, altAA);
+		int startSameIndex = startEndSameIndex[0], endSameIndex = startEndSameIndex[1];
 		
 		if (isStartAtAAstart) {
 			setVarType.add(EnumVariantClass.conservative_inframe_deletion);
@@ -325,20 +319,24 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			setVarType.add(EnumVariantClass.disruptive_inframe_deletion);
 		}
 		
-		if (altAA.length-refStart-refEnd <= 0 && isGetAllLenAA()) {
-			throw new  ExceptionNBCSnpHgvs("indel error, altAA length is zero. " + snpRefAltInfo.toString());
+		if (altAA.length-startSameIndex-endSameIndex <= 0 && isGetAllLenAA()) {
+			StringBuilder indelAA = new StringBuilder();
+			for (int i = startSameIndex; i < refAA.length-endSameIndex; i++) {
+				indelAA.append(refAA[i]);
+			}
+			return getDeletionDuplicate(indelAA.toString(), start+startSameIndex, end-endSameIndex);			
 		}
 		
 		StringBuilder sBuilder = new StringBuilder();
-		if (start+refStart == end-refEnd) {
-			sBuilder.append(convertAA(refAA[refStart]) + (start+refStart) + "del");
+		if (start+startSameIndex == end-endSameIndex) {
+			sBuilder.append(convertAA(refAA[startSameIndex]) + (start+startSameIndex) + "del");
 		} else {
-			sBuilder.append(convertAA(refAA[refStart]) + (start+refStart) + "_" + convertAA(refAA[refAA.length-refEnd-1]) + (end-refEnd) + "del");
+			sBuilder.append(convertAA(refAA[startSameIndex]) + (start+startSameIndex) + "_" + convertAA(refAA[refAA.length-endSameIndex-1]) + (end-endSameIndex) + "del");
 		}
-		if (altAA.length-refStart-refEnd > 0) {
+		if (altAA.length-startSameIndex-endSameIndex > 0) {
 			sBuilder.append("ins");
 		}
-		for (int i = refStart; i < altAA.length-refEnd; i++) {
+		for (int i = startSameIndex; i < altAA.length-endSameIndex; i++) {
 			sBuilder.append(convertAA(altAA[i]));	
 		}
 		return sBuilder.toString();

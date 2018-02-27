@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.StringOperate;
 
 /**
  * 检测var的duplication
@@ -65,6 +66,9 @@ public class SnpIndelRealignHandle {
 		this.alignRef = alignRef;
 		this.seqRef = seqRef;
 		this.seqAlt = seqAlt;
+		if (StringOperate.isRealNull(seqShort)) {
+			seqShort = "";
+		}
 		this.seqChangeShort = seqShort;
 	}
 	/** 如果本align可以前后移动，则最后侧的坐标 */
