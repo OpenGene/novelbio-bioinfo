@@ -21,7 +21,7 @@ class SnpRefAltIsoIndel extends SnpIsoHgvsp {
 	/** alt和ref相比增加了几个碱基，仅用于非移码突变 */
 	int changeAltLen = 0;
 	
-	/** 是否切除了整个intron  */
+	/** 是否切除了整个intron，这种情况和insertion其实挺像  */
 	boolean isAllIntron = false;
 	
 	protected boolean isGetAllLenAA() {
