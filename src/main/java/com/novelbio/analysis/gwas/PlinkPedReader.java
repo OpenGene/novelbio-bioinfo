@@ -106,6 +106,12 @@ public class PlinkPedReader implements Closeable {
 	public Iterable<Allele> readAllelsFromSample(String sampleName) {
 		return readAllelsFromSample(sampleName, 0);
 	}
+	/**
+	 *  从第几个位置开始，从1开始计数
+	 * @param sampleName
+	 * @param siteStart
+	 * @return
+	 */
 	public Iterable<Allele> readAllelsFromSample(String sampleName, int siteStart) {
 		try {
 			return readAllelsFromSampleExp(sampleName, siteStart);
@@ -116,12 +122,11 @@ public class PlinkPedReader implements Closeable {
 	}
 	/**
 	 * @param sampleName
-	 * @param siteStart 从第几个位置开始
-	 * @param siteEnd 到第几个位置结束
+	 * @param siteStart 从第几个位置开始，从1开始
 	 * @return
 	 * @throws IOException 
 	 */
-	private Iterable<Allele> readAllelsFromSampleExp(String sampleName, int siteStart) throws IOException {		
+	private Iterable<Allele> readAllelsFromSampleExp(String sampleName, int siteStart) throws IOException {
 		long[] lineStart2BaseStart = mapLine2Index.get(sampleName);
 		if (siteStart <= 0) siteStart = 1;		
 		long start = (siteStart-1) * 4 + lineStart2BaseStart[1];
@@ -154,14 +159,16 @@ public class PlinkPedReader implements Closeable {
 						try {
 							int i = bufferedReader.read(cAllel);
 							if (i != 4 || cAllel[1] != ' ' || (cAllel[3] != ' ' && cAllel[3] != '\r' && cAllel[3] != '\n')) {
+								close();
 								throw new ExceptionNbcFile("read plinkped file error " + plinkPed);
 							}
 						} catch (Exception e) {
+							close();
 							throw new ExceptionNbcFile("read plinkped file error " + plinkPed);
 						}
 						Allele allele = new Allele();
-						allele.setRef(cAllel[0]);
-						allele.setAlt(cAllel[2]);
+						allele.setAllele1(cAllel[0]);
+						allele.setAllele2(cAllel[2]);
 						allele.setIndex((int) site[0]);
 						site[0]++;
 						return allele;
@@ -203,13 +210,13 @@ public class PlinkPedReader implements Closeable {
 				if (base == ' ') {
 					throw new ExceptionNbcFile("read plinkPed error " + plinkPed);
 				}
-				allele.setRef(base);
+				allele.setAllele1(base);
 			} else if (i%4 == 2) {
 				char base = (char)baseInt;
 				if (base == ' ') {
 					throw new ExceptionNbcFile("read plinkPed error " + plinkPed);
 				}
-				allele.setAlt(base);
+				allele.setAllele2(base);
 			}
 		}
 		return lsResult;

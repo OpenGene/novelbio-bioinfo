@@ -12,6 +12,12 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
 
+/** 用于氨基酸重复的偏移工作
+ * 譬如 GMCDARM-[M]-MCK
+ * 需要偏移为 GMCDARMM-[M]-CK
+ * @author zong0jie
+ * @data 2018年3月3日
+ */
 public class SeqHashAAforHgvs implements SeqHashInt {
 	String seq;
 	public SeqHashAAforHgvs(String seq) {

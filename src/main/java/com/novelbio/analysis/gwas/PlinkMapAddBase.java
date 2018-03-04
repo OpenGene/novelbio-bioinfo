@@ -20,9 +20,9 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  * 给定plink-map文件和chr文件，在map文件最后一列添上碱基
  * 
  * 原来是 
- * chrId marker	other	position<br>
- * 1	10100001579	0	1579<br>
- * 1	10100003044	0	3044<br>
+ * chrId marker	other	position Major Minor<br>
+ * 1	10100001579	0	1579 A G<br>
+ * 1	10100003044	0	3044 G A<br>
  * 要修改为
  * chrId marker	other	position	reference alt<br>
  * 1	10100001579	0	1579	A G<br>
@@ -39,75 +39,20 @@ public class PlinkMapAddBase {
 	public PlinkMapAddBase(String chrFile) {
 		this.chrFile = chrFile;
 	}
-	
-	public void AddAnno(String plinkMapFile, String plinkPed, String plinkAddRefFile) {
-		AnnoFromRef annoFromRef = new AnnoFromRef(chrFile);
-		TxtReadandWrite txtRead = new TxtReadandWrite(plinkMapFile);
 		
-		List<Integer> lsRef2This = new ArrayList<>();
-		for (String content : txtRead.readlines()) {
-			if (content.startsWith("#")) continue;
-			
-			Allele allele = null;
-			try {
-				allele = annoFromRef.annotation(content);
-			} catch (ExceptionNBCChromosome e) {
-				txtRead.close();
-				annoFromRef.close();
-				throw e;
-			}
-			AlleleShort alleleShort = new AlleleShort(allele.getRefBase(), "");
-			lsRef2This.add(alleleShort.encode());
-		}
-		annoFromRef.close();
-		txtRead.close();
-		
-		PlinkPedReader pedReader = new PlinkPedReader(plinkPed);
-		for (String sample : pedReader.getLsAllSamples()) {
-			int i = 0;
-			for (Allele allele : pedReader.readAllelsFromSample(sample)) {
-				int code = lsRef2This.get(i);
-				AlleleShort alleleShort = AlleleShort.decode(code);
-				if (!alleleShort.isHaveAlt()) {
-					if (!StringOperate.isEqualIgnoreCase(allele.getRefBase(), alleleShort.getRef())) {
-						alleleShort.setAlt(allele.getRefBase());
-					} else if (!StringOperate.isEqualIgnoreCase(allele.getAltBase(), alleleShort.getRef())) {
-						alleleShort.setAlt(allele.getAltBase());
-					}
-					lsRef2This.set(i, alleleShort.encode());
-				}
-				i++;
-			}
-		}
-		pedReader.close();
-		
-		txtRead = new TxtReadandWrite(plinkMapFile);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(plinkAddRefFile, true);
-		int i = 0;
-		for (String content : txtRead.readlines()) {
-			if (content.startsWith("#")) continue;
-			
-			AlleleShort alleleShort = AlleleShort.decode(lsRef2This.get(i));
-			Allele allele = new Allele(content);
-			allele.setRef(alleleShort.getRef());
-			allele.setAlt(alleleShort.getAlt());
-			txtWrite.writefileln(allele.toString());
-			i++;
-		}
-		txtRead.close();
-		txtWrite.close();
-	}
-	
-	public void addAnnoFromRef(String plinkMapFile, String plinkAddRefFile) {
+	public void addAnnoFromRef(String plinkBim, String plinkBimAddChr) {
 		AnnoFromRef annoFromRef = new AnnoFromRef(chrFile);
 
-		TxtReadandWrite txtRead = new TxtReadandWrite(plinkMapFile);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(plinkAddRefFile, true);
-	
+		TxtReadandWrite txtRead = new TxtReadandWrite(plinkBim);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(plinkBimAddChr, true);
+		
+		int baseIndex = 1;
+		
 		for (String content : txtRead.readlines()) {
 			Allele allele = null;
 			try {
 				allele = annoFromRef.annotation(content);
+				allele.setIndex(baseIndex++);
 			} catch (ExceptionNBCChromosome e) {
 				txtRead.close();
 				txtWrite.close();
@@ -132,9 +77,15 @@ public class PlinkMapAddBase {
 			chrBaseIter = new ChrBaseIter(chrFile);
 		}
 		
-		/** 给定plinkmap的一行，用reference进行注释 */
-		public Allele annotation(String plinkMapContent) {
-			Allele allele = new Allele(plinkMapContent);
+		/** 给定plinkmap的一行，用reference进行注释
+		 * 注意 plink.bim 的一行中
+		 * 1\t10100001579\t0\t1579\tA\tG
+		 * 第六列高频，第五列为低频
+		 * @param plinkMapContent 
+		 * @return
+		 */
+		public Allele annotation(String plinkBimLine) {
+			Allele allele = new Allele(plinkBimLine);
 			/**
 			 * 如果查找第一个allel，或者两个allel不在一条染色体上/相聚很远
 			 * 则重新定位染色体
@@ -151,7 +102,16 @@ public class PlinkMapAddBase {
 				base = itBase.next();
 			}
 			if (base.getPosition() == allele.getStartAbs()) {
-				allele.setRef(base.getBase());
+				//设置高频低频
+				allele.setIsRefMajor(!allele.getRefBase().equals(base.getBase()+""));
+				
+				if (!allele.getRefBase().equals(base.getBase() + "")) {
+					if (!allele.getAltBase().equals(base.getBase() + "")) {
+						throw new ExceptionNBCPlink("error! " + allele.toString() + " but ref is " + base.getBase());
+					}
+					allele.changeRefAlt();
+				}
+				
 			} else {
 				chrBaseIter.close();
 				throw new ExceptionNBCChromosome("cannot get reference on position " + allele.getRefID() + " " +allele.getPosition());
@@ -232,13 +192,16 @@ class AlleleShort {
 		return !StringOperate.isRealNull(alt);
 	}
 	
+	//========================================
+	//暂时不用
+	@Deprecated
 	public int encode() {
 		int i = 0;
 		i += mapBase2Code.get(ref);
 		i += 10*mapBase2Code.get(alt);
 		return i;
 	}
-	
+	@Deprecated
 	public static AlleleShort decode(int codeAllele) {
 		AlleleShort alleleShort = new AlleleShort();
 		int refInt = (codeAllele) % 10;
@@ -247,6 +210,7 @@ class AlleleShort {
 		alleleShort.alt = mapCode2Base.get(altInt);
 		return alleleShort;
 	}
+	
 }
 
 class Allele extends Align {
@@ -258,6 +222,15 @@ class Allele extends Align {
 	
 	/** 该snp的序号 */
 	int index;
+	/**
+	 * ref 位点是否为高频位点
+	 * 对于plink.bim 来说，ref位点不一定是高频位点
+	 * 很可能alt是高频
+	 */
+	Boolean isRefMajor;
+	
+	String allele1;
+	String allele2;
 	
 	public Allele() {}
 	
@@ -279,6 +252,30 @@ class Allele extends Align {
 		if (ss.length >= 6) {
 			alt = ss[5];
 		}
+		if (ss.length >= 7) {
+			if (StringOperate.isEqual(ss[6], "1")) {
+				isRefMajor = true;
+			} else if (StringOperate.isEqual(ss[6], "-1")) {
+				isRefMajor = false;
+			}
+		}
+	}
+	/**
+	 * ref 位点是否为高频位点
+	 * 对于plink.bim 来说，ref位点不一定是高频位点
+	 * 很可能alt是高频
+	 */
+	public void setIsRefMajor(boolean isRefMajor) {
+		this.isRefMajor = isRefMajor;
+	}
+	public Boolean isRefMajor() {
+		return isRefMajor;
+	}
+	/** ref和alt交换 */
+	public void changeRefAlt() {
+		String tmp = ref;
+		ref = alt;
+		alt = tmp;
 	}
 	/** 该snp的序号，在plinkPed中，只能知道allel的序号而不知道snp的具体position<br>
 	 * 必须从plinkMap相同序号的allel中获取position<br>
@@ -316,10 +313,38 @@ class Allele extends Align {
 	public String getAltBase() {
 		return alt;
 	}
-	
+	public void setAllele1(Character allele1) {
+		this.allele1 = allele1+"";
+	}
+	public void setAllele2(Character allele2) {
+		this.allele2 = allele2+"";
+	}
+	public void setAllele1(String allele1) {
+		this.allele1 = allele1;
+	}
+	public void setAllele2(String allele2) {
+		this.allele2 = allele2;
+	}
+	public String getAllele1() {
+		return allele1;
+	}
+	public String getAllele2() {
+		return allele2;
+	}
 	/** 本allel所在的染色体坐标 */
 	public int getPosition() {
 		return getStartAbs();
+	}
+	
+	public void setRef(Allele alleleRef) {
+		this.ref = alleleRef.getRefBase();
+		this.alt = alleleRef.getAltBase();
+		this.setChrID(alleleRef.getRefID());
+		this.setStartAbs(alleleRef.getStartAbs());
+		this.setEndAbs(alleleRef.getEndAbs());
+		this.setCis5to3(alleleRef.isCis5to3());
+		this.marker = alleleRef.marker;
+		this.isRefMajor = alleleRef.isRefMajor();
 	}
 	
 	public String toString() {
@@ -329,9 +354,56 @@ class Allele extends Align {
 		lsResult.add(other);
 		lsResult.add(getStartAbs()+"");
 		lsResult.add(ref);
+		lsResult.add(alt);
+		if (isRefMajor != null) {
+			String isRefMajorStr = isRefMajor ? "1" : "-1";
+			lsResult.add(isRefMajorStr);
+		}
+		return ArrayOperate.cmbString(lsResult, "\t");
+	}
+	
+	/**
+	 * 根据碱基频率来获取值
+	 * 譬如高频位点为A，低频位点为T
+	 * 则 AA = 1
+	 * AT = 0
+	 * TT = -1
+	 * @return
+	 */
+	public int getFrq() {
+		boolean isAllele1SameToRef = StringOperate.isEqual(allele1, ref);
+		boolean isAllele2SameToRef = StringOperate.isEqual(allele2, ref);
+		
+		if (StringOperate.isEqual(allele1, "0") || StringOperate.isEqual(allele2, "0")) {
+			return -9;
+		}
+		
+		int result = 0;
+		if (isAllele1SameToRef && isAllele2SameToRef) {
+			result = 1;
+		} else if (isAllele1SameToRef || isAllele2SameToRef) {
+			result = 0;
+		} else {
+			result = -1;
+		}
+		result = isRefMajor ? result : -result;
+		return result;
+		
+	}
+	public String toStringAlleleGwas() {
+		List<String> lsResult = new ArrayList<>();
+		lsResult.add(getRefID());
+		lsResult.add(marker);
+		lsResult.add(getStartAbs()+"");
+		lsResult.add(ref);
 		if (!StringOperate.isRealNull(alt)) {
 			lsResult.add(alt);
 		}
+		if (!StringOperate.isRealNull(allele1)) {
+			lsResult.add(allele1);
+			lsResult.add(allele2);
+		}
+		lsResult.add(getFrq()+"");
 		return ArrayOperate.cmbString(lsResult, "\t");
 	}
 }

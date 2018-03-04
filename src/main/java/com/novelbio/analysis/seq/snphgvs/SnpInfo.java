@@ -163,7 +163,12 @@ public class SnpInfo {
 		}
 		snpRealignHandler.moveAlignAfter(moveBefore);
 	}
-	/** 根据parent，设定GffChrAbs */
+	/**
+	 * 与方法 {@link #setGene(GffDetailGene)} 二选一<br>
+	 * 给定GffHashGene
+	 * 填充SnpInfo所需的list-iso
+	 * @param gffHashGene
+	 */
 	public void setGffHashGene(GffHashGene gffHashGene) {
 		GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(alignRefRaw.getRefID(), alignRefRaw.getStartAbs(), alignRefRaw.getEndAbs());
 		if (gffCodGeneDu == null) {
@@ -173,6 +178,16 @@ public class SnpInfo {
 		for (GffDetailGene gffDetailGene : setGenes) {
 			lsIsos.addAll(gffDetailGene.getLsCodSplit());
 		}
+	}
+	
+	/** 
+	 * 与方法 {@link #setGffHashGene(GffHashGene)} 二选一<br>
+	 * 给定GffHashGene
+	 * 填充SnpInfo所需的list-iso
+	 * @param gffHashGene
+	 */
+	public void setGene(GffDetailGene gene) {
+		 lsIsos.addAll(gene.getLsCodSplit());
 	}
 	
 	/**

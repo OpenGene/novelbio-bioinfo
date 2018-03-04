@@ -52,6 +52,7 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 		String alt = convertAA(altSeqNrForAA.toStringAA1().substring(0, 1));
 		if (isUAG && !ref.equals(alt)) {
 			setVarType.add(EnumVariantClass.stop_lost);
+			setVarType.add(EnumVariantClass.missense_variant);
 			return "p." + getInDelChangeFrameShift(true, false);
 		}
 		
@@ -65,6 +66,7 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 		}
 		if (isATG) {
 			setVarType.add(EnumVariantClass.start_lost);
+			setVarType.add(EnumVariantClass.missense_variant);
 			setVarType.add(EnumVariantClass.initiator_codon_variant);
 			return "p." + ref + "1?";
 		}

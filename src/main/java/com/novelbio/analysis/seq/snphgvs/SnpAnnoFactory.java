@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 
 public class SnpAnnoFactory {
@@ -17,6 +18,13 @@ public class SnpAnnoFactory {
 	public SnpInfo generateSnpInfo(String refId, int position, String seqRef, String seqAlt) {
 		SnpInfo snpInfo = new SnpInfo(refId, position, seqRef, seqAlt);
 		snpInfo.setGffHashGene(gffChrAbs.getGffHashGene());
+		snpInfo.initial(gffChrAbs.getSeqHash());
+		return snpInfo;
+	}
+	
+	public SnpInfo generateSnpInfo(String refId, int position, String seqRef, String seqAlt, GffDetailGene gene) {
+		SnpInfo snpInfo = new SnpInfo(refId, position, seqRef, seqAlt);
+		snpInfo.setGene(gene);
 		snpInfo.initial(gffChrAbs.getSeqHash());
 		return snpInfo;
 	}

@@ -6,10 +6,17 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.snphgvs.EnumVariantClass;
+import com.novelbio.analysis.seq.snphgvs.SnpAnnoFactory;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo;
+import com.novelbio.analysis.seq.snphgvs.SnpIsoHgvsp;
+import com.novelbio.analysis.seq.snphgvs.VariantTypeDetector;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public class PlinkMapReader {
@@ -23,28 +30,29 @@ public class PlinkMapReader {
 	 * 其中第二列和第三列不用管，只需要根据第一列和第四列去提取信息即可
 	 */
 	String plinkMap;
-	GffChrAbs gffChrAbs;
-
 	/** 缓存队列，用于 */
 	List<Allele> lsAllele = new ArrayList<>();
-	GffDetailGene gffGene = null;
-	String chrId;
+	SnpAnnoFactory snpAnnoFactory = new SnpAnnoFactory();
 	
 	Map<String, List<GffDetailGene>> mapChrId2LsGenes = new HashMap<>();
 	
-	TxtReadandWrite txtReadSite;
+	TxtReadandWrite txtReadPlinkMap;
 	Iterator<String> itPlinkMap;
-	Iterator<String> itPlinkMapTmp;
 	Iterator<GffDetailGene> itGenes;
-	GffDetailGene geneTmp;
 	Allele alleleTmp;
 	String chrIdTmp;
 	int snpIndex = 1;
 	
+	boolean isFinish = false;
+	
+	GffDetailGene gene;
+	
+	
 	public void setGffChrAbs(String chrFile, String gffFile) {
-		this.gffChrAbs = new GffChrAbs();
+		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setChrFile(chrFile, null);
 		gffChrAbs.setGffHash(new GffHashGene(gffFile));
+		
 		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getLsGffDetailGenes()) {
 			List<GffDetailGene> lsGenes = mapChrId2LsGenes.get(gffDetailGene.getRefID());
 			if (lsGenes == null) {
@@ -56,31 +64,33 @@ public class PlinkMapReader {
 		for (List<GffDetailGene> lsGenes : mapChrId2LsGenes.values()) {
 			Collections.sort(lsGenes, (gene1, gene2) -> {return ((Integer)gene1.getStartAbs()).compareTo(gene2.getStartAbs());});
 		}
+		snpAnnoFactory.setGffChrAbs(gffChrAbs);
 	}
 	
 	public void setPlinkMap(String plinkMap) {
 		this.plinkMap = plinkMap;
-		txtReadSite = new TxtReadandWrite(plinkMap);
-		itPlinkMap = txtReadSite.readlines().iterator();
+		txtReadPlinkMap = new TxtReadandWrite(plinkMap);
+		itPlinkMap = txtReadPlinkMap.readlines().iterator();
 	}
 	
-	public void initial(){
+	public void initial() {
 		lsAllele.clear();
 		alleleTmp = new Allele(itPlinkMap.next());
 		alleleTmp.setIndex(snpIndex++);
 		chrIdTmp = alleleTmp.getRefID();
 		itGenes = mapChrId2LsGenes.get(alleleTmp.getRefID()).iterator();
 	}
-	
-	public List<Allele> getLsAllele() {
-		return lsAllele;
+	public GffDetailGene getGene() {
+		return gene;
 	}
-	
+	public boolean isFinish() {
+		return isFinish;
+	}
 	/**
 	 * 读取一个基因中的全体snp
 	 * 尚未测试
 	 */
-	public void readLsAlleles() {
+	public List<Allele> readLsAlleles() {
 		if (!itGenes.hasNext()) {
 			lsAllele.clear();
 			while (itPlinkMap.hasNext()) {
@@ -89,13 +99,14 @@ public class PlinkMapReader {
 				if (!chrIdTmp.equals(alleleTmp.getRefID())) {
 					chrIdTmp = alleleTmp.getRefID();
 					itGenes = mapChrId2LsGenes.get(alleleTmp.getRefID()).iterator();
+					break;
 				}
 			}
 		}
 		if (!itPlinkMap.hasNext()) {
-			return;
+			isFinish = true;
+			return null;
 		}
-		GffDetailGene gene = null;
 		while (itGenes.hasNext()) {
 			gene = itGenes.next();
 			if (alleleTmp.getPosition() > gene.getEndAbs()) {
@@ -108,8 +119,8 @@ public class PlinkMapReader {
 			gene = null;
 		}
 		//说明itGenes已经空了，alleleTmp.getPosition() > 最后一个gene的终点
-		if (gene == null) {
-			return;
+		if (gene == null && !isFinish) {
+			return readLsAlleles();
 		}
 		lsAllele.add(alleleTmp);
 
@@ -133,31 +144,43 @@ public class PlinkMapReader {
 			if (allele.getPosition() < gene.getStartAbs()) {
 				continue;
 			}
-			if (allele.getPosition() > gene.getStartAbs()) {
+			if (allele.getPosition() > gene.getEndAbs()) {
 				alleleTmp = allele;
 				break;
 			}
-			lsAlleleResult.add(alleleTmp);
+			lsAlleleResult.add(allele);
 		}
 		lsAllele = lsAlleleResult;
+		
+		return getLsSnpsChangeAA(lsAllele, gene);
 	}
 	
-	private void getSnpsChangeAA(List<Allele> lsAllele) {
+	private List<Allele> getLsSnpsChangeAA(List<Allele> lsAllele, GffDetailGene gene) {
+		List<Allele> lsAllelsChange = new ArrayList<>();
 		for (Allele allele : lsAllele) {
-			//TODO 挑选出修改了aa的snp
-		}
-	}
-	
-	public void extractSnp() {
-		TxtReadandWrite txtReadSite = new TxtReadandWrite(plinkMap);
-		int i = 1;
-		for (String content : txtReadSite.readlines()) {
-			Allele allele = new Allele(content);
-			allele.setIndex(i++);
-			if (chrId == null || !allele.getRefID().equalsIgnoreCase(chrId)) {
-				
+			boolean isNeedSnp = false;
+			SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo(allele.getRefID(), allele.getPosition(), allele.getRefBase(), allele.getAltBase(), gene);
+			for (GffGeneIsoInfo iso : snpInfo.getLsIsos()) {
+				SnpIsoHgvsp snpIsoHgvsp = snpInfo.getMapIso2Hgvsp().get(iso);
+				if (snpIsoHgvsp.isNeedHgvsp()) {
+					snpIsoHgvsp.getHgvsp();
+				}
+				Set<EnumVariantClass> setVar = VariantTypeDetector.getSetVarType(iso, snpInfo);
+				setVar.addAll(snpIsoHgvsp.getSetVarType());
+				if (setVar.contains(EnumVariantClass.Five_prime_UTR_variant)
+						|| setVar.contains(EnumVariantClass.Three_prime_UTR_variant)
+						|| setVar.contains(EnumVariantClass.missense_variant)
+						|| setVar.contains(EnumVariantClass.splice_acceptor_variant)
+						|| setVar.contains(EnumVariantClass.splice_donor_variant)
+						) {
+					isNeedSnp = true;
+				}
+			}
+			if (isNeedSnp) {
+				lsAllelsChange.add(allele);
 			}
 		}
+		return lsAllelsChange;
 	}
 	
 }

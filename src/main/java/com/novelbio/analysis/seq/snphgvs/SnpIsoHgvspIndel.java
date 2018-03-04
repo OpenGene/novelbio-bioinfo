@@ -241,7 +241,6 @@ class SnpRefAltIsoIndel extends SnpIsoHgvsp {
 			for (int i = startSameIndex; i < altAA.length - endSameIndex; i++) {
 				sBuilder.append(altAA[i]);
 			}
-			logger.info("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 			return getInsertionDuplicate(sBuilder.toString(), start + startSameIndex-1, start + startSameIndex);
 		}
 		//缺失
@@ -250,7 +249,6 @@ class SnpRefAltIsoIndel extends SnpIsoHgvsp {
 			for (int i = startSameIndex; i < refAA.length - endSameIndex; i++) {
 				sBuilder.append(refAA[i]);
 			}
-			logger.info("bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb");
 			return getDeletionDuplicate(sBuilder.toString(), start + startSameIndex, end-endSameIndex);
 		}
 		
@@ -265,7 +263,6 @@ class SnpRefAltIsoIndel extends SnpIsoHgvsp {
 		for (int i = startSameIndex; i < altAA.length-endSameIndex-1; i++) {
 			sBuilder.append(convertAA(altAA[i]));
 		}
-		logger.info("ccccccccccccccccccccccccccccccccccccccccccc");
 		return sBuilder.toString();
 	}
 	

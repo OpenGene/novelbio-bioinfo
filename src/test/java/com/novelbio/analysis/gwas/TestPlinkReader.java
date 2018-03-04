@@ -1,5 +1,7 @@
 package com.novelbio.analysis.gwas;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,17 +42,17 @@ public class TestPlinkReader {
 		
 		List<Allele> lsAlleles = plinkPedReader.readAllelsFromSample("IRI910", 4, 7);
 		Assert.assertEquals(4, lsAlleles.size());
-		Assert.assertEquals("T", lsAlleles.get(0).getRefBase());
-		Assert.assertEquals("G", lsAlleles.get(0).getAltBase());
+		Assert.assertEquals("T", lsAlleles.get(0).getAllele1());
+		Assert.assertEquals("G", lsAlleles.get(0).getAllele2());
 
-		Assert.assertEquals("C", lsAlleles.get(1).getRefBase());
-		Assert.assertEquals("T", lsAlleles.get(1).getAltBase());
+		Assert.assertEquals("C", lsAlleles.get(1).getAllele1());
+		Assert.assertEquals("T", lsAlleles.get(1).getAllele2());
 		
-		Assert.assertEquals("C", lsAlleles.get(2).getRefBase());
-		Assert.assertEquals("A", lsAlleles.get(2).getAltBase());
+		Assert.assertEquals("C", lsAlleles.get(2).getAllele1());
+		Assert.assertEquals("A", lsAlleles.get(2).getAllele2());
 		
-		Assert.assertEquals("G", lsAlleles.get(3).getRefBase());
-		Assert.assertEquals("G", lsAlleles.get(3).getAltBase());
+		Assert.assertEquals("G", lsAlleles.get(3).getAllele1());
+		Assert.assertEquals("G", lsAlleles.get(3).getAllele2());
 		plinkPedReader.close();
 	}
 	
@@ -65,20 +67,20 @@ public class TestPlinkReader {
 			lsAlleles.add(allele);
 		}
 		Assert.assertEquals(4, lsAlleles.size());
-		Assert.assertEquals("T", lsAlleles.get(0).getRefBase());
-		Assert.assertEquals("G", lsAlleles.get(0).getAltBase());
+		Assert.assertEquals("T", lsAlleles.get(0).getAllele1());
+		Assert.assertEquals("G", lsAlleles.get(0).getAllele2());
 		Assert.assertEquals(4, lsAlleles.get(0).getIndex());
 
-		Assert.assertEquals("C", lsAlleles.get(1).getRefBase());
-		Assert.assertEquals("T", lsAlleles.get(1).getAltBase());
+		Assert.assertEquals("C", lsAlleles.get(1).getAllele1());
+		Assert.assertEquals("T", lsAlleles.get(1).getAllele2());
 		Assert.assertEquals(5, lsAlleles.get(1).getIndex());
 
-		Assert.assertEquals("C", lsAlleles.get(2).getRefBase());
-		Assert.assertEquals("A", lsAlleles.get(2).getAltBase());
+		Assert.assertEquals("C", lsAlleles.get(2).getAllele1());
+		Assert.assertEquals("A", lsAlleles.get(2).getAllele2());
 		Assert.assertEquals(6, lsAlleles.get(2).getIndex());
 
-		Assert.assertEquals("G", lsAlleles.get(3).getRefBase());
-		Assert.assertEquals("G", lsAlleles.get(3).getAltBase());
+		Assert.assertEquals("G", lsAlleles.get(3).getAllele1());
+		Assert.assertEquals("G", lsAlleles.get(3).getAllele2());
 		Assert.assertEquals(7, lsAlleles.get(3).getIndex());
 
 		plinkPedReader.close();
@@ -93,5 +95,43 @@ public class TestPlinkReader {
 		Assert.assertArrayEquals(new String[]{"IR_3-1r10", "217", "246", "7"}, lsIndexes.get(4));
 	}
 	
+	@Test
+	public void testAlleleGetFrq() {
+		Allele allele = new Allele();
+		allele.setRef("A"); allele.setAlt("T");
+		allele.setAllele1("A"); allele.setAllele2("A");
+		allele.setIsRefMajor(true);
+		assertEquals(1, allele.getFrq());
+		
+		allele = new Allele();
+		allele.setRef("A"); allele.setAlt("T");
+		allele.setAllele1("T"); allele.setAllele2("T");
+		allele.setIsRefMajor(true);
+		assertEquals(-1, allele.getFrq());
+		
+		allele = new Allele();
+		allele.setRef("A"); allele.setAlt("T");
+		allele.setAllele1("A"); allele.setAllele2("A");
+		allele.setIsRefMajor(false);
+		assertEquals(-1, allele.getFrq());
+		
+		allele = new Allele();
+		allele.setRef("A"); allele.setAlt("T");
+		allele.setAllele1("T"); allele.setAllele2("T");
+		allele.setIsRefMajor(false);
+		assertEquals(1, allele.getFrq());
+		
+		allele = new Allele();
+		allele.setRef("A"); allele.setAlt("T");
+		allele.setAllele1("A"); allele.setAllele2("T");
+		allele.setIsRefMajor(true);
+		assertEquals(0, allele.getFrq());
+		
+		allele = new Allele();
+		allele.setRef("A"); allele.setAlt("T");
+		allele.setAllele1("A"); allele.setAllele2("T");
+		allele.setIsRefMajor(false);
+		assertEquals(0, allele.getFrq());
+	}
 	
 }
