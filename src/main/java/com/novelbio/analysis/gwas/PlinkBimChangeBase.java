@@ -1,16 +1,16 @@
 package com.novelbio.analysis.gwas;
 
 import java.io.Closeable;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import com.novelbio.analysis.seq.fasta.Base;
 import com.novelbio.analysis.seq.fasta.ChrBaseIter;
+import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
@@ -30,22 +30,33 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  * @author zongjie
  *
  */
-public class PlinkMapAddBase {
-	private static int gapLen = 50000;
+public class PlinkBimChangeBase {
 	
+	SnpAnno snpAnno = new SnpAnno();
 	/** 染色体文件 */
 	String chrFile;
 	
-	public PlinkMapAddBase(String chrFile) {
+	public PlinkBimChangeBase(String gffFile, String chrFile) {
+		this.chrFile = chrFile;
+		GffChrAbs gffChrAbs = new GffChrAbs();
+		gffChrAbs.setChrFile(chrFile, null);
+		gffChrAbs.setGffHash(new GffHashGene(gffFile));
+		snpAnno.setGffChrAbs(gffChrAbs);
+	}
+	public PlinkBimChangeBase(GffChrAbs gffChrAbs) {
+		this.chrFile = gffChrAbs.getSeqHash().getChrFile();
+		snpAnno.setGffChrAbs(gffChrAbs);
+	}
+	public PlinkBimChangeBase(String chrFile) {
 		this.chrFile = chrFile;
 	}
-		
-	public void addAnnoFromRef(String plinkBim, String plinkBimAddChr) {
+	
+	public void addAnnoFromRef(String plinkBim, String plinkBimAddBase) {
 		AnnoFromRef annoFromRef = new AnnoFromRef(chrFile);
 
 		TxtReadandWrite txtRead = new TxtReadandWrite(plinkBim);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(plinkBimAddChr, true);
-		
+		TxtReadandWrite txtWriteBim = new TxtReadandWrite(plinkBimAddBase, true);
+
 		int baseIndex = 1;
 		
 		for (String content : txtRead.readlines()) {
@@ -53,90 +64,158 @@ public class PlinkMapAddBase {
 			try {
 				allele = annoFromRef.annotation(content);
 				allele.setIndex(baseIndex++);
+				txtWriteBim.writefileln(allele.toString());
 			} catch (ExceptionNBCChromosome e) {
 				txtRead.close();
-				txtWrite.close();
+				txtWriteBim.close();
 				annoFromRef.close();
 				throw e;
 			}
-			txtWrite.writefileln(allele.toString());
 		}
 		annoFromRef.close();
 		txtRead.close();
-		txtWrite.close();
+		txtWriteBim.close();
 	}
 	
-	static class AnnoFromRef implements Closeable {
+	/** 把影响了iso的snp的marker提取出来 */
+	public void generateSnpNeedIndex(String plinkBim, String plinkNeedSnpIndex) {
+		AnnoFromRef annoFromRef = new AnnoFromRef(chrFile);
+
+		TxtReadandWrite txtRead = new TxtReadandWrite(plinkBim);
+		TxtReadandWrite txtWriteSnpIndex = new TxtReadandWrite(plinkNeedSnpIndex, true);
+
+		int baseIndex = 1;
 		
-		ChrBaseIter chrBaseIter;
-		
-		Iterator<Base> itBase = null;
-		Allele lastAllel = null;
-		
-		public AnnoFromRef(String chrFile) {
-			chrBaseIter = new ChrBaseIter(chrFile);
-		}
-		
-		/** 给定plinkmap的一行，用reference进行注释
-		 * 注意 plink.bim 的一行中
-		 * 1\t10100001579\t0\t1579\tA\tG
-		 * 第六列高频，第五列为低频
-		 * @param plinkMapContent 
-		 * @return
-		 */
-		public Allele annotation(String plinkBimLine) {
-			Allele allele = new Allele(plinkBimLine);
-			/**
-			 * 如果查找第一个allel，或者两个allel不在一条染色体上/相聚很远
-			 * 则重新定位染色体
-			 */
-			if (lastAllel == null
-					|| !StringOperate.isEqualIgnoreCase(lastAllel.getRefID(), allele.getRefID())
-					|| allele.getStartAbs() < lastAllel.getStartAbs()
-					|| allele.getStartAbs() - lastAllel.getStartAbs() > gapLen
-					) {
-				itBase = chrBaseIter.readBase(allele.getRefID(), allele.getStartAbs()).iterator();
-			}
-			Base base = itBase.next();
-			while (base != null && base.getPosition() < allele.getStartAbs()) {
-				base = itBase.next();
-			}
-			if (base.getPosition() == allele.getStartAbs()) {
-				//设置高频低频
-				allele.setIsRefMajor(!allele.getRefBase().equals(base.getBase()+""));
-				
-				if (!allele.getRefBase().equals(base.getBase() + "")) {
-					if (!allele.getAltBase().equals(base.getBase() + "")) {
-						throw new ExceptionNBCPlink("error! " + allele.toString() + " but ref is " + base.getBase());
-					}
-					allele.changeRefAlt();
+		for (String content : txtRead.readlines()) {
+			Allele allele = null;
+			try {
+				allele = annoFromRef.annotation(content);
+				allele.setIndex(baseIndex++);
+				if (!snpAnno.getSetIsoName(allele).isEmpty()) {
+					txtWriteSnpIndex.writefileln(allele.getMarker());
 				}
-				
-			} else {
-				chrBaseIter.close();
-				throw new ExceptionNBCChromosome("cannot get reference on position " + allele.getRefID() + " " +allele.getPosition());
+			} catch (ExceptionNBCChromosome e) {
+				txtRead.close();
+				txtWriteSnpIndex.close();
+				annoFromRef.close();
+				throw e;
 			}
-			return allele;
 		}
-		
-		@Override
-		public void close() {
-			chrBaseIter.close();			
-		}
-	
+		annoFromRef.close();
+		txtRead.close();
+		txtWriteSnpIndex.close();
 	}
 	
-	public static class ExceptionNBCChromosome extends RuntimeException {
-		private static final long serialVersionUID = -3709544067133262276L;
+	/**
+	 * 注释的同时，
+	 * 把影响了iso的snp的marker提取出来
+	 */
+	public void addAnnoFromRef(String plinkBim, String plinkBimAddChr, String plinkNeedSnpIndex) {
+		AnnoFromRef annoFromRef = new AnnoFromRef(chrFile);
+
+		TxtReadandWrite txtRead = new TxtReadandWrite(plinkBim);
+		TxtReadandWrite txtWriteBim = new TxtReadandWrite(plinkBimAddChr, true);
+		TxtReadandWrite txtWriteSnpIndex = new TxtReadandWrite(plinkNeedSnpIndex, true);
+
+		int baseIndex = 1;
 		
-		public ExceptionNBCChromosome() {
-			super();
+		for (String content : txtRead.readlines()) {
+			Allele allele = null;
+			try {
+				allele = annoFromRef.annotation(content);
+				allele.setIndex(baseIndex++);
+				if (!snpAnno.getSetIsoName(allele).isEmpty()) {
+					txtWriteSnpIndex.writefileln(allele.getMarker());
+					txtWriteBim.writefileln(allele.toString());
+				}
+			} catch (ExceptionNBCChromosome e) {
+				txtRead.close();
+				txtWriteBim.close();
+				txtWriteSnpIndex.close();
+				annoFromRef.close();
+				throw e;
+			}
 		}
-		public ExceptionNBCChromosome(String msg) {
-			super(msg);
-		}
+		annoFromRef.close();
+		txtRead.close();
+		txtWriteBim.close();
+		txtWriteSnpIndex.close();
 	}
 	
+}
+
+class ExceptionNBCChromosome extends RuntimeException {
+	private static final long serialVersionUID = -3709544067133262276L;
+	
+	public ExceptionNBCChromosome() {
+		super();
+	}
+	public ExceptionNBCChromosome(String msg) {
+		super(msg);
+	}
+}
+
+class AnnoFromRef implements Closeable {
+	private static int gapLen = 50000;
+
+	ChrBaseIter chrBaseIter;
+	
+	Iterator<Base> itBase = null;
+	Allele lastAllel = null;
+	
+	public AnnoFromRef(String chrFile) {
+		chrBaseIter = new ChrBaseIter(chrFile);
+	}
+	
+	/** 给定plinkmap的一行，用reference进行注释
+	 * 注意 plink.bim 的一行中
+	 * 1\t10100001579\t0\t1579\tA\tG
+	 * 第六列高频，第五列为低频
+	 * 
+	 * 输出修改为 第五列 ref 第六列 alt
+	 * @param plinkMapContent 
+	 * @return
+	 */
+	public Allele annotation(String plinkBimLine) {
+		Allele allele = new Allele(plinkBimLine);
+		/**
+		 * 如果查找第一个allel，或者两个allel不在一条染色体上/相聚很远
+		 * 则重新定位染色体
+		 */
+		if (lastAllel == null
+				|| !StringOperate.isEqualIgnoreCase(lastAllel.getRefID(), allele.getRefID())
+				|| allele.getStartAbs() < lastAllel.getStartAbs()
+				|| allele.getStartAbs() - lastAllel.getStartAbs() > gapLen
+				) {
+			itBase = chrBaseIter.readBase(allele.getRefID(), allele.getStartAbs()).iterator();
+		}
+		Base base = itBase.next();
+		while (base != null && base.getPosition() < allele.getStartAbs()) {
+			base = itBase.next();
+		}
+		if (base.getPosition() == allele.getStartAbs()) {
+			//本行开始到下面的if--功能是设置高频低频
+			allele.setIsRefMajor(!allele.getRefBase().equals(base.getBase()+""));
+			
+			if (!allele.getRefBase().equals(base.getBase() + "")) {
+				if (!allele.getAltBase().equals(base.getBase() + "")) {
+					throw new ExceptionNBCPlink("error! " + allele.toString() + " but ref is " + base.getBase());
+				}
+				allele.changeRefAlt();
+			}
+			
+		} else {
+			chrBaseIter.close();
+			throw new ExceptionNBCChromosome("cannot get reference on position " + allele.getRefID() + " " +allele.getPosition());
+		}
+		return allele;
+	}
+	
+	@Override
+	public void close() {
+		chrBaseIter.close();			
+	}
+
 }
 
 /**
@@ -260,6 +339,9 @@ class Allele extends Align {
 			}
 		}
 	}
+	public String getMarker() {
+		return marker;
+	}
 	/**
 	 * ref 位点是否为高频位点
 	 * 对于plink.bim 来说，ref位点不一定是高频位点
@@ -345,6 +427,12 @@ class Allele extends Align {
 		this.setCis5to3(alleleRef.isCis5to3());
 		this.marker = alleleRef.marker;
 		this.isRefMajor = alleleRef.isRefMajor();
+		
+		if (!allele1.equals("0") && !ref.equalsIgnoreCase(allele1) && !alt.equalsIgnoreCase(allele1)
+				|| !allele2.equals("0") && !ref.equalsIgnoreCase(allele2) && !alt.equalsIgnoreCase(allele2)
+				) {
+			throw new ExceptionNBCPlink("Error! allele ref " + alleleRef.toString() + " is not correspond with " + allele1 + " " + allele2);
+		}
 	}
 	
 	public String toString() {
@@ -375,7 +463,8 @@ class Allele extends Align {
 		boolean isAllele2SameToRef = StringOperate.isEqual(allele2, ref);
 		
 		if (StringOperate.isEqual(allele1, "0") || StringOperate.isEqual(allele2, "0")) {
-			return -9;
+			return isRefMajor ? 1 : -1;
+//			return -9;
 		}
 		
 		int result = 0;

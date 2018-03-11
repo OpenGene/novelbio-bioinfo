@@ -3,11 +3,14 @@ package com.novelbio.analysis.gwas;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
@@ -19,6 +22,11 @@ import com.novelbio.analysis.seq.snphgvs.SnpIsoHgvsp;
 import com.novelbio.analysis.seq.snphgvs.VariantTypeDetector;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
+/** 按照基因读取PlinkMap
+ * 一次读取一个基因中的全体snp
+ * @author zong0jie
+ * @data 2018年3月10日
+ */
 public class PlinkMapReader {
 	
 	/**
@@ -30,23 +38,23 @@ public class PlinkMapReader {
 	 * 其中第二列和第三列不用管，只需要根据第一列和第四列去提取信息即可
 	 */
 	String plinkMap;
-	/** 缓存队列，用于 */
-	List<Allele> lsAllele = new ArrayList<>();
-	SnpAnnoFactory snpAnnoFactory = new SnpAnnoFactory();
 	
 	Map<String, List<GffDetailGene>> mapChrId2LsGenes = new HashMap<>();
 	
 	TxtReadandWrite txtReadPlinkMap;
 	Iterator<String> itPlinkMap;
 	Iterator<GffDetailGene> itGenes;
-	Allele alleleTmp;
+	Allele alleleLast;
 	String chrIdTmp;
 	int snpIndex = 1;
 	
 	boolean isFinish = false;
 	
-	GffDetailGene gene;
+	GffDetailGene geneCurrent;
+	List<Allele> lsAlleleTmp = new ArrayList<>();
+	Map<Allele, Set<String>> mapCurrentSnp2SetIsoName = new LinkedHashMap<>();
 	
+	SnpAnno snpAnno = new SnpAnno();
 	
 	public void setGffChrAbs(String chrFile, String gffFile) {
 		GffChrAbs gffChrAbs = new GffChrAbs();
@@ -64,7 +72,22 @@ public class PlinkMapReader {
 		for (List<GffDetailGene> lsGenes : mapChrId2LsGenes.values()) {
 			Collections.sort(lsGenes, (gene1, gene2) -> {return ((Integer)gene1.getStartAbs()).compareTo(gene2.getStartAbs());});
 		}
-		snpAnnoFactory.setGffChrAbs(gffChrAbs);
+		snpAnno.setGffChrAbs(gffChrAbs);
+	}
+	
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getLsGffDetailGenes()) {
+			List<GffDetailGene> lsGenes = mapChrId2LsGenes.get(gffDetailGene.getRefID());
+			if (lsGenes == null) {
+				lsGenes = new ArrayList<>();
+				mapChrId2LsGenes.put(gffDetailGene.getRefID(), lsGenes);
+			}
+			lsGenes.add(gffDetailGene);
+		}
+		for (List<GffDetailGene> lsGenes : mapChrId2LsGenes.values()) {
+			Collections.sort(lsGenes, (gene1, gene2) -> {return ((Integer)gene1.getStartAbs()).compareTo(gene2.getStartAbs());});
+		}
+		snpAnno.setGffChrAbs(gffChrAbs);
 	}
 	
 	public void setPlinkMap(String plinkMap) {
@@ -74,113 +97,158 @@ public class PlinkMapReader {
 	}
 	
 	public void initial() {
-		lsAllele.clear();
-		alleleTmp = new Allele(itPlinkMap.next());
-		alleleTmp.setIndex(snpIndex++);
-		chrIdTmp = alleleTmp.getRefID();
-		itGenes = mapChrId2LsGenes.get(alleleTmp.getRefID()).iterator();
+		lsAlleleTmp.clear();
+		alleleLast = new Allele(itPlinkMap.next());
+		alleleLast.setIndex(snpIndex++);
+		chrIdTmp = alleleLast.getRefID();
+		itGenes = mapChrId2LsGenes.get(alleleLast.getRefID()).iterator();
 	}
-	public GffDetailGene getGene() {
-		return gene;
-	}
-	public boolean isFinish() {
-		return isFinish;
+	
+	public GffDetailGene getGeneCurrent() {
+		return geneCurrent;
 	}
 	/**
 	 * 读取一个基因中的全体snp
 	 * 尚未测试
 	 */
-	public List<Allele> readLsAlleles() {
+	public Map<Allele, Set<String>> getLsAllelesCurrentGene() {
+		return mapCurrentSnp2SetIsoName;
+	}
+	/**
+	 * 读取一个基因中的全体snp
+	 * 尚未测试
+	 */
+	protected List<Allele> getLsAllelesCurrent() {
+		return lsAlleleTmp;
+	}
+	/**
+	 * 读取一个基因中的全体snp
+	 * 尚未测试
+	 */
+	public boolean readNext() {
+		if (isFinish) {
+			return false;
+		}
+		readNextLsAllele();
+		mapCurrentSnp2SetIsoName = getMapSnp2SetIsoName(lsAlleleTmp, geneCurrent);
+		return true;
+	}
+	
+	@VisibleForTesting
+	protected void readNextLsAllele() {
+		//读完一条染色体后，根据PlinkMap的内容换下一条染色体
 		if (!itGenes.hasNext()) {
-			lsAllele.clear();
+			lsAlleleTmp.clear();
 			while (itPlinkMap.hasNext()) {
-				alleleTmp = new Allele(itPlinkMap.next());
-				alleleTmp.setIndex(snpIndex++);
-				if (!chrIdTmp.equals(alleleTmp.getRefID())) {
-					chrIdTmp = alleleTmp.getRefID();
-					itGenes = mapChrId2LsGenes.get(alleleTmp.getRefID()).iterator();
+				alleleLast = new Allele(itPlinkMap.next());
+				alleleLast.setIndex(snpIndex++);
+				if (!chrIdTmp.equals(alleleLast.getRefID())) {
+					chrIdTmp = alleleLast.getRefID();
+					itGenes = mapChrId2LsGenes.get(alleleLast.getRefID()).iterator();
+					lsAlleleTmp.clear();
+					alleleLast = null;
 					break;
 				}
 			}
 		}
 		if (!itPlinkMap.hasNext()) {
 			isFinish = true;
-			return null;
-		}
+			return;
+ 		}
+		List<Allele> lsAllelesResult = new ArrayList<>();
+		
 		while (itGenes.hasNext()) {
-			gene = itGenes.next();
-			if (alleleTmp.getPosition() > gene.getEndAbs()) {
-				if (!lsAllele.isEmpty()) {
-					lsAllele.clear();
+			geneCurrent = itGenes.next();
+			
+			if (!lsAlleleTmp.isEmpty() && lsAlleleTmp.get(lsAlleleTmp.size()-1).getPosition() > geneCurrent.getStartAbs()) {
+				for (Allele allele : lsAlleleTmp) {
+					if (isAlleleLargerThanGene(allele, geneCurrent)) {
+						lsAllelesResult.add(allele);
+					}
 				}
-			} else {
+				lsAlleleTmp.clear();
+			}
+			if (alleleLast == null 
+					|| !alleleLast.getRefID().equals(geneCurrent.getRefID())
+					|| alleleLast.getPosition() <= geneCurrent.getEndAbs()
+					|| !lsAllelesResult.isEmpty()
+					) {
 				break;
 			}
-			gene = null;
+			geneCurrent = null;
 		}
 		//说明itGenes已经空了，alleleTmp.getPosition() > 最后一个gene的终点
-		if (gene == null && !isFinish) {
-			return readLsAlleles();
+		if (geneCurrent == null && !isFinish) {
+			readNextLsAllele();
+			return;
 		}
-		lsAllele.add(alleleTmp);
+		if (isAlleleInGene(alleleLast, geneCurrent)) {
+			lsAllelesResult.add(alleleLast);
+		} else if (alleleLast != null && alleleLast.getPosition() > geneCurrent.getEndAbs()) {
+			lsAlleleTmp = lsAllelesResult;
+			return;
+		}
 
-		List<Allele> lsAlleleResult = new ArrayList<>();
-		for (Allele allel : lsAllele) {
-			if (allel.getPosition() >= gene.getStartAbs() && allel.getPosition() <= gene.getEndAbs()) {
-				lsAlleleResult.add(allel);
-			}
-		}
-		alleleTmp = null;
+		alleleLast = null;
 		while (itPlinkMap.hasNext()) {
 			String content = itPlinkMap.next();
 			Allele allele = new Allele(content);
 			allele.setIndex(snpIndex++);
-			if (!allele.getRefID().equals(gene.getRefID())) {
-				alleleTmp = allele;
-				chrIdTmp = alleleTmp.getRefID();
-				itGenes = mapChrId2LsGenes.get(alleleTmp.getRefID()).iterator();
-				break;
+			if (!allele.getRefID().equals(geneCurrent.getRefID())) {
+				alleleLast = allele;
+				chrIdTmp = alleleLast.getRefID();
+				itGenes = mapChrId2LsGenes.get(alleleLast.getRefID()).iterator();
+				if (!lsAllelesResult.isEmpty()) {
+					lsAlleleTmp = lsAllelesResult;
+					return;
+				}
+				readNextLsAllele();
+				return;
 			}
-			if (allele.getPosition() < gene.getStartAbs()) {
+			if (allele.getPosition() < geneCurrent.getStartAbs()) {
 				continue;
 			}
-			if (allele.getPosition() > gene.getEndAbs()) {
-				alleleTmp = allele;
+			if (allele.getPosition() > geneCurrent.getEndAbs()) {
+				alleleLast = allele;
 				break;
 			}
-			lsAlleleResult.add(allele);
+			lsAllelesResult.add(allele);
 		}
-		lsAllele = lsAlleleResult;
-		
-		return getLsSnpsChangeAA(lsAllele, gene);
+		lsAlleleTmp = lsAllelesResult;
 	}
 	
-	private List<Allele> getLsSnpsChangeAA(List<Allele> lsAllele, GffDetailGene gene) {
-		List<Allele> lsAllelsChange = new ArrayList<>();
+	private boolean isAlleleInGene(Allele allele, GffDetailGene gene) {
+		if (allele == null || !allele.getRefID().equals(gene.getRefID())) {
+			return false;
+		}
+		return allele.getPosition() >= gene.getStartAbs() && allele.getPosition() <= gene.getEndAbs();
+	}
+	
+	private boolean isAlleleLargerThanGene(Allele allele, GffDetailGene gene) {
+		if (allele == null || !allele.getRefID().equals(gene.getRefID())) {
+			return false;
+		}
+		return allele.getPosition() >= gene.getStartAbs();
+	}
+	
+	/**
+	 * 获得改变iso的snp，以及相应的iso的名字
+	 * @param lsAllele
+	 * @param gene
+	 * @return
+	 */
+	private Map<Allele, Set<String>> getMapSnp2SetIsoName(List<Allele> lsAllele, GffDetailGene gene) {
+		Map<Allele, Set<String>> mapSnp2SetIsoName = new LinkedHashMap<>();
 		for (Allele allele : lsAllele) {
-			boolean isNeedSnp = false;
-			SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo(allele.getRefID(), allele.getPosition(), allele.getRefBase(), allele.getAltBase(), gene);
-			for (GffGeneIsoInfo iso : snpInfo.getLsIsos()) {
-				SnpIsoHgvsp snpIsoHgvsp = snpInfo.getMapIso2Hgvsp().get(iso);
-				if (snpIsoHgvsp.isNeedHgvsp()) {
-					snpIsoHgvsp.getHgvsp();
-				}
-				Set<EnumVariantClass> setVar = VariantTypeDetector.getSetVarType(iso, snpInfo);
-				setVar.addAll(snpIsoHgvsp.getSetVarType());
-				if (setVar.contains(EnumVariantClass.Five_prime_UTR_variant)
-						|| setVar.contains(EnumVariantClass.Three_prime_UTR_variant)
-						|| setVar.contains(EnumVariantClass.missense_variant)
-						|| setVar.contains(EnumVariantClass.splice_acceptor_variant)
-						|| setVar.contains(EnumVariantClass.splice_donor_variant)
-						) {
-					isNeedSnp = true;
-				}
+			if (!isAlleleInGene(allele, gene)) {
+				continue;
 			}
-			if (isNeedSnp) {
-				lsAllelsChange.add(allele);
+			Set<String> setIsoName = snpAnno.getSetIsoName(allele, gene);
+			if (!setIsoName.isEmpty()) {
+				mapSnp2SetIsoName.put(allele, setIsoName);
 			}
 		}
-		return lsAllelsChange;
+		return mapSnp2SetIsoName;
 	}
 	
 }

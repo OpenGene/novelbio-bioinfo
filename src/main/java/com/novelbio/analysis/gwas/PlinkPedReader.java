@@ -29,7 +29,7 @@ public class PlinkPedReader implements Closeable {
 	 * IRIS_313-15910 IRIS_313-15910 0 0 0 -9 G G T T A A T T T T A A C C G G T T G G<br>
 	 * 其中第1列样本名，第2列家系名<br>
 	 * 第3,4,5,6基本都是 0 0 0 -9，暂时不用管<br>
-	 * 后面每两位是一个locus，每两个snp和{@link #plinkMap} 中的坐标对应
+	 * 后面每两位是一个locus，每两个snp和{@link #plinkBim} 中的坐标对应
 	 * 譬如:
 	 * G G <--> 1 1579
 	 * T T <--> 1 3044
@@ -180,8 +180,8 @@ public class PlinkPedReader implements Closeable {
 	
 	/**
 	 * @param sampleName
-	 * @param siteStart 从第几个位置开始
-	 * @param siteEnd 到第几个位置结束
+	 * @param siteStart 从第几个位置开始，从1开始计数
+	 * @param siteEnd 到第几个位置结束，从1开始计数
 	 * @return
 	 * @throws IOException 
 	 */

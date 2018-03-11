@@ -416,7 +416,7 @@ private static Logger logger = Logger.getLogger(GffChrHanYan.class);
 			if (gffGeneIsoSearch.ismRNA()) {
 				seqInfo.atg = getReadsInfo(string,gffGeneIsoSearch);
 				if (seqInfo.atg == null) {
-					logger.error("本基因没有相应的信息："+gffGeneIsoSearch.getParentGffDetailGene().getName()+" "+ 
+					logger.error("本基因没有相应的信息："+gffGeneIsoSearch.getParentGffDetailGene().getNameSingle()+" "+ 
 							gffGeneIsoSearch.getTSSsite() +"  " +gffGeneIsoSearch.getTESsite() +"  "+gffGeneIsoSearch.getName());
 					continue;
 				}

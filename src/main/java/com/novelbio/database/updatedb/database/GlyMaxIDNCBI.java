@@ -104,7 +104,7 @@ public class GlyMaxIDNCBI {
 					lsOverlapGffGene = gffCodGeneDU.getLsGffDetailMid();
 				}
 				for (GffDetailGene gffDetailGene2 : lsOverlapGffGene) {
-					txtOutGene.writefileln(gffDetailGene2.getName() + "\t" + gffDetailGene.getName().get(0) + "\t" + gffDetailGene.getName().get(1));
+					txtOutGene.writefileln(gffDetailGene2.getName() + "\t" + gffDetailGene.getNameSingle() + "\t" + gffDetailGene.getName().get(1));
 				}
 			}
 		}

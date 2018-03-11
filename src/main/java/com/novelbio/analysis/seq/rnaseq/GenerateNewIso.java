@@ -310,7 +310,7 @@ public class GenerateNewIso {
 				continue;
 			}
 			if (exonNumEnd < exonNumStart) {
-				logger.error("出错" + gffDetailGene.getName() + " " + junctionUnit.getStartAbs() + " " + junctionUnit.getEndAbs());
+				logger.error("出错" + gffDetailGene.getNameSingle() + " " + junctionUnit.getStartAbs() + " " + junctionUnit.getEndAbs());
 			}
 			if (exonNumEnd - exonNumStart == 1) {
 				findJun = true;

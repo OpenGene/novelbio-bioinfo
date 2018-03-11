@@ -27,7 +27,7 @@ public class PlinkPedConverter {
 	private static final Logger logger = LoggerFactory.getLogger(PlinkPedConverter.class);
 	String plinkPed;
 	/** plinkMap文件，注意第四列添加上了reference碱基，不考虑indel的情况 */
-	String plinkMap;
+	String plinkBim;
 	
 	PlinkPedReader pedReader;
 	
@@ -39,14 +39,14 @@ public class PlinkPedConverter {
 //		};
 		Options opts = new Options();
 		if (args[0].equals("--help")) {
-			System.out.println("java -jar PlinkConvertor.jar --chrFile chromosome.fa --plinkMap plinkmap.map --plinkPed plinkped.ped --outPath /path/to/result/");
+			System.out.println("java -jar PlinkConvertor.jar --chrFile chromosome.fa --plinkBim plinkbim.bim --plinkPed plinkped.ped --outPath /path/to/result/");
 			System.out.println("chromosome.fa must have index file chromosome.fa.fai");
 
 			return;
 		}
 		
 		opts.addOption("chrFile", true, "chrFile");
-		opts.addOption("plinkMap", true, "plinkMap");
+		opts.addOption("plinkBim", true, "plinkBim");
 		opts.addOption("plinkPed", true, "plinkPed");
 		opts.addOption("outPath", true, "outPath");
 
@@ -60,7 +60,7 @@ public class PlinkPedConverter {
 		}
 		
 		String chrFile = cliParser.getOptionValue("chrFile", "");
-		String plinkMap = cliParser.getOptionValue("plinkMap", "");
+		String plinkBim = cliParser.getOptionValue("plinkBim", "");
 		String plinkPed = cliParser.getOptionValue("plinkPed", "");
 		String outPath = cliParser.getOptionValue("outPath", "");
 		if (StringOperate.isRealNull(outPath)) {
@@ -69,49 +69,49 @@ public class PlinkPedConverter {
 			outPath = FileOperate.addSep(outPath);
 		}
 		
-		String plinkMapNewPath = outPath + FileOperate.getFileName(plinkMap);
+		String plinkBimNewPath = outPath + FileOperate.getFileName(plinkBim);
 		String plinkPedNewPath = outPath + FileOperate.getFileName(plinkPed);
 		PlinkPedReader.createPlinkPedIndex(plinkPed);
-		String plinkMapAnno = FileOperate.changeFileSuffix(plinkMapNewPath, ".anno", null);
+		String plinkBimAnno = FileOperate.changeFileSuffix(plinkBimNewPath, ".anno", null);
 		
-		String plinkMapConvert = FileOperate.changeFileSuffix(plinkMapNewPath, ".convert", null);
+		String plinkBimConvert = FileOperate.changeFileSuffix(plinkBimNewPath, ".convert", null);
 		String plinkPedConvert = FileOperate.changeFileSuffix(plinkPedNewPath, ".convert", null);
 
-		PlinkMapAddBase plinkMapAddBase = new PlinkMapAddBase(chrFile);
-		plinkMapAddBase.AddAnno(plinkMap, plinkPed, plinkMapAnno);
+		PlinkBimChangeBase plinkMapAddBase = new PlinkBimChangeBase(chrFile);
+		plinkMapAddBase.addAnnoFromRef(plinkBim, plinkBimAnno);
 		
 		PlinkPedConverter pedConverter = new PlinkPedConverter();
-		pedConverter.setPlinkMap(plinkMapAnno);
+		pedConverter.setPlinkBim(plinkBimAnno);
 		pedConverter.setPlinkPed(plinkPed);
-		pedConverter.convertPlinkMapToAnother(plinkMapConvert);
+		pedConverter.convertPlinkMapToAnother(plinkBimConvert);
 		pedConverter.convertPlinkPedToAnother(plinkPedConvert);
 
 	}
 	
-	public void setPlinkMap(String plinkMap) {
-		this.plinkMap = plinkMap;
+	public void setPlinkBim(String plinkMap) {
+		this.plinkBim = plinkMap;
 	}
 	public void setPlinkPed(String plinkPed) {
 		this.plinkPed = plinkPed;
 	}
 	public void convertPlinkMapToAnother(String outFile) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
-		TxtReadandWrite txtReadMap = new TxtReadandWrite(plinkMap);
+		TxtReadandWrite txtReadBim = new TxtReadandWrite(plinkBim);
 		
 		txtWrite.writefileln("SNP\tChromosome\tPosition");
-		for (String content : txtReadMap.readlines()) {
+		for (String content : txtReadBim.readlines()) {
 			String[] ss = content.split("\t");
 			String result = ss[1] + "\t" + ss[0] + "\t" + ss[3];
 			txtWrite.writefileln(result);
 		}
-		txtReadMap.close();
+		txtReadBim.close();
 		txtWrite.close();
 	}
 	
 	public void convertPlinkPedToAnother(String outFile) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
 		try {
-			SeekablePathInputStream seekablePathInputStream = FileOperate.getInputStreamSeekable(plinkMap);
+			SeekablePathInputStream seekablePathInputStream = FileOperate.getInputStreamSeekable(plinkBim);
 			String plinkIndex = PlinkPedReader.createPlinkPedIndex(plinkPed);		
 			List<String> lsSample = PlinkPedReader.getLsSamples(plinkIndex);
 			pedReader = new PlinkPedReader(plinkPed);
@@ -128,7 +128,7 @@ public class PlinkPedConverter {
 			}
 			seekablePathInputStream.close();
 		} catch (Exception e) {
-			throw new ExceptionNbcFile("read file error " + plinkMap, e);
+			throw new ExceptionNbcFile("read file error " + plinkBim, e);
 		} finally {
 			txtWrite.close();
 		}
