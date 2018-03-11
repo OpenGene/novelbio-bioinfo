@@ -36,8 +36,20 @@ public class TestGwas {
 //		}
 //		txtRead.close();
 //		txtWrite.close();
-		PlinkBimChangeBase plinkBimChangeBase = new PlinkBimChangeBase(chrFile);
-		plinkBimChangeBase.addAnnoFromRef("/home/novelbio/test/plink/realdata/NB_final_snp.bim.addchr", "/home/novelbio/test/plink/realdata/NB_final_snp.bim.addchr.addbase");
+//		PlinkBimChangeBase plinkBimChangeBase = new PlinkBimChangeBase(chrFile);
+//		plinkBimChangeBase.addAnnoFromRef("/home/novelbio/test/plink/realdata/NB_final_snp.bim.addchr", "/home/novelbio/test/plink/realdata/NB_final_snp.bim.addchr.addbase");
+		
+//		String chrFile = "/home/novelbio/test/plink/chrAll.fa";
+		String gffFile = "/home/novelbio/test/plink/all.gff3";
+		
+		GffChrAbs gffChrAbs = new GffChrAbs();
+		gffChrAbs.setChrFile(chrFile, null);
+		gffChrAbs.setGffHash(new GffHashGene(gffFile));
+		SnpAnnoFactory snpAnnoFactory = new SnpAnnoFactory();
+		snpAnnoFactory.setGffChrAbs(gffChrAbs);
+		
+		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo("chr1", 2838546, "G", "A");
+		System.out.print(snpInfo.getMapIso2Hgvsc().values().iterator().next().getHgvsc());
 	}
 	
 	public static void main(String[] args) {

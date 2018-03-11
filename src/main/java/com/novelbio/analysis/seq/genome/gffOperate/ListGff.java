@@ -31,13 +31,17 @@ public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGene
 		GffDetailGene gffDetailGeneLast = null;
 		//合并两个重叠的基因
 		for (GffDetailGene gffDetailGene : this) {
+			if (gffDetailGene.getName().contains("LOC_Os01g05940") || gffDetailGene.getName().contains("LOC_Os01g05900")) {
+				System.out.println();
+			}
 			gffDetailGene.resetStartEnd();
 			if (gffDetailGeneLast != null && gffDetailGene.getRefID().equals(gffDetailGeneLast.getRefID())) {
 				double[] regionLast = new double[]{gffDetailGeneLast.getStartAbs(), gffDetailGeneLast.getEndAbs()};
 				double[] regionThis = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs() };
 				double[]  overlapInfo = ArrayOperate.cmpArray(regionLast, regionThis);
-				if ((overlapInfo[2] > 0.5 || overlapInfo[3] > 0.5)) {
+				if ((overlapInfo[2] > 0.5 || overlapInfo[3] > GffHashGeneNCBI.overlapFactor)) {
 					gffDetailGeneLast.addIsoSimple(gffDetailGene);
+					gffDetailGeneLast.resetStartEnd();
 					continue;
 				}
 			}

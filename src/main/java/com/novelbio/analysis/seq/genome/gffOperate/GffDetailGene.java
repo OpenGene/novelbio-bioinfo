@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -148,7 +149,7 @@ public class GffDetailGene extends ListDetailAbs {
 	 * 仅用于GFF3的结果，如NCBI的等<br>
 	 */
 	public List<GffDetailGene> getlsGffDetailGenes() {
-		Map<String, GffDetailGene> mapName2Gene = new HashMap<>();
+		Map<String, GffDetailGene> mapName2Gene = new LinkedHashMap<>();
 		for (GffGeneIsoInfo gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			String parentName = gffGeneIsoInfo.getParentGeneName();
 			GffDetailGene gffDetailGene = mapName2Gene.get(parentName);

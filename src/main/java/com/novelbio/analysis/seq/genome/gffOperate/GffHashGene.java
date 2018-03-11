@@ -322,6 +322,7 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 		return gffHashGene.getMapChrID2LsGff();
 	}
 	/** 返回所有不重复GffDetailGene */
+	@Deprecated
 	public ArrayList<GffDetailGene> getGffDetailAll() {
 		return gffHashGene.getGffDetailAll();
 	}

@@ -42,6 +42,7 @@ import com.novelbio.database.model.modgeneid.GeneType;
  * 每个基因的起点终点和CDS的起点终点保存在GffDetailList类中<br/>
  */
 public class GffHashGeneNCBI extends GffHashGeneAbs {
+	public static final double overlapFactor = 0.5;
 	private static final Logger logger = LoggerFactory
 			.getLogger(GffHashGeneNCBI.class);
 
@@ -191,10 +192,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			fillDuplicateNameSet();
 		}
 		for (String content : txtgff.readlines()) {
-//			if (content.contains("RNU1-116P")) {
-//				logger.info("stop");
-//			}
-			
 			if (content.trim().equals("") || content.charAt(0) == '#')
 				continue;
 
@@ -236,7 +233,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 					}
 				}
 				if (patParentID.getPatFirst(ss[8]) == null
-						&& (thisGeneIDandName == null || compareRegion[2] < 0.5)) {
+						&& (thisGeneIDandName == null || Math.max(compareRegion[2], compareRegion[3]) <= overlapFactor)) {
 					thisGeneIDandName = addNewGene(ss);
 				}
 

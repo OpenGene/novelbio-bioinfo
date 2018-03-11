@@ -177,7 +177,7 @@ public class ReconstructIso implements IntCmdSoft {
 		
 		GffHashGene gffHashGene = new GffHashGene(GffType.GTF, outGtf);
 		GffHashGene gffHashGeneNew = new GffHashGene();
-		for (GffDetailGene gffDetailGene : gffHashGene.getGffDetailAll()) {
+		for (GffDetailGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
 			GffDetailGene gffDetailGeneNew = gffDetailGene.clone();
 			gffDetailGeneNew.clearIso();
 			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
