@@ -89,7 +89,11 @@ public abstract class SnpIsoHgvsp {
 	}
 	
 	public String getHgvsp() {
-		return getSnpChange();
+		try {
+			return getSnpChange();
+		} catch (Exception e) {
+			throw new ExceptionNBCSnpHgvs("get hgvsp error " + snpRefAltInfo.toString(), e);
+		}
 	}
 	protected abstract String getSnpChange();
 	

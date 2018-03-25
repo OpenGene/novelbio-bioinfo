@@ -1,5 +1,6 @@
 package com.novelbio.analysis.gwas;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -10,6 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,11 +52,11 @@ public class TestGwas {
 		SnpAnnoFactory snpAnnoFactory = new SnpAnnoFactory();
 		snpAnnoFactory.setGffChrAbs(gffChrAbs);
 		
-		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo("chr1", 2838546, "G", "A");
-		System.out.print(snpInfo.getMapIso2Hgvsc().values().iterator().next().getHgvsc());
+		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo("chr8", 13041137, "T", "C");
+		System.out.print(snpInfo.getMapIso2Hgvsp().values().iterator().next().getHgvsp());
 	}
 	
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		String plinkBim = "/home/novelbio/test/plink/619-40maf.addchr.bim";
 		String plinkPed =  "/home/novelbio/test/plink/plink.ped";
 		String plinkBimCorrect = "/home/novelbio/test/plink/realdata/NB_final_snp.bim.addchr.addbase";
@@ -95,7 +99,11 @@ public class TestGwas {
 					System.out.print(snpInfo.getMapIso2Hgvsc().values().iterator().next().getHgvsc());
 					System.out.print("\t");
 					if (snpInfo.getMapIso2Hgvsp().values().iterator().next().isNeedHgvsp()) {
-						System.out.print(snpInfo.getMapIso2Hgvsp().values().iterator().next().getHgvsp());
+						try {
+							System.out.print(snpInfo.getMapIso2Hgvsp().values().iterator().next().getHgvsp());
+						} catch (Exception e) {
+							System.out.print("anno_error");
+						}
 					}
 					System.out.println();
 				}
@@ -105,26 +113,49 @@ public class TestGwas {
 			System.out.println(num + "\t" + mapNum.get(num)[0]);
 		}
 	}
-	public static void main2(String[] args) {
-//		long sum = 0;
-//		for (int i = 0; i < 34; i++) {
-//			System.out.println(i);
-//			long value = Permutation.combinationNew(34, i);
-//			sum+= value;
-//		}
-//		System.out.println(sum);
+	public static void main(String[] args) {
+		if (args == null || args.length == 0) {
+			printHelp();
+			System.exit(1);
+		}
+		for (String string : args) {
+			if (string.toLowerCase().contains("help")) {
+				printHelp();
+				System.exit(1);
+			}
+		}
 		
-//		System.out.println(Permutation.combination(340, 280));
-		System.out.println(Permutation.combinationNew(34, 14));
+		Options opts = new Options();
+		opts.addOption("plinkBim", true, "plinkBim");
+		opts.addOption("plinkPed", true, "plinkPed");
+		opts.addOption("chrFile", true, "chrFile");
+		opts.addOption("gffFile", true, "gffFile");
+		opts.addOption("out", true, "out");
 
-		String plinkBim = "/home/novelbio/test/plink/619-40maf.addchr.bim";
-		String plinkPed =  "/home/novelbio/test/plink/plink.ped";
-		String plinkBimCorrect = "/home/novelbio/test/plink/619-40maf.bim.anno";
-//		String plinkBimNeedSnpIndex = "/home/novelbio/test/plink/plink.bim.index";
+		CommandLine cliParser = null;
+		try {
+			cliParser = new GnuParser().parse(opts, args);
+		} catch (Exception e) {
+			printHelp();
+			System.exit(1);
+		}
+		
+		String plinkBim = cliParser.getOptionValue("plinkBim", "");
+		String plinkPed = cliParser.getOptionValue("plinkPed", "");
+		String chrFile = cliParser.getOptionValue("chrFile", "");
+		String gffFile = cliParser.getOptionValue("gffFile", "");
+		String out = cliParser.getOptionValue("out", "");
+		FileOperate.createFolders(FileOperate.getPathName(out));
+		String plinkBimCorrect = FileOperate.changeFileSuffix(plinkBim, ".correct", null);
 
-		String chrFile = "/home/novelbio/test/plink/chrAll.fa";
-		String gffFile = "/home/novelbio/test/plink/all.gff3";
-	
+//		String plinkBim = "/home/novelbio/test/plink/619-40maf.addchr.bim";
+//		String plinkPed =  "/home/novelbio/test/plink/plink.ped";
+//		String plinkBimCorrect = "/home/novelbio/test/plink/619-40maf.bim.anno";
+//		
+//		String chrFile = "/home/novelbio/test/plink/chrAll.fa";
+//		String gffFile = "/home/novelbio/test/plink/all.gff3";
+//		String out = "/home/novelbio/test/plink/";
+		
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setChrFile(chrFile, null);
 		gffChrAbs.setGffHash(new GffHashGene(gffFile));
@@ -136,13 +167,25 @@ public class TestGwas {
 		}
 		
 		System.out.println("finish anno");
-		String outPath = "/home/novelbio/test/plink/";
 		TestGwas testGwas = new TestGwas();
 		testGwas.setGffChrAbs(gffChrAbs);
 		testGwas.setPlinkPed(plinkPed);
 		testGwas.setPlinkBimCorrect(plinkBimCorrect);
-		testGwas.setOutput(outPath + "permutation.plinkmap", outPath + "permutation.plinkmapconvertor", outPath + "permutation.plinkped.pre");
+		testGwas.setOutput(out + "permutation.plinkmap", out + "permutation.plinkmapconvertor", out + "permutation.plinkped.pre");
 		testGwas.cluster();
+		System.out.println("finish permutation");
+		try {
+			GwasFormat.convertPlinkCsv2plinkPed(out + "permutation.plinkped.pre", out + "permutation.plink.ped");
+		} catch (IOException e) {
+			throw new RuntimeException(e);
+		}
+	}
+	
+	private static void printHelp() {
+		System.err.println("java -jar testGwas.jar --plinkBim plink.bim --plinkPed plink.ped --chrFile chrFile --gffFile gffFile --out outPath");
+		System.err.println("example:");
+		System.err.println("java -jar testGwas.jar --plinkBim /home/novelbio/plink.bim --plinkPed /home/novelbio/plink.ped"
+				+ " --chrFile /home/novelbio/chrFile --gffFile /home/novelbio/gffFile --out /home/novelbio/permutation");
 	}
 	
 	PlinkPedReader plinkPedReader;
@@ -185,6 +228,7 @@ public class TestGwas {
 
 		List<String> lsSamples = plinkPedReader.getLsAllSamples();
 		txtWritePlinkPedPre.writefileln(ArrayOperate.cmbString(lsSamples, "\t"));
+		int i = 0;
 		while (plinkMapReader.readNext()) {
 			Map<Allele, Set<String>> mapSnp2SetIsoName = plinkMapReader.getLsAllelesCurrentGene();
 			if (mapSnp2SetIsoName.isEmpty()) {
@@ -201,9 +245,9 @@ public class TestGwas {
 			index = permutation.getIndexNew();
 			
 			Map<String, List<Allele>> mapSample2LsAllele = new LinkedHashMap<>();
-			logger.info("read snp from gene " + geneName);
-			if (geneName.equals("LOC_Os01g25386")) {
-				System.out.println();
+//			logger.info("read snp from gene " + geneName);
+			if (i++ % 500 == 0) {
+				logger.info("read {} genes", i);
 			}
 			
 			for (String sample : lsSamples) {
@@ -305,10 +349,15 @@ class Permutation {
 	public List<List<Integer>> getLsPermutations() {
 		List<List<Integer>> lsNumberFinal = new ArrayList<>();
 		//把单个的也加进去
-		for (int i = 0; i < lsAlleleFinal.size(); i++) {
-			lsNumberFinal.add(Lists.newArrayList(i));
+//		for (int i = 0; i < lsAlleleFinal.size(); i++) {
+//			lsNumberFinal.add(Lists.newArrayList(i));
+//		}
+		for (List<Integer> list : lsNumber) {
+//			if (list.size() == 1) {
+//				continue;
+//			}
+			lsNumberFinal.add(list);
 		}
-		lsNumberFinal.addAll(lsNumber);
 		return lsNumberFinal;
 	}
 	
@@ -335,39 +384,42 @@ class Permutation {
 		for (int i = 0; i < lsIndex.length; i++) {
 			lsIndex[i] = i;
 		}
-		for (int i = 2; i <= lsIndex.length; i++) {
-			combinationSelect(lsIndex, 0, new Integer[i], 0);
-		}
+		lsNumber.add(ArrayOperate.converArray2List(lsIndex));
+		//排列组合，暂时停用
+//		for (int i = 2; i <= lsIndex.length; i++) {
+//			combinationSelect(lsIndex, 0, new Integer[i], 0);
+//		}
 	}
 	
 	//TODO 尚未测试
 	protected void filterByIso() {
 		List<List<Integer>> lsPermutationFinal = new ArrayList<>();
 		lsAlleleFinal = new ArrayList<>(mapSnp2SetIsoName.keySet());
-		for (List<Integer> lsPermutationUnit : lsNumber) {
-			Set<String> setOverlap = new HashSet<>();
-			for (Integer index : lsPermutationUnit) {
-				Set<String> setIsoThis = mapSnp2SetIsoName.get(lsAlleleFinal.get(index));
-				if (setOverlap.isEmpty()) {
-					setOverlap = setIsoThis;
-					continue;
-				}
-				Set<String> setOverlapTmp = new HashSet<>();
-				for (String isoName : setIsoThis) {
-					if (setOverlap.contains(isoName)) {
-						setOverlapTmp.add(isoName);
-					}
-				}
-				setOverlap = setOverlapTmp;
-				if (setOverlap.isEmpty()) {
-					break;
-				}
-			}
-			if (!setOverlap.isEmpty()) {
-				lsPermutationFinal.add(lsPermutationUnit);
-			}
-		}
-		lsNumber = lsPermutationFinal;
+		//TODO 暂时停用
+//		for (List<Integer> lsPermutationUnit : lsNumber) {
+//			Set<String> setOverlap = new HashSet<>();
+//			for (Integer index : lsPermutationUnit) {
+//				Set<String> setIsoThis = mapSnp2SetIsoName.get(lsAlleleFinal.get(index));
+//				if (setOverlap.isEmpty()) {
+//					setOverlap = setIsoThis;
+//					continue;
+//				}
+//				Set<String> setOverlapTmp = new HashSet<>();
+//				for (String isoName : setIsoThis) {
+//					if (setOverlap.contains(isoName)) {
+//						setOverlapTmp.add(isoName);
+//					}
+//				}
+//				setOverlap = setOverlapTmp;
+//				if (setOverlap.isEmpty()) {
+//					break;
+//				}
+//			}
+//			if (!setOverlap.isEmpty()) {
+//				lsPermutationFinal.add(lsPermutationUnit);
+//			}
+//		}
+//		lsNumber = lsPermutationFinal;
 	}
 	
 	/** 

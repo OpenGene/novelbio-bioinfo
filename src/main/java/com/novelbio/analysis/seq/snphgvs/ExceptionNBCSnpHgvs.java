@@ -6,4 +6,8 @@ public class ExceptionNBCSnpHgvs extends RuntimeException {
 	public ExceptionNBCSnpHgvs(String msg) {
 		super(msg);
 	}
+	
+	public ExceptionNBCSnpHgvs(String msg, Throwable t) {
+		super(msg, t);
+	}
 }

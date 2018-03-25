@@ -53,7 +53,11 @@ public class SnpAnno {
 		for (GffGeneIsoInfo iso : snpInfo.getLsIsos()) {
 			SnpIsoHgvsp snpIsoHgvsp = snpInfo.getMapIso2Hgvsp().get(iso);
 			if (snpIsoHgvsp.isNeedHgvsp()) {
-				snpIsoHgvsp.getHgvsp();
+				try {
+					snpIsoHgvsp.getHgvsp();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
 			}
 			Set<EnumVariantClass> setVar = VariantTypeDetector.getSetVarType(iso, snpInfo);
 			setVar.addAll(snpIsoHgvsp.getSetVarType());

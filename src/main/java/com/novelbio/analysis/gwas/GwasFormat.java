@@ -1,6 +1,9 @@
 package com.novelbio.analysis.gwas;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.Charset;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
@@ -8,7 +11,8 @@ import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.fileOperate.SeekablePathInputStream;
 
 /**
  * gwas格式转化
@@ -19,10 +23,9 @@ import com.novelbio.base.dataStructure.ArrayOperate;
  * @data 2018年3月10日
  */
 public class GwasFormat {
-	String plinkMap;
-	/** 其中不能有indel信息 */
-	String plinkPed;
-	
+//	public static void main(String[] args) throws IOException {
+//		GwasFormat.convertPlinkCsv2plinkPed("/home/novelbio/test/plink/permutation.plinkped.pre", "/home/novelbio/test/plink/permutation.plink.final.ped");
+//	}
 	public static void main(String[] args) throws IOException {
 		Options opts = new Options();
 		opts.addOption("plinkMap", true, "plinkMap");
@@ -39,20 +42,17 @@ public class GwasFormat {
 		String plinkPed = cliParser.getOptionValue("plinkPed", "");
 		String snpDataOut = cliParser.getOptionValue("snpDataOut", "");
 
-		GwasFormat gwasFormat = new GwasFormat();
-		gwasFormat.setPlinkMap(plinkMap);
-		gwasFormat.setPlinkPed(plinkPed);
-		gwasFormat.convertor(snpDataOut);
+		GwasFormat.convertor(plinkMap, plinkPed, snpDataOut);
 		
 	}
-	public void setPlinkMap(String plinkMap) {
-		this.plinkMap = plinkMap;
-	}
-	public void setPlinkPed(String plinkPed) {
-		this.plinkPed = plinkPed;
-	}
 	
-	public void convertor(String snpDataOut) throws IOException {
+	/**
+	 * @param plinkMap
+	 * @param plinkPed 其中不能有indel信息
+	 * @param snpDataOut
+	 * @throws IOException
+	 */
+	public static void convertor(String plinkMap, String plinkPed, String snpDataOut) throws IOException {
 		PlinkPedReader.createPlinkPedIndex(plinkPed);
 		PlinkPedReader plinkPedReader = new PlinkPedReader(plinkPed);
 		List<String> lsSamples = plinkPedReader.getLsAllSamples();
@@ -81,4 +81,49 @@ public class GwasFormat {
 		plinkPedReader.close();
 	}
 	
+	/**
+	 * 给定类似csv的文件，转化为plinkPed
+	 * @throws IOException 
+	 */
+	public static void convertPlinkCsv2plinkPed(String csv, String plinkPed) throws IOException {
+		long length = FileOperate.getFileSizeLong(csv);
+		String title = TxtReadandWrite.readFirstLine(csv);
+		TxtReadandWrite txtRead = new TxtReadandWrite(csv);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(plinkPed, true);
+		
+		String enterType = txtRead.getEnterType();
+		String[] samples = title.split("\t");
+		int enterLen = enterType.equals(TxtReadandWrite.ENTER_LINUX) ? 1 : 2;
+		int startFirst = title.length() + enterLen;
+		int lengthNum = 3*samples.length-1+enterLen;
+		SeekablePathInputStream seek = FileOperate.getSeekablePathInputStream(FileOperate.getPath(csv));
+		for (int i = 0; i < samples.length; i++) {
+			int startSite = 0;
+			txtWrite.writefile(samples[i] + " " + samples[i] + " 0 0 0 -9");
+			for (int j = 0; ; j++) {
+				startSite = startFirst + i*3 + j * lengthNum;
+				if (startSite > length) {
+					break;
+				}
+				seek.seek(startSite);
+				byte[] b = new byte[2];
+				seek.read(b);
+				char[] chars = getChars(b);
+				txtWrite.writefile(" " + chars[0] + " " + chars[1]);
+			}
+			txtWrite.writefileln();
+		}
+		txtRead.close();
+		txtWrite.close();
+	}
+	
+	private static char[] getChars (byte[] bytes) {
+	      Charset cs = Charset.forName ("UTF-8");
+	      ByteBuffer bb = ByteBuffer.allocate (bytes.length);
+	      bb.put (bytes);
+	                 bb.flip ();
+	       CharBuffer cb = cs.decode (bb);
+	  
+	   return cb.array();
+	}
 }
