@@ -21,6 +21,7 @@ import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.ExonCluster;
 import com.novelbio.base.SepSign;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.model.modgeneid.GeneID;
@@ -210,10 +211,10 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 因为可能会有多个gffDetailGene合并为一个gffDetailGene，这时候直接用gffDetailGeneParent的名字就无法进行区分
 	 */
 	public String getParentGeneName() {
-		if (gffDetailGeneParent != null) {
-			return gffDetailGeneParent.getNameSingle();
+		if (!StringOperate.isRealNull(geneParentName)) {
+			return geneParentName;
 		}
-		return geneParentName;
+		return gffDetailGeneParent.getNameSingle();
 	}
 	/**
 	 * coord是否在promoter区域的范围内，从Tss上游UpStreamTSSbp到Tss下游DownStreamTssbp

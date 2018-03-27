@@ -402,9 +402,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		List<GffDetailGene> lsGffDetailAll = new ArrayList<>();
 		for (ListGff lsGffDetailGenes : mapChrID2ListGff.values()) {
 			List<GffDetailGene> lsGene = lsGffDetailGenes.getLsElement();
-			for (GffDetailGene geneUnit : lsGene) {
-				lsGffDetailAll.addAll(geneUnit.getlsGffDetailGenes());
-			}
+			lsGffDetailAll.addAll(lsGene);
 		}
 		return lsGffDetailAll;
 	}
@@ -487,7 +485,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 			ListGff lsGffDetailGenes = mapChrID2ListGff.get(chrID.toLowerCase());
 			if (lsGffDetailGenes == null) continue;
 			
-			for (GffDetailGene gffDetailGene : lsGffDetailGenes) {
+			for (GffDetailGene gffDetailGene : lsGffDetailGenes.getLsElement()) {
 				//将每个iso的parentGene名字替换成不重复的名字
 				gffDetailGene = gffDetailGene.cloneDeep();
 				Map<String, String> mapGeneName2GeneNameNew = new HashMap<String, String>();

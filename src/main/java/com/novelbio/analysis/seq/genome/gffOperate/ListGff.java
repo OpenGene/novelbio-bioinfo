@@ -1,5 +1,8 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,7 +22,16 @@ public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGene
 		GffCodGeneDU gffCodGeneDU = new GffCodGeneDU(gffCod1, gffCod2);
 		return gffCodGeneDU;
 	}
-	
+	/** 会将gffDetailGene进行拆分，把独立的gene文件拿出来 */
+	public ArrayList<GffDetailGene> getLsElement() {
+		ArrayList<GffDetailGene> lsGenes = new ArrayList<>();
+		lsElement.forEach((gene)->{
+			if (gene.getName().contains("SNORD121B")) {
+				logger.info("stop");
+			}
+			lsGenes.addAll(gene.getlsGffDetailGenes());});
+		return lsGenes;
+	}
 	/**
 	 * 合并重复的GffDetailGene
 	 * @return
