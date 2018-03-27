@@ -22,11 +22,12 @@ public class SamWriter {
 	int maxErrorReadsNum = 10000;
 	
 	public SamWriter(boolean presorted, SAMFileHeader samFileHeader, String outSamFile) {
+		this(presorted, samFileHeader, outSamFile, !outSamFile.endsWith(".sam"));
+	}
+	
+	/** 默认写入bam文件 */
+	public SamWriter(boolean presorted, SAMFileHeader samFileHeader, String outSamFile, boolean writeToBam) {
 		this.fileName = outSamFile;
-		boolean writeToBam = true;
-		if (outSamFile.endsWith(".sam")) {
-			writeToBam = false;
-		}
 		OutputStream outputStream = null;
 		try {
 			outputStream = FileOperate.getOutputStream(fileName);	
@@ -37,17 +38,6 @@ public class SamWriter {
 			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, outputStream);
 		} else {
 			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, outputStream);
-		}
-	}
-	
-	/** 默认写入bam文件 */
-	public SamWriter(boolean presorted, SAMFileHeader samFileHeader, String outSamFile, boolean writeToBam) {
-		this.fileName = outSamFile;
-		File file = FileOperate.getFile(fileName);
-		if (writeToBam) {
-			samFileWriter = samFileWriterFactory.makeBAMWriter(samFileHeader, presorted, file, 7);
-		} else {
-			samFileWriter = samFileWriterFactory.makeSAMWriter(samFileHeader, presorted, file);
 		}
 	}
 	

@@ -91,22 +91,14 @@ public class SamFile implements AlignSeq {
 	 * 根据samFileHeader来定义默认输入的序列是否已经经过排序。
 	 */
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader) {
-		if (samFileHeader.getSortOrder() != SortOrder.unsorted) {
-			setSamFileNew(samFileHeader, samBamFile, true);
-		} else {
-			setSamFileNew(samFileHeader, samBamFile, false);
-		}
+		setSamFileNew(samFileHeader, samBamFile, samFileHeader.getSortOrder() != SortOrder.unsorted);
 	}
 	
 	/**读取已有文件
 	 * 如果有索引会自动读取索引
 	 */
 	public SamFile(OutputStream os, SAMFileHeader samFileHeader, boolean isBam) {
-		if (samFileHeader.getSortOrder() != SortOrder.unsorted) {
-			setSamFileNew(samFileHeader, os, isBam, true);
-		} else {
-			setSamFileNew(samFileHeader, os, isBam, false);
-		}		
+		setSamFileNew(samFileHeader, os, isBam, samFileHeader.getSortOrder() != SortOrder.unsorted);
 	}
 	
 	/**
@@ -127,6 +119,17 @@ public class SamFile implements AlignSeq {
 	public SamFile(String samBamFile, SAMFileHeader samFileHeader, boolean preSorted) {
 		setSamFileNew(samFileHeader, samBamFile, preSorted);
 	}
+	
+	/** 创建新的sambam文件'
+	 * @param samBamFile
+	 * @param samFileHeader
+	 * @param isBam 输出是否为bam格式
+	 * @param preSorted 输入的文件是否已经排序了
+	 */
+	public SamFile(String samBamFile, SAMFileHeader samFileHeader, boolean isBam, Boolean preSorted) {
+		setSamFileNew(samFileHeader, samBamFile, isBam, preSorted);
+	}
+	
 	private void setSamFileRead(String samBamFile) {
 		String bamindex = samBamFile + ".bai";
 		if (!FileOperate.isFileExistAndBigThanSize(bamindex, 0)) {
@@ -190,7 +193,22 @@ public class SamFile implements AlignSeq {
 			bamFile = true;
 		}
 	}
-	
+	/** 
+	 * 
+	 * 创建新的sam文件
+	 * @param samFileHeader
+	 * @param samFileCreate
+	 * @param isBam 是否输出bam文件
+	 * @param preSorted 输入的文件是否经过排序
+	 */
+	private void setSamFileNew(SAMFileHeader samFileHeader, String samFileCreate, boolean isBam, Boolean preSorted) {
+		if (preSorted == null) {
+			preSorted = samFileHeader.getSortOrder() != SortOrder.unsorted;
+		}
+		read = false;
+		samWriter = new SamWriter(preSorted, samFileHeader, samFileCreate, isBam);
+		bamFile = isBam;
+	}
 	/** 
 	 * 创建新的sam文件
 	 * @param samFileHeader

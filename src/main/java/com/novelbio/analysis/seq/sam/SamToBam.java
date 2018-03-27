@@ -262,7 +262,7 @@ public class SamToBam {
 			this.isWriteOut = isWriteOut;
 		}
 		private String getTmpFileName() {
-			return  FileOperate.changeFileSuffix(outFileName, ".tmp", null);
+			return  outFileName + ".tmp";
 		}
 		
 		public void setNeedSort(boolean isNeedSort) {
@@ -275,9 +275,9 @@ public class SamToBam {
 			
 			if (isNeedSort && header.getSortOrder()== SortOrder.unsorted) {
 				header.setSortOrder(SAMFileHeader.SortOrder.coordinate);
-				samFileBam = new SamFile(getTmpFileName(), header, false);
+				samFileBam = new SamFile(getTmpFileName(), header, true, false);
 			} else {
-				samFileBam = new SamFile(getTmpFileName(), header);
+				samFileBam = new SamFile(getTmpFileName(), header, true, null);
 			}
 			
 		}
