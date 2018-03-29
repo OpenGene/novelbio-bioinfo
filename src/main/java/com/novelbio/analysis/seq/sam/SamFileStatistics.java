@@ -425,7 +425,6 @@ public class SamFileStatistics implements AlignmentRecorder {
 		java.text.DecimalFormat df =new java.text.DecimalFormat("0.000");  
 
 		try {
-			lsTable.add(new String[] { "#Item", prefix});
 			lsTable.add(new String[]{title, "Result"});
 			long allReads = getReadsNum(MappingReadsType.All);
 			long unMapped = getReadsNum(MappingReadsType.UnMapped);
@@ -671,9 +670,21 @@ public class SamFileStatistics implements AlignmentRecorder {
 
 	
 	public static String saveExcel(String pathAndName, SamFileStatistics samFileStatistics) {
-		String excelName = getSaveExcel(pathAndName);
+		
+		String excelName = getSaveExcelStatisticsOnly(pathAndName);
+		TxtReadandWrite txtWriteStatistics = new TxtReadandWrite(excelName, true);
+		List<String[]> lsStatistics = samFileStatistics.getSamTable();
+		
+		for (String[] contents : lsStatistics) {
+			txtWriteStatistics.writefileln(contents);
+		}
+		txtWriteStatistics.close();
+		
+		excelName = getSaveExcel(pathAndName);
 		TxtReadandWrite excelOperate = new TxtReadandWrite(excelName, true);
 		excelOperate.writefileln("#Mapping_Statistics");
+		excelOperate.writefileln(new String[] { "#Item", samFileStatistics.getPrefix()});
+		
 		for (String[] contents : samFileStatistics.getSamTable()) {
 			excelOperate.writefileln(contents);
 		}
@@ -685,6 +696,9 @@ public class SamFileStatistics implements AlignmentRecorder {
 			excelOperate.writefileln(contents);
 		}
 		excelOperate.close();
+		
+
+		
 		return excelName;
 	}
 	
@@ -723,7 +737,18 @@ public class SamFileStatistics implements AlignmentRecorder {
 		}
 		return excelName;
 	}
-
+	/** 预判会出现的文件名 */
+	private static String getSaveExcelStatisticsOnly(String pathAndName) {
+		String excelName = null;
+		if (pathAndName.endsWith("/") || pathAndName.endsWith("\\")) {
+			excelName = pathAndName + "mapping.statistic.xls";
+		} else if(FileOperate.getFileName(pathAndName).contains("mapping_statistics")) {
+			return pathAndName;
+		} else {
+			excelName = pathAndName + ".mapping.statistics.xls";
+		}
+		return excelName;
+	}
 //bll
 //	public static String getSaveAllStaExcel() {
 //		String allStaExcel = null;
