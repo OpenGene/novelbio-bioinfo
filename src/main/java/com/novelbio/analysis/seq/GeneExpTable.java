@@ -603,6 +603,9 @@ public class GeneExpTable {
 			double uq = (mapCondition2UQ != null) ? mapCondition2UQ.get(condition) : 0;
 			
 			Long allReadsNum = mapCond2AllReads.get(condition);
+			if (!mapGene2Len.containsKey(geneName)) {
+				throw new ExceptionNBCgeneExpression("cannot find gene " + geneName);
+			}
 			Integer geneLen = mapGene2Len == null ? 0 : mapGene2Len.get(geneName);
 			String geneValue = getValueStr(enumExpression, value, allReadsNum, uq, geneLen);
 			lsValue.add(geneValue);

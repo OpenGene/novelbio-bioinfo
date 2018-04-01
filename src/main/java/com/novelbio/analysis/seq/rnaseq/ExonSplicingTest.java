@@ -362,6 +362,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		align.setChrID(exonCluster.getRefID());
 		return align;
 	}
+	public List<Align> getLsSpliceSitFlank() {
+		List<Align> lsAligns = mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getLsAligns();
+		for (Align align : lsAligns) {
+			align.setChrID(exonCluster.getRefID());
+		}
+		return lsAligns;
+	}
 	public Align getDifSite() {
 		List<Align> lsAligns = mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getDifSite();
 		if (lsAligns.isEmpty()) {

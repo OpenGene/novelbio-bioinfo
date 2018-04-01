@@ -182,7 +182,7 @@ public class ExonJunction extends RunProcess {
 	/** 小于6bp的alt5和alt3都可能是假的 */
 	int minDifLen = 6;
 	
-	boolean isPvalueA = true;
+	boolean isPvalueA = false;
 	
 	/**
 	 * 是否分染色体跑。如果分染色体跑的话，会一条一条染色体的运行，这样相对来说省点内存

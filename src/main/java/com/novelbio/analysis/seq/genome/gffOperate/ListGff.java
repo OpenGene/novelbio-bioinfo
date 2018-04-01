@@ -26,9 +26,6 @@ public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGene
 	public ArrayList<GffDetailGene> getLsElement() {
 		ArrayList<GffDetailGene> lsGenes = new ArrayList<>();
 		lsElement.forEach((gene)->{
-			if (gene.getName().contains("SNORD121B")) {
-				logger.info("stop");
-			}
 			lsGenes.addAll(gene.getlsGffDetailGenes());});
 		return lsGenes;
 	}

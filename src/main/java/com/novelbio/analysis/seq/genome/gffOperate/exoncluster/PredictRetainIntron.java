@@ -1,11 +1,13 @@
 package com.novelbio.analysis.seq.genome.gffOperate.exoncluster;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.jfree.data.RangeType;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.AlignRecord;
@@ -163,6 +165,13 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 	
 	public Align getResultSite() {
 		return new Align(exonCluster);
+	}
+	
+	/** 获得差异可变剪接的区段，用于IGV查看位点 */
+	public List<Align> getLsAligns() {
+		List<Align> lsAligns = new ArrayList<>();
+		getBGSite().forEach((alignment) -> lsAligns.add(new Align(alignment)));
+		return lsAligns;
 	}
 	/**
 	 * retainIntron有两个条件：1：存在一个长的exon，2：存在两个短的exon

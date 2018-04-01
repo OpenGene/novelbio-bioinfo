@@ -89,6 +89,19 @@ public abstract class SpliceTypePredict {
 	public abstract List<Align> getDifSite();
 	/** 获得差异可变剪接的区段，用于IGV查看位点 */
 	public abstract Align getResultSite();
+	
+	/** 获得差异可变剪接的区段，用于IGV查看位点 */
+	public List<Align> getLsAligns() {
+		List<Align> lsDifSite = getDifSite();
+		List<? extends Alignment> lsBG = getBGSite();
+		List<Align> lsResult = new ArrayList<>();
+		for (Alignment alignment : lsBG) {
+			lsResult.add(new Align(alignment));
+		}
+		lsResult.addAll(lsDifSite);
+		Collections.sort(lsResult, new Alignment.ComparatorAlignment());
+		return lsResult;
+	}
 	/**
 	 * 获得比较的位点
 	 * 如果是cassette则返回全基因长度

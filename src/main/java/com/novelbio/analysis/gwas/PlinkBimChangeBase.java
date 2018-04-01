@@ -195,10 +195,10 @@ class AnnoFromRef implements Closeable {
 		}
 		if (base.getPosition() == allele.getStartAbs()) {
 			//本行开始到下面的if--功能是设置高频低频
-			allele.setIsRefMajor(!allele.getRefBase().equals(base.getBase()+""));
+			allele.setIsRefMajor(!allele.getRefBase().equalsIgnoreCase(base.getBase()+""));
 			
-			if (!allele.getRefBase().equals(base.getBase() + "")) {
-				if (!allele.getAltBase().equals(base.getBase() + "")) {
+			if (!allele.getRefBase().equalsIgnoreCase(base.getBase() + "")) {
+				if (!allele.getAltBase().equalsIgnoreCase(base.getBase() + "")) {
 					throw new ExceptionNBCPlink("error! " + allele.toString() + " but ref is " + base.getBase());
 				}
 				allele.changeRefAlt();

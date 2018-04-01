@@ -10,6 +10,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict.SplicingAlternativeType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.ExonSplicingTest.PvalueCalculate;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.generalConf.TitleFormatNBC;
 
@@ -27,13 +28,17 @@ public class ExonSplicingResultUnit {
 	public static final String SpliceIndex = "SpliceIndex";
 	public static final String ExonAround = "AroundExon";
 	public static final String SplicingType = "SplicingType";
+	public static final String AlignsFlank = "LocFlank";
+
 	public static final String ExonNum = "Exon";
 
 	boolean isArithmeticPvalue = true;
 	
 	String accId;
+	/** 差异的位点 */
 	Align alignLoc;
-	Align alignLocDetail;
+	/** 差异的位点结合两侧区域 */
+	List<Align> lsAlignFlank;
 	/** 本剪接位点周边的坐标 */
 	List<Align> lsBeforeThisAfterAlign;
 	String exonNumStr;
@@ -59,6 +64,10 @@ public class ExonSplicingResultUnit {
 		accId = gffDetailGene.getNameSingle();
 		alignLoc = exonSplicingTest.getDifSite();
 		alignLoc.setChrID(mapChrIdLowcase2ChrId.get(alignLoc.getRefID().toLowerCase()));
+		
+		lsAlignFlank = exonSplicingTest.getLsSpliceSitFlank();
+		alignLoc.setChrID(mapChrIdLowcase2ChrId.get(alignLoc.getRefID().toLowerCase()));
+		
 		try {
 			lsBeforeThisAfterAlign = exonSplicingTest.getLsAlignBeforeThisAfter(mapChrIdLowcase2ChrId);
 		} catch (Exception e) {
@@ -195,11 +204,18 @@ public class ExonSplicingResultUnit {
 		lsResult.add(pvalueGeometric+"");
 		lsResult.add(fdrGeometric+"");
 
-
 //		lsResult.add(spliceIndex+"");
 		lsResult.add(splicingType.toString());
+		lsResult.add(combineAligns(lsAlignFlank));
+
 		return lsResult.toArray(new String[0]);
 	}
+	private String combineAligns(List<Align> lsAligns) {
+		List<String> lsResult = new ArrayList<>();
+		lsAligns.forEach((align) -> lsResult.add(align.toString()));
+		return ArrayOperate.cmbString(lsResult, ";");
+	}
+	
 	/** 获得标题,我们自己用 */
 	public static String[] getTitle(String condition1, String condition2) {
 		List<String> lsTitle = getLsTitleBasic(condition1, condition2);
@@ -216,6 +232,7 @@ public class ExonSplicingResultUnit {
 		lsTitle.add(FdrGeometric);
 
 //		lsTitle.add(SpliceIndex);
+		lsTitle.add(SplicingType);
 		lsTitle.add(SplicingType);
 		return lsTitle.toArray(new String[0]);
 	}
