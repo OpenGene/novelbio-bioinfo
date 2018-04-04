@@ -222,6 +222,48 @@ public class PlinkPedReader implements Closeable {
 		return lsResult;
 	}
 	
+	/**
+	 * 给定一系列位点，提取某个样本中的实际突变情况
+	 * @param sample
+	 * @param lsAlleles 从plinkBim中读取的位点
+	 * @return
+	 */
+	public List<Allele> getLsAlleleFromSample(String sample, List<Allele> lsAlleles) {
+		if (lsAlleles.isEmpty()) {
+			return new ArrayList<>();
+		}
+		
+		List<Allele> lsAlleleResult = new ArrayList<>();
+
+		int start = lsAlleles.get(0).getIndex();
+
+		Iterator<Allele> itAllelesRef = lsAlleles.iterator();
+		Iterator<Allele> itAllelesSample = readAllelsFromSample(sample, start).iterator();
+		
+		Allele alleleRef = itAllelesRef.next();
+		Allele alleleSample = itAllelesSample.next();
+		while (true) {
+			if (alleleRef.getIndex() == alleleSample.getIndex() ) {
+				alleleSample.setRef(alleleRef);
+				lsAlleleResult.add(alleleSample);
+				if (!itAllelesRef.hasNext()) {
+					break;
+				}
+				alleleRef = itAllelesRef.next();
+				alleleSample = itAllelesSample.next();
+				continue;
+			} else if (alleleRef.getIndex() > alleleSample.getIndex()) {
+				if (!itAllelesSample.hasNext()) {
+					throw new ExceptionNBCPlink("error sample " + sample + " doesnot have " + alleleRef.toString());
+				}
+				alleleSample = itAllelesSample.next();
+				continue;
+			} else if (alleleRef.getIndex() < alleleSample.getIndex()) {
+				throw new ExceptionNBCPlink("error sample " + sample + " doesnot have " + alleleRef.toString());
+			}
+		}
+		return lsAlleleResult;
+	}
 	@Override
 	public void close() {
 		try {

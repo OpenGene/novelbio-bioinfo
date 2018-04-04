@@ -148,13 +148,13 @@ public class TestGwas {
 		FileOperate.createFolders(FileOperate.getPathName(out));
 		String plinkBimCorrect = FileOperate.changeFileSuffix(plinkBim, ".correct", null);
 
-//		String plinkBim = "/home/novelbio/test/plink/619-40maf.addchr.bim";
-//		String plinkPed =  "/home/novelbio/test/plink/plink.ped";
-//		String plinkBimCorrect = "/home/novelbio/test/plink/619-40maf.bim.anno";
+//		String plinkBim = "/home/novelbio/test/plink/debug/Desktop/619-40maf.bim";
+//		String plinkPed =  "/home/novelbio/test/plink/debug/Desktop/619-40maf.ped";
+//		String plinkBimCorrect = "/home/novelbio/test/plink/debug/Desktop/619-40maf.bim.anno";
 //		
-//		String chrFile = "/home/novelbio/test/plink/chrAll.fa";
-//		String gffFile = "/home/novelbio/test/plink/all.gff3";
-//		String out = "/home/novelbio/test/plink/";
+//		String chrFile = "/home/novelbio/test/plink/debug/Desktop/IRGSP-1.0.fasta";
+//		String gffFile = "/home/novelbio/test/plink/debug/Desktop/all.gff3";
+//		String out = "/home/novelbio/test/plink/debug/Desktop/";
 		
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setChrFile(chrFile, null);
@@ -251,7 +251,7 @@ public class TestGwas {
 			}
 			
 			for (String sample : lsSamples) {
-				List<Allele> lsAlleleSample = getLsAlleleFromSample(sample, permutation.getLsAlleleFinal());
+				List<Allele> lsAlleleSample = plinkPedReader.getLsAlleleFromSample(sample, permutation.getLsAlleleFinal());
 				mapSample2LsAllele.put(sample, lsAlleleSample);
 			}
 			for (List<Integer> lsIndex : permutation.getLsPermutations()) {
@@ -274,43 +274,6 @@ public class TestGwas {
 		txtWritePlinkMap.close();
 		txtWritePlinkMapConvertor.close();
 		txtWritePlinkPedPre.close();
-	}
-
-	private List<Allele> getLsAlleleFromSample(String sample, List<Allele> lsAlleles) {
-		if (lsAlleles.isEmpty()) {
-			return new ArrayList<>();
-		}
-		
-		List<Allele> lsAlleleResult = new ArrayList<>();
-
-		int start = lsAlleles.get(0).getIndex();
-
-		Iterator<Allele> itAllelesRef = lsAlleles.iterator();
-		Iterator<Allele> itAllelesSample = plinkPedReader.readAllelsFromSample(sample, start).iterator();
-		
-		Allele alleleRef = itAllelesRef.next();
-		Allele alleleSample = itAllelesSample.next();
-		while (true) {
-			if (alleleRef.getIndex() == alleleSample.getIndex() ) {
-				alleleSample.setRef(alleleRef);
-				lsAlleleResult.add(alleleSample);
-				if (!itAllelesRef.hasNext()) {
-					break;
-				}
-				alleleRef = itAllelesRef.next();
-				alleleSample = itAllelesSample.next();
-				continue;
-			} else if (alleleRef.getIndex() > alleleSample.getIndex()) {
-				if (!itAllelesSample.hasNext()) {
-					throw new ExceptionNBCPlink("error sample " + sample + " doesnot have " + alleleRef.toString());
-				}
-				alleleSample = itAllelesSample.next();
-				continue;
-			} else if (alleleRef.getIndex() < alleleSample.getIndex()) {
-				throw new ExceptionNBCPlink("error sample " + sample + " doesnot have " + alleleRef.toString());
-			}
-		}
-		return lsAlleleResult;
 	}
 	
 }
@@ -582,16 +545,38 @@ class ClusterKmean {
 	}
 	
 	public void cluster() {
+		cluster(2);
+	}
+	
+	/**
+	 * 如果转成碱基的话，仅支持分两类
+	 * @param clusterNum
+	 */
+	public void cluster(int clusterNum) {
 		if (mapSample2LsAllele.values().iterator().next().size() == 1) {
 			return;
 		}
 		double[][] data = generateData();
-		KMeans kMeans = new KMeans(data, 2);
+		KMeans kMeans = new KMeans(data, clusterNum);
 		int[] result = kMeans.getClusterLabel();
 		int i = 0;
 		for (String sampleName : mapSample2LsAllele.keySet()) {
 			mapSample2ClusterResult.put(sampleName, result[i++]);
 		}
+	}
+	public Map<String, Integer> getMapSample2ClusterResult() {
+		return mapSample2ClusterResult;
+	}
+	/** 返回聚类的结果，用int型 */
+	public List<Integer> getClusterResultInt() {
+		List<Integer> lsResult = new ArrayList<>();
+		for (Integer clusterValue : mapSample2ClusterResult.values()) {
+			lsResult.add(clusterValue);
+		}
+		if (lsResult.isEmpty()) {
+			throw new RuntimeException();
+		}
+		return lsResult;
 	}
 	
 	public List<String> getClusterResult() {

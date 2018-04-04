@@ -1,10 +1,9 @@
 package com.novelbio.test;
 
 
-import java.nio.file.Path;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -18,17 +17,14 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.Lists;
 import com.novelbio.analysis.seq.chipseq.RegionBed;
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
-import com.novelbio.analysis.seq.fasta.Base;
-import com.novelbio.analysis.seq.fasta.ChrBaseIter;
 import com.novelbio.analysis.seq.fasta.ChrDensity;
+import com.novelbio.analysis.seq.fasta.ChrSeqHash;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneNCBI;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads.ChrMapReadsInfo;
 import com.novelbio.analysis.seq.mapping.Align;
@@ -36,11 +32,10 @@ import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.analysis.seq.snphgvs.SnpInfo;
-import com.novelbio.analysis.seq.snphgvs.SnpIsoHgvsc;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.domain.kegg.KGIDgen2Keg;
@@ -62,36 +57,54 @@ public class mytest {
 	private static final Logger logger = LoggerFactory.getLogger(mytest.class);
 	static boolean is;
 	
-	public static void main(String[] args) {
-		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/下载/snp-types27.vep.vcf");
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/下载/snp-types27.vep.txt", true);
-		for (String content : txtRead.readlines()) {
-			if (content.startsWith("#")) {
-				continue;
-			}
-			
-			String[] ss = content.split("\t");
-			List<String> lsResult = new ArrayList<>();
-			lsResult.add(ss[0]); lsResult.add(ss[1]); lsResult.add(ss[3]); lsResult.add(ss[4]);
-			String[] sss = ss[7].split("\\|");
-			Set<String> setHgvsc = new HashSet<>();
-			Set<String> setHgvsp = new HashSet<>();
-
-			for (String hgvs : sss) {
-				if (hgvs.contains("c.")) {
-					setHgvsc.add(hgvs.split(":")[1]);
-				} else if (hgvs.contains("p.")) {
-					setHgvsp.add(hgvs.split(":")[1]);
-				}
-			}
-			String hgvsc = setHgvsc.isEmpty() ? "" : setHgvsc.iterator().next();
-			String hgvsp = setHgvsp.isEmpty() ? "" : setHgvsp.iterator().next();
-			lsResult.add(hgvsc);
-			lsResult.add(hgvsp);
-			txtWrite.writefileln(lsResult.toArray(new String[0]));
+	public static void main(String[] args) throws IOException {
+		FileOperate.copyFolder(FileOperate.getPath("/media/winE/sssss/bmm"), "/home/novelbio/git/Documents/doc/配置文件/novelbioshanghai/aaa", true);
+	}
+	
+	public static void changeEntry(String in) {
+		String inTmp = in+ ".tmp";
+		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(in);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(inTmp, true);
+		for (String content : txtReadandWrite.readlines()) {
+			txtWrite.writefileln(content);
 		}
-		txtRead.close();
+		txtReadandWrite.close();
 		txtWrite.close();
+		FileOperate.moveFile(true, inTmp, in);
+	}
+	
+	public static void main3(String[] args) {
+		System.out.println(StringOperate.decode("%3D"));
+		
+//		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/下载/snp-types27.vep.vcf");
+//		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/下载/snp-types27.vep.txt", true);
+//		for (String content : txtRead.readlines()) {
+//			if (content.startsWith("#")) {
+//				continue;
+//			}
+//			
+//			String[] ss = content.split("\t");
+//			List<String> lsResult = new ArrayList<>();
+//			lsResult.add(ss[0]); lsResult.add(ss[1]); lsResult.add(ss[3]); lsResult.add(ss[4]);
+//			String[] sss = ss[7].split("\\|");
+//			Set<String> setHgvsc = new HashSet<>();
+//			Set<String> setHgvsp = new HashSet<>();
+//
+//			for (String hgvs : sss) {
+//				if (hgvs.contains("c.")) {
+//					setHgvsc.add(hgvs.split(":")[1]);
+//				} else if (hgvs.contains("p.")) {
+//					setHgvsp.add(hgvs.split(":")[1]);
+//				}
+//			}
+//			String hgvsc = setHgvsc.isEmpty() ? "" : setHgvsc.iterator().next();
+//			String hgvsp = setHgvsp.isEmpty() ? "" : setHgvsp.iterator().next();
+//			lsResult.add(hgvsc);
+//			lsResult.add(hgvsp);
+//			txtWrite.writefileln(lsResult.toArray(new String[0]));
+//		}
+//		txtRead.close();
+//		txtWrite.close();
 		
 	}
 	

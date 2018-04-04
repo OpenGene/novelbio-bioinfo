@@ -8,6 +8,8 @@ GenomePath=hdfs:/nbCloud/public/nbcplatform/genome/
 
 COGfasta=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/COG0303/cog0303.fa
 cogId2Anno=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/COG0303/cogs.csv
+#COGfasta=home/novelbio/software/cog/COG0303/cog0303.fa
+#cogId2Anno=home/novelbio/software/cog/COG0303/cogs.csv
 pro2cog=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/COG0303/prot2COG.tab
 cogAbbr2Fun=hdfs:/nbCloud/public/nbcplatform/genome/otherResource/cog/COG0303/fun.txt
 
