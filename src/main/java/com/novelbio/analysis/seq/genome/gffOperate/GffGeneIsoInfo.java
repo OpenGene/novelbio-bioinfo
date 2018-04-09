@@ -1058,21 +1058,27 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	
 	/**
 	 * 如果输入的是GffPlant的类型，
-	 * 那么可能UTR和CDS会错位。这时候就需要先将exon排序，然后合并两个中间只差一位的exon
+	 * 那么可能UTR和CDS会错位。这时候就需要先将exon排序，然后合并overlap或者是挨着的(exon相邻，只相差1bp)exon
 	 */
 	protected void combineExon() {
-		sort();
+		if (isEmpty()) {
+			return;
+		}
+		super.sort();
 		List<ExonInfo> lsExoninfo = new ArrayList<ExonInfo>();
 		lsExoninfo.add(get(0));
 		
 		boolean combine = false;
 		for (int i = 1; i < this.size(); i++) {
-			ExonInfo exonInfo = get(i);
-			if (Math.abs(exonInfo.getStartCis() - lsExoninfo.get(lsExoninfo.size() - 1).getEndCis()) == 1) {
+			ExonInfo exon = get(i);
+			ExonInfo exonLast = lsExoninfo.get(lsExoninfo.size() - 1);
+			if (isCis5to3() && exon.getStartCis() <= exonLast.getEndCis()+1
+					|| !isCis5to3() && exon.getStartCis() >= exonLast.getEndCis()-1
+					) {
 				combine = true;
-				lsExoninfo.get(lsExoninfo.size() - 1).setEndCis(exonInfo.getEndCis());
+				exonLast.setEndCis(exon.getEndCis());
 			} else {
-				lsExoninfo.add(exonInfo);
+				lsExoninfo.add(exon);
 			}
 		}
 		

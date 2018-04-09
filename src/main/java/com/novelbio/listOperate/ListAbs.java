@@ -1043,13 +1043,13 @@ class CompM2S implements Comparator<Alignment> {
 	public int compare(Alignment o1, Alignment o2) {
 		Integer o1start = o1.getStartCis();
 		Integer o2start = o2.getStartCis();
-		int comp = o1start.compareTo(o2start);
+		int comp = -o1start.compareTo(o2start);
 		if (comp == 0) {
 			Integer o1end = o1.getEndCis();
 			Integer o2end = o2.getEndCis();
 			return -o1end.compareTo(o2end);
 		}
-		return -comp;
+		return comp;
 	}
 }
 /**

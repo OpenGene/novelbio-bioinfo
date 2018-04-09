@@ -88,8 +88,9 @@ public enum GeneType {
 	private static void setMapName2GeneType() {
 		if (mapMRNA2GeneType.isEmpty()) {
 			mapMRNA2GeneType.put("transcript", mRNA);
-			
 			mapMRNA2GeneType.put("nontranslating_CDS".toLowerCase(), mRNA);
+
+			mapMRNA2GeneType.put("transcript_region".toLowerCase(), mRNA);
 
 			
 			mapMRNA2GeneType.put("mRNA".toLowerCase(),mRNA);
@@ -97,6 +98,8 @@ public enum GeneType {
 			mapMRNA2GeneType.put("miRNA".toLowerCase(),miRNA);
 			mapMRNA2GeneType.put("tRNA".toLowerCase(),tRNA);
 			mapMRNA2GeneType.put("tRNA_pseudogene".toLowerCase(),tRNA);
+			mapMRNA2GeneType.put("pseudogenic_tRNA".toLowerCase(),tRNA);
+			
 			mapMRNA2GeneType.put("rRNA".toLowerCase(), rRNA);
 			mapMRNA2GeneType.put("snoRNA".toLowerCase(), snoRNA);
 			mapMRNA2GeneType.put("snRNA".toLowerCase(), snRNA);			
@@ -124,6 +127,9 @@ public enum GeneType {
 			mapMRNA2GeneType.put("precursor_RNA".toLowerCase(), Precursor_RNA);
 			mapMRNA2GeneType.put("Precursor_miRNA".toLowerCase(), Precursor_miRNA);
 			mapMRNA2GeneType.put("Pre_miRNA".toLowerCase(), Precursor_miRNA);
+			mapMRNA2GeneType.put("miRNA_primary_transcript".toLowerCase(), Precursor_miRNA);
+			
+			mapMRNA2GeneType.put("antisense_lncRNA".toLowerCase(), antisense_RNA);
 			mapMRNA2GeneType.put("antisense_RNA".toLowerCase(), antisense_RNA);
 			mapMRNA2GeneType.put("telomerase_RNA".toLowerCase(), telomerase_RNA);
 			mapMRNA2GeneType.put("RNase_P_RNA".toLowerCase(), RNase_P_RNA);

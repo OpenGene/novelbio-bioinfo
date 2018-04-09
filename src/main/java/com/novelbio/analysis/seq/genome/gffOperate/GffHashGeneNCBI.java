@@ -131,6 +131,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			setIsGene.add("ncRNA_gene");
 			setIsGene.add("gene");
 			setIsGene.add("transposable_element_gene");
+			setIsGene.add("transposable_element");
 			setIsGene.add("protein_coding_gene");
 			setIsGene.add("pseudogene");
 			// setIsGene.add("tRNA");
@@ -215,8 +216,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			 * 不管怎么加都是从第一个cds开始加到最后一个cds，正向的话就是从小加到大，反向就是从大加到小。
 			 * 一旦出现了mRNA，就要开始指定5UTR，3UTR，CDS的起点和终止
 			 */
-			else if (GeneType.getMapMRNA2GeneType().containsKey(
-					ss[2].toLowerCase()) || ss[2].toLowerCase().contains("rna")) {
+			else if (isTranscript(ss)) {
 				Align alignRegion = new Align(ss[0], Integer.parseInt(ss[3]),
 						Integer.parseInt(ss[4]));
 				double[] compareRegion = null;
@@ -243,12 +243,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 					continue;
 				}
 			} else if (ss[2].equals("CDS")) {
-				try {
-					addCDS(thisGeneIDandName, thisRnaIDandName, ss);
-
-				} catch (Exception e) {
-					addCDS(thisGeneIDandName, thisRnaIDandName, ss);
-				}
+				addCDS(thisGeneIDandName, thisRnaIDandName, ss);
 			} else if (ss[2].equals("STS") || ss[2].contains("gene_segment")
 					|| ss[2].contains("contig") || ss[2].contains("match")) {
 				continue;
@@ -272,6 +267,19 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			isGene = geneType.toLowerCase().contains("gene");
 		}
 		return isGene;
+	}
+	
+	
+	private boolean isTranscript(String[] ss) {
+		boolean isTranscript = GeneType.getMapMRNA2GeneType().containsKey(
+				ss[2].toLowerCase()) || ss[2].toLowerCase().contains("rna");
+		if (!isTranscript) {
+			String parentId =ss[0] + patParentID.getPatFirst(ss[8]);
+			if (parentId != null && mapGenID2GffDetail.containsKey(parentId)) {
+				isTranscript = true;
+			}
+		}
+		return isTranscript;
 	}
 	
 	private void fillDuplicateNameSet() {
@@ -445,8 +453,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		int exonEnd = Integer.parseInt(ss[4]);
 
 		try {
-			gffGeneIsoInfo = getGffIso(rnaID, exonStart, exonEnd,
-					GeneType.ncRNA);// TODO
+			gffGeneIsoInfo = getGffIso(rnaID, GeneType.ncRNA);// TODO
 		} catch (Exception e) {
 			logger.error("出现未知exon：" + ArrayOperate.cmbString(ss, "\t"), e);
 			return false;
@@ -459,14 +466,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		if (mapGeneName2IsHaveExon.get(geneID) == null) {
 			logger.error("没有找到相应的GeneID:" + geneID);
 		}
-		if (mapGeneName2IsHaveExon.get(geneID) == false) {
-			gffGeneIsoInfo.addFirstExon(ss[6].equals("+") || ss[6].equals("."),
-					exonStart, exonEnd);
+		if (!mapGeneName2IsHaveExon.get(geneID)) {
+			gffGeneIsoInfo.clearElements();
 			mapGeneName2IsHaveExon.put(geneID, true);
-		} else {
-			gffGeneIsoInfo.addExon(ss[6].equals("+") || ss[6].equals("."),
-					exonStart, exonEnd);
 		}
+		gffGeneIsoInfo.addExonNorm(ss[6].equals("+") || ss[6].equals("."), exonStart, exonEnd);
 
 		return true;
 	}
@@ -477,15 +481,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		int cdsEnd = Integer.parseInt(ss[4]);
 		String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
 		String geneID = getGeneID(rnaID);
-		GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaID, cdsStart, cdsEnd, null);
+		GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaID, null);
 		gffGeneIsoInfo.setATGUAGauto(cdsStart, cdsEnd);
 		if (mapGeneName2IsHaveExon.get(geneID) == null) {
 			logger.error("没有找到相应的GeneID:" + geneID);
 		}
-		if (!mapGeneName2IsHaveExon.get(geneID)) {
-			gffGeneIsoInfo.addCDS(ss[6].equals("+") || ss[6].equals("."),
-					Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
-		}
+		gffGeneIsoInfo.addExonNorm(ss[6].equals("+") || ss[6].equals("."), Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 	}
 
 	/**
@@ -710,8 +711,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 *            如果没有找到iso，则新建的iso是什么类型
 	 * @return
 	 */
-	private GffGeneIsoInfo getGffIso(String rnaID, int startExon, int endExon,
-			GeneType geneType) {
+	private GffGeneIsoInfo getGffIso(String rnaID, GeneType geneType) {
 		GffGeneIsoInfo iso = mapRnaID2Iso.get(rnaID);
 		if (iso == null) {
 			mapRnaID2GeneID.put(rnaID, rnaID);
@@ -754,6 +754,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		//====================================================
 		//有些基因是很长的转录本，但是gff记录的时候记录成了两个，所以需要把他们合并为一个iso
 		for (GffDetailGene gene : mapGenID2GffDetail.values()) {
+			for (GffGeneIsoInfo iso : gene.getLsCodSplit()) {
+				iso.combineExon();
+			}
+			
 			if (!mapName2LsGene.containsKey(gene.getNameSingle())) {
 				mapName2LsGene.put(gene.getNameSingle(), gene);
 				continue;
