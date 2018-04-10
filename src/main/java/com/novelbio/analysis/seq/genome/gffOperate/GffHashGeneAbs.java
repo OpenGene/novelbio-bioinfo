@@ -203,6 +203,11 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 */
 	public GffDetailGene searchLOCWithoutDB(String accID) {
 		GffDetailGene gffDetailGene = super.searchLOC(accID);
+		for (GffDetailGene gene : gffDetailGene.getlsGffDetailGenes()) {
+			if (gene.getNameSingle().equalsIgnoreCase(accID)) {
+				return gene;
+			}
+		}
 		return gffDetailGene;
 	}
 	

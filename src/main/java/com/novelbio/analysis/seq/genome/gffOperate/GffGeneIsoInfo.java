@@ -1187,7 +1187,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * @param title 该GTF文件的名称
 	 * @return
 	 */
-	protected String getGFFformat(String title) {
+	public String getGFFformat(String title) {
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";

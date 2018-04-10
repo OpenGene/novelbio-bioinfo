@@ -59,7 +59,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** ID的正则 */
 	protected static String regID = "(?<=ID\\=)[\\w\\.\\-%\\:\\{\\}]+";
 	/** parentID的正则 */
-	protected static String regParentID = "(?<=Parent\\=)[\\w\\.\\-%\\:\\{\\}\\(\\)]+";
+	protected static String regParentID = "(?<=Parent\\=)[\\w\\.\\-%\\,\\:\\{\\}\\(\\)]+";
 
 	/** gene类似名 */
 	private static Set<String> setIsGene = new HashSet<String>();
@@ -446,32 +446,32 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 
 	private boolean addExon(String[] lastGeneID2Name, String[] lastRnaID2Name,
 			String[] ss) {
-		String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
+		List<String> lsRnaId = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
 
 		GffGeneIsoInfo gffGeneIsoInfo = null;
 		int exonStart = Integer.parseInt(ss[3]);
 		int exonEnd = Integer.parseInt(ss[4]);
-
-		try {
-			gffGeneIsoInfo = getGffIso(rnaID, GeneType.ncRNA);// TODO
-		} catch (Exception e) {
-			logger.error("出现未知exon：" + ArrayOperate.cmbString(ss, "\t"), e);
-			return false;
+		for (String rnaId : lsRnaId) {
+			try {
+				gffGeneIsoInfo = getGffIso(rnaId, GeneType.ncRNA);// TODO
+			} catch (Exception e) {
+				logger.error("出现未知exon：" + ArrayOperate.cmbString(ss, "\t"), e);
+				return false;
+			}
+			if (gffGeneIsoInfo == null) {
+				return false;
+			}
+			
+			String geneID = getGeneID(rnaId);
+			if (mapGeneName2IsHaveExon.get(geneID) == null) {
+				logger.error("没有找到相应的GeneID:" + geneID);
+			}
+			if (!mapGeneName2IsHaveExon.get(geneID)) {
+				gffGeneIsoInfo.clearElements();
+				mapGeneName2IsHaveExon.put(geneID, true);
+			}
+			gffGeneIsoInfo.addExonNorm(ss[6].equals("+") || ss[6].equals("."), exonStart, exonEnd);
 		}
-		if (gffGeneIsoInfo == null) {
-			return false;
-		}
-		
-		String geneID = getGeneID(rnaID);
-		if (mapGeneName2IsHaveExon.get(geneID) == null) {
-			logger.error("没有找到相应的GeneID:" + geneID);
-		}
-		if (!mapGeneName2IsHaveExon.get(geneID)) {
-			gffGeneIsoInfo.clearElements();
-			mapGeneName2IsHaveExon.put(geneID, true);
-		}
-		gffGeneIsoInfo.addExonNorm(ss[6].equals("+") || ss[6].equals("."), exonStart, exonEnd);
-
 		return true;
 	}
 
@@ -479,14 +479,16 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			String[] ss) {
 		int cdsStart = Integer.parseInt(ss[3]);
 		int cdsEnd = Integer.parseInt(ss[4]);
-		String rnaID = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
-		String geneID = getGeneID(rnaID);
-		GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaID, null);
-		gffGeneIsoInfo.setATGUAGauto(cdsStart, cdsEnd);
-		if (mapGeneName2IsHaveExon.get(geneID) == null) {
-			logger.error("没有找到相应的GeneID:" + geneID);
+		for (String rnaId : getRNAID(lastGeneID2Name, lastRnaID2Name, ss)) {
+			String geneID = getGeneID(rnaId);
+			GffGeneIsoInfo gffGeneIsoInfo = getGffIso(rnaId, null);
+			gffGeneIsoInfo.setATGUAGauto(cdsStart, cdsEnd);
+			if (mapGeneName2IsHaveExon.get(geneID) == null) {
+				logger.error("没有找到相应的GeneID:" + geneID);
+			}
+			gffGeneIsoInfo.addExonNorm(ss[6].equals("+") || ss[6].equals("."), Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 		}
-		gffGeneIsoInfo.addExonNorm(ss[6].equals("+") || ss[6].equals("."), Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
+	
 	}
 
 	/**
@@ -496,18 +498,23 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 * @param lastRNAID
 	 * @param
 	 */
-	private String getRNAID(String[] lastGeneID2Name, String[] lastRNAID2Name,
+	private List<String> getRNAID(String[] lastGeneID2Name, String[] lastRNAID2Name,
 			String[] ss) {
+		List<String> lsRnaId = new ArrayList<>();
+		
 		String rnaID = patParentID.getPatFirst(ss[8]);
 		if (rnaID == null) {
 			rnaID = lastRNAID2Name[0];
 			if (rnaID == null) {
 				rnaID = lastGeneID2Name[0];
 			}
+			lsRnaId.add(rnaID);
 		} else {
-			rnaID = ss[0] + rnaID;
+			for (String rnaIdUnit : rnaID.split(",")) {
+				lsRnaId.add(ss[0] + rnaIdUnit);
+			}
 		}
-		return rnaID;
+		return lsRnaId;
 	}
 
 	private String getGeneName(String content) {
