@@ -62,9 +62,12 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	protected static String regParentID = "(?<=Parent\\=)[\\w\\.\\-%\\,\\:\\{\\}\\(\\)]+";
 
 	/** gene类似名 */
-	private static Set<String> setIsGene = new HashSet<String>();
+	private Set<String> setIsGene = new HashSet<String>();
+	/** 外显子类似名 */
+	private Set<String> setIsExon = new HashSet<String>();
+
 	/** gene类似名 */
-	private static Set<String> setIsChromosome = new HashSet<String>();
+	private Set<String> setIsChromosome = new HashSet<String>();
 
 	/** "(?<=gene\\=)\\w+" */
 	PatternOperate patGeneName = null;
@@ -138,6 +141,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		}
 		if (setIsChromosome.isEmpty()) {
 			setIsChromosome.add("chromosome");
+		}
+		if (setIsExon.isEmpty()) {
+			setIsExon.add("exon");
+			setIsExon.add("cds");
 		}
 	}
 	
@@ -269,11 +276,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		return isGene;
 	}
 	
-	
 	private boolean isTranscript(String[] ss) {
 		boolean isTranscript = GeneType.getMapMRNA2GeneType().containsKey(
 				ss[2].toLowerCase()) || ss[2].toLowerCase().contains("rna");
-		if (!isTranscript) {
+		if (!isTranscript && !setIsExon.contains(ss[2].toLowerCase())) {
 			String parentId =ss[0] + patParentID.getPatFirst(ss[8]);
 			if (parentId != null && mapGenID2GffDetail.containsKey(parentId)) {
 				isTranscript = true;
