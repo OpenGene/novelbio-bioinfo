@@ -76,7 +76,7 @@ public class CombineTab {
 	/** ColCompareComb：将待查找的列合并起来，用 {@link #Sep_Sample_Name} 连接<br>
 	 * ColCompareSep：分开的待查找的列
 	 * */
-	LinkedHashMap<String, List<String>> mapColCompareComb_To_ColCompareSep = new LinkedHashMap<>();
+	LinkedHashMap<String, List<String>> mapColCompareComb_To_ColCompareSep;
 	Configuration freeMarkerConfiguration = (Configuration)SpringFactoryBioinfo.getFactory().getBean("freemarkNBC");
 
 	HashMap<String, LinkedHashMap<String, String[]>> mapFileName_To_ColCompareComb2ExtractCol = new LinkedHashMap<>();
@@ -305,6 +305,7 @@ public class CombineTab {
 		if (colCompareOverlapID.length > lsTmpInfo.get(0).length) {
 			logger.error("输入列名长度有问题");
 		}
+		mapColCompareComb_To_ColCompareSep = new LinkedHashMap<>(lsTmpInfo.size());
 		for (String[] strings : lsTmpInfo) {
 			String colIDcombineStr = ""; List<String> colIDarray = new ArrayList<>();
 			//flag列的信息
