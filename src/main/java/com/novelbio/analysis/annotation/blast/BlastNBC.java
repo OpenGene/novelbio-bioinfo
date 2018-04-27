@@ -22,9 +22,9 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.geneanno.BlastInfo;
+import com.novelbio.database.model.information.SoftWareInfo;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 /**
  * 自动化进行blast的方法

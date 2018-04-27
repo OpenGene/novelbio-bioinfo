@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.junit.Assert;
 
-import com.novelbio.database.domain.omim.GeneMIM;
-import com.novelbio.database.domain.omim.MIMInfo;
-import com.novelbio.database.domain.omim.MorbidMap;
+import com.novelbio.database.model.omim.GeneMIM;
+import com.novelbio.database.model.omim.MIMInfo;
+import com.novelbio.database.model.omim.MorbidMap;
 
 public class TestOmimUnit {
 

@@ -24,7 +24,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 /**
  * 直接在这个里面设定tss和tes
  * gffChrAbs里面的就不管他了

@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 
 public class LncSiteInfo {
 	/** 输入的一列Lnc */

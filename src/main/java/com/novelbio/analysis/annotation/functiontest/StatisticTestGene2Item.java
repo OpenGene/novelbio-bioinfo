@@ -7,12 +7,12 @@ import java.util.Map;
 import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
 import com.novelbio.analysis.annotation.cog.EnumCogType;
-import com.novelbio.database.domain.geneanno.AGene2Go;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.AGene2Go;
+import com.novelbio.database.model.geneanno.BlastInfo;
+import com.novelbio.database.model.geneanno.GOtype;
+import com.novelbio.database.model.geneanno.Go2Term;
+import com.novelbio.database.model.kegg.KGpathway;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 public abstract class StatisticTestGene2Item {

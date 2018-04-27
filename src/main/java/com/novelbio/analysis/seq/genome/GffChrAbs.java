@@ -12,7 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 /**
  * GffHashGene和SeqHash都是static，也就是一次只能对一个物种进行分析
  * MapReads不是static，也就是可以同时处理多个mapping文件

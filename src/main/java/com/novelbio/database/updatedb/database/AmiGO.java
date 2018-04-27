@@ -9,11 +9,11 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.GOtype.GORelation;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.GOtype;
+import com.novelbio.database.model.geneanno.GeneInfo;
+import com.novelbio.database.model.geneanno.Go2Term;
+import com.novelbio.database.model.geneanno.GOtype.GORelation;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 

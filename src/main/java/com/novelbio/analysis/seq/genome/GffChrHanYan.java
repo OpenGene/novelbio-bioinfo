@@ -23,7 +23,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.java.HeatChart;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 
 import de.erichseifert.gral.util.GraphicsUtils;
 

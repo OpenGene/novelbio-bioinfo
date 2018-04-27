@@ -4,7 +4,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 /**
  * 名字通通小写
  * 计算距离时，SnnnC<br>

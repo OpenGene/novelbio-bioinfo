@@ -10,7 +10,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 public class TestGeneToRegion {
 	

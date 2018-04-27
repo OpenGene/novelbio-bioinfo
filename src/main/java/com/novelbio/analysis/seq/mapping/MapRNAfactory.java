@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.mapping;
 
 import com.novelbio.analysis.ExceptionNBCsoft;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 public class MapRNAfactory {
 	public static MapRNA generateMapRNA(SoftWare softWare) {

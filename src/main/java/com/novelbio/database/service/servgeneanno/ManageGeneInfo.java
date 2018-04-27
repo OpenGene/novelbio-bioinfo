@@ -3,12 +3,12 @@ package com.novelbio.database.service.servgeneanno;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.novelbio.database.domain.geneanno.AGeneInfo;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.domain.geneanno.UniGeneInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.mongorepo.geneanno.RepoGeneInfo;
-import com.novelbio.database.mongorepo.geneanno.RepoUniGeneInfo;
+import com.novelbio.database.dao.geneanno.RepoGeneInfo;
+import com.novelbio.database.dao.geneanno.RepoUniGeneInfo;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.AGeneInfo;
+import com.novelbio.database.model.geneanno.GeneInfo;
+import com.novelbio.database.model.geneanno.UniGeneInfo;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageGeneInfo {

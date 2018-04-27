@@ -27,9 +27,9 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.geneanno.BlastInfo;
 
 /**
  *  指定一条序列，将该序列比对到指定物种的dna或rna上，并获得序列 

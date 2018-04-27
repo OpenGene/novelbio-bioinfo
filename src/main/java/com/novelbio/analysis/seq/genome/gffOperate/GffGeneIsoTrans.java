@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 public class GffGeneIsoTrans extends GffGeneIsoInfo {
 	private static final long serialVersionUID = -3187469258704218874L;
 	

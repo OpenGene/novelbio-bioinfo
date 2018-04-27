@@ -17,8 +17,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.species.Species;
 
 public class GffSpeciesInfo {
 	private static Logger logger = Logger.getLogger(GffSpeciesInfo.class);

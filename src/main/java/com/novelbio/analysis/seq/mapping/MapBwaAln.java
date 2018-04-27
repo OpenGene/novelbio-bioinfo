@@ -19,7 +19,7 @@ import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 /**
  * 在set里面有很多参数可以设定，不设定就用默认

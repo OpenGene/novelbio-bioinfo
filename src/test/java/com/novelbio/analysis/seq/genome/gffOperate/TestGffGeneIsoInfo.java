@@ -6,7 +6,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 public class TestGffGeneIsoInfo {
 	

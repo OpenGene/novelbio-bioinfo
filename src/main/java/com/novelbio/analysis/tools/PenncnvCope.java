@@ -12,7 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 
 /**
  * 给周琴做分析的一套东西

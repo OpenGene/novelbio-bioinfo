@@ -27,7 +27,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.plot.ImageUtils;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 
 /**
  * 重写RSeQC的junction saturation模块，因为那个会报错

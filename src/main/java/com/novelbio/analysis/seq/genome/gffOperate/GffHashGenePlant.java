@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 /**
  * @deprecated 用{@link GffHashGeneNCBI}替换<br><br>

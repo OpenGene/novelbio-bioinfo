@@ -6,10 +6,10 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modkegg.KeggInfo;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.modkegg.KeggInfo;
+import com.novelbio.database.model.geneanno.GOtype;
+import com.novelbio.database.model.kegg.KGpathway;
 
 public class KEGGPathwayFunTest extends FunctionTest {
 

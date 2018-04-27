@@ -8,9 +8,9 @@ import java.util.Hashtable;
 import java.util.List;
 
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
-import com.novelbio.database.domain.geneanno.*;
-import com.novelbio.database.domain.kegg.*;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.*;
+import com.novelbio.database.model.kegg.*;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKPathRelation;

@@ -15,11 +15,11 @@ import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.domain.geneanno.EnumSpeciesFile;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.database.model.species.Species.SeqType;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.domain.species.Species.SeqType;
+import com.novelbio.database.model.geneanno.BlastInfo;
+import com.novelbio.database.model.geneanno.EnumSpeciesFile;
 import com.novelbio.generalConf.PathDetailNBC;
 
 /**

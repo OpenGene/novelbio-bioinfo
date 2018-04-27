@@ -22,7 +22,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**

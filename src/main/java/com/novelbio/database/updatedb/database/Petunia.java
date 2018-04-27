@@ -7,7 +7,7 @@ import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 public class Petunia {
 	public static void main(String[] args) {
 		GeneID copedID = new GeneID("PH_TC2092", 0);

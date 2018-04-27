@@ -1,6 +1,6 @@
 import org.springframework.data.mongodb.core.MongoTemplate;
 
-import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.model.geneanno.BlastInfo;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 

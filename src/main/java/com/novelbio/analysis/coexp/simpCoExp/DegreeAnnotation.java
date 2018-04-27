@@ -7,7 +7,7 @@ import java.util.Map;
 
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /**

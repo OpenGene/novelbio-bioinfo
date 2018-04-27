@@ -14,8 +14,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 public class LncInfo {
 	int taxID = 0;

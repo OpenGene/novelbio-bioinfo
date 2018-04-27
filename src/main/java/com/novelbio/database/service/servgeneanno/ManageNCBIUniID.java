@@ -7,12 +7,12 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.geneanno.AgeneUniID;
-import com.novelbio.database.domain.geneanno.NCBIID;
-import com.novelbio.database.domain.geneanno.UniProtID;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.mongorepo.geneanno.RepoNCBIID;
-import com.novelbio.database.mongorepo.geneanno.RepoUniID;
+import com.novelbio.database.dao.geneanno.RepoNCBIID;
+import com.novelbio.database.dao.geneanno.RepoUniID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.AgeneUniID;
+import com.novelbio.database.model.geneanno.NCBIID;
+import com.novelbio.database.model.geneanno.UniProtID;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageNCBIUniID {

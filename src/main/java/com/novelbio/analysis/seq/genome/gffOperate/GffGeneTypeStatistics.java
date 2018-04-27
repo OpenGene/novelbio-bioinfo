@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import com.novelbio.analysis.seq.GeneExpTable;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 
 public class GffGeneTypeStatistics {

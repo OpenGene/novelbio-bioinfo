@@ -5,8 +5,8 @@ import java.util.HashMap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.BlastInfo;
 
 /** 
  * trinity获得的结果会做blast，因为是用iso做的blast，

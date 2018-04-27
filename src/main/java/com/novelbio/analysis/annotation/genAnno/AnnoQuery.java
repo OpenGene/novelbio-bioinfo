@@ -10,8 +10,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.multithread.RunInfo;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.GOtype;
 /**
  * 批量注释
  * @author zong0jie

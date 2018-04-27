@@ -5,9 +5,9 @@ import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.Gene2Go;
+import com.novelbio.database.model.geneanno.GeneInfo;
 
 public class SoyBean {
 	public static void main(String[] args) {

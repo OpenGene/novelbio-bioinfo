@@ -10,8 +10,8 @@ import org.junit.Test;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 public class TestMapSplice {
 	String fq1;

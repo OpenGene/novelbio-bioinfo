@@ -22,9 +22,9 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.information.SoftWareInfo;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 //TODO 移动文件还不够好
 /**
  * 新的miRNA的预测，基于mirDeep的算法

@@ -9,7 +9,7 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.model.geneanno.BlastInfo;
 
 public class MiRNAtargetPlant {	
 //	String flag = DateUtil.getDateAndRandom();

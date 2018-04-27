@@ -15,7 +15,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.MapLibrary;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 
 
 /**

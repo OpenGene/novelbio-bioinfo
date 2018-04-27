@@ -14,7 +14,7 @@ import com.novelbio.analysis.seq.genome.GffChrSeq;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 public class ExtractSeq {
 	public static void main(String[] args) {

@@ -25,10 +25,10 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.util.ServiceEnvUtil;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.SpeciesFileSepChr;
-import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
+import com.novelbio.database.domain.species.SpeciesFileSepChr;
+import com.novelbio.database.domain.species.SpeciesIndexMappingMaker;
+import com.novelbio.database.model.information.SoftWareInfo;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 import com.novelbio.generalConf.PathDetailNBC;
 
 /**

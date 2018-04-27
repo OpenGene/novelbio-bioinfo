@@ -4,7 +4,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 
 public class DownloadKEGG {
 	public static void main(String[] args) {

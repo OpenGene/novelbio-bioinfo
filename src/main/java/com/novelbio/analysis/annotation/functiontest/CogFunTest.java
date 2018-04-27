@@ -15,8 +15,8 @@ import com.novelbio.analysis.annotation.cog.COGanno;
 import com.novelbio.analysis.annotation.cog.CogInfo;
 import com.novelbio.analysis.annotation.cog.EnumCogType;
 import com.novelbio.base.dataStructure.FisherTest;
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.GOtype;
 
 public class CogFunTest extends FunctionTest {
 	COGanno cogAnno;

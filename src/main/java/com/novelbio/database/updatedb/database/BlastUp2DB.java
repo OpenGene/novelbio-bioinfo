@@ -10,10 +10,10 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.BlastFileInfo;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.geneanno.BlastFileInfo;
+import com.novelbio.database.model.geneanno.BlastInfo;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 
 public class BlastUp2DB {

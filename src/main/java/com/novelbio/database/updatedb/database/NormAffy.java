@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 /**
  * 常规affy的注释文件，仅导入affy探针，其他注释通通不导入<br>
  * <b>如果导入不进去，考虑将ss[8]放入筛选条件</b><br>

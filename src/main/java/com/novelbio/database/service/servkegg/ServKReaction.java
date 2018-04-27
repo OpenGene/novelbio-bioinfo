@@ -2,8 +2,8 @@ package com.novelbio.database.service.servkegg;
 
 import java.util.List;
 
-import com.novelbio.database.domain.kegg.KGreaction;
-import com.novelbio.database.mongorepo.kegg.RepoKReaction;
+import com.novelbio.database.dao.kegg.RepoKReaction;
+import com.novelbio.database.model.kegg.KGreaction;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ServKReaction {

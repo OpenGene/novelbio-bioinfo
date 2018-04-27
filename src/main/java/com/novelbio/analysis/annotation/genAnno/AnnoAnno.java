@@ -7,8 +7,8 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.StringOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modkegg.KeggInfoAbs;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.modkegg.KeggInfoAbs;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 public class AnnoAnno extends AnnoAbs {

@@ -8,8 +8,8 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.GeneInfo;
 
 /**
  * 升级UniProt下载的所有文件的类

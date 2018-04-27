@@ -2,8 +2,8 @@ package com.novelbio.database.service.servcosmic;
 
 import java.util.List;
 
-import com.novelbio.database.domain.cosmic.CompleteExport;
-import com.novelbio.database.mongorepo.cosmic.RepoCompleteExport;
+import com.novelbio.database.dao.cosmic.RepoCompleteExport;
+import com.novelbio.database.model.cosmic.CompleteExport;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class MgmtCompleteExport {

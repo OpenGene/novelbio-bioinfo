@@ -9,7 +9,7 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.resequencing.SnpAnnotation;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 public class GffHashGeneGBK extends GffHashGeneAbs {
 	private static final Logger logger = Logger.getLogger(GffHashGeneGBK.class);

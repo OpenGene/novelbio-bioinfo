@@ -16,7 +16,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesTxt;

@@ -20,8 +20,8 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 /** 

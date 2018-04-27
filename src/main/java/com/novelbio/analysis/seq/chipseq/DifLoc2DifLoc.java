@@ -16,7 +16,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 import com.novelbio.listOperate.ListCodAbs;
 import com.novelbio.listOperate.ListCodAbsDu;
 

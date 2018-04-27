@@ -28,7 +28,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 import com.novelbio.listOperate.ListAbs;
 import com.novelbio.listOperate.ListCodAbs;
 /**
@@ -887,11 +887,11 @@ class MapReadsAddAlignRecord {
 		for (Alignment is : lsAddLoc) {
 			for (int i = is.getStartAbs(); i <=is.getEndAbs(); i++) {
 				if (i >= chrLoc.length) {
-					logger.info("超出范围："+ i);
+					logger.info("out of range: "+ i);
 					break;
 				}
 				if (i < 0) {
-					logger.info("超出范围："+ i);
+					logger.info("out of range: "+ i);
 					continue;
 				}
 				chrLoc[i] = chrLoc[i] + addNum;

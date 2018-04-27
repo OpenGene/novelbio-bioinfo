@@ -1,6 +1,6 @@
 package com.novelbio.analysis.coexp.simpCoExp;
 
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 
 
 public class TestCoExp {

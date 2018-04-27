@@ -7,9 +7,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.google.common.collect.HashMultimap;
-import com.novelbio.database.domain.geneanno.AGene2Go;
-import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.AGene2Go;
+import com.novelbio.database.model.geneanno.Go2Term;
 
 public class GeneID2LsGoLevel extends GeneID2LsGo {
 	private final static Logger logger = Logger.getLogger(GeneID2LsGoLevel.class);

@@ -7,8 +7,8 @@ import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.information.SoftWareInfo;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 public class WigToBigWig implements IntCmdSoft {
 	String exePath;

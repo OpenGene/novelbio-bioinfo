@@ -2,8 +2,8 @@ package com.novelbio.database.service.servkegg;
 
 import java.util.List;
 
-import com.novelbio.database.domain.kegg.KGrelation;
-import com.novelbio.database.mongorepo.kegg.RepoKRelation;
+import com.novelbio.database.dao.kegg.RepoKRelation;
+import com.novelbio.database.model.kegg.KGrelation;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ServKRelation {

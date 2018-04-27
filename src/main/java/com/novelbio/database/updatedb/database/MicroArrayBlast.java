@@ -7,8 +7,8 @@ import java.util.Set;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.BlastInfo;
 
 /**
  * 将Microarray与本物中序列blast的结果导入数据库

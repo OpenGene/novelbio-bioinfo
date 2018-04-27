@@ -3,9 +3,10 @@ package com.novelbio.test;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
-import java.util.Set;
 
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+
+import java.util.Set;
 
 /**
  * 检测equal不同的类，相同的hashcode，会不会碰撞

@@ -1,6 +1,6 @@
 package com.novelbio.analysis.annotation.pathway.network;
 
-import com.novelbio.database.domain.kegg.KGentry;
+import com.novelbio.database.model.kegg.KGentry;
 
 /**
  * 用kegg的entry查找relation表后，获得的结果保存在该类里面<br>

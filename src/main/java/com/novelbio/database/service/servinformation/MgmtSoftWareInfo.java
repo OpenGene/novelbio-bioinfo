@@ -8,9 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.mongorepo.information.RepoSoftwareInfo;
+import com.novelbio.database.dao.information.RepoSoftwareInfo;
+import com.novelbio.database.model.information.SoftWareInfo;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 import com.novelbio.generalConf.PathDetailNBC;
 /**

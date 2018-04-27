@@ -14,7 +14,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 @Component
 @Scope("prototype")

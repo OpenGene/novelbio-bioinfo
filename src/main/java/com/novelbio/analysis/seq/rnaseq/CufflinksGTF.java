@@ -16,8 +16,8 @@ import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.information.SoftWareInfo;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 public class CufflinksGTF implements IntCmdSoft, IntReconstructIsoUnit {
 	private static final Logger logger = Logger.getLogger(CufflinksGTF.class);
@@ -176,7 +176,7 @@ public class CufflinksGTF implements IntCmdSoft, IntReconstructIsoUnit {
 	 * false: 仅用输入的gff文件进行定量工作
 	 */
 	public void setGtfFile(String gtfFile, boolean isReconstruct) {
-		if (FileOperate.isFileExistAndBigThan0(gtfFile)) {
+		if (!FileOperate.isFileExistAndBigThan0(gtfFile)) {
 			throw new ExceptionNbcParamError("gtffile " + gtfFile + " is not exist");
 		}
 		this.gtfFile = gtfFile;

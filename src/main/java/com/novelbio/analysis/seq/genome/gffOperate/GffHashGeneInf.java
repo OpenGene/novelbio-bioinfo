@@ -6,7 +6,7 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.genome.GffChrStatistics;
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 /**
  * 将GffHash和GffHashGene的方法全部列在了这里
  * @author zong0jie

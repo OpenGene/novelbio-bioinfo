@@ -2,8 +2,8 @@ package com.novelbio.database.service.servcosmic;
 
 import java.util.List;
 
-import com.novelbio.database.domain.cosmic.CosmicCNV;
-import com.novelbio.database.mongorepo.cosmic.RepoNCV;
+import com.novelbio.database.dao.cosmic.RepoNCV;
+import com.novelbio.database.model.cosmic.CosmicCNV;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class MgmtNCV {

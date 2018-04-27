@@ -6,7 +6,7 @@ import java.util.List;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.mirna.MiRNAnovelAnnotaion;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 
 public class TestMiRNAnovelAnnotation {
 	MiRNAnovelAnnotaion miRNAnovelAnnotaion = new MiRNAnovelAnnotaion();

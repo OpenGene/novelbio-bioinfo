@@ -4,7 +4,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 
 /**
  * 将从NCBI下载的序列，其序列名中的>gi|513046643|ref|NW_004675961.1| Setaria italica strain Yugu1 unplaced genomic scaffold, Setaria V1 SETITscaffold_1, whole genome shotgun sequence

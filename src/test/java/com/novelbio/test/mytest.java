@@ -4,6 +4,8 @@ package com.novelbio.test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +25,8 @@ import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fastq.FastQ;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffOperate.GffDetailCG;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
@@ -32,17 +36,22 @@ import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
 import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
 import com.novelbio.analysis.seq.sam.AlignSamReading;
 import com.novelbio.analysis.seq.sam.SamFile;
+import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.StringOperate;
+import com.novelbio.base.cmd.CmdMoveFileAli;
+import com.novelbio.base.cmd.CmdOperate;
+import com.novelbio.base.cmd.CmdPathCluster;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.domain.kegg.KGIDgen2Keg;
-import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.base.util.ServiceEnvUtil;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.kegg.KGIDgen2Keg;
+import com.novelbio.database.model.kegg.KGentry;
+import com.novelbio.database.model.kegg.KGpathway;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKPathway;
@@ -58,533 +67,101 @@ public class mytest {
 	static boolean is;
 	
 	public static void main(String[] args) throws IOException {
-		FileOperate.copyFolder(FileOperate.getPath("/media/winE/sssss/bmm"), "/home/novelbio/git/Documents/doc/配置文件/novelbioshanghai/aaa", true);
-	}
-	
-	public static void changeEntry(String in) {
-		String inTmp = in+ ".tmp";
-		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(in);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(inTmp, true);
-		for (String content : txtReadandWrite.readlines()) {
-			txtWrite.writefileln(content);
-		}
-		txtReadandWrite.close();
-		txtWrite.close();
-		FileOperate.moveFile(true, inTmp, in);
-	}
-	
-	public static void main3(String[] args) {
-		System.out.println(StringOperate.decode("%3D"));
+//		PatternOperate patternOperate = new PatternOperate("/media/nbfs/nbCloud/[\\w/\\._-]+");
+//		System.out.println(patternOperate.getPatFirst("<script param=\"/media/nbfs/nbCloud/public/task/java/bio-info.jar\"/>"));
 		
-//		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/下载/snp-types27.vep.vcf");
-//		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/下载/snp-types27.vep.txt", true);
-//		for (String content : txtRead.readlines()) {
-//			if (content.startsWith("#")) {
-//				continue;
-//			}
-//			
-//			String[] ss = content.split("\t");
-//			List<String> lsResult = new ArrayList<>();
-//			lsResult.add(ss[0]); lsResult.add(ss[1]); lsResult.add(ss[3]); lsResult.add(ss[4]);
-//			String[] sss = ss[7].split("\\|");
-//			Set<String> setHgvsc = new HashSet<>();
-//			Set<String> setHgvsp = new HashSet<>();
-//
-//			for (String hgvs : sss) {
-//				if (hgvs.contains("c.")) {
-//					setHgvsc.add(hgvs.split(":")[1]);
-//				} else if (hgvs.contains("p.")) {
-//					setHgvsp.add(hgvs.split(":")[1]);
+		
+		changeScriptsToBin();
+		
+		
+//		changePathToBin("/media/nbfs/nbCloud/public/taskdatabase", "${database_path}");
+
+//		changePathToBin("/media/nbfs/nbCloud/public/task/scriptmodule/\\w+/scripts|/media/nbfs/nbCloud/public/task/scriptmodule/\\w+/software", "${task_bin_path}");
+	}
+	
+	public static void changeScriptsToBin() {
+		Set<String> setPath = new HashSet<>();
+		
+		PatternOperate patternOperate = new PatternOperate("/media/nbfs/nbCloud/[\\w/\\._-]+");
+		List<String> lsTasks = FileOperate.getLsFoldFileName("hdfs:/nbCloud/public/task/scriptmodule/");
+		List<String> lsFiles = new ArrayList<>();
+		for (String task : lsTasks) {
+			lsFiles.addAll(FileOperate.getLsFoldFileName(task+"/Prepare"));
+			lsFiles.addAll(FileOperate.getLsFoldFileName(task+"/Run"));
+			lsFiles.addAll(FileOperate.getLsFoldFileName(task+"/Summary"));
+		}
+		List<String> lsNew = new ArrayList<>();
+		
+		for (String file : lsFiles) {
+			if (!file.endsWith("xml")) {
+				continue;
+			}
+			TxtReadandWrite txtRead = new TxtReadandWrite(file);
+			for (String content : txtRead.readlines()) {
+//				String info = patternOperate.getPatFirst(content);
+//				if (!StringOperate.isRealNull(info)) {
+//					setPath.add(FileOperate.getParentPathNameWithSep(info));
 //				}
-//			}
-//			String hgvsc = setHgvsc.isEmpty() ? "" : setHgvsc.iterator().next();
-//			String hgvsp = setHgvsp.isEmpty() ? "" : setHgvsp.iterator().next();
-//			lsResult.add(hgvsc);
-//			lsResult.add(hgvsp);
-//			txtWrite.writefileln(lsResult.toArray(new String[0]));
+				if (content.contains("${database_path}")) {
+					System.out.println(file);
+					break;
+				}
+			}
+			txtRead.close();
+		}
+//		for (String string : setPath) {
+//			System.out.println(string);
 //		}
-//		txtRead.close();
-//		txtWrite.close();
+	}
+	
+	public static void changePathToBin(String pattern, String replace) {
+		PatternOperate patternOperate = new PatternOperate(pattern);		
+		List<String> lsTasks = FileOperate.getLsFoldFileName("hdfs:/nbCloud/public/task/scriptmodule/");
+		List<String> lsFiles = new ArrayList<>();
+		for (String task : lsTasks) {
+			lsFiles.addAll(FileOperate.getLsFoldFileName(task+"/Prepare"));
+			lsFiles.addAll(FileOperate.getLsFoldFileName(task+"/Run"));
+			lsFiles.addAll(FileOperate.getLsFoldFileName(task+"/Summary"));
+		}
+		List<String> lsNew = new ArrayList<>();
 		
-	}
-	
-	public static void main2(String[] args) throws Exception {
-		SeqHash seqHash = new SeqHash("/home/novelbio/NBCresource/genome/species/tigr7/chrAll.fa");
-		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/test/29mio-alt-ref");
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/test/29mio-alt-ref.error", true);
-		for (String content : txtRead.readlines(2)) {
-			String[] ss = content.split(" +|\t");
-			String chrId = "chr" + ss[0];
-			int position = Integer.parseInt(ss[2]);
-			String ref = ss[4];
-			String refReal = seqHash.getSeq(chrId, position, position).toString();
-			if (!ref.equals(refReal)) {
-				System.out.println(content + "\t" + refReal);
-				txtWrite.writefileln(content + "\t" + refReal);
-			}
-		}
-		seqHash.close();
-		txtRead.close();
-		txtWrite.close();
-	}
-	
-	public static void geneBody(GffHashGene gffHashGene, String parentPath) throws Exception {
-		int length = 501;
-		List<RegionBed> lsRegionBeds = new ArrayList<>();
-		String geneFile = parentPath + "Symbol_4.txt";
-		TxtReadandWrite txtRead = new TxtReadandWrite(geneFile);
-		for (String content : txtRead.readlines(1)) {
-			String geneName = content.trim();
-			GffGeneIsoInfo iso = gffHashGene.searchISO(geneName);
-			if (iso == null) continue;
-			RegionBed regionBed = new RegionBed(EnumTssPileUpType.pileup_norm_to_length, length);
-			regionBed.setName(geneName);
-			regionBed.addAlign(new Align(iso.getRefID(), iso.getStart(), iso.getEnd()));
-			lsRegionBeds.add(regionBed);
-		}
-		txtRead.close();
-		
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/genebody.txt", true);
-		txtWrite.writefileln("#xaxis");
-		txtWrite.writefileln("#" + ArrayOperate.cmbString(getXaxis(length, 0, 1), " "));
-		for (RegionBed regionBed : lsRegionBeds) {
-			txtWrite.writefileln(regionBed.toString());
-		}
-		txtWrite.close();
-	}
-	
-	public static void tss(GffHashGene gffHashGene, String parentPath) throws Exception {
-		int length = 501;
-		List<RegionBed> lsRegionBeds = new ArrayList<>();
-		String geneFile = parentPath + "Symbol_4.txt";
-		TxtReadandWrite txtRead = new TxtReadandWrite(geneFile);
-		for (String content : txtRead.readlines(1)) {
-			String geneName = content.trim();
-			GffGeneIsoInfo iso = gffHashGene.searchISO(geneName);
-			if (iso == null) continue;
-			RegionBed regionBed = new RegionBed(EnumTssPileUpType.pileup_norm_to_length, length);
-			regionBed.setName(geneName);
-			if (iso.isCis5to3()) {
-				regionBed.addAlign(new Align(iso.getRefID(), iso.getStart() - 1000, iso.getStart() + 1000));
-			} else {
-				regionBed.addAlign(new Align(iso.getRefID(), iso.getStart() + 1000, iso.getStart() - 1000));
-			}
-			lsRegionBeds.add(regionBed);
-		}
-		txtRead.close();
-		
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/tss1k.txt", true);
-		txtWrite.writefileln("#xaxis");
-		txtWrite.writefileln("#" + ArrayOperate.cmbString(getXaxis(length, -1000, 4), " "));
-		for (RegionBed regionBed : lsRegionBeds) {
-			txtWrite.writefileln(regionBed.toString());
-		}
-		txtWrite.close();
-	}
-	
-	public static void tes(GffHashGene gffHashGene, String parentPath) throws Exception {
-		int length = 501;
-		List<RegionBed> lsRegionBeds = new ArrayList<>();
-		String geneFile = parentPath + "Symbol_4.txt";
-		TxtReadandWrite txtRead = new TxtReadandWrite(geneFile);
-		for (String content : txtRead.readlines(1)) {
-			String geneName = content.trim();
-			GffGeneIsoInfo iso = gffHashGene.searchISO(geneName);
-			if (iso == null) continue;
-			RegionBed regionBed = new RegionBed(EnumTssPileUpType.pileup_norm_to_length, length);
-			regionBed.setName(geneName);
-			if (iso.isCis5to3()) {
-				regionBed.addAlign(new Align(iso.getRefID(), iso.getEnd() - 1000, iso.getEnd() + 1000));
-			} else {
-				regionBed.addAlign(new Align(iso.getRefID(), iso.getEnd() + 1000, iso.getEnd() - 1000));
-			}
-			lsRegionBeds.add(regionBed);
-		}
-		txtRead.close();
-		
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/tes1k.txt", true);
-		txtWrite.writefileln("#xaxis");
-		txtWrite.writefileln("#" + ArrayOperate.cmbString(getXaxis(length, -1000, 4), " "));
-		for (RegionBed regionBed : lsRegionBeds) {
-			txtWrite.writefileln(regionBed.toString());
-		}
-		txtWrite.close();
-	}
-	
-	public static void tss500(GffHashGene gffHashGene, String geneFile, String outFile) throws Exception {
-		int length = 501;
-		List<RegionBed> lsRegionBeds = new ArrayList<>();
-		TxtReadandWrite txtRead = new TxtReadandWrite(geneFile);
-		for (String content : txtRead.readlines(1)) {
-			String geneName = content.trim();
-			GffGeneIsoInfo iso = gffHashGene.searchISO(geneName);
-			if (iso == null) continue;
-			RegionBed regionBed = new RegionBed(EnumTssPileUpType.pileup_norm_to_length, length);
-			regionBed.setName(geneName);
-			if (iso.isCis5to3()) {
-				regionBed.addAlign(new Align(iso.getRefID(), iso.getStart() - 500, iso.getStart() + 500));
-			} else {
-				regionBed.addAlign(new Align(iso.getRefID(), iso.getStart() + 500, iso.getStart() - 500));
-			}
-			lsRegionBeds.add(regionBed);
-		}
-		txtRead.close();
-		
-		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
-		txtWrite.writefileln("#xaxis");
-		txtWrite.writefileln("#" + ArrayOperate.cmbString(getXaxis(length, -500, 2), " "));
-		for (RegionBed regionBed : lsRegionBeds) {
-			txtWrite.writefileln(regionBed.toString());
-		}
-		txtWrite.close();
-	}
-	
-	private static double[] getXaxis(int length, int start, int step) {
-		double[] xaxis = new double[length];
-		for (int i = 0; i < length; i++) {
-			xaxis[i] = start + i*step;
-		}
-		return xaxis;
-	}
-	
-	private static List<Integer> getLsIntegers(String colInfo) {
-		if (StringOperate.isRealNull(colInfo)) {
-			return Lists.newArrayList(0);
-		}
-		colInfo = colInfo.replace(",", " ").replace(";", " ");
-		
-		String[] ss = colInfo.split(" +");
-		Set<Integer> setCols = new LinkedHashSet<>();
-		for (String colTmp : ss) {
-			if (StringOperate.isRealNull(colTmp)) {
+		for (String file : lsFiles) {
+			if (!file.endsWith("xml")) {
 				continue;
 			}
-			if (colTmp.contains("-")) {
-				setCols.addAll(getLsSequenceNum(colTmp));
-			} else {
-				try {
-					setCols.add(Integer.parseInt(colTmp));
-				} catch (Exception e) {
-					throw new RuntimeException("cannot contain " + colTmp);
+			TxtReadandWrite txtRead = new TxtReadandWrite(file);
+			for (String content : txtRead.readlines()) {
+				if (!StringOperate.isRealNull(patternOperate.getPatFirst(content))) {
+					lsNew.add(file);
+					break;
 				}
 			}
-		}
-		return new ArrayList<>(setCols);
-	}
-	
-	private static List<Integer> getLsSequenceNum(String colSeq) {
-		String[] ss = colSeq.trim().split("-");
-		if (ss.length > 2) {
-			throw new RuntimeException("cannot contain " + colSeq);
-		}
-		int start = 0, end = 0;
-		try {
-			start = Integer.parseInt(ss[0]);
-			end = Integer.parseInt(ss[1]);
-		} catch (Exception e) {
-			throw new RuntimeException("cannot contain " + colSeq);
+			txtRead.close();
 		}
 		
-		List<Integer> lsCols = new ArrayList<>();
-		
-		if (start <= end) {
-			for (int i = start; i <= end; i++) {
-				lsCols.add(i);
+		Set<String> setChanged = new HashSet<>();
+		for (String file : lsNew) {
+			String parentPath = FileOperate.getParentPathNameWithSep(file);
+			parentPath = FileOperate.getParentPathNameWithSep(parentPath);
+			if (!setChanged.contains(parentPath)) {
+				FileOperate.moveFile(true, parentPath + "scripts", parentPath + "bin");
+				FileOperate.moveFile(true, parentPath + "software", parentPath + "bin");
+				setChanged.add(parentPath);
 			}
-		} else {
-			for (int i = start; i >= end; i--) {
-				lsCols.add(i);
-			}
-		}
-		return lsCols;
-	}
-	
-	
-	public static void getGeneFromPath() throws Exception {
-		List<String> lsGeneName = new ArrayList<>();
-//		List<KGpathway> lsKGpathways = ServKPathway.getInstance().findAll();
-//		System.out.println();
-		KGpathway kGpathway = ServKPathway.getInstance().findByPathName("path:mmu11651");
-		List<KGentry> lsKGentry = ServKEntry.getInstance().findByPathName(kGpathway.getPathName());
-		for (KGentry kGentry : lsKGentry) {
-			
-			KGIDgen2Keg kgiDgen2Keg = ServKIDgen2Keg.getInstance().findByKegId(kGentry.getEntryName());
-			if (kgiDgen2Keg != null) {
-				GeneID geneID = new GeneID(GeneID.IDTYPE_GENEID, kgiDgen2Keg.getGeneID()+"", kgiDgen2Keg.getTaxID());
-				lsGeneName.add(geneID.getSymbol());
-			}
-		}
-		for (String symbol : lsGeneName) {
-			System.out.println(symbol);
-		}
-		
-	}
-	
-	private static void runPvalue(int repeat) throws Exception {}
-	
-	private static int[] getIntContent(String content) {
-		Random random = new Random();
-		
-		String[] ss = content.split("::");
-		int a = Integer.parseInt(ss[0]) + random.nextInt(100)-50;
-		if (a < 0) {
-			a = 2;
-		}
-		int b = Integer.parseInt(ss[1]) + random.nextInt(100)-50;
-		if (b < 0) {
-			b = 2;
-		}
-		
-		int[] result = new int[]{a, b};
-		return result;
-	}
-	
-	private static String getStrInt(List<int[]> lsCtrl) {
-		String ss = "";
-		for (int[] is : lsCtrl) {
-			ss+= is[0] + ":" + is[1] + "\t";
-		}
-		return ss;
-	}
-	
-	/**
-	 * 差异可变剪接计算pvalue
-	 * 实验数据
-	 * 24 35
-	 * 16 33
-	 * 45 66
-	 * 
-	 * 34 31
-	 * 25 18
-	 * 56 44
-	 * 
-	 */
-	private static void testPvalue() {
-		List<int[]> lsTreat = new ArrayList<>();
-		lsTreat.add(new int[]{24, 35});
-		lsTreat.add(new int[]{16, 33});
-		lsTreat.add(new int[]{45, 66});
-		
-		List<int[]> lsCtrl = new ArrayList<>();
-		lsCtrl.add(new int[]{34, 31});
-		lsCtrl.add(new int[]{25, 18});
-		lsCtrl.add(new int[]{56, 44});
-		
-		System.out.println(getPvalue(lsTreat, lsCtrl));
-	}
-	
-	
-	private static double getPvalue(List<int[]> lsTreat2LsValue, List<int[]> lsCtrl2LsValue) {
-		double chiCvT = 0, chiIn = 0;
-		int[] ctrlFirst = null, treatFirst = null;
-		int[] ctrlLast = null, treatLast = null;
-		
-		int dfCvT= lsTreat2LsValue.size();
-		int dfIn = 0;
-		for (int i = 0; i < lsTreat2LsValue.size(); i++) {
-			int[] treatOne = lsTreat2LsValue.get(i);
-			int[] ctrlOne = lsCtrl2LsValue.get(i);
-			
-			if (i == 0) {
-				ctrlFirst = ctrlOne;
-				treatFirst = treatOne;
-			}
-			if (ctrlLast != null) {
-				dfIn += 2;
-				chiIn += chiSquareDataSetsComparison(ctrlLast, ctrlOne);
-				chiIn += chiSquareDataSetsComparison(treatLast, treatOne);
-			}
-			if (i == lsTreat2LsValue.size() - 1) {
-				dfIn += 2;
-				chiIn += chiSquareDataSetsComparison(ctrlFirst, ctrlOne);
-				chiIn += chiSquareDataSetsComparison(treatFirst, treatOne);
-			}
-			
-			chiCvT += chiSquareDataSetsComparison(treatOne, ctrlOne);
-		}
-		
-		double f = (chiCvT/dfCvT) / (chiIn/dfIn);
-		
-		double p = 2.0 * Beta.regularizedIncompleteBetaFunction(0.5 * dfIn, 0.5 * dfCvT, dfIn / (dfIn + dfCvT * f));
-		if (p > 1.0) {
-			p = 2.0 - p;
-        }
-		
-		return p;
-	}
-	
-	
-	protected static double chiSquareDataSetsComparison(int[] cond1, int[] cond2) {
-		return chiSquareDataSetsComparison1(cond1, cond2);
-	}
-	
-	protected static double chiSquareDataSetsComparison1(int[] cond1, int[] cond2) {
-		long[] cond1Long = new long[cond1.length];
-		long[] cond2Long = new long[cond2.length];
-		for (int i = 0; i < cond1.length; i++) {
-			cond1Long[i] = cond1[i];
-		}
-		for (int i = 0; i < cond2.length; i++) {
-			cond2Long[i] = cond2[i];
-		}
-		try {
-			double chisq = TestUtils.chiSquareDataSetsComparison(cond1Long, cond2Long);
-			return chisq;
-		} catch (Exception e) {
-			return 1.0;
-		}
-	}
-	
-	protected static double chiSquareDataSetsComparison2(int[] cond1, int[] cond2) {
-		ChiSqTest chiSqTest = ChiSqTest.test(cond1, cond2);
-		return chiSqTest.chisq;
-	}
-	
-	
-	
-	
-	
-	private static void test() {
-		Species species = new Species(39947);
-		species.setVersion("tigr7");
-		Map<String, Long> mapChr2Len = SeqHash.getMapChrId2Len(species.getChromSeq() + ".fai");
-		ChrDensity chrDensity = new ChrDensity(mapChr2Len, 1000000);
-		TxtReadandWrite txtRead = new TxtReadandWrite("/media/winE/resources/fanwei/combine/JP69.bed");
-		for (String content : txtRead.readlines()) {
-			String[] ss = content.split("\t");
-			int start = Integer.parseInt(ss[1]);
-			int end = Integer.parseInt(ss[2]);
-			if (Math.abs(start - end) < 50) {
-				continue;
-			}
-			chrDensity.addSite(ss[0], Integer.parseInt(ss[1]));
-		}
-		
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/resources/fanwei/combine/JP69_count.txt", true);
-		for (HistList histList : chrDensity.getMapChr2His().values()) {
-			for (HistBin histBin : histList) {
-				txtWrite.writefileln(histList.getName() + "\t" + (int)histBin.getThisNumber() + "\t" + histBin.getCountNumber());
-			}
-		}
-		
-		txtRead.close();
-		txtWrite.close();
-	}
-	
-	private static void getCoveredRegion() {
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/winE/resources/fanwei/combine/JP69.bed", true);
-		SamFile samFile = new SamFile("/media/winE/resources/fanwei/combine/JP69_sorted.bam");
-		MapReads mapReads = new MapReads();
-		int invNum = 2;
-		mapReads.setInvNum(invNum);
-		mapReads.prepareAlignRecord(samFile.readFirstLine());
-		mapReads.setMapChrID2Len(samFile.getMapChrID2Length());
-
-		AlignSamReading alignSamReading = new AlignSamReading(samFile);
-		alignSamReading.addAlignmentRecorder(mapReads);
-		alignSamReading.run();
-		
-		for (String chrId : mapReads.getChrIDLs()) {
-			ChrMapReadsInfo mapReadsInfo = mapReads.getChrMapReadsInfo(chrId);
-			
-			int num = 0;
-			int start = 0;
-			
-			int[] sumChrBps = mapReadsInfo.getSumChrBpReads();
-			for (int i = 0; i < sumChrBps.length; i++) {
-				int loc = i*invNum;
-				int pileUp = sumChrBps[i];
-				double pileUpD = (double)pileUp/mapReads.fold;
-				if (pileUpD > 10) {
-					if (num == 0) {
-						start = loc;
-					}
-					num++;
-				} else {
-					if (num*invNum > 70) {
-						txtWrite.writefileln(chrId + "\t" + start + "\t" + (start+ num*invNum));
-					}
-					num = 0;				
+			TxtReadandWrite txtRead = new TxtReadandWrite(file);
+			TxtReadandWrite txtWrite = new TxtReadandWrite(file+".new", true);
+			for (String content : txtRead.readlines()) {
+				String pat = patternOperate.getPatFirst(content);
+				if (!StringOperate.isRealNull(pat)) {
+					content = content.replace(pat, replace);
 				}
+				txtWrite.writefileln(content);
 			}
-		}
-
-		txtWrite.close();
-	}
-	
-	private static void makeIndexTophat(Species species) {
-		GffChrAbs gffChrAbs = new GffChrAbs(species);
-		IndexMapSplice maker = (IndexMapSplice)IndexMappingMaker.createIndexMaker(SoftWare.bwa_aln);
-		maker.setLock(false);
-		maker.setChrIndex(species.getIndexChr(SoftWare.bowtie));
-		maker.IndexMake();
-		gffChrAbs.close();
-		System.out.println("finish " + species.getCommonName());
-	}
-	
-	
-	private static void run(String group, String name) {
-		int i = 0;
-
-		try {
-			System.out.println("start run " + group + "\t" + name);
-
-			String parentPath = "/run/media/novelbio/4256740f-b44a-4500-89ab-61ce6448aeb6/F15FTSECKW0321_HUMcxvR/Raw/" + group + "/";
-			FastQ fastQ = new FastQ(parentPath + name + "_1.fq.gz");
-			FastQ fastQ2 = new FastQ(parentPath + name + "_2.fq.gz");
-			
-			for (FastQRecord[] fQRecords : fastQ.readlinesPE(fastQ2)) {
-				i++;
-				if (i%5000000 == 0) {
-					System.out.println(i);
-				}
-			}
-			System.out.println(group + "\t" + name + " is ok, linenum " + i);
-			fastQ.close();
-			fastQ2.close();
-		} catch (Exception e) {
-			System.out.println(group + "\t" + name + " is error, linenum " + i);
-		}
-
-	}
-	
-	protected static double chiSquareTestDataSetsComparison(int[] cond1, int[] cond2) {
-		long[] cond1Long = new long[cond1.length];
-		long[] cond2Long = new long[cond2.length];
-		for (int i = 0; i < cond1.length; i++) {
-			cond1Long[i] = cond1[i] + 1;
-		}
-		for (int i = 0; i < cond2.length; i++) {
-			cond2Long[i] = cond2[i] + 1;
-		}
-		try {
-			return TestUtils.chiSquareTestDataSetsComparison(cond1Long, cond2Long);
-		} catch (Exception e) {
-			return 1.0;
+			txtRead.close();
+			txtWrite.close();
+			System.out.println("change file: " + file);
+			FileOperate.moveFile(true, file+".new", file);
 		}
 	}
-	private static List<Align> mergeNearbyAlign(List<Align> lsAligns) {
-		List<Align> lsAlignsResult = new ArrayList<>();
-		Align alignLast = null;
-		for (Align align : lsAligns) {
-			if (alignLast == null) {
-				alignLast = align;
-				continue;
-			}
-			int distance = align.getStartAbs() - alignLast.getEndAbs();
-			if (distance < 0) {
-				throw new RuntimeException("distance less than 0");
-			} else if (distance < 20) {
-				System.out.println("merge");
-				align.setStartAbs(alignLast.getStartAbs());
-			} else {
-				lsAlignsResult.add(alignLast);
-			}
-			alignLast = align;
-		}
-		lsAlignsResult.add(alignLast);
-		return lsAlignsResult;
-    }
-	
 	
 }

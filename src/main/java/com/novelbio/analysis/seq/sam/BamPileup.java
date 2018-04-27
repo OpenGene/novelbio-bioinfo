@@ -10,8 +10,8 @@ import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.ExceptionNbcFileInputNotExist;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.information.SoftWareInfo;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 public class BamPileup implements IntCmdSoft {
 //	samtools mpileup -EB  -C50 -f $chrmFa -Q 13 $bamFile > $out

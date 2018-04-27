@@ -5,8 +5,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.novelbio.database.domain.geneanno.DBInfo;
-import com.novelbio.database.mongorepo.geneanno.RepoDBinfo;
+import com.novelbio.database.dao.geneanno.RepoDBinfo;
+import com.novelbio.database.model.geneanno.DBInfo;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageDBInfo {

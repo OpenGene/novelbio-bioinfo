@@ -9,7 +9,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.snphgvs.SnpInfo;
 import com.novelbio.analysis.seq.snphgvs.SnpIsoHgvsc;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 public class TestSnpHgvsc {
 	

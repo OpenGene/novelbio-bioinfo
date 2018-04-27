@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.fasta.format;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 
 /**
  * 把NCBI的refseq的格式进行修正

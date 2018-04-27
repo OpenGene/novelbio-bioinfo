@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 /** 细菌的GFF文件，因为细菌只有一个染色体，所以默认名字是novelbio */
 public class GffHashGeneBacterium extends GffHashGeneAbs {

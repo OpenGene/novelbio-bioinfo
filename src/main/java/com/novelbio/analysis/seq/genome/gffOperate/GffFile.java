@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.novelbio.base.dataOperate.DateUtil;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 import com.novelbio.database.service.servgff.MgmtGffDetailGene;
 
 @Document(collection = "gfffileinfo")

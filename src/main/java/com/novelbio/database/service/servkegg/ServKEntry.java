@@ -2,8 +2,8 @@ package com.novelbio.database.service.servkegg;
 
 import java.util.List;
 
-import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.mongorepo.kegg.RepoKEntry;
+import com.novelbio.database.dao.kegg.RepoKEntry;
+import com.novelbio.database.model.kegg.KGentry;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 public class ServKEntry {
 	RepoKEntry mapKEntry;

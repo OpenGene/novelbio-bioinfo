@@ -11,7 +11,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.generalConf.TitleFormatNBC;
 /**
  * 比对到RefSeq上的ncRNA，看其具体情况

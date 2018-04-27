@@ -7,7 +7,7 @@ import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 
 /**给定基因的mRNA序列和protein序列，生成一个GffHashGene，其中每个基因就是一个独立的ListGff */
 public class GffHashGeneRefSeq extends GffHashGeneAbs{

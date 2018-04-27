@@ -22,7 +22,7 @@ import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 import junit.framework.TestCase;
 /**

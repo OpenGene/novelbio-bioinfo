@@ -11,7 +11,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 import com.novelbio.generalConf.PathDetailNBC;
 
 public class KgmlDownLoad {

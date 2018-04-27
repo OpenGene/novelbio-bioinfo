@@ -18,9 +18,9 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamFileStatistics;
 import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.information.SoftWareInfo;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 import com.novelbio.generalConf.TitleFormatNBC;
 
 public class CtrlMiRNApredict implements IntCmdSoft {

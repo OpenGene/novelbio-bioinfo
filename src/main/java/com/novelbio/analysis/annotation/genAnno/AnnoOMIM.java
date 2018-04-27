@@ -3,13 +3,13 @@ package com.novelbio.analysis.annotation.genAnno;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.database.domain.geneanno.AGene2Go;
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.omim.MIMInfo;
-import com.novelbio.database.domain.omim.MorbidMap;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modomim.MgmtMorbidMap;
-import com.novelbio.database.model.modomim.MgmtOMIMUnit;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.modomim.MgmtMorbidMap;
+import com.novelbio.database.domain.modomim.MgmtOMIMUnit;
+import com.novelbio.database.model.geneanno.AGene2Go;
+import com.novelbio.database.model.geneanno.GOtype;
+import com.novelbio.database.model.omim.MIMInfo;
+import com.novelbio.database.model.omim.MorbidMap;
 
 
 public class AnnoOMIM extends AnnoAbs {

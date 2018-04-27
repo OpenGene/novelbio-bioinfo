@@ -2,8 +2,8 @@ package com.novelbio.database.service.servcosmic;
 
 import java.util.List;
 
-import com.novelbio.database.domain.cosmic.CancerGene;
-import com.novelbio.database.mongorepo.cosmic.RepoCancerGene;
+import com.novelbio.database.dao.cosmic.RepoCancerGene;
+import com.novelbio.database.model.cosmic.CancerGene;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class MgmtCancerGene {

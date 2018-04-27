@@ -5,9 +5,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.novelbio.database.domain.geneanno.AGene2Go;
-import com.novelbio.database.domain.geneanno.UniGene2Go;
-import com.novelbio.database.mongorepo.geneanno.RepoUniGene2Go;
+import com.novelbio.database.dao.geneanno.RepoUniGene2Go;
+import com.novelbio.database.model.geneanno.AGene2Go;
+import com.novelbio.database.model.geneanno.UniGene2Go;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageUniGene2Go {

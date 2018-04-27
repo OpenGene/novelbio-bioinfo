@@ -11,7 +11,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.GenerateNewIso;
 import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 import junit.framework.TestCase;
 

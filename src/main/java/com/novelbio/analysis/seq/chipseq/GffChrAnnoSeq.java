@@ -17,7 +17,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 
 /** 给定peak cover的区域，将覆盖到tss等区域的坐标提取出来
  * 目前仅分析tss上游，tes下游，genebody区域

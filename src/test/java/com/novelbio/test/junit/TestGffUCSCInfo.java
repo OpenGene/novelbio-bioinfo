@@ -17,7 +17,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 
 public class TestGffUCSCInfo extends TestCase{
 	GffHashGene gffHashUCSC;

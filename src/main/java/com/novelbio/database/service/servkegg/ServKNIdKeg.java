@@ -2,8 +2,8 @@ package com.novelbio.database.service.servkegg;
 
 import java.util.List;
 
-import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
-import com.novelbio.database.mongorepo.kegg.RepoKNIdKeg;
+import com.novelbio.database.dao.kegg.RepoKNIdKeg;
+import com.novelbio.database.model.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 /**

@@ -21,11 +21,11 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffFileUnit;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.mongorepo.geneanno.RepoGffFile;
-import com.novelbio.database.mongorepo.geneanno.RepoGffFileUnit;
-import com.novelbio.database.mongorepo.geneanno.RepoGffGene;
-import com.novelbio.database.mongorepo.geneanno.RepoGffIso;
+import com.novelbio.database.dao.geneanno.RepoGffFile;
+import com.novelbio.database.dao.geneanno.RepoGffFileUnit;
+import com.novelbio.database.dao.geneanno.RepoGffGene;
+import com.novelbio.database.dao.geneanno.RepoGffIso;
+import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class MgmtGffDetailGene {

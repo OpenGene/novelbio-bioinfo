@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.annotation.functiontest.TopGO.GoAlgorithm;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
 
 public class ElimGOFunTest extends NovelGOFunTest {
 	private static final Logger logger = LoggerFactory.getLogger(ElimGOFunTest.class);

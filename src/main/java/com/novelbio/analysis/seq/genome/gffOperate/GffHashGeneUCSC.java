@@ -6,8 +6,8 @@ import java.util.LinkedHashMap;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneType;
 //TODO 开闭区间修正
 /**
  * 本开闭区间已经设定

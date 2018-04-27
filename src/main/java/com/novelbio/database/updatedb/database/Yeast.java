@@ -2,10 +2,10 @@ package com.novelbio.database.updatedb.database;
 
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.domain.geneanno.AgeneUniID;
-import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.AgeneUniID;
+import com.novelbio.database.model.geneanno.Gene2Go;
+import com.novelbio.database.model.geneanno.GeneInfo;
 
 /**
  * 酿酒酵母的网址：

@@ -23,8 +23,8 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 /**
  * 应该是标准的gff3格式，仅用于NCBI的gff3文件

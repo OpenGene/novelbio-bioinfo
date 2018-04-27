@@ -3,8 +3,8 @@ package com.novelbio.database.updatedb.database;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.GeneInfo;
 
 /**
  * 将tair10的数据导入数据库

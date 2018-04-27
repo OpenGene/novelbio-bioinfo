@@ -114,16 +114,16 @@ public class TestGwas {
 		}
 	}
 	public static void main(String[] args) {
-		if (args == null || args.length == 0) {
-			printHelp();
-			System.exit(1);
-		}
-		for (String string : args) {
-			if (string.toLowerCase().contains("help")) {
-				printHelp();
-				System.exit(1);
-			}
-		}
+//		if (args == null || args.length == 0) {
+//			printHelp();
+//			System.exit(1);
+//		}
+//		for (String string : args) {
+//			if (string.toLowerCase().contains("help")) {
+//				printHelp();
+//				System.exit(1);
+//			}
+//		}
 		
 		Options opts = new Options();
 		opts.addOption("plinkBim", true, "plinkBim");
@@ -140,21 +140,21 @@ public class TestGwas {
 			System.exit(1);
 		}
 		
-		String plinkBim = cliParser.getOptionValue("plinkBim", "");
-		String plinkPed = cliParser.getOptionValue("plinkPed", "");
-		String chrFile = cliParser.getOptionValue("chrFile", "");
-		String gffFile = cliParser.getOptionValue("gffFile", "");
-		String out = cliParser.getOptionValue("out", "");
-		FileOperate.createFolders(FileOperate.getPathName(out));
-		String plinkBimCorrect = FileOperate.changeFileSuffix(plinkBim, ".correct", null);
+//		String plinkBim = cliParser.getOptionValue("plinkBim", "");
+//		String plinkPed = cliParser.getOptionValue("plinkPed", "");
+//		String chrFile = cliParser.getOptionValue("chrFile", "");
+//		String gffFile = cliParser.getOptionValue("gffFile", "");
+//		String out = cliParser.getOptionValue("out", "");
+//		FileOperate.createFolders(FileOperate.getPathName(out));
+//		String plinkBimCorrect = FileOperate.changeFileSuffix(plinkBim, ".correct", null);
 
-//		String plinkBim = "/home/novelbio/test/plink/debug/Desktop/619-40maf.bim";
-//		String plinkPed =  "/home/novelbio/test/plink/debug/Desktop/619-40maf.ped";
-//		String plinkBimCorrect = "/home/novelbio/test/plink/debug/Desktop/619-40maf.bim.anno";
-//		
-//		String chrFile = "/home/novelbio/test/plink/debug/Desktop/IRGSP-1.0.fasta";
-//		String gffFile = "/home/novelbio/test/plink/debug/Desktop/all.gff3";
-//		String out = "/home/novelbio/test/plink/debug/Desktop/";
+		String plinkBim = "/home/novelbio/test/plink/simple/double.plk.bim";
+		String plinkPed =  "/home/novelbio/test/plink/simple/double.plk.ped";
+		String plinkBimCorrect = "/home/novelbio/test/plink/simple/double.plk.bim.anno";
+		
+		String chrFile = "/home/novelbio/test/plink/debug/Desktop/IRGSP-1.0.fasta";
+		String gffFile = "/home/novelbio/test/plink/debug/Desktop/all.gff3";
+		String out = "/home/novelbio/test/plink/simple/double";
 		
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setChrFile(chrFile, null);

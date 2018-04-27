@@ -20,8 +20,7 @@ import org.htmlparser.util.ParserException;
 import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
-//import com.novelbio.PathNBCDetail;
+import com.novelbio.database.domain.species.Species;
 
 public class KgmlDownLoad {
 	private static final Logger logger = Logger.getLogger(KgmlDownLoad.class);

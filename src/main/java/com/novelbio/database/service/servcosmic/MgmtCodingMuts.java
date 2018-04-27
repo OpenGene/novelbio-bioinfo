@@ -2,8 +2,8 @@ package com.novelbio.database.service.servcosmic;
 
 import java.util.List;
 
-import com.novelbio.database.domain.cosmic.CodingMuts;
-import com.novelbio.database.mongorepo.cosmic.RepoCodingMuts;
+import com.novelbio.database.dao.cosmic.RepoCodingMuts;
+import com.novelbio.database.model.cosmic.CodingMuts;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class MgmtCodingMuts {

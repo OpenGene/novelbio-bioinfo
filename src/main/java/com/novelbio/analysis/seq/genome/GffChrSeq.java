@@ -22,7 +22,7 @@ import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 /**
  * 在GffChrAbs中设定Tss和Tes的范围
  * setGetSeqIso 和 setGetSeqSite，谁后设定就提取谁

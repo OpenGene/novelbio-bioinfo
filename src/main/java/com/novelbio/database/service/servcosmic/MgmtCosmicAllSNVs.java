@@ -2,8 +2,8 @@ package com.novelbio.database.service.servcosmic;
 
 import java.util.List;
 
-import com.novelbio.database.domain.cosmic.CosmicAllSNVs;
-import com.novelbio.database.mongorepo.cosmic.RepoCosmicAllSNVs;
+import com.novelbio.database.dao.cosmic.RepoCosmicAllSNVs;
+import com.novelbio.database.model.cosmic.CosmicAllSNVs;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class MgmtCosmicAllSNVs {

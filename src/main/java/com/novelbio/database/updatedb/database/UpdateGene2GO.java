@@ -1,8 +1,8 @@
 package com.novelbio.database.updatedb.database;
 
-import com.novelbio.database.domain.geneanno.AGene2Go;
-import com.novelbio.database.domain.geneanno.Gene2Go;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.AGene2Go;
+import com.novelbio.database.model.geneanno.Gene2Go;
 
 /**
  * 常规的添加GeneID信息的类

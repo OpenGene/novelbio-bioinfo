@@ -3,9 +3,8 @@ package com.novelbio.test.database.domain.geneanno;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.novelbio.database.domain.geneanno.AGeneInfo;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-
+import com.novelbio.database.model.geneanno.AGeneInfo;
+import com.novelbio.database.model.geneanno.GeneInfo;
 
 import junit.framework.TestCase;
 

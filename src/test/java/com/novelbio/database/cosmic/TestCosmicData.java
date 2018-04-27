@@ -11,12 +11,12 @@ import org.junit.Test;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.cosmic.CancerGene;
-import com.novelbio.database.domain.cosmic.CodingMuts;
-import com.novelbio.database.domain.cosmic.CompleteExport;
-import com.novelbio.database.domain.cosmic.CosmicAbb;
-import com.novelbio.database.domain.cosmic.CosmicCNV;
-import com.novelbio.database.domain.cosmic.NonCodingVars;
+import com.novelbio.database.model.cosmic.CancerGene;
+import com.novelbio.database.model.cosmic.CodingMuts;
+import com.novelbio.database.model.cosmic.CompleteExport;
+import com.novelbio.database.model.cosmic.CosmicAbb;
+import com.novelbio.database.model.cosmic.CosmicCNV;
+import com.novelbio.database.model.cosmic.NonCodingVars;
 import com.novelbio.database.service.servcosmic.MgmtNonCodingVars;
 
 public class TestCosmicData {

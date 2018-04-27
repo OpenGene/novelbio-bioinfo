@@ -18,7 +18,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.base.SepSign;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 /** 主要测试重建RI部分 */
 public class TestGenerateNewIsoRI {

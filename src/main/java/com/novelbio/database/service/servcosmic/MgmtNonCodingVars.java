@@ -2,8 +2,8 @@ package com.novelbio.database.service.servcosmic;
 
 import java.util.List;
 
-import com.novelbio.database.domain.cosmic.NonCodingVars;
-import com.novelbio.database.mongorepo.cosmic.RepoNonCodingVars;
+import com.novelbio.database.dao.cosmic.RepoNonCodingVars;
+import com.novelbio.database.model.cosmic.NonCodingVars;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class MgmtNonCodingVars {

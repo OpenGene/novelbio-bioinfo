@@ -7,13 +7,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.novelbio.base.StringOperate;
-import com.novelbio.database.domain.geneanno.SpeciesFile;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.database.model.species.SpeciesFileExtract;
-import com.novelbio.database.model.species.SpeciesFileSepChr;
-import com.novelbio.database.model.species.SpeciesIndexMappingMaker;
-import com.novelbio.database.model.species.SpeciesMirnaFile;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.domain.species.SpeciesFileExtract;
+import com.novelbio.database.domain.species.SpeciesFileSepChr;
+import com.novelbio.database.domain.species.SpeciesIndexMappingMaker;
+import com.novelbio.database.domain.species.SpeciesMirnaFile;
+import com.novelbio.database.model.geneanno.SpeciesFile;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 public class CmdIndexMake {
 	private static final Logger logger = LoggerFactory.getLogger(CmdIndexMake.class);

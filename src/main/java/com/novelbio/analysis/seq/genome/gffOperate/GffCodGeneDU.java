@@ -10,8 +10,8 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.database.model.modgeneid.GeneID;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneType;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
 import com.novelbio.listOperate.ListCodAbsDu;

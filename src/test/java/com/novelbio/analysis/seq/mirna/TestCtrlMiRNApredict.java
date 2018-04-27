@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.sam.SamFile;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 
 public class TestCtrlMiRNApredict {
 	CtrlMiRNApredict ctrlMiRNApredict = new CtrlMiRNApredict();

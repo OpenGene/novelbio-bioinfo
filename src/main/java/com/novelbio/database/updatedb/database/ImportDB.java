@@ -12,9 +12,9 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.domain.geneanno.DBInfo;
-import com.novelbio.database.domain.geneanno.TaxInfo;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.geneanno.DBInfo;
+import com.novelbio.database.model.species.TaxInfo;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
 

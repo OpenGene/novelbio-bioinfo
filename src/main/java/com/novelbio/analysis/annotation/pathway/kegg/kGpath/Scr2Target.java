@@ -8,9 +8,9 @@ import java.util.List;
 import com.novelbio.analysis.annotation.pathway.network.KGpathScr2Trg;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
-import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.kegg.KGIDkeg2Ko;
+import com.novelbio.database.model.kegg.KGentry;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 

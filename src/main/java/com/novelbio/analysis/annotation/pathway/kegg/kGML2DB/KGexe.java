@@ -12,9 +12,9 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.kegg.KGentry;
-import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.kegg.KGentry;
+import com.novelbio.database.model.kegg.KGpathway;
 
 
 public class KGexe {

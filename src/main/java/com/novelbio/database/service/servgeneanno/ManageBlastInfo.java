@@ -13,11 +13,11 @@ import org.springframework.data.mongodb.core.query.Query;
 
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.geneanno.BlastFileInfo;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.model.species.Species;
-import com.novelbio.database.mongorepo.geneanno.RepoBlastFileInfo;
-import com.novelbio.database.mongorepo.geneanno.RepoBlastInfo;
+import com.novelbio.database.dao.geneanno.RepoBlastFileInfo;
+import com.novelbio.database.dao.geneanno.RepoBlastInfo;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.geneanno.BlastFileInfo;
+import com.novelbio.database.model.geneanno.BlastInfo;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ManageBlastInfo {

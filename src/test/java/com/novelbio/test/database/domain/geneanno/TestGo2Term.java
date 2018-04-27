@@ -5,9 +5,9 @@ import org.junit.Test;
 
 import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.analysis.seq.mirna.MiRNACount;
-import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.domain.geneanno.GOtype.GORelation;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.geneanno.Go2Term;
+import com.novelbio.database.model.geneanno.GOtype.GORelation;
 
 import junit.framework.TestCase;
 

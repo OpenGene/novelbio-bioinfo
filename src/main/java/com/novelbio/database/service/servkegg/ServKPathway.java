@@ -2,8 +2,8 @@ package com.novelbio.database.service.servkegg;
 
 import java.util.List;
 
-import com.novelbio.database.domain.kegg.KGpathway;
-import com.novelbio.database.mongorepo.kegg.RepoKPathway;
+import com.novelbio.database.dao.kegg.RepoKPathway;
+import com.novelbio.database.model.kegg.KGpathway;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ServKPathway {

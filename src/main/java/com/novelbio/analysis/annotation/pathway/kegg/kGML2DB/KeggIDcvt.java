@@ -5,11 +5,11 @@ import java.util.List;
 
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.kegg.KGIDgen2Keg;
-import com.novelbio.database.domain.kegg.KGIDkeg2Ko;
-import com.novelbio.database.domain.kegg.noGene.KGNCompInfo;
-import com.novelbio.database.domain.kegg.noGene.KGNIdKeg;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.kegg.KGIDgen2Keg;
+import com.novelbio.database.model.kegg.KGIDkeg2Ko;
+import com.novelbio.database.model.kegg.noGene.KGNCompInfo;
+import com.novelbio.database.model.kegg.noGene.KGNIdKeg;
 import com.novelbio.database.service.servkegg.ServKIDKeg2Ko;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKNCompInfo;

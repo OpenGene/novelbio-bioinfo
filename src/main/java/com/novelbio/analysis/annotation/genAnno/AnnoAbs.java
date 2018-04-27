@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.model.geneanno.GOtype;
 
 public abstract class AnnoAbs {
 	public static final int ANNOTATION = 1234;

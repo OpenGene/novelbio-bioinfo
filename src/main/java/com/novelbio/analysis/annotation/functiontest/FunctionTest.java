@@ -24,8 +24,8 @@ import com.novelbio.base.dataStructure.FisherTest;
 import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.dataStructure.StatisticsTest.StatisticsPvalueType;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.GOtype;
 
 public abstract class FunctionTest implements Cloneable {
 	private static final Logger logger = LoggerFactory.getLogger(FunctionTest.class);

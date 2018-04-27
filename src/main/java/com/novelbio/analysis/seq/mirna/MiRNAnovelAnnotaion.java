@@ -11,8 +11,8 @@ import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.BlastInfo;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.geneanno.BlastInfo;
 
 /** 新miRNA的注释 */
 public class MiRNAnovelAnnotaion implements IntCmdSoft {

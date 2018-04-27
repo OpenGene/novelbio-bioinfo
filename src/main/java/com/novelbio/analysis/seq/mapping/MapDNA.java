@@ -12,7 +12,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamToBamSort;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 /**

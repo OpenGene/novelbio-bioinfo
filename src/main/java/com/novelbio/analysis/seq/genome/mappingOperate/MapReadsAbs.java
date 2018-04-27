@@ -20,7 +20,7 @@ import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 import com.novelbio.listOperate.ListAbs;
 
 /**

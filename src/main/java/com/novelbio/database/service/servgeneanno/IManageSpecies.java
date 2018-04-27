@@ -6,8 +6,8 @@ import java.util.Map;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.novelbio.database.domain.geneanno.SpeciesFile;
-import com.novelbio.database.domain.geneanno.TaxInfo;
+import com.novelbio.database.model.geneanno.SpeciesFile;
+import com.novelbio.database.model.species.TaxInfo;
 import com.novelbio.generalConf.PathDetailNBC;
 
 public interface IManageSpecies {

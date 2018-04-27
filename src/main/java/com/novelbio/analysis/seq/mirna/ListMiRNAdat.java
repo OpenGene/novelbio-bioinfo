@@ -12,7 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;
 import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
 import com.novelbio.analysis.seq.genome.gffOperate.MirPre;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 /**
  * 读取miRNA.dat的信息，构建listabs表，方便给定mirID和loc，从而查找到底是5p还是3p
  * @author zong0jie

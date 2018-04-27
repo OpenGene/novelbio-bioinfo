@@ -14,10 +14,10 @@ import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.modgeneid.GeneType;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.modgeneid.GeneType;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.information.SoftWareInfo;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 /**
  * simple script : cpat.py -g lncRNA_candiate.fa -x *_hexamer.table -d *_logit.RData -o  *.result.xls

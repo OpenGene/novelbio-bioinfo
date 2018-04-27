@@ -1,7 +1,7 @@
 package com.novelbio.database.service.servkegg;
 
-import com.novelbio.database.domain.kegg.KGsubstrate;
-import com.novelbio.database.mongorepo.kegg.RepoKSubstrate;
+import com.novelbio.database.dao.kegg.RepoKSubstrate;
+import com.novelbio.database.model.kegg.KGsubstrate;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class ServKSubstrate {

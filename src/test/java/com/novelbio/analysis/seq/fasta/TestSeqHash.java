@@ -10,8 +10,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.base.fileOperate.FileHadoop;
-import com.novelbio.database.model.modgeneid.GeneType;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.modgeneid.GeneType;
+import com.novelbio.database.domain.species.Species;
 
 public class TestSeqHash extends TestCase {
 	SeqHash seqHash;

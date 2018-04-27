@@ -5,7 +5,7 @@ import java.util.HashSet;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 /**
  * 将待升级的文件按照行读取的abstract类，因为很多文件都是一行一个信息，
  * 那么就可以按照行将文件信息导入数据库

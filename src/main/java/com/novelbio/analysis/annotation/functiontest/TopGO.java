@@ -18,7 +18,7 @@ import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.GOtype;
+import com.novelbio.database.model.geneanno.GOtype;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 import freemarker.template.Configuration;

@@ -8,8 +8,8 @@ import org.junit.Test;
 import com.novelbio.analysis.seq.bed.BedFile;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
+import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 public class TestNovelMiRNADeep {
 	NovelMiRNADeep novelMiRNADeep = new NovelMiRNADeep();

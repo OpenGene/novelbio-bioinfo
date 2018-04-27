@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.AlignSeq;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 /**
  * 从bam文件或bed文件转化为DGE的值
  * @author zong0jie

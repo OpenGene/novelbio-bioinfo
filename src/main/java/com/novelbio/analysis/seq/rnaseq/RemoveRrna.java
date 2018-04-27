@@ -11,7 +11,7 @@ import com.novelbio.analysis.seq.sam.SamToFastq;
 import com.novelbio.analysis.seq.sam.SamToFastq.EnumSamToFastqType;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.species.Species;
+import com.novelbio.database.domain.species.Species;
 
 /** 去除rrna的模块 */
 public class RemoveRrna implements IntCmdSoft {

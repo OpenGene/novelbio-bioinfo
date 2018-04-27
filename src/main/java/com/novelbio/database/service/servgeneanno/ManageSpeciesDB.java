@@ -21,11 +21,11 @@ import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.domain.geneanno.EnumSpeciesFile;
-import com.novelbio.database.domain.geneanno.SpeciesFile;
-import com.novelbio.database.domain.geneanno.TaxInfo;
-import com.novelbio.database.mongorepo.geneanno.RepoSpeciesFile;
-import com.novelbio.database.mongorepo.geneanno.RepoTaxInfo;
+import com.novelbio.database.dao.geneanno.RepoSpeciesFile;
+import com.novelbio.database.dao.species.RepoTaxInfo;
+import com.novelbio.database.model.geneanno.EnumSpeciesFile;
+import com.novelbio.database.model.geneanno.SpeciesFile;
+import com.novelbio.database.model.species.TaxInfo;
 import com.novelbio.generalConf.PathDetailNBC;
 
 public class ManageSpeciesDB implements IManageSpecies {

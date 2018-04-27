@@ -8,7 +8,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoTrans;
 import com.novelbio.analysis.seq.rnaseq.GffGeneCluster;
-import com.novelbio.database.model.modgeneid.GeneType;
+import com.novelbio.database.domain.modgeneid.GeneType;
 
 import junit.framework.TestCase;
 /**

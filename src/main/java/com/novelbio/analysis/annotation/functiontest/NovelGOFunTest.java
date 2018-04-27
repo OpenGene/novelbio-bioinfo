@@ -13,9 +13,9 @@ import org.slf4j.LoggerFactory;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.geneanno.GOtype;
-import com.novelbio.database.domain.geneanno.Go2Term;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.GOtype;
+import com.novelbio.database.model.geneanno.Go2Term;
 import com.novelbio.database.service.servgeneanno.ManageGo2Term;
 
 public class NovelGOFunTest extends FunctionTest {

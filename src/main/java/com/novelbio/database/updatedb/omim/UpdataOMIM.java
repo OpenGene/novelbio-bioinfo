@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.omim.GeneMIM;
-import com.novelbio.database.domain.omim.MIMInfo;
-import com.novelbio.database.domain.omim.MorbidMap;
-import com.novelbio.database.model.modomim.MgmtGeneMIMInfo;
-import com.novelbio.database.model.modomim.MgmtMorbidMap;
-import com.novelbio.database.model.modomim.MgmtOMIMUnit;
+import com.novelbio.database.domain.modomim.MgmtGeneMIMInfo;
+import com.novelbio.database.domain.modomim.MgmtMorbidMap;
+import com.novelbio.database.domain.modomim.MgmtOMIMUnit;
+import com.novelbio.database.model.omim.GeneMIM;
+import com.novelbio.database.model.omim.MIMInfo;
+import com.novelbio.database.model.omim.MorbidMap;
 
 public class UpdataOMIM {
 	

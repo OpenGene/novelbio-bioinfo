@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.database.domain.geneanno.BlastInfo;
+import com.novelbio.database.model.geneanno.BlastInfo;
 import com.novelbio.listOperate.HistBin;
 import com.novelbio.listOperate.HistList;
 import com.novelbio.listOperate.HistList.HistBinType;

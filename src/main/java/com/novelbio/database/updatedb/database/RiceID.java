@@ -10,8 +10,8 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.GeneInfo;
 import com.novelbio.database.service.servgeneanno.ManageDBInfo;
 
 public class RiceID {

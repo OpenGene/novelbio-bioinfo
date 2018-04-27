@@ -4,9 +4,9 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.DBAccIDSource;
-import com.novelbio.database.domain.geneanno.AGeneInfo;
-import com.novelbio.database.domain.geneanno.GeneInfo;
-import com.novelbio.database.model.modgeneid.GeneID;
+import com.novelbio.database.domain.modgeneid.GeneID;
+import com.novelbio.database.model.geneanno.AGeneInfo;
+import com.novelbio.database.model.geneanno.GeneInfo;
 
 public class MaizeGDB {
 	private static Logger logger = Logger.getLogger(MaizeGDB.class);
