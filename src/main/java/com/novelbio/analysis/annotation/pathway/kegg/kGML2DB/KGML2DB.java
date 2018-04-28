@@ -68,9 +68,9 @@ public class KGML2DB
 	{
 		ServKEntry servKEntry = new ServKEntry();
 		ServKPathRelation servKPathRelation = new ServKPathRelation();
-		ServKPathway servKPathway = new ServKPathway();
-		ServKReaction servKReaction = new ServKReaction();
-		ServKRelation servKRelation = new ServKRelation();
+		ServKPathway servKPathway = ServKPathway.getInstance();
+		ServKReaction servKReaction = ServKReaction.getInstance();
+		ServKRelation servKRelation = ServKRelation.getInstance();
 		IManageSpecies servTaxID = ManageSpecies.getInstance();
 		//获得具体物种
 		String taxAbbr=kgml.getSpecies();

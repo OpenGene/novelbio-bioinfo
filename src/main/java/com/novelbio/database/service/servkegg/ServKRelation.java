@@ -10,7 +10,7 @@ public class ServKRelation {
 
 	RepoKRelation mapKRelation;
 	
-	public ServKRelation() {
+	private ServKRelation() {
 		mapKRelation = (RepoKRelation)SpringFactoryBioinfo.getFactory().getBean("repoKRelation");
 	}
 	

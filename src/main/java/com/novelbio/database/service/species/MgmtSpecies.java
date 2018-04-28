@@ -7,12 +7,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import com.novelbio.base.StringOperate;
+import com.novelbio.database.dao.kegg.RepoKRelation;
 import com.novelbio.database.dao.species.RepoSpeciesGff;
 import com.novelbio.database.dao.species.RepoSpeciesVersion;
 import com.novelbio.database.dao.species.RepoTaxInfo;
 import com.novelbio.database.model.species.SpeciesGff;
 import com.novelbio.database.model.species.SpeciesVersion;
 import com.novelbio.database.model.species.TaxInfo;
+import com.novelbio.database.service.SpringFactoryBioinfo;
 
 public class MgmtSpecies {
 	@Autowired
@@ -21,6 +23,12 @@ public class MgmtSpecies {
 	private RepoSpeciesGff repoSpeciesGff;
 	@Autowired
 	private RepoTaxInfo repoTaxInfo;
+	
+	private MgmtSpecies() {
+		repoSpeciesVersion = SpringFactoryBioinfo.getFactory().getBean(RepoSpeciesVersion.class);
+		repoSpeciesGff = SpringFactoryBioinfo.getFactory().getBean(RepoSpeciesGff.class);
+		repoTaxInfo = SpringFactoryBioinfo.getFactory().getBean(RepoTaxInfo.class);
+	}
 	
 	public Page<TaxInfo> queryLsTaxInfo(Pageable pageable) {
 		return repoTaxInfo.findAll(pageable);
@@ -50,10 +58,20 @@ public class MgmtSpecies {
 		}
 		return null;
 	}
+	
 	public void saveTaxInfo(TaxInfo taxInfo) {
 		if (taxInfo.getTaxID() == 0) {
 			return;
 		}
 		repoTaxInfo.save(taxInfo);
 	}
+	
+	static class ManageHolder {
+		static MgmtSpecies instance = new MgmtSpecies();
+	}
+	
+	public static MgmtSpecies getInstance() {
+		return ManageHolder.instance;
+	}
+
 }

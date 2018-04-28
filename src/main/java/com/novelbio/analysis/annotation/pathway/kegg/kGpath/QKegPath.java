@@ -147,7 +147,7 @@ public class QKegPath {
 	public static Hashtable<String, KGpathScr2Trg>  getHashKGpathRelation(KGentry kGentry)
 	{
 		ServKEntry servKEntry = new ServKEntry();
-		ServKRelation servKRelation = new ServKRelation();
+		ServKRelation servKRelation = ServKRelation.getInstance();
 		/**
 		 * 保存最后获得与之相关的entry信息
 		 */
