@@ -1,6 +1,7 @@
 package com.novelbio.analysis.seq.fastq;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -257,7 +258,27 @@ public class FastQRecord implements Cloneable {
         }
 		String lname = name1.split(" ")[0].split("#")[0];
 		String rname = name2.split(" ")[0].split("#")[0];
-		return lname.equals(rname);
+		List<char[]> lsDif = new ArrayList<>();
+		char[] lchr = lname.toCharArray();
+		char[] rchr = rname.toCharArray();
+		if (lchr.length != rchr.length) {
+			return false;
+		}
+		for (int i = 0; i < lchr.length; i++) {
+			char l = lchr[i];
+			char r = rchr[i];
+			if (l != r) {
+				lsDif.add(new char[] {l, r});
+			}
+		}
+		if (lsDif.isEmpty()) {
+			return true;
+		}
+		if (lsDif.size() > 1) {
+			return false;
+		}
+		char[] pair = lsDif.get(0);
+		return pair[0] == '1' && pair[1] == '2';
 	}
 	
 }

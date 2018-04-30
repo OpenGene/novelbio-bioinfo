@@ -20,5 +20,19 @@ public class TestFastQPE {
 		fastQ2.close();
 		Assert.assertEquals(1924, i);
 	}
+	
+	@Test
+	public void testReadPairend2() {
+		FastQRecord[] pe = new FastQRecord[2];
+		pe[0] = new FastQRecord();
+		pe[1] = new FastQRecord();
+		pe[0].setName("@V100000354L1C001R001000005/1");
+		pe[1].setName("@V100000354L1C001R001000005/2");
+		Assert.assertEquals(true, FastQRecord.isPairedByName(pe[0], pe[1]));
+
+		pe[0].setName("@V100000354L1C001R001000015/1");
+		pe[1].setName("@V100000354L1C001R001000005/2");
+		Assert.assertEquals(false, FastQRecord.isPairedByName(pe[0], pe[1]));
+	}
 
 }
