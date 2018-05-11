@@ -203,6 +203,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 	 */
 	public GffDetailGene searchLOCWithoutDB(String accID) {
 		GffDetailGene gffDetailGene = super.searchLOC(accID);
+		if (gffDetailGene == null) {
+			return null;
+		}
 		for (GffDetailGene gene : gffDetailGene.getlsGffDetailGenes()) {
 			if (gene.getNameSingle().equalsIgnoreCase(accID)) {
 				return gene;
@@ -223,7 +226,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 		if (gffGeneIsoInfo != null) {
 			return gffGeneIsoInfo;
 		}
-		GffDetailGene gffdetail = searchLOCWithoutDB(accID);
+		GffDetailGene gffdetail = null;
+		gffdetail = searchLOCWithoutDB(accID);
+
 		if (gffdetail == null) return null;
 		
 		GffGeneIsoInfo gffGeneIsoInfoOut = gffdetail.getIsolist(accID);

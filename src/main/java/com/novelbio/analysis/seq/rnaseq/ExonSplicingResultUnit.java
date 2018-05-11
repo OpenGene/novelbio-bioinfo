@@ -233,7 +233,7 @@ public class ExonSplicingResultUnit {
 
 //		lsTitle.add(SpliceIndex);
 		lsTitle.add(SplicingType);
-		lsTitle.add(SplicingType);
+		lsTitle.add(AlignsFlank);
 		return lsTitle.toArray(new String[0]);
 	}
 
