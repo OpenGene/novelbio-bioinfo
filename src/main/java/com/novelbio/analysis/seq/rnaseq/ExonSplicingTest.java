@@ -30,7 +30,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.ISpliceTestModule.SpliceTestFactory;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /**
  * 一个ExonSplicingTest专门检测一个ExonCluster

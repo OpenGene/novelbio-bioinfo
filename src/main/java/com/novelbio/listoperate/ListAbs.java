@@ -1,4 +1,4 @@
-package com.novelbio.listOperate;
+package com.novelbio.listoperate;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,8 +15,8 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.listOperate.ListDetailAbs.ListDetailAbsCompareNoStrand;
-import com.novelbio.listOperate.ListDetailAbs.ListDetailAbsCompareStrand;
+import com.novelbio.listoperate.ListDetailAbs.ListDetailAbsCompareNoStrand;
+import com.novelbio.listoperate.ListDetailAbs.ListDetailAbsCompareStrand;
 /**
  * 考虑将其拆分成为三个不同的list，一个cis，一个trans，一个null
  * @author zong0jie

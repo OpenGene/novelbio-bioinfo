@@ -16,7 +16,7 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /** 计算trf表达量的模块，仅计算一个prefix的表达量，同时包含合并的代码 */
 public class CtrlTrfCountPerPrefix {

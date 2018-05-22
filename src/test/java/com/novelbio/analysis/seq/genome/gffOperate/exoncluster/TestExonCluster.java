@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.database.domain.modgeneid.GeneType;
-import com.novelbio.listOperate.ListAbs;
+import com.novelbio.listoperate.ListAbs;
 
 public class TestExonCluster extends TestCase {
 	@Before

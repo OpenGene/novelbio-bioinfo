@@ -12,7 +12,7 @@ import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.species.Species;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 public class KgmlDownLoad {
 	private static final Logger logger = Logger.getLogger(KgmlDownLoad.class);

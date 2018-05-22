@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /** 常规t检验
  * 

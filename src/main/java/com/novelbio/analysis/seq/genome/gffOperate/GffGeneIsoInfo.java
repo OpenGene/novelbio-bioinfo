@@ -26,10 +26,10 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modgeneid.GeneType;
-import com.novelbio.listOperate.ListAbs;
-import com.novelbio.listOperate.ListAbsSearch;
-import com.novelbio.listOperate.ListCodAbs;
-import com.novelbio.listOperate.ListCodAbsDu;
+import com.novelbio.listoperate.ListAbs;
+import com.novelbio.listoperate.ListAbsSearch;
+import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbsDu;
 
 /**
  * 	重写hash，不包含基因名信息，包含基因taxID，chrID，atg，uag，tss，长度，以及每一个exon的信息<br>

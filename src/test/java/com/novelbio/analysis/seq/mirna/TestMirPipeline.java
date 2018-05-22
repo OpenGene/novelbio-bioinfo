@@ -15,8 +15,8 @@ import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.database.domain.species.Species;
-import com.novelbio.generalConf.PathDetailNBC;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.PathDetailNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 public class TestMirPipeline {
 	private static final Logger logger = Logger.getLogger(TestMirPipeline.class);

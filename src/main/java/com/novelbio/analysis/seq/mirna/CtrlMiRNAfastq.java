@@ -22,7 +22,7 @@ import com.novelbio.base.StringOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.species.Species;
 import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /** 
  * 给定一系列fastq文件，获得miRNA的bed文件

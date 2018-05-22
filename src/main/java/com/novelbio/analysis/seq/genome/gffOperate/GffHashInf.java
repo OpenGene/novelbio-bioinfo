@@ -3,9 +3,9 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.listOperate.ListCodAbs;
-import com.novelbio.listOperate.ListCodAbsDu;
-import com.novelbio.listOperate.ListDetailAbs;
+import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbsDu;
+import com.novelbio.listoperate.ListDetailAbs;
 
 public interface GffHashInf<T extends ListDetailAbs, K extends ListCodAbs<T>, M extends ListCodAbsDu<T, K>> {
 	

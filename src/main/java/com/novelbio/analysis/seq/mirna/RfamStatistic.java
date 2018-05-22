@@ -13,7 +13,7 @@ import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /**
  * 读取Rfam的文件，获得RfamID对应的具体信息

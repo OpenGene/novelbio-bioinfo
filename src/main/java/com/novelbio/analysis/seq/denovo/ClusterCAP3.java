@@ -19,7 +19,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.information.SoftWareInfo;
 import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
-import com.novelbio.listOperate.HistList;
+import com.novelbio.listoperate.HistList;
 
 /**
  * simple script : cap3 trinity.fa -f 20 -o 100 -p 90 -z 3 > trinity.cap3.result.txt

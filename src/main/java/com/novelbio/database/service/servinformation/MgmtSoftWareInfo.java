@@ -12,7 +12,7 @@ import com.novelbio.database.dao.information.RepoSoftwareInfo;
 import com.novelbio.database.model.information.SoftWareInfo;
 import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 import com.novelbio.database.service.SpringFactoryBioinfo;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 /**
  * 待修正，就是自动化的update工作，参照servGeneInfo
  * @author zong0jie

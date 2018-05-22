@@ -23,10 +23,10 @@ import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.analysis.seq.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.base.SepSign;
-import com.novelbio.listOperate.ListAbs;
-import com.novelbio.listOperate.ListCodAbs;
-import com.novelbio.listOperate.ListCodAbsDu;
-import com.novelbio.listOperate.ListDetailAbs.ListDetailAbsCompareStrand;
+import com.novelbio.listoperate.ListAbs;
+import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbsDu;
+import com.novelbio.listoperate.ListDetailAbs.ListDetailAbsCompareStrand;
 
 /** 根据junction reads，产生新的iso
  * 暂时没有考虑链特异性测序

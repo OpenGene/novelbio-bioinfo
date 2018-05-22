@@ -20,7 +20,7 @@ import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesTxt;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 //TODO 本类中的注释功能在RefSiteSnpIndel类中已经写过类似的tostring方法，考虑将两个合并起来
 /** 
  * snp annotation的类，一般用不到，因为其他已经集成了该功能<br>

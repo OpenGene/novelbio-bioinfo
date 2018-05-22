@@ -20,7 +20,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.modgeneid.GeneID;
-import com.novelbio.listOperate.ListHashSearch;
+import com.novelbio.listoperate.ListHashSearch;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
 	private static final Logger logger = LoggerFactory.getLogger(GffHashGeneAbs.class);

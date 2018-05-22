@@ -1,4 +1,4 @@
-package com.novelbio.listOperate;
+package com.novelbio.listoperate;
 /**
  * 一般的序列查找就用这个就行
  * @author zong0jie

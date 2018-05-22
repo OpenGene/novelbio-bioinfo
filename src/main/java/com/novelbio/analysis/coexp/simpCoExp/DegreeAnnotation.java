@@ -8,7 +8,7 @@ import java.util.Map;
 import com.novelbio.base.dataOperate.ExcelOperate;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.database.domain.modgeneid.GeneID;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /**
  * 加上degree并且注释

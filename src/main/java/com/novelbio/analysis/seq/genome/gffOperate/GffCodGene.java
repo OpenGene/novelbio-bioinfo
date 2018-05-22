@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.genome.gffOperate;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.novelbio.listOperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbs;
 
 /**
  * UCSC konwn gene的基因坐标信息

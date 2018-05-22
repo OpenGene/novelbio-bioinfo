@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
 import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
-import com.novelbio.listOperate.ListCodAbs;
-import com.novelbio.listOperate.ListCodAbsDu;
+import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbsDu;
 
  
 

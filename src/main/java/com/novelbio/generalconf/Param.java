@@ -1,4 +1,4 @@
-package com.novelbio.generalConf;
+package com.novelbio.generalconf;
 
 import com.novelbio.base.SepSign;
 

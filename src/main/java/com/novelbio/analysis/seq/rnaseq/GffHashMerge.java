@@ -15,7 +15,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffType;
 import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.species.Species;
-import com.novelbio.listOperate.ListAbs;
+import com.novelbio.listoperate.ListAbs;
 /**
  * merge转录本的，不过现在就用其统计模块把<br>
  * merge工作交给cuffmerge来做

@@ -23,7 +23,7 @@ import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamMapRate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.domain.species.Species;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /**
  * 计算每个miRNA的表达，无法获得总表达值，只能获得每个表达值

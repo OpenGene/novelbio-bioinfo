@@ -5,7 +5,7 @@ import java.io.InputStream;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.geneanno.SpeciesFile;
 import com.novelbio.database.service.species.MgmtSpecies;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 /** 上传文件 */
 public class SpeciesUploadFile {

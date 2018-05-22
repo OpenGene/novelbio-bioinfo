@@ -1,4 +1,4 @@
-package com.novelbio.listOperate;
+package com.novelbio.listoperate;
 
 import java.util.ArrayList;
 import java.util.Collections;

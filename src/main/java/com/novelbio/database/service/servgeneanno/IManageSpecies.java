@@ -8,7 +8,7 @@ import org.springframework.data.domain.Pageable;
 
 import com.novelbio.database.model.geneanno.SpeciesFile;
 import com.novelbio.database.model.species.TaxInfo;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 public interface IManageSpecies {
 	

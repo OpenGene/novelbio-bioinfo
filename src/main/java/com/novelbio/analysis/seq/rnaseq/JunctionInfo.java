@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.novelbio.base.SepSign;
-import com.novelbio.listOperate.ListDetailAbs;
+import com.novelbio.listoperate.ListDetailAbs;
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致
  * 重写了hashcode 仅比较ChrID + "//" + numberstart + "//" + numberstart;

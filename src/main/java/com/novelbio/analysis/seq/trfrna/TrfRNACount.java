@@ -16,7 +16,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.trfrna.TrfRNAList;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamRecord;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /**
  * 计算每个trfRNA的表达，无法获得总表达值，只能获得每个表达值

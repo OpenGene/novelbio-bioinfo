@@ -29,7 +29,7 @@ import com.novelbio.database.domain.species.SpeciesFileSepChr;
 import com.novelbio.database.domain.species.SpeciesIndexMappingMaker;
 import com.novelbio.database.model.information.SoftWareInfo;
 import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 /**
  * 如果添加新的index软件，需要在

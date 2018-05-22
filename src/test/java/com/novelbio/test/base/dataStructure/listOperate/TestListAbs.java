@@ -12,7 +12,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoCis;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoTrans;
 import com.novelbio.database.domain.modgeneid.GeneType;
-import com.novelbio.listOperate.ListAbs;
+import com.novelbio.listoperate.ListAbs;
 /**
  * @author zong0jie
  *

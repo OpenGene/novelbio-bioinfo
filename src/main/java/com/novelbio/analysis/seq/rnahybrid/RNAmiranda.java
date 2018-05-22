@@ -18,7 +18,7 @@ import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 public class RNAmiranda implements IntCmdSoft {
 	private static final Logger logger = Logger.getLogger(RNAmiranda.class);

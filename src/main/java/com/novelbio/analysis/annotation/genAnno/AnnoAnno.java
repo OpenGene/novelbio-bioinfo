@@ -9,7 +9,7 @@ import com.novelbio.base.SepSign;
 import com.novelbio.base.StringOperate;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modkegg.KeggInfoAbs;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 public class AnnoAnno extends AnnoAbs {
 	GffChrAbs gffChrAbs;

@@ -2,7 +2,7 @@ package com.novelbio.database.model.geneanno;
 
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 /**
  * 物种下所有文件的类型
  * @author novelbio

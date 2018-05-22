@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.listOperate.ListAbsSearch;
+import com.novelbio.listoperate.ListAbsSearch;
 
 public class ListGff extends ListAbsSearch<GffDetailGene, GffCodGene, GffCodGeneDU> {
 	private static Logger logger = LoggerFactory.getLogger(ListGff.class);

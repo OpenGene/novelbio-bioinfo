@@ -55,8 +55,8 @@ import com.novelbio.database.model.kegg.KGpathway;
 import com.novelbio.database.service.servkegg.ServKEntry;
 import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
 import com.novelbio.database.service.servkegg.ServKPathway;
-import com.novelbio.listOperate.HistBin;
-import com.novelbio.listOperate.HistList;
+import com.novelbio.listoperate.HistBin;
+import com.novelbio.listoperate.HistList;
 
 import smile.math.special.Beta;
 import smile.stat.hypothesis.ChiSqTest;

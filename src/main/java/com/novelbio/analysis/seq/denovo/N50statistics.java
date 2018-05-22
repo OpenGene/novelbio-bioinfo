@@ -8,7 +8,7 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.listOperate.HistList;
+import com.novelbio.listoperate.HistList;
 
 public class N50statistics {
 	

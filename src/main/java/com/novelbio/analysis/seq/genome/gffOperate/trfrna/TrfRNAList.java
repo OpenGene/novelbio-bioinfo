@@ -5,9 +5,9 @@ import org.slf4j.LoggerFactory;
 
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.listOperate.ListCodAbs;
-import com.novelbio.listOperate.ListCodAbsDu;
-import com.novelbio.listOperate.ListHashSearch;
+import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbsDu;
+import com.novelbio.listoperate.ListHashSearch;
 
 /** 存储miRNA的list */
 public class TrfRNAList extends ListHashSearch<TrfMature, ListCodAbs<TrfMature>, ListCodAbsDu<TrfMature,ListCodAbs<TrfMature>>, TrfPre> {

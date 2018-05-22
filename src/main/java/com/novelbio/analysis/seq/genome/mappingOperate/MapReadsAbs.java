@@ -21,7 +21,7 @@ import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.database.domain.species.Species;
-import com.novelbio.listOperate.ListAbs;
+import com.novelbio.listoperate.ListAbs;
 
 /**
  * 不考虑内存限制的编

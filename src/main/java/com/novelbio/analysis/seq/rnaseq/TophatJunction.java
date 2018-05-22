@@ -21,10 +21,10 @@ import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.listOperate.ListBin;
-import com.novelbio.listOperate.ListCodAbs;
-import com.novelbio.listOperate.ListCodAbsDu;
-import com.novelbio.listOperate.ListHashSearch;
+import com.novelbio.listoperate.ListBin;
+import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbsDu;
+import com.novelbio.listoperate.ListHashSearch;
 
 public class TophatJunction extends ListHashSearch<JunctionInfo, ListCodAbs<JunctionInfo>, 
 ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> implements AlignmentRecorder {

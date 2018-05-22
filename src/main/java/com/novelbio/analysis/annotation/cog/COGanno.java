@@ -20,7 +20,7 @@ import com.novelbio.database.domain.species.Species;
 import com.novelbio.database.domain.species.Species.SeqType;
 import com.novelbio.database.model.geneanno.BlastInfo;
 import com.novelbio.database.model.geneanno.EnumSpeciesFile;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 /**
  * 给定序列做COG分析，模式物种文件保存在genome/cog里面，非模式物种保存在

@@ -11,8 +11,8 @@ public class PlinkPedGeneReader {
 	PlinkPedReader plinkPedReader;
 	
 	public void readSnps() {
-		for (iterable_type iterable_element : plinkMapReader.) {
-			
-		}
+//		for (iterable_type iterable_element : plinkMapReader.) {
+//			
+//		}
 	}
 }

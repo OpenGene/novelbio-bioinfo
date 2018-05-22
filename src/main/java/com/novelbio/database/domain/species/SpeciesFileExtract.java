@@ -24,7 +24,7 @@ import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modgeneid.GeneType;
 import com.novelbio.database.model.geneanno.EnumSpeciesFile;
 import com.novelbio.database.model.geneanno.SpeciesFile;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 /** 初始化物种的时候，需要生成一系列文件，包括建索引，提取miRNA等工作。而这些都很费时 */
 public class SpeciesFileExtract {

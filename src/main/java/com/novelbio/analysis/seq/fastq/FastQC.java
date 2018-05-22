@@ -23,7 +23,7 @@ import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.ImageUtils;
-import com.novelbio.generalConf.Param;
+import com.novelbio.generalconf.Param;
 
 public class FastQC {
 	private List<FastQCmodules> lsModules = new ArrayList<FastQCmodules>();

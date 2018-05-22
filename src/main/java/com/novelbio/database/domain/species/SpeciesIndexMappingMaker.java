@@ -20,7 +20,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.geneanno.EnumSpeciesFile;
 import com.novelbio.database.model.geneanno.SpeciesFile;
 import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 /** 为某个物种创建mapping相关的索引 */
 public class SpeciesIndexMappingMaker {

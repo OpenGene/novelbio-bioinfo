@@ -20,7 +20,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.util.ServiceEnvUtil;
 import com.novelbio.database.model.geneanno.SpeciesFile;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 /**
  * 把一个基因组文件切分为一条染色体一个文件，放在一个文件夹内

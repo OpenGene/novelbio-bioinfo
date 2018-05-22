@@ -17,7 +17,7 @@ import com.novelbio.analysis.seq.genome.gffOperate.GffHashRepeat;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.listOperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbs;
 /**
  * bed文件在repeat和gene上的分布情况，可以单独设定repeat或者是gene
  * @author zong0jie

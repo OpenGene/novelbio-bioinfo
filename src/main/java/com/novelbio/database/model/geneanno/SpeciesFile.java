@@ -27,7 +27,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.species.ExceptionNbcSpeciesNotExist;
 import com.novelbio.database.service.servgeneanno.IManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 /**
  * 保存某个物种的各种文件信息，譬如mapping位置等等

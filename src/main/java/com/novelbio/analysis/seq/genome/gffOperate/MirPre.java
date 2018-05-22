@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.listOperate.ListBin;
+import com.novelbio.listoperate.ListBin;
 
 public class MirPre extends ListBin<MirMature> {
 	SeqFasta seqMirPre;

@@ -50,7 +50,7 @@
 	<mongo:mapping-converter base-package="com.novelbio.database.model" />
 	
 	<!-- mongodb bean的仓库目录，会自动扫描扩展了MongoRepository接口的接口进行注入 -->
-	<mongo:repositories base-package="com.novelbio.database.mongorepo"/>
+	<mongo:repositories base-package="com.novelbio.database.dao"/>
 	
     <!-- spring AOP 
 	<aop:aspectj-autoproxy proxy-target-class="true" /> -->
@@ -60,7 +60,7 @@
     <context:component-scan base-package="com.novelbio.nbcgui.controlseq" />
     <context:component-scan base-package="com.novelbio.analysis.diffexpress" />
     <context:component-scan base-package="com.novelbio.analysis.seq.mapping" />
-    <context:component-scan base-package="com.novelbio.database.mongorepo.kegg" />
+    <context:component-scan base-package="com.novelbio.database.dao.kegg" />
     
    	 <bean id="freemarkNBC" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">  
         <property name="templateLoaderPath" value="classpath:FreemarkerTmplt" />  

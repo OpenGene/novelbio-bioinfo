@@ -4,10 +4,10 @@ import java.util.Hashtable;
 import java.util.LinkedHashMap;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.listOperate.ListBin;
-import com.novelbio.listOperate.ListCodAbs;
-import com.novelbio.listOperate.ListCodAbsDu;
-import com.novelbio.listOperate.ListHashSearch;
+import com.novelbio.listoperate.ListBin;
+import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbsDu;
+import com.novelbio.listoperate.ListHashSearch;
 
 
 public class GffHashRepeat extends ListHashSearch<GffDetailRepeat, ListCodAbs<GffDetailRepeat>, 

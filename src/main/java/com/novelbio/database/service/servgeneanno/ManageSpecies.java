@@ -23,7 +23,7 @@ import com.novelbio.database.model.geneanno.EnumSpeciesFile;
 import com.novelbio.database.model.geneanno.SpeciesFile;
 import com.novelbio.database.model.species.TaxInfo;
 import com.novelbio.database.service.SpringFactoryBioinfo;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 public class ManageSpecies implements IManageSpecies {
 	private static final Logger logger = Logger.getLogger(ManageSpecies.class);

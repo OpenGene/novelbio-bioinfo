@@ -8,7 +8,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.model.kegg.KGentry;
 import com.novelbio.database.model.kegg.KGpathway;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 public class AnnoPath extends AnnoAbs {
 

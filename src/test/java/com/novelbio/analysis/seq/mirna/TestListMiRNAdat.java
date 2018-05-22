@@ -2,7 +2,7 @@ package com.novelbio.analysis.seq.mirna;
 
 import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
 import com.novelbio.database.domain.species.Species;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 import junit.framework.TestCase;
 

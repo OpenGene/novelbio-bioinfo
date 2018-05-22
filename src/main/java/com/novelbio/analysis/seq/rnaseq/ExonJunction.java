@@ -58,8 +58,8 @@ import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
-import com.novelbio.generalConf.PathDetailNBC;
-import com.novelbio.listOperate.ListAbs;
+import com.novelbio.generalconf.PathDetailNBC;
+import com.novelbio.listoperate.ListAbs;
 
 import htsjdk.samtools.SAMException;
 

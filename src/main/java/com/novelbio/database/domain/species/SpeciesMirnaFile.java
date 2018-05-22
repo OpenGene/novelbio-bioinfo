@@ -4,7 +4,7 @@ import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.species.TaxInfo;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 /** 
  * TODO 这里没有考虑miRNAdat的版本

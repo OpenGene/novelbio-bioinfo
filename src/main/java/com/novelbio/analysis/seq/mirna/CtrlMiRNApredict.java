@@ -21,7 +21,7 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.species.Species;
 import com.novelbio.database.model.information.SoftWareInfo;
 import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 public class CtrlMiRNApredict implements IntCmdSoft {
 	GffChrAbs gffChrAbs;

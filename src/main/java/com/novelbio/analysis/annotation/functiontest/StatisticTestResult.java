@@ -7,7 +7,7 @@ import java.util.List;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.StatisticsTest;
 import com.novelbio.base.dataStructure.StatisticsTest.StatisticsPvalueType;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /**
  * 检验的结果

@@ -19,8 +19,8 @@ import com.novelbio.analysis.seq.genome.gffOperate.exoncluster.SpliceTypePredict
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.listOperate.ListCodAbs;
-import com.novelbio.listOperate.ListCodAbsDu;
+import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbsDu;
 
 public class PredictCassette extends SpliceTypePredict {
 	private static final Logger logger = Logger.getLogger(PredictCassette.class);

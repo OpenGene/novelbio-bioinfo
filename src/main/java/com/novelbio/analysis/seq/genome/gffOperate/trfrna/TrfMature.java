@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate.trfrna;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.listOperate.ListDetailAbs;
+import com.novelbio.listoperate.ListDetailAbs;
 
 public class TrfMature extends ListDetailAbs {
 	

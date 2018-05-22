@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.genome.gffOperate;
 
-import com.novelbio.listOperate.ListCodAbs;
+import com.novelbio.listoperate.ListCodAbs;
 
 public class GffCodRepeat extends ListCodAbs<GffDetailRepeat>{
 

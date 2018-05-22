@@ -17,7 +17,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.model.geneanno.SpeciesFile;
 import com.novelbio.database.model.species.TaxInfo;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 public class ManageSpeciesTxt implements IManageSpecies {
 	private static final Logger logger = Logger.getLogger(ManageSpeciesTxt.class);

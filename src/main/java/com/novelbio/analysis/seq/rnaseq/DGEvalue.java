@@ -9,7 +9,7 @@ import java.util.Map.Entry;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /**
  * 输入的文件必须经过排序

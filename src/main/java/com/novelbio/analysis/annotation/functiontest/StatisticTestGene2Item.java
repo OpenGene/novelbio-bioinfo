@@ -13,7 +13,7 @@ import com.novelbio.database.model.geneanno.BlastInfo;
 import com.novelbio.database.model.geneanno.GOtype;
 import com.novelbio.database.model.geneanno.Go2Term;
 import com.novelbio.database.model.kegg.KGpathway;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 public abstract class StatisticTestGene2Item {
 	

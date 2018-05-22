@@ -32,9 +32,9 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modgeneid.GeneType;
-import com.novelbio.generalConf.TitleFormatNBC;
-import com.novelbio.listOperate.ListCodAbs;
-import com.novelbio.listOperate.ListDetailAbs;
+import com.novelbio.generalconf.TitleFormatNBC;
+import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.listoperate.ListDetailAbs;
 /**
  * 考虑将其中的iso装入hash表中，以加快查找效率
  * 重写了clone但是没有重写equals和hash

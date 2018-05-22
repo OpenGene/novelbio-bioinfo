@@ -27,7 +27,7 @@ import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.service.SpringFactoryBioinfo;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 import freemarker.template.Configuration;
 

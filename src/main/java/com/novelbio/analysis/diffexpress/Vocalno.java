@@ -13,7 +13,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.Volcano;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /**
  * 用来筛选差异基因，画火山图的类

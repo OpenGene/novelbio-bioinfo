@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.fasta;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.novelbio.listOperate.HistList;
+import com.novelbio.listoperate.HistList;
 
 /**
  * 读取一个列表，按照指定的window输出染色体上的密度信息

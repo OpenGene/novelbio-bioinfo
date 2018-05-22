@@ -13,7 +13,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.generalConf.PathDetailNBC;
+import com.novelbio.generalconf.PathDetailNBC;
 
 public class FastQ {
 	private static final Logger logger = Logger.getLogger(FastQ.class);

@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.novelbio.database.domain.modgeneid.GeneID;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 /**
  * ElimGo 特有的GO2Gene

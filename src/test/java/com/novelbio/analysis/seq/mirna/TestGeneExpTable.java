@@ -13,7 +13,7 @@ import com.novelbio.analysis.seq.GeneExpTable;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.generalConf.TitleFormatNBC;
+import com.novelbio.generalconf.TitleFormatNBC;
 
 public class TestGeneExpTable {
 	GeneExpTable geneExpTable = new GeneExpTable(TitleFormatNBC.GeneID);

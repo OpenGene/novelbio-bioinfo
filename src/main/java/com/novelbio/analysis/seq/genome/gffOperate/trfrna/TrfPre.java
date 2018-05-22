@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.genome.gffOperate.trfrna;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.listOperate.ListBin;
+import com.novelbio.listoperate.ListBin;
 
 public class TrfPre extends ListBin<TrfMature> {
 	SeqFasta seqTrfPre;

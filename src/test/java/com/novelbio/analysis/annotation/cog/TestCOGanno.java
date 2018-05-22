@@ -1,7 +1,7 @@
 package com.novelbio.analysis.annotation.cog;
 
-import com.novelbio.generalConf.PathDetailNBC;
-import com.novelbio.listOperate.HistList;
+import com.novelbio.generalconf.PathDetailNBC;
+import com.novelbio.listoperate.HistList;
 
 public class TestCOGanno {
 	public static void main(String[] args) {
