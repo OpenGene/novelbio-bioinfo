@@ -7,12 +7,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+import org.aspectj.util.LangUtil.ProcessController.Thrown;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
+import com.novelbio.base.SepSign;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.HttpFetch;
@@ -35,13 +38,19 @@ public class GffHashGTF extends GffHashGeneAbs{
 	
 	ArrayListMultimap<String, GffGeneIsoInfo> mapID2Iso = ArrayListMultimap.create();
 	private HashMap<String, Boolean> mapIso2IsHaveExon = new HashMap<String, Boolean>();
-	
-	String geneNameFlag = null;
+		
+	List<String> lsGeneName = new ArrayList<>();
+	List<String> lsTranscript = new ArrayList<>();	
 	
 	/** geneName是哪一项，默认是 gene_name */
-	public void setGeneNameFlag(String geneNameFlag) {
-		this.geneNameFlag = geneNameFlag;
+	public void addGeneNameFlag(String geneNameFlag) {
+		lsGeneName.add(geneNameFlag);
 	}
+	/** geneName是哪一项，默认是 gene_name */
+	public void addTranscriptNameFlag(String transcriptNameFlag) {
+		lsTranscript.add(transcriptNameFlag);
+	}
+	
 	/**
 	 * 设定参考基因的Gff文件
 	 * @param gffHashRef
@@ -99,8 +108,13 @@ public class GffHashGTF extends GffHashGeneAbs{
 				if (!tmpChrID.equals(ss[0]) ) {
 					tmpChrID = ss[0];
 				}
-				
-				String[] isoName2GeneName = getIsoName2GeneName(ss[8], geneNameFlag);
+				String[] isoName2GeneName = null;
+				try {
+					isoName2GeneName = getIsoName2GeneName(ss[8]);
+				} catch (Exception e) {
+					isoName2GeneName = getIsoName2GeneName(ss[8]);
+					throw new ExceptionNbcGFF("gff file error on line " + content);
+				}
 				if (isoName2GeneName == null) {
 					txtgff.close();
 					throw new ExceptionNbcGFF("line " + line + " error, no isoName exist: " + content);
@@ -257,7 +271,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 		}
 		
 		for (int i = 0; i < lsAnnoInfo.size(); i+=2) {
-			String name = CmdOperate.removeQuot(lsAnnoInfo.get(i)) + " " + CmdOperate.removeQuot(lsAnnoInfo.get(i+1));
+			String name = CmdOperate.removeQuot(lsAnnoInfo.get(i)) + SepSign.SEP_ID + CmdOperate.removeQuot(lsAnnoInfo.get(i+1));
 			 name = name.trim();
 				if (isKeyContainsValue(name, "transcript") && isKeyContainsValue(name	, "id")) {
 					iso2geneName[0] = getLastValue(name);
@@ -283,13 +297,165 @@ public class GffHashGTF extends GffHashGeneAbs{
 		 return iso2geneName;
 	}
 	
+	private String[] getIsoName2GeneName(String ss8) {
+		String[] iso2Gene = getIsoName2GeneNameStatic(ss8);
+		if (lsGeneName.isEmpty() && lsTranscript.isEmpty()) {
+			return iso2Gene;
+		}
+		Map<String, String> mapId2Value = getMapId2ValueSS8(ss8);
+
+		if (!lsGeneName.isEmpty()) {
+			for (String geneName : lsGeneName) {
+				if (mapId2Value.containsKey(geneName)) {
+					iso2Gene[1] = mapId2Value.get(geneName);
+					break;
+				}
+			}
+		}
+		if (!lsTranscript.isEmpty()) {
+			for (String transcript : lsTranscript) {
+				if (mapId2Value.containsKey(transcript)) {
+					iso2Gene[0] = mapId2Value.get(transcript);
+					break;
+				}
+			}
+		}
+		return iso2Gene;
+	}
+	
+	protected static Map<String, String> getMapId2ValueSS8(String ss8) {
+		Map<String, String> mapId2Value = null;
+		if (ss8.contains("\"\"")) {
+			try {
+				mapId2Value = getMapId2ValueSS8Commo(ss8);
+			} catch (Exception e) {
+				mapId2Value = getMapId2ValueSS8Quote(ss8);
+			}
+		} else {
+			try {
+				mapId2Value = getMapId2ValueSS8Quote(ss8);
+			} catch (Exception e) {
+				mapId2Value = getMapId2ValueSS8Commo(ss8);
+			}
+		}
+		return mapId2Value;
+	}
+	/**  第八列整理成id2value的形式 */
+	protected static Map<String, String> getMapId2ValueSS8Quote(String ss8) {
+		Map<String, String> mapId2Value = new HashMap<>();
+		StringBuilder stringBuilder = new StringBuilder();
+		boolean isInQuote = false;
+		List<String> lsAnnoInfo = new ArrayList<>();
+		for (char c : ss8.toCharArray()) {
+			if (c == '"') isInQuote = !isInQuote;
+			
+			if ((c == ' ' || c == ';' || c == '"') && !isInQuote) {
+//				if (c=='"') stringBuilder.append('"');
+				
+				String info = stringBuilder.toString();
+				stringBuilder = new StringBuilder();
+				if (!StringOperate.isRealNull(info)) {
+					lsAnnoInfo.add(info.trim());
+				}
+			} else {
+				if (c == '"') {
+					continue;
+				}
+				stringBuilder.append(c);
+			}
+		}
+		String info = stringBuilder.toString();
+		stringBuilder = new StringBuilder();
+		if (!StringOperate.isRealNull(info)) {
+			lsAnnoInfo.add(info.trim());
+		}
+		for (int i = 0; i < lsAnnoInfo.size(); i+=2) {
+			mapId2Value.put(lsAnnoInfo.get(i), lsAnnoInfo.get(i+1));
+		}
+		return mapId2Value;
+	}
+	
+	/**  第八列整理成id2value的形式 */
+	protected static Map<String, String> getMapId2ValueSS8Commo(String ss8) {
+		if (ss8.endsWith(";")) {
+			ss8 = ss8+" ";
+		}
+		Map<String, String> mapId2Value = new HashMap<>();
+		String[] ss = ss8.split("; ");
+		for (String unit : ss) {
+			if (StringOperate.isRealNull(unit)) {
+				continue;
+			}
+			String[] tmp = unit.split(" ");
+			String key = CmdOperate.removeQuot(tmp[0]);
+			String value = cmbStringWithoutFirst(tmp);
+			mapId2Value.put(key, CmdOperate.removeQuot(value));
+		}
+		return mapId2Value;
+	}
+	
+	private static String cmbStringWithoutFirst(String[] tmp) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(tmp[1]);
+		for (int i = 2; i < tmp.length; i++) {
+			stringBuilder.append(" " + tmp[i]);
+		}
+		return stringBuilder.toString();
+	}
+	
+	/**
+	 * @param ss8
+	 * @param gffGeneNameFlag
+	 * @return 0 IsoName; 1 GeneName; 2 GeneType
+	 * 注意2 暂时不用
+	 */
+	protected static String[] getIsoName2GeneNameStatic(String ss8) {
+		ss8 = ss8.replace("\t", " ");
+		String geneNameFlag = "gene_name";
+		
+		if (!ss8.contains(geneNameFlag) && ss8.contains("gene_id")) {
+			geneNameFlag = "gene_id";
+		} else if (!ss8.contains(geneNameFlag) && !ss8.contains("gene_id") && ss8.contains("Name")) {
+			geneNameFlag = "Name";
+		} else if (ss8.contains("Parent")) {
+			geneNameFlag = "Parent";
+		}
+		 String[] iso2geneName = new String[3];
+		Map<String, String> mapId2Value = getMapId2ValueSS8(ss8);
+		for (String key : mapId2Value.keySet()) {
+			String value = mapId2Value.get(key);
+			String name = key + SepSign.SEP_ID + value;
+			 name = name.trim();
+			 if (isKeyContainsValue(name, "transcript") && isKeyContainsValue(name	, "id")) {
+					iso2geneName[0] = getLastValue(name);
+				} else if (name.startsWith(geneNameFlag)) {
+					iso2geneName[1] = getLastValue(name);
+				} else if (name.startsWith("ID")) {
+					iso2geneName[0] = getLastValue(name);
+				} else if (isKeyContainsValue(name, "type")) {
+					try {
+						iso2geneName[2] = getLastValue(name);
+					} catch (Exception e) {
+						iso2geneName[2] = GeneType.mRNA.toString(); 
+					}
+				} else if (name.toLowerCase().startsWith("gene_biotype")) {
+					try {
+						iso2geneName[2] = getLastValue(name);
+					} catch (Exception e) {
+						iso2geneName[2] = GeneType.mRNA.toString(); 
+					}
+				}
+		}
+		 return iso2geneName;
+	}
+	
 	/**
 	 * 给定 transcript_id "R2_19_1" 这种，返回 
 	 * @param keyvalue
 	 * @return
 	 */
 	private static String getLastValue(String keyValue) {
-		String[] ss = keyValue.replace("=", " ").trim().split(" ");
+		String[] ss = keyValue.replace("=", SepSign.SEP_ID).trim().split(SepSign.SEP_ID);
 		String value = ss[ss.length-1];
 		value = value.replace("\"", "").trim();
 		return value;

@@ -546,6 +546,14 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 		return outFile;
 	}
 	
+	public String convertToFile(String outFile, GffType gfftype) {
+		String gffFile = getGffFilename();
+		if (!StringOperate.isEqual(gffFile, outFile)) {
+			gffHashGene.writeToFile(gfftype, null, outFile, GFFDBNAME);
+        }
+		return outFile;
+	}
+	
 	/** 仅修改名字 */
 	public static String convertNameToOtherFile(String gffFileName, GffType gffType) {
 		String suffix = null;
