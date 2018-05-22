@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.snphgvs.EnumVariantClass;
 import com.novelbio.analysis.seq.snphgvs.SnpAnnoFactory;
 import com.novelbio.analysis.seq.snphgvs.SnpInfo;

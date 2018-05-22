@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
+import com.novelbio.analysis.seq.genome.gffoperate.GffFile;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 

@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.genome.gffoperate.GffCodGeneDU;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffType;
 import com.novelbio.database.domain.modgeneid.GeneID;
 /**
  * ID转换，将ensembl的表转化为NCBI的表，以及类似功能

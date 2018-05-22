@@ -5,9 +5,9 @@ import org.junit.Test;
 
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
 import com.novelbio.analysis.seq.chipseq.RegionBed.ReadsCoverageHandleFactory;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.CpGCalculator;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumBspCpGCalculateType;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumCpGmethyType;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsBSP.CpGCalculator;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsBSP.EnumBspCpGCalculateType;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsBSP.EnumCpGmethyType;
 import com.novelbio.analysis.seq.mapping.Align;
 
 public class TestRegionBed {

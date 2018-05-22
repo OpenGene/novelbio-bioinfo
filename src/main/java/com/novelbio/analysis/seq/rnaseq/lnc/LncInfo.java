@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffCodGeneDU;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.database.domain.modgeneid.GeneID;

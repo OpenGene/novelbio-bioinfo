@@ -6,7 +6,7 @@ import java.util.List;
 import com.novelbio.analysis.IntCmdSoft;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.rnahybrid.HybridUnit;
 import com.novelbio.analysis.seq.rnahybrid.RNAhybrid;
 import com.novelbio.analysis.seq.rnahybrid.RNAhybrid.HybridRNAUnit;

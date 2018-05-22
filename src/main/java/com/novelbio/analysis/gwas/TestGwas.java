@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.Lists;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
 import com.novelbio.analysis.seq.snphgvs.SnpAnnoFactory;
 import com.novelbio.analysis.seq.snphgvs.SnpInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

@@ -6,11 +6,11 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.analysis.annotation.genAnno.AnnoQuery.AnnoQueryDisplayInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGeneDU;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.annotation.genanno.AnnoQuery.AnnoQueryDisplayInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffCodGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffCodGeneDU;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;

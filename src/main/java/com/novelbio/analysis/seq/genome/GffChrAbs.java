@@ -7,10 +7,10 @@ import java.util.Map;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGeneAbs;
+import com.novelbio.analysis.seq.genome.gffoperate.GffType;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.species.Species;
 /**

@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.mappingoperate.SiteSeqInfo;
 
 public interface SeqHashInt extends Closeable {
 	/**

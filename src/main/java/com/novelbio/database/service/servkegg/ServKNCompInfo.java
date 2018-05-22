@@ -3,7 +3,7 @@ package com.novelbio.database.service.servkegg;
 import org.springframework.stereotype.Service;
 
 import com.novelbio.database.dao.kegg.RepoKNCompInfo;
-import com.novelbio.database.model.kegg.noGene.KGNCompInfo;
+import com.novelbio.database.model.kegg.nogene.KGNCompInfo;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
 /**

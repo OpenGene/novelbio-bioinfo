@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.snphgvs;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 
 class SnpRefAltIsoSnp extends SnpIsoHgvsp {

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.HashMultimap;
-import com.novelbio.analysis.blastZJ.BlastSeqFasta;
+import com.novelbio.analysis.blastzj.BlastSeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 
 public class FQrecordFilterAdaptor extends FQrecordFilter {

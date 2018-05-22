@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genome.gffOperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsHanyanChrom;
+import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 

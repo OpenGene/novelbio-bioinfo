@@ -7,9 +7,9 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.Lists;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffCodGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.snphgvs.SnpAnnoFactory;
 import com.novelbio.analysis.seq.snphgvs.SnpInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

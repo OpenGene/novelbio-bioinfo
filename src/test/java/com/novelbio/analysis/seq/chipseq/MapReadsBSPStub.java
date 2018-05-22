@@ -1,8 +1,8 @@
 package com.novelbio.analysis.seq.chipseq;
 
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.CpGCalculator;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsAbs;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsBSP;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsBSP.CpGCalculator;
 import com.novelbio.base.dataStructure.MathComput;
 
 /** 仅用于测试，目前用在 {@link TestGene2Value} 上

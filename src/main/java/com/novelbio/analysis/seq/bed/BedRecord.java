@@ -7,7 +7,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fastq.FastQRecord;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
+import com.novelbio.analysis.seq.genome.mappingoperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;

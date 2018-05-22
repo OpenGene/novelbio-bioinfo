@@ -11,8 +11,8 @@ import com.novelbio.analysis.seq.fasta.SeqFastaReader;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene.GeneStructure;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.modgeneid.GeneType;
 

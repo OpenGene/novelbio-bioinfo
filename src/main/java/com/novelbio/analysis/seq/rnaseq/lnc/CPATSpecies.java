@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.rnaseq.lnc;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import com.novelbio.analysis.annotation.genAnno.AnnoAbs;
+import com.novelbio.analysis.annotation.genanno.AnnoAbs;
 
 public class CPATSpecies {
 

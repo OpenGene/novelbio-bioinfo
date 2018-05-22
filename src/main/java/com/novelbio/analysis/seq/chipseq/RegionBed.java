@@ -7,11 +7,11 @@ import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.chipseq.RegionBed.EnumTssPileUpType;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.CpGCalculator;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumBspCpGCalculateType;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsBSP.EnumCpGmethyType;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsAbs;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsBSP;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsBSP.CpGCalculator;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsBSP.EnumBspCpGCalculateType;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsBSP.EnumCpGmethyType;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.dataStructure.ArrayOperate;

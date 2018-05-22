@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 
 import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.StringOperate;

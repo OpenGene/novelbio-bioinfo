@@ -7,7 +7,7 @@ import java.util.List;
 import junit.framework.TestCase;
 
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
 import com.novelbio.database.domain.species.Species;
 
 public class TestManageGffDetailGene extends TestCase {

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 
 public interface RepoGffIso extends PagingAndSortingRepository<GffGeneIsoInfo, String> {
 	

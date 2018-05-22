@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 
 import com.novelbio.analysis.seq.fasta.FastaGetCDSFromProtein;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 
 public class TestFastaGetCDSFromProtein extends TestCase{
 //	public static void main(String[] args) {

@@ -3,7 +3,7 @@ package com.novelbio.analysis.seq.snphgvs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 
 class SnpRefAltIsoIndel extends SnpIsoHgvsp {
 	private static final Logger logger = LoggerFactory.getLogger(SnpRefAltIsoIndel.class);

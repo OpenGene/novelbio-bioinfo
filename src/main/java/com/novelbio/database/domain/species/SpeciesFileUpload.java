@@ -3,7 +3,7 @@ package com.novelbio.database.domain.species;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.genome.gffoperate.GffType;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;

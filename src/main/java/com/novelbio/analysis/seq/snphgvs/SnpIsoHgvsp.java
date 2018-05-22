@@ -7,7 +7,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.CodeInfo;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 
 public abstract class SnpIsoHgvsp {

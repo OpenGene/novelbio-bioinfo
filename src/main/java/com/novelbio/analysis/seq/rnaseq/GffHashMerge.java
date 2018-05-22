@@ -8,11 +8,11 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.gffOperate.GffCodGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
-import com.novelbio.analysis.seq.genome.gffOperate.ListGff;
+import com.novelbio.analysis.seq.genome.gffoperate.GffCodGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffType;
+import com.novelbio.analysis.seq.genome.gffoperate.ListGff;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.species.Species;
 import com.novelbio.listoperate.ListAbs;

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamFile;
 import com.novelbio.analysis.seq.sam.SamRecord;

@@ -11,12 +11,12 @@ import java.util.Comparator;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGeneAbs;
-import com.novelbio.analysis.seq.genome.mappingOperate.EnumMapNormalizeType;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsHanyanChrom;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGeneAbs;
+import com.novelbio.analysis.seq.genome.mappingoperate.EnumMapNormalizeType;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsHanyanChrom;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 

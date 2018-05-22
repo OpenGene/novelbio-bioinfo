@@ -6,7 +6,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffDetailGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
 
 public interface RepoGffGene extends PagingAndSortingRepository<GffDetailGene, String> {
 	

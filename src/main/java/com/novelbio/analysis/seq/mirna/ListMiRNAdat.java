@@ -8,9 +8,9 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;
-import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
-import com.novelbio.analysis.seq.genome.gffOperate.MirPre;
+import com.novelbio.analysis.seq.genome.gffoperate.MiRNAList;
+import com.novelbio.analysis.seq.genome.gffoperate.MirMature;
+import com.novelbio.analysis.seq.genome.gffoperate.MirPre;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.database.domain.species.Species;
 /**

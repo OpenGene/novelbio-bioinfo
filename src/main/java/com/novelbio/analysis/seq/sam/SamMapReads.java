@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsAbs;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.mapping.StrandSpecific;
 import com.novelbio.base.ExceptionNullParam;

@@ -2,8 +2,8 @@ package com.novelbio.analysis.seq.snphgvs;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.genome.gffOperate.EnumMrnaLocate;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.gffoperate.EnumMrnaLocate;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 
 
 /**

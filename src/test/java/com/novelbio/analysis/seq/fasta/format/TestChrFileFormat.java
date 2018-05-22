@@ -9,7 +9,7 @@ import junit.framework.Assert;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.fasta.ChrSeqHash;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGetChrId;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGetChrId;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 

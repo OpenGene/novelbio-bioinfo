@@ -2,9 +2,9 @@ package com.novelbio.analysis.seq.mirna;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;
-import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
-import com.novelbio.analysis.seq.genome.gffOperate.MirPre;
+import com.novelbio.analysis.seq.genome.gffoperate.MiRNAList;
+import com.novelbio.analysis.seq.genome.gffoperate.MirMature;
+import com.novelbio.analysis.seq.genome.gffoperate.MirPre;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 /**
  * 读取miRNA.dat的信息，构建listabs表，方便给定mirID和loc，从而查找到底是5p还是3p

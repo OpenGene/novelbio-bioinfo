@@ -1,6 +1,6 @@
 package com.novelbio.analysis.seq.mirna;
 
-import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
+import com.novelbio.analysis.seq.genome.gffoperate.MirMature;
 import com.novelbio.database.domain.species.Species;
 import com.novelbio.generalconf.PathDetailNBC;
 

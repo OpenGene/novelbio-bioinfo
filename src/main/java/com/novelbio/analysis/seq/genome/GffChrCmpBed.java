@@ -3,9 +3,9 @@ package com.novelbio.analysis.seq.genome;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.RegionInfo;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingoperate.RegionInfo;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;

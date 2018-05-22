@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.StringOperate;

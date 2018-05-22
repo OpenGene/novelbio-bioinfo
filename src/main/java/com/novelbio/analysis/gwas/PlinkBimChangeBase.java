@@ -10,7 +10,7 @@ import java.util.Map;
 import com.novelbio.analysis.seq.fasta.Base;
 import com.novelbio.analysis.seq.fasta.ChrBaseIter;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.gffOperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

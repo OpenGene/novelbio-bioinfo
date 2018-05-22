@@ -3,8 +3,8 @@ package com.novelbio.analysis.seq.genome;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.analysis.seq.genome.gffOperate.ListDetailBin;
-import com.novelbio.analysis.seq.genome.gffOperate.ListHashBin;
+import com.novelbio.analysis.seq.genome.gffoperate.ListDetailBin;
+import com.novelbio.analysis.seq.genome.gffoperate.ListHashBin;
 import com.novelbio.listoperate.ListCodAbs;
 import com.novelbio.listoperate.ListCodAbsDu;
 

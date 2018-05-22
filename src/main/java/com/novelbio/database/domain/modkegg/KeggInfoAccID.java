@@ -2,7 +2,7 @@ package com.novelbio.database.domain.modkegg;
 
 import java.util.ArrayList;
 
-import com.novelbio.database.model.kegg.noGene.KGNIdKeg;
+import com.novelbio.database.model.kegg.nogene.KGNIdKeg;
 import com.novelbio.database.service.servkegg.ServKNIdKeg;
 
 public class KeggInfoAccID extends KeggInfoAbs{

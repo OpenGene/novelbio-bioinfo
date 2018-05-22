@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.novelbio.analysis.seq.fasta.ChrSeqHash;
 import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
 import com.novelbio.analysis.seq.fasta.format.TestChrFileFormat;
-import com.novelbio.analysis.seq.genome.gffOperate.GffType;
+import com.novelbio.analysis.seq.genome.gffoperate.GffType;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.species.SpeciesFileSepChr;

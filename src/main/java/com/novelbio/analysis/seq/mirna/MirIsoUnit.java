@@ -13,9 +13,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.novelbio.analysis.seq.GeneExpTable;
-import com.novelbio.analysis.seq.genome.gffOperate.MiRNAList;
-import com.novelbio.analysis.seq.genome.gffOperate.MirMature;
-import com.novelbio.analysis.seq.genome.gffOperate.MirPre;
+import com.novelbio.analysis.seq.genome.gffoperate.MiRNAList;
+import com.novelbio.analysis.seq.genome.gffoperate.MirMature;
+import com.novelbio.analysis.seq.genome.gffoperate.MirPre;
 import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.analysis.seq.sam.SamRecord;
 import com.novelbio.base.SepSign;

@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.novelbio.analysis.seq.fasta.ChrSeqHash;
-import com.novelbio.analysis.seq.genome.gffOperate.GffGetChrId;
+import com.novelbio.analysis.seq.genome.gffoperate.GffGetChrId;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;

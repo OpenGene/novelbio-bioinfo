@@ -11,8 +11,8 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.analysis.seq.AlignRecord;
 import com.novelbio.analysis.seq.GeneExpTable;
-import com.novelbio.analysis.seq.genome.gffOperate.trfrna.TrfMature;
-import com.novelbio.analysis.seq.genome.gffOperate.trfrna.TrfRNAList;
+import com.novelbio.analysis.seq.genome.gffoperate.trfrna.TrfMature;
+import com.novelbio.analysis.seq.genome.gffoperate.trfrna.TrfRNAList;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.AlignmentRecorder;
 import com.novelbio.analysis.seq.sam.SamRecord;

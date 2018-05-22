@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.novelbio.analysis.seq.fastq.FastQ;
-import com.novelbio.analysis.seq.genome.mappingOperate.SiteSeqInfo;
+import com.novelbio.analysis.seq.genome.mappingoperate.SiteSeqInfo;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 
 public interface AlignSeq {

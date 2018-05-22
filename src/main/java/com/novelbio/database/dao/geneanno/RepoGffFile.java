@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.novelbio.analysis.seq.genome.gffOperate.GffFile;
+import com.novelbio.analysis.seq.genome.gffoperate.GffFile;
 
 public interface RepoGffFile extends PagingAndSortingRepository<GffFile, String> {
 	

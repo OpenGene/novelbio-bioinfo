@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Repository;
 
-import com.novelbio.database.model.kegg.noGene.KGNCompInfo;
+import com.novelbio.database.model.kegg.nogene.KGNCompInfo;
 /**
  * kegg的化合物表
  * @author zong0jie

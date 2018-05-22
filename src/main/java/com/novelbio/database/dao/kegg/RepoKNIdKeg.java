@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import com.novelbio.database.model.kegg.noGene.KGNIdKeg;
+import com.novelbio.database.model.kegg.nogene.KGNIdKeg;
 
 @Repository
 public class RepoKNIdKeg {

@@ -11,7 +11,7 @@ import org.broad.igv.bbfile.WigItem;
 import org.broad.igv.bbfile.ZoomDataRecord;
 import org.broad.igv.bbfile.ZoomLevelIterator;
 
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReadsAbs;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReadsAbs;
 import com.novelbio.base.dataStructure.MathComput;
 
 public class WigReader extends MapReadsAbs {

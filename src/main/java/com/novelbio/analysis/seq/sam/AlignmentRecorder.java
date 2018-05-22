@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.sam;
 
 import com.novelbio.analysis.seq.AlignRecord;
-import com.novelbio.analysis.seq.genome.mappingOperate.MapReads;
+import com.novelbio.analysis.seq.genome.mappingoperate.MapReads;
 import com.novelbio.analysis.seq.mapping.Align;
 /** 
  * 待读取的samFile必须排过序
