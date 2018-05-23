@@ -86,9 +86,6 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpTranscriptNameLast = "";
 		int line = 0;
 		for (String content : txtgff.readlines() ) {
-			if (content.contains("transcript	11872")) {
-				logger.info("test");
-			}
 			try {
 				line++;
 				if (StringOperate.isRealNull(content) || content.charAt(0) == '#') continue;

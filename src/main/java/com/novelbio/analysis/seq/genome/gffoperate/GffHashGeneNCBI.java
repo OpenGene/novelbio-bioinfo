@@ -26,6 +26,8 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modgeneid.GeneType;
 
+import sun.util.logging.resources.logging;
+
 /**
  * 应该是标准的gff3格式，仅用于NCBI的gff3文件
  * 
@@ -43,19 +45,10 @@ import com.novelbio.database.domain.modgeneid.GeneType;
  */
 public class GffHashGeneNCBI extends GffHashGeneAbs {
 	public static final double overlapFactor = 0.5;
-	private static final Logger logger = LoggerFactory
-			.getLogger(GffHashGeneNCBI.class);
-
-	/** 基因名字的正则，可以改成识别人类或者其他,这里是拟南芥，默认 NCBI的ID */
-	protected static String regGeneName = "(?<=gene\\=)[\\w\\-%\\:\\.\\{\\}\\(\\)]+";
-	/** 可变剪接mRNA的正则，默认 NCBI的ID */
-	protected static String regSplitmRNA = "(?<=transcript_id\\=)[\\w\\-\\.]+|(?<=stable_id\\=)[\\w\\-\\.]+";
-	/** 可变剪接mRNA的产物的正则，默认 NCBI的symbol */
-	protected static String regProduct = "(?<=product\\=)[\\w\\-%]+";
-	/** geneID的正则 */
-	protected static String regGeneID = "(?<=Dbxref\\=GeneID\\:)\\d+";
-	/** Name的正则 */
-	protected static String regName = "(?<=(\\W|^)Name\\=)[\\w\\-%\\.\\:\\{\\}\\(\\)]+";
+	private static final Logger logger = LoggerFactory.getLogger(GffHashGeneNCBI.class);
+	
+	private static String geneIdRegx = "([\\w\\-%\\:\\.\\{\\}\\(\\)]+)";
+	
 	/** ID的正则 */
 	protected static String regID = "(?<=ID\\=)[\\w\\.\\-%\\:\\{\\}]+";
 	/** parentID的正则 */
@@ -69,20 +62,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	/** gene类似名 */
 	private Set<String> setIsChromosome = new HashSet<String>();
 
-	/** "(?<=gene\\=)\\w+" */
-	PatternOperate patGeneName = null;
-	/** "(?<=transcript_id\\=)\\w+" */
-	PatternOperate patmRNAName = null;
-	/** "(?<=Dbxref\\=GeneID\\:)\\d+" */
-	PatternOperate patGeneID = null;
-	/** "(?<=Name\\=)\\w+" */
-	PatternOperate patName = null;
 	/** "(?<=ID\\=)\\w+" */
 	PatternOperate patID = null;
 	/** "(?<=Parent\\=)\\w+" */
 	PatternOperate patParentID = null;
-	/** "(?<=product\\=)\\w+" */
-	PatternOperate patProduct = null;
 
 	private Map<String, String> mapRnaID2GeneID = new HashMap<String, String>();
 	private Map<String, GffDetailGene> mapGenID2GffDetail = new LinkedHashMap<String, GffDetailGene>();
@@ -120,9 +103,6 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 
 	int numCopedIDsearch = 0;// 查找taxID的次数最多10次
 
-	/** 默认连上数据库 */
-	boolean database = true;
-
 	/** 发现重复的mRNA名字时，就换一个名字，专用于果蝇 */
 	public void setFilterDuplicateName(boolean isFilterDuplicateName) {
 		this.isFilterDuplicateName = isFilterDuplicateName;
@@ -156,17 +136,45 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		gffGetChrId.setChangeChrId(isChangeChrId);
 	}
 	
-	private void setPattern() {
-		patGeneName = new PatternOperate(regGeneName, false);
-		patmRNAName = new PatternOperate(regSplitmRNA, false);
-		patProduct = new PatternOperate(regProduct, false);
+	List<String> lsGeneIds = new ArrayList<>();
+	List<String> lsmRNA = new ArrayList<>();
+	List<String> lsMiRNA = new ArrayList<>();
 
-		patGeneID = new PatternOperate(regGeneID, false);
+	private void initialLsGeneIds() {
+		lsGeneIds.add("gene=");
+		lsGeneIds.add("(\\W|^)Name\\=");
+		lsGeneIds.add("product=");
+		lsGeneIds.add("Dbxref=GeneID:");
+		lsGeneIds.add("ID=");
+	}
+	
+	private void initialLsmiRNA() {
+		lsMiRNA.add("product=");
+		lsMiRNA.add("(transcript_id=|stable_id=)");
+		lsMiRNA.add("(\\W|^)Name=");
+		lsMiRNA.add("ID=");
+	}
+	
+	private void initialLsmRNA() {
+		lsmRNA.add("(transcript_id=|stable_id=)");
+		lsmRNA.add("(\\W|^)Name=");
+		lsmRNA.add("ID=");
+	}
+	/** geneName是哪一项，默认是 gene_name */
+	public void addGeneNameFlag(String geneNameFlag) {
+		lsGeneIds.add(geneNameFlag);
+	}
+	/** geneName是哪一项，默认是 gene_name */
+	public void addTranscriptNameFlag(String transcriptNameFlag) {
+		lsmRNA.add(transcriptNameFlag);
+	}
+	
+	
+	private void setPattern() {
 		patID = new PatternOperate(regID, false);
-		patName = new PatternOperate(regName, false);
 		patParentID = new PatternOperate(regParentID, false);
 	}
-
+	
 	/**
 	 * 最底层读取gff的方法，本方法只能读取UCSCknown gene<br>
 	 * 输入Gff文件，最后获得两个哈希表和一个list表<br/>
@@ -188,6 +196,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 * @throws Exception
 	 */
 	protected void ReadGffarrayExcepTmp(String gfffilename) {
+		initialLsGeneIds();
+		initialLsmiRNA();
+		initialLsmRNA();
 		setGeneName();
 		setPattern();
 		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename, false);
@@ -202,7 +213,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		for (String content : txtgff.readlines()) {
 			if (content.trim().equals("") || content.charAt(0) == '#')
 				continue;
-
+			
 			String[] ss = content.split("\t");// 按照tab分开
 			if (ss[2].equals("match")
 					|| ss[2].toLowerCase().equals("chromosome")
@@ -384,7 +395,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		String rnaName = getRnaName(ss, geneType);
 		if (rnaName != null
 				&& setMrnaNameDuplicate.contains(rnaName.toLowerCase())) {
-			rnaName = getRnaNameDifToRnaName(rnaName, ss, geneType);
+			rnaName = getRnaNameDifToRnaName(ss, geneType, rnaName);
 		}
 		if (rnaName == null) {
 			rnaName = lastGeneIDandName[1];
@@ -400,56 +411,65 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		return rnaName;
 	}
 
-	/**
-	 * @param lastGeneIDandName
-	 * @param rnaID
-	 * @param ss
-	 * @return 返回加入的rna名字
-	 */
-	private String getRnaName(String[] ss, GeneType geneType) {
-		// 保证不能出现重复id
-		String rnaName = null;
-		if (geneType == GeneType.miRNA) {
-			rnaName = patProduct.getPatFirst(ss[8]);
-			if (rnaName == null)
-				rnaName = patmRNAName.getPatFirst(ss[8]);
-		} else {
-			rnaName = patmRNAName.getPatFirst(ss[8]);
-		}
+	   /**
+	    * @param lastGeneIDandName
+	    * @param rnaID
+	    * @param ss
+	    * @return  返回加入的rna名字
+	    */
+	   private String getRnaName(String[] ss, GeneType geneType) {
+		   String rnaName = null;
+		   String content = ArrayOperate.cmbString(ss, "\t");
+		   if (geneType == GeneType.miRNA) {
+			   rnaName = getNameFromIds(ss[8], lsMiRNA, null, content);
+		   } else {
+			   rnaName = getNameFromIds(ss[8], lsmRNA, null, content);
+		   }
+		   return rnaName;
+	   }
 
-		if (rnaName == null) {
-			rnaName = patName.getPatFirst(ss[8]);
-		}
-		return rnaName;
-	}
-
-	/**
-	 * @param lastGeneIDandName
-	 * @param rnaID
-	 * @param ss
-	 * @return 返回加入的rna名字
-	 */
-	private String getRnaNameDifToRnaName(String rnaNameExist, String[] ss,
-			GeneType geneType) {
-		// 保证不能出现重复id
-		String rnaName = null;
-		if (geneType == GeneType.miRNA) {
-			rnaName = patProduct.getPatFirst(ss[8]);
-			if (rnaName == null || rnaNameExist.equals(rnaName))
-				rnaName = patmRNAName.getPatFirst(ss[8]);
-		} else {
-			rnaName = patmRNAName.getPatFirst(ss[8]);
-		}
-
-		if (rnaName == null || rnaNameExist.equals(rnaName)) {
-			rnaName = patName.getPatFirst(ss[8]);
-		}
-		if (rnaName == null || rnaNameExist.equals(rnaName)) {
-			rnaName = patID.getPatFirst(ss[8]);
-		}
-		return rnaName;
-	}
-
+	   /**
+	    * @param lastGeneIDandName
+	    * @param rnaID
+	    * @param ss
+	    * @return  返回加入的rna名字
+	    */
+	   private String getRnaNameDifToRnaName(String[] ss, GeneType geneType, String rnaNameExist) {
+		   String rnaName = null;
+		   String content = ArrayOperate.cmbString(ss, "\t");
+		   if (geneType == GeneType.miRNA) {
+			   rnaName = getNameFromIds(ss[8], lsMiRNA, rnaNameExist, content);
+		   } else {
+			   rnaName = getNameFromIds(ss[8], lsmRNA, rnaNameExist, content);
+		   }
+		   return rnaName;
+	   }
+	   
+	   /**
+	    * @param ss
+	    * @param lsIds
+	    * @param nameExist 保证不能出现重复id 
+	    * @return
+	    */
+	   private String getNameFromIds(String content, List<String> lsIds, String nameExist, String lineInfo) {
+		   String name = null;
+		   for (String geneId : lsIds) {
+			   if (StringOperate.isRealNull(geneId)) {
+				   continue;
+			   }
+			   PatternOperate patternGeneName = new PatternOperate(geneId+geneIdRegx);
+			   name = patternGeneName.getPatFirst_lastGroup(content);
+			   if (name == null || (!StringOperate.isRealNull(nameExist) && nameExist.equals(name))) {
+				   continue;
+			   }
+			   break;
+		   }
+			if (name == null) {
+				logger.error("GffHashNCBI: 文件  " + getGffFilename() + "  在本行可能没有指定的基因ID  " + lineInfo);
+			} 
+		   return name;
+	   }
+	   
 	private boolean addExon(String[] lastGeneID2Name, String[] lastRnaID2Name,
 			String[] ss) {
 		List<String> lsRnaId = getRNAID(lastGeneID2Name, lastRnaID2Name, ss);
@@ -523,43 +543,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		return lsRnaId;
 	}
 
-	private String getGeneName(String content) {
-		String geneName = patGeneName.getPatFirst(content);// 查找基因名字
-		String geneID = null;
-		String ID = patID.getPatFirst(content);
-		if (geneName == null) {
-			geneID = patGeneID.getPatFirst(content);
-//			if (StringOperate.isRealNull(geneID) && database) {
-//				try {
-//					GeneID copedID = new GeneID(GeneID.IDTYPE_GENEID, geneID,
-//							taxID);
-//					geneName = copedID.getAccID();
-//				} catch (Throwable e) {
-//					database = false;
-//				}
-//			}
-		}
-		if (geneName == null) {
-			geneName = patName.getPatFirst(content);
-		}
-		if (geneName == null) {
-			geneName = patProduct.getPatFirst(content);
-		}
-		if (geneName == null) {
-			if (geneID == null && ID == null) {
-				logger.error("GffHashNCBI: 文件  " + getGffFilename()
-						+ "  在本行可能没有指定的基因ID  " + content);
-			} else {
-				if (geneID != null) {
-					geneName = geneID;
-				} else {
-					geneName = ID;
-				}
-
-			}
-		}
-		return geneName;
-	}
+	   private String getGeneName(String content) {
+			  return getNameFromIds(content, lsGeneIds, null, content);
+		   }
 
 	/**
 	 * @param content
@@ -852,13 +838,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	 * 读取完毕后清空一些变量
 	 */
 	private void clear() {
-		patGeneName = null;
-		patmRNAName = null;
-		patGeneID = null;
-		patName = null;
 		patID = null;
 		patParentID = null;
-		patProduct = null;
 
 		mapRnaID2GeneID.clear();
 		mapGenID2GffDetail.clear();

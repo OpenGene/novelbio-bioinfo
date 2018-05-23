@@ -34,12 +34,15 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 	String dbinfo;
 	/** 发现重复的mRNA名字时，就换一个名字，专用于果蝇 */
 	boolean isFilterDuplicateName;
+	
+	List<String> lsGeneIds = new ArrayList<>();
+	List<String> lsmRNA = new ArrayList<>();
+	
 	/**
 	 * 新建一个GffHashGeneUCSC的类，需要readGffFile
 	 */
-	public GffHashGene() {
-		gffHashGene =  new GffHashGTF();
-	}
+	public GffHashGene() { }
+	
 	public GffHashGene(GffHashGeneAbs gffHashGene) {
 		this.gffHashGene = gffHashGene;
 	}
@@ -78,6 +81,15 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 		this.dbinfo = dbinfo;
 		read(taxID,version, dbinfo, gffType, gffFile, isFilterDuplicateGeneName);
 	}
+	/** geneName是哪一项，默认是 gene_name */
+	public void addGeneNameFlag(String geneNameFlag) {
+		lsGeneIds.add(geneNameFlag);
+	}
+	/** geneName是哪一项，默认是 gene_name */
+	public void addTranscriptNameFlag(String transcriptNameFlag) {
+		lsmRNA.add(transcriptNameFlag);
+	}
+	
 	/**
 	 * 读取并初始化，可以用isFinished()来判定是否顺利运行完毕
 	 * @param gffFile 根据文件后缀名判断是GFF还是GTF
@@ -197,12 +209,24 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 //		}
 		else if (gffType == GffType.GTF) {
 			gffHashGene = new GffHashGTF();
+			for (String geneName : lsGeneIds) {
+				((GffHashGTF)gffHashGene).addGeneNameFlag(geneName);
+			}
+			for (String mRNA : lsmRNA) {
+				((GffHashGTF)gffHashGene).addTranscriptNameFlag(mRNA);
+			}
 		}
 		else if (gffType == GffType.GFF3) {
 			gffHashGene = new GffHashGeneNCBI();
 			((GffHashGeneNCBI)gffHashGene).setFilterDuplicateName(isFilterDuplicateName);
 			if (isChangeChrId != null) {
 				((GffHashGeneNCBI)gffHashGene).setChangeChrId(isChangeChrId);
+			}
+			for (String geneName : lsGeneIds) {
+				((GffHashGeneNCBI)gffHashGene).addGeneNameFlag(geneName);
+			}
+			for (String mRNA : lsmRNA) {
+				((GffHashGeneNCBI)gffHashGene).addTranscriptNameFlag(mRNA);
 			}
 		}
 		if (taxID > 0) {
@@ -236,7 +260,9 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 	 * @param gffFile
 	 */
 	public void readGffFile(String gffFile) {
-		gffHashGene.ReadGffarray(gffFile);
+		gffType = readGffTypeFromFileName(gffFile);
+		this.gffFile = gffFile;
+		read(taxID, version, dbinfo, gffType, gffFile, false);
 	}
 	/**
 	 * 专门给冯英的项目用的，设定ref的Gffinfo
