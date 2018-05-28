@@ -1216,7 +1216,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		
 		int[] atg = getATGLoc();
 		int[] uag = getUAGLoc();
-		boolean ismRNA = ismRNA();
+		boolean ismRNA = ismRNAFromCds();
 		for (ExonInfo exons : this) {
 			List<String> lsTmpResult = new ArrayList<>();
 			ExonInfo cds = getCds(exons);
@@ -1225,6 +1225,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				lsTmpResult.addAll(lsHead);
 				lsTmpResult.add(GffHashGTF.startCodeFlag);
 				lsTmpResult.add(atg[0] + ""); lsTmpResult.add(atg[1] + "");
+				lsSuffixInfo.set(2, ".");
 				lsTmpResult.addAll(lsSuffixInfo);
 				lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
 			}
@@ -1233,6 +1234,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			lsTmpResult.add("exon");
 			lsTmpResult.add(exons.getStartAbs() + "");
 			lsTmpResult.add(exons.getEndAbs() + "");
+			lsSuffixInfo.set(2, ".");
 			lsTmpResult.addAll(lsSuffixInfo);
 			lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
 			
@@ -1242,6 +1244,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				lsTmpResult.add("CDS");
 				lsTmpResult.add(cds.getStartAbs() + "");
 				lsTmpResult.add(cds.getEndAbs() + "");
+				lsSuffixInfo.set(2, getCdsCodeNum(cds.getStartCis()) + "");
 				lsTmpResult.addAll(lsSuffixInfo);
 				lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
 			}
@@ -1251,6 +1254,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				lsTmpResult.add(GffHashGTF.stopCodeFlag);
 				lsTmpResult.add(uag[0] + "");
 				lsTmpResult.add(uag[1] + "");
+				lsSuffixInfo.set(2, ".");
 				lsTmpResult.addAll(lsSuffixInfo);
 				lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
 			}
@@ -1263,13 +1267,23 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return stringBuilder.toString();
 	}
 	
+	private int getCdsCodeNum(int cdsStart) {
+		int codNum = getCod2ATGmRNA(cdsStart)%3;
+		if (codNum == 1) {
+			codNum = 2;
+		} else if (codNum == 2) {
+			codNum = 1;
+		}
+		return codNum;
+	}
+	
 	/** 根据输入的exon，判断是否存在cds，并返回<br>
 	 * null表示没有cds
 	 * @param exons
 	 * @return
 	 */
 	private ExonInfo getCds(ExonInfo exons) {
-		if (!ismRNA()) {
+		if (!ismRNAFromCds()) {
 			return null;
 		}
 		
@@ -1283,7 +1297,11 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			cdsInfo.setStartCis(ATGsite);
 		}
 		if (cdsInfo.isCodInSide(UAGsite)) {
-			cdsInfo.setEndCis(UAGsite);
+			if (isCis5to3()) {
+				cdsInfo.setEndCis(UAGsite-3);
+			} else {
+				cdsInfo.setEndCis(UAGsite+3);
+			}
 		}
 		return cdsInfo;
 	}
