@@ -5,15 +5,15 @@ import htsjdk.samtools.SAMFileWriter;
 import htsjdk.samtools.SAMFileWriterFactory;
 import htsjdk.samtools.SAMRecord;
 
-import java.io.File;
 import java.io.OutputStream;
 
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.novelbio.base.fileOperate.FileOperate;
 
 public class SamWriter {
-	private static final Logger logger = Logger.getLogger(SamWriter.class);
+	private static final Logger logger = LoggerFactory.getLogger(SamWriter.class);
 	String fileName;
 	SAMFileWriter samFileWriter;
 	SAMFileWriterFactory samFileWriterFactory = new SAMFileWriterFactory();
@@ -65,9 +65,11 @@ public class SamWriter {
 		} catch (Exception e) {
 			errorReadsNum++;
 			if (errorReadsNum <= 100) {
+				e.printStackTrace();
 				logger.error("write error: " + samRecord.toString() , e);
 			}
 			if (errorReadsNum > 10000 ) {
+				e.printStackTrace();
 				logger.error("to much reads error, more than 10000", e);
 				close();
 				throw new ExceptionSamError(e);

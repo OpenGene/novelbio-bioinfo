@@ -141,7 +141,7 @@ public class SamToBam {
 				break;
 			}
 			if (i++%1000000 == 0) {
-				logger.info("read lines: " + i);
+//				logger.info("read lines: " + i);
 				System.gc();
 			}
 			

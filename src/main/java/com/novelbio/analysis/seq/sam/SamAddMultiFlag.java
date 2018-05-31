@@ -40,8 +40,8 @@ public class SamAddMultiFlag {
 		
 		try {
 			if (i++%1000000 == 0) {
-				logger.info("read lines: " + i);
-				logger.info("mapMateInfo2pairReads.size: " + mapMateInfo2pairReads.size());
+//				logger.info("read lines: " + i);
+//				logger.info("mapMateInfo2pairReads.size: " + mapMateInfo2pairReads.size());
 			}
 			if ((!isPairend) || (isPairend && !lastSeqName.equals(samRecord.getName()))
 					) {
