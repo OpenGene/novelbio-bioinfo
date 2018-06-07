@@ -141,10 +141,18 @@ public class SnpAnnotation extends RunProcess {
 //		}
 		ArrayList<String> lsInfo = ArrayOperate.converArray2List(input.split("\t"));
 		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite).trim());
-		
+//		if (refStartSite==27529644) {
+//			logger.info("stop");
+//		}
 		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo(lsInfo.get(colChrID), refStartSite, lsInfo.get(colRefNr), lsInfo.get(colThisNr));
 		List<List<String>> lsLsAnno = snpAnnoFactory.getLsAnnotation(snpInfo);
 		List<String> lsResult = new ArrayList<>();
+		if (lsLsAnno.isEmpty()) {
+			for (int i = 0; i < 5; i++) {
+				lsInfo.add("");
+			}
+			return lsInfo;
+		}
 		for (List<String> lsAnno : lsLsAnno) {
 			List<String> lsResultUnit = new ArrayList<>();
 			lsResultUnit.addAll(lsInfo);

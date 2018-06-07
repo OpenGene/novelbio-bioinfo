@@ -1,6 +1,8 @@
 package com.novelbio.analysis.gwas.combinesnp;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -97,8 +99,18 @@ public class CombineSnp {
 				lsInfos.get(i).add(new String[] {allele.getAllele1(), allele.getAllele2()});
 			}
 		}
+		
+		List<Allele> lsAllelesRaw = mapSample2LsAllelesIn.values().iterator().next();
+		List<Allele> lsAlleles = new ArrayList<>();
+		
+		//将list中没有变异的位点去除
+		for (int i = 0; i < lsInfos.size(); i++) {
+			List<String[]> lsSite = lsInfos.get(i);
+			
+		}
+		
+		
 		//================== 开始计算相关性  =============================
-		List<Allele> lsAlleles = mapSample2LsAllelesIn.values().iterator().next();
 		int snpNum = lsAlleles.size();
 		double[][] distance = new double[snpNum][snpNum];
 		for (int i = 0; i < snpNum-1; i++) {
@@ -116,6 +128,59 @@ public class CombineSnp {
 		}
 		distance[snpNum-1][snpNum-1] = 0;
 		return distance;
+	}
+	
+	/**
+	 * 过滤，如果本位点仅有一个位点，则返回null
+	 * 如果位点排序发现N的数量更多，则将N替换为变异位点
+	 * @param lsSite
+	 * @param allele
+	 * @return
+	 */
+	private List<String[]> modifyList(List<String[]> lsSite, Allele allele) {
+		Map<String, int[]> mapAllele2Num = new HashMap<>();
+		for (String[] alleles : lsSite) {
+			int[] num = mapAllele2Num.get(alleles[0]);
+			if (num == null) {
+				num = new int[]{0};
+				mapAllele2Num.put(alleles[0], num);
+			}
+			num[0]++;
+		}
+		if (mapAllele2Num.size() == 1) {
+			return null;
+		}
+		
+		
+		List<String[]> lsSite2Num = new ArrayList<>();
+		for (String alleleStr : mapAllele2Num.keySet()) {
+			lsSite2Num.add(new String[] {alleleStr, mapAllele2Num.get(alleleStr)[0]+""});
+		}
+		Collections.sort(lsSite2Num, (site2Num1, site2Num2) ->{
+			Integer site1 = Integer.parseInt(site2Num1[1]);
+			Integer site2 = Integer.parseInt(site2Num2[1]);
+			return -site1.compareTo(site2);
+		} );
+		String site1 = lsSite2Num.get(0)[0];
+		String site2 = lsSite2Num.get(1)[0];
+		//正常情况
+		if (site1.equals(allele.getRefBase()) && site2.equals(allele.getAltBase())
+			|| site1.equals(allele.getAltBase()) && site2.equals(allele.getRefBase())
+			) {
+			return lsSite;
+		}
+		if (site1.equals(allele.getRefBase())) {
+			//TODO change site2 to alt
+		} else if (site1.equals(allele.getAltBase())) {
+			//TODO change site2 to ref
+		} else if (site2.equals(allele.getRefBase())) {
+			//TODO change site1 to alt
+		} else if (site2.equals(allele.getAltBase())) {
+			//TODO change site1 to ref
+		} else {
+			//TODO change site1 to ref
+			//TODO change site2 to alt
+		}
 	}
 	
 	private void clustering(double[][] distances) {
