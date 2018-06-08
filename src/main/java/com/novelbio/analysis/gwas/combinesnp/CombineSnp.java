@@ -170,17 +170,74 @@ public class CombineSnp {
 			return lsSite;
 		}
 		if (site1.equals(allele.getRefBase())) {
-			//TODO change site2 to alt
+			//change site2 to alt
+			for (String[] strings : lsSite) {
+				if (strings[0].equals(site1)) {
+					continue;
+				} else if (strings[0].equals(site2)) {
+					strings[0] = allele.getAltBase();
+					strings[1] = allele.getAltBase();
+				} else {
+					strings[0] = "N";
+					strings[1] = "N";
+				}
+			}
 		} else if (site1.equals(allele.getAltBase())) {
-			//TODO change site2 to ref
+			//change site2 to ref
+			for (String[] strings : lsSite) {
+				if (strings[0].equals(site1)) {
+					continue;
+				} else if (strings[0].equals(site2)) {
+					strings[0] = allele.getRefBase();
+					strings[1] = allele.getRefBase();
+				} else {
+					strings[0] = "N";
+					strings[1] = "N";
+				}
+			}
 		} else if (site2.equals(allele.getRefBase())) {
-			//TODO change site1 to alt
+			// change site1 to alt
+			for (String[] strings : lsSite) {
+				if (strings[0].equals(site2)) {
+					continue;
+				} else if (strings[0].equals(site1)) {
+					strings[0] = allele.getAltBase();
+					strings[1] = allele.getAltBase();
+				} else {
+					strings[0] = "N";
+					strings[1] = "N";
+				}
+			}
 		} else if (site2.equals(allele.getAltBase())) {
-			//TODO change site1 to ref
+			// change site1 to ref
+			for (String[] strings : lsSite) {
+				if (strings[0].equals(site2)) {
+					continue;
+				} else if (strings[0].equals(site1)) {
+					strings[0] = allele.getRefBase();
+					strings[1] = allele.getRefBase();
+				} else {
+					strings[0] = "N";
+					strings[1] = "N";
+				}
+			}
 		} else {
-			//TODO change site1 to ref
-			//TODO change site2 to alt
+			// change site1 to ref
+			// change site2 to alt
+			for (String[] strings : lsSite) {
+				if (strings[0].equals(site1)) {
+					strings[0] = allele.getRefBase();
+					strings[1] = allele.getRefBase();
+				} else if (strings[0].equals(site2)) {
+					strings[0] = allele.getAltBase();
+					strings[1] = allele.getAltBase();
+				} else {
+					strings[0] = "N";
+					strings[1] = "N";
+				}
+			}
 		}
+		return lsSite;
 	}
 	
 	private void clustering(double[][] distances) {
