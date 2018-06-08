@@ -86,27 +86,33 @@ public class CombineSnp {
 	/** 计算某个基因其snp的ld的r平方，用于聚类 */
 	@VisibleForTesting
 	protected double[][] calculateDistanceFromAlleles() {
-		List<List<String[]>> lsInfos = new ArrayList<>();
+		List<List<String[]>> lsInfosRaw = new ArrayList<>();
 		int alleleNum = mapSample2LsAllelesIn.values().iterator().next().size();
 		for (int i = 0; i < alleleNum; i++) {
-			lsInfos.add(new ArrayList<>());
+			lsInfosRaw.add(new ArrayList<>());
 		}
 		//================= 按照snp位点产生了一个snp一个list这种 =========
 		for (String sample : mapSample2LsAllelesIn.keySet()) {
 			List<Allele> lsAllelesSample = mapSample2LsAllelesIn.get(sample);
 			for (int i = 0; i < lsAllelesSample.size(); i++) {
 				Allele allele = lsAllelesSample.get(i);
-				lsInfos.get(i).add(new String[] {allele.getAllele1(), allele.getAllele2()});
+				lsInfosRaw.get(i).add(new String[] {allele.getAllele1(), allele.getAllele2()});
 			}
 		}
 		
 		List<Allele> lsAllelesRaw = mapSample2LsAllelesIn.values().iterator().next();
 		List<Allele> lsAlleles = new ArrayList<>();
-		
+		List<List<String[]>> lsInfos = new ArrayList<>();
 		//将list中没有变异的位点去除
-		for (int i = 0; i < lsInfos.size(); i++) {
-			List<String[]> lsSite = lsInfos.get(i);
-			
+		for (int i = 0; i < lsInfosRaw.size(); i++) {
+			List<String[]> lsSite = lsInfosRaw.get(i);
+			Allele allele = lsAllelesRaw.get(i);
+			//TODO
+			lsSite = modifyList(lsSite, allele);
+			if (lsSite != null) {
+				lsInfos.add(lsSite);
+				lsAlleles.add(allele);
+			}
 		}
 		
 		
