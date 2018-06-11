@@ -41,7 +41,8 @@ public class GffHashGTF extends GffHashGeneAbs{
 		
 	List<String> lsGeneName = new ArrayList<>();
 	List<String> lsTranscript = new ArrayList<>();	
-	
+	List<String> lsTranscriptType = new ArrayList<>();	
+
 	/** geneName是哪一项，默认是 gene_name */
 	public void addGeneNameFlag(String geneNameFlag) {
 		lsGeneName.add(geneNameFlag);
@@ -50,7 +51,23 @@ public class GffHashGTF extends GffHashGeneAbs{
 	public void addTranscriptNameFlag(String transcriptNameFlag) {
 		lsTranscript.add(transcriptNameFlag);
 	}
+	private void initialLsGeneIds() {
+		lsGeneName.add("gene_name");
+		lsGeneName.add("gene_id");
+		lsGeneName.add("Name");
+		lsGeneName.add("Parent");
+	}
 	
+	private void initialLsmiRNA() {
+		lsTranscript.add("transcript_name");
+		lsTranscript.add("transcript_id");
+		lsTranscript.add("ID");
+	}
+	
+	private void initialLsTranscriptType() {
+		lsTranscriptType.add("gene_biotype");
+		lsTranscriptType.add("transcript_biotype");
+	}
 	/**
 	 * 设定参考基因的Gff文件
 	 * @param gffHashRef
@@ -77,6 +94,10 @@ public class GffHashGTF extends GffHashGeneAbs{
 	@Override
 	protected void ReadGffarrayExcepTmp(String gfffilename) {
 		setGeneName(); setContig();
+		initialLsGeneIds();
+		initialLsmiRNA();
+		initialLsTranscriptType();
+		
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
 		ArrayListMultimap<String, GffGeneIsoInfo> mapChrID2LsIso = ArrayListMultimap.create();
 		TxtReadandWrite txtgff = new TxtReadandWrite(gfffilename);
@@ -86,6 +107,10 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpTranscriptNameLast = "";
 		int line = 0;
 		for (String content : txtgff.readlines() ) {
+			if (content.contains("BID-207")) {
+				logger.info("stop");
+			}
+			
 			try {
 				line++;
 				if (StringOperate.isRealNull(content) || content.charAt(0) == '#') continue;
@@ -295,7 +320,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 	}
 	
 	private String[] getIsoName2GeneName(String ss8) {
-		String[] iso2Gene = getIsoName2GeneNameStatic(ss8);
+		String[] iso2Gene = new String[3];
 		if (lsGeneName.isEmpty() && lsTranscript.isEmpty()) {
 			return iso2Gene;
 		}
@@ -313,6 +338,14 @@ public class GffHashGTF extends GffHashGeneAbs{
 			for (String transcript : lsTranscript) {
 				if (mapId2Value.containsKey(transcript)) {
 					iso2Gene[0] = mapId2Value.get(transcript);
+					break;
+				}
+			}
+		}
+		if (!lsTranscriptType.isEmpty()) {
+			for (String transcript : lsTranscriptType) {
+				if (mapId2Value.containsKey(transcript)) {
+					iso2Gene[2] = mapId2Value.get(transcript);
 					break;
 				}
 			}
@@ -445,7 +478,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 		}
 		 return iso2geneName;
 	}
-	
+
 	/**
 	 * 给定 transcript_id "R2_19_1" 这种，返回 
 	 * @param keyvalue
