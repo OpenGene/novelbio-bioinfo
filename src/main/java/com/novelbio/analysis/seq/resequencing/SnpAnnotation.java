@@ -151,7 +151,9 @@ public class SnpAnnotation extends RunProcess {
 			for (int i = 0; i < 5; i++) {
 				lsInfo.add("");
 			}
-			return lsInfo;
+			String result = ArrayOperate.cmbString(lsInfo, "\t");
+			lsResult.add(result);
+			return lsResult;
 		}
 		for (List<String> lsAnno : lsLsAnno) {
 			List<String> lsResultUnit = new ArrayList<>();
@@ -164,17 +166,7 @@ public class SnpAnnotation extends RunProcess {
 	}
 	
 	/** tilte和annoSnp方法中一致 */
-	public static ArrayList<String> getTitleLs() {
-		ArrayList<String> lsTitle = new ArrayList<String>();
-		lsTitle.add(TitleFormatNBC.AccID.toString());
-		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
-			lsTitle.add(TitleFormatNBC.Symbol.toString());
-			lsTitle.add(TitleFormatNBC.Description.toString());
-		}
-	
-		lsTitle.add("LocationDescription");
-		lsTitle.add("PropToGeneStart");
-		lsTitle.addAll(SnpAnnoFactory.getLsTitle());
-		return lsTitle;
+	public static List<String> getTitleLs() {
+		return SnpAnnoFactory.getLsTitle();
 	}
 }

@@ -68,7 +68,6 @@ public class CombineSnp {
 	
 	public void modifyMapSample2LsAlleles(Map<String, List<Allele>> mapSample2LsAllelesIn) {
 		for (String sample : mapSample2LsAllelesIn.keySet()) {
-			//TODO
 			mapSample2LsAllelesOut.put(sample, new ArrayList<>());
 		}
 	}
@@ -114,7 +113,6 @@ public class CombineSnp {
 				lsAlleles.add(allele);
 			}
 		}
-		
 		
 		//================== 开始计算相关性  =============================
 		int snpNum = lsAlleles.size();
@@ -169,6 +167,13 @@ public class CombineSnp {
 		} );
 		String site1 = lsSite2Num.get(0)[0];
 		String site2 = lsSite2Num.get(1)[0];
+		if (allele.getAltBase() == null) {
+			if (allele.getRefBase().equals(site1)) {
+				allele.setAlt(site2);
+			} else {
+				allele.setAlt(site1);
+			}
+		}
 		//正常情况
 		if (site1.equals(allele.getRefBase()) && site2.equals(allele.getAltBase())
 			|| site1.equals(allele.getAltBase()) && site2.equals(allele.getRefBase())
@@ -250,10 +255,14 @@ public class CombineSnp {
 		Linkage linkage = new UPGMALinkage(distances);
 		HierarchicalClustering hierarchicalClustering = new HierarchicalClustering(linkage);
 		//相似度小于0.2的合并在一起，这里的0.2是1-r^2
+		double heightSet = 1-r2;
 		height = hierarchicalClustering.getHeight();
+		if (heightSet > height[height.length - 1]) {
+			heightSet = height[height.length-1];
+		}
 		int[] clusters = null;
 		try {
-			clusters = hierarchicalClustering.partition(1-r2);
+			clusters = hierarchicalClustering.partition(heightSet);
 		} catch (Exception e) {
 			List<Allele> lsAlleles = mapSample2LsAllelesIn.values().iterator().next();
 			logger.error(lsAlleles.get(0).toString());
@@ -270,7 +279,7 @@ public class CombineSnp {
 		
 		if (maxClusterNum > 0 && clusterNum > maxClusterNum) {
 			for (double heightUnit : height) {
-				if (heightUnit <= 1-r2) {
+				if (heightUnit <= heightSet) {
 					continue;
 				}
 				if (heightUnit >= 1) {

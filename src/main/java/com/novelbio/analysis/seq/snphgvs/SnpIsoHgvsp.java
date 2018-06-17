@@ -96,7 +96,11 @@ public abstract class SnpIsoHgvsp {
 		}
 	}
 	protected abstract String getSnpChange();
-	
+	/** 返回氨基酸极性变化*/
+	public String getAAattrConvert() {
+		return "";
+	}
+
 	/**
 	 * 必须在 {@link #getHgvsp()} 调用之后再使用
 	 * @return

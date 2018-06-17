@@ -333,7 +333,7 @@ public class SnpInfo {
 	 * 的不同返回相应的坐标
 	 * @return
 	 */
-	public int getStartReal() {
+	protected int getStartReal() {
 		return snpRealignHandler == null ? alignChange.getStartAbs() : snpRealignHandler.getRealign().getStartAbs();
 	}
 	/**
@@ -341,7 +341,7 @@ public class SnpInfo {
 	 * 的不同返回相应的坐标
 	 * @return
 	 */
-	public int getEndReal() {
+	protected int getEndReal() {
 		return snpRealignHandler == null ? alignChange.getEndAbs() : snpRealignHandler.getRealign().getEndAbs();
 	}
 	
@@ -356,7 +356,7 @@ public class SnpInfo {
 	 * @return
 	 */
 	protected int getStartPosition() {
-		Align align = snpRealignHandler == null ? alignChange : snpRealignHandler.getAlignEnd();
+		Align align = snpRealignHandler == null ? alignChange : snpRealignHandler.getAlignRight();
 		if (varType == EnumHgvsVarType.Duplications) {
 			return align.getStartAbs() - getSeqAlt().length() + 1;
 		}
@@ -373,36 +373,45 @@ public class SnpInfo {
 	 * @return
 	 */
 	protected int getEndPosition() {
-		Align align = snpRealignHandler == null ? alignChange : snpRealignHandler.getAlignEnd();
+		Align align = snpRealignHandler == null ? alignChange : snpRealignHandler.getAlignRight();
 		if (varType == EnumHgvsVarType.Duplications) {
 			return align.getEndAbs() - 1;
 		}
 		return align.getEndAbs();
 	}
 	
-	public String getSeqRef() {
+	protected String getSeqRef() {
 		return snpRealignHandler == null ? seqRef : snpRealignHandler.getSeqRef();
 	}
-	public String getSeqAlt() {
+	protected String getSeqAlt() {
 		return snpRealignHandler == null ? seqAlt : snpRealignHandler.getSeqAlt();
 	}
-	public String getSeqHead() {
+	protected String getSeqHead() {
 		return snpRealignHandler == null ? seqHead : snpRealignHandler.getSeqHead();
 	}
-	public Align getAlignRef() {
-		return snpRealignHandler == null ? alignChange : snpRealignHandler.getRealign();
+	
+	public Align getAlignRefRight() {
+		return snpRealignHandler == null ? alignChange : snpRealignHandler.getAlignRight();
 	}
-
+	public String getSeqRefRight() {
+		return snpRealignHandler == null ? seqRef : snpRealignHandler.getSeqRefRight();
+	}
+	public String getSeqAltRight() {
+		return snpRealignHandler == null ? seqAlt : snpRealignHandler.getSeqAltRight();
+	}
+	public String getSeqHeadRight() {
+		return snpRealignHandler == null ? seqHead : snpRealignHandler.getSeqHeadRight();
+	}
 	
 	/** 修正过的位点信息 */
 	public String toStringModify() {
 		StringBuilder sBuilder = new StringBuilder();
 		sBuilder.append(alignChange.getRefID() + "\t");
 		int startLen = varType == EnumHgvsVarType.Deletions ? 1 : 0;
-		sBuilder.append(getAlignRef().getStartAbs() - startLen);
+		sBuilder.append(getAlignRefRight().getStartAbs() - startLen);
 		sBuilder.append("\t");
-		sBuilder.append(getSeqHead() + getSeqRef() + "\t");
-		sBuilder.append(getSeqHead() + getSeqAlt());
+		sBuilder.append(getSeqHeadRight() + getSeqRefRight() + "\t");
+		sBuilder.append(getSeqHeadRight() + getSeqAltRight());
 		return sBuilder.toString();
 	}
 	public static enum SnpIndelType {

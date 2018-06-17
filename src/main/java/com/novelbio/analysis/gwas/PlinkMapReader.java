@@ -29,6 +29,8 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  */
 public class PlinkMapReader {
 	
+	int tss = 1500;
+	
 	/**
 	 * 每个位点的坐标信息<br>
 	 * chrId name	other	location<br>
@@ -55,7 +57,9 @@ public class PlinkMapReader {
 	Map<Allele, Set<String>> mapCurrentSnp2SetIsoName = new LinkedHashMap<>();
 	
 	SnpAnno snpAnno = new SnpAnno();
-	
+	public void setTss(int tss) {
+		this.tss = tss;
+	}
 	public void setGffChrAbs(String chrFile, String gffFile) {
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setChrFile(chrFile, null);
@@ -67,7 +71,28 @@ public class PlinkMapReader {
 				lsGenes = new ArrayList<>();
 				mapChrId2LsGenes.put(gffDetailGene.getRefID(), lsGenes);
 			}
-			lsGenes.add(gffDetailGene);
+			GffDetailGene gffDetailGeneTss = new GffDetailGene();
+			gffDetailGeneTss.setParentName(gffDetailGene.getRefID());
+			gffDetailGeneTss.addItemName(gffDetailGene.getNameSingle() + ".tss");
+			gffDetailGeneTss.setCis5to3(gffDetailGene.isCis5to3());
+			if (gffDetailGene.isCis5to3()) {
+				int start = gffDetailGene.getStartAbs()-tss;
+				if (start < 1) start = 1;
+				gffDetailGeneTss.setStartAbs(start);
+				gffDetailGeneTss.setEndAbs(gffDetailGene.getStartAbs());
+				if (tss>0) {
+					lsGenes.add(gffDetailGeneTss);
+				}
+				lsGenes.add(gffDetailGene);
+			} else {
+				if (tss>0) {
+					lsGenes.add(gffDetailGeneTss);
+				}
+				gffDetailGeneTss.setStartAbs(gffDetailGene.getEndAbs());
+				gffDetailGeneTss.setEndAbs(gffDetailGene.getEndAbs() + tss);
+				lsGenes.add(gffDetailGeneTss);
+			}
+		
 		}
 		for (List<GffDetailGene> lsGenes : mapChrId2LsGenes.values()) {
 			Collections.sort(lsGenes, (gene1, gene2) -> {return ((Integer)gene1.getStartAbs()).compareTo(gene2.getStartAbs());});
@@ -233,6 +258,8 @@ public class PlinkMapReader {
 	
 	/**
 	 * 获得改变iso的snp，以及相应的iso的名字
+	 * 落在内含子中的snp就不要了
+	 * 注意这里如果是tss区域的snp，则都要
 	 * @param lsAllele
 	 * @param gene
 	 * @return
@@ -243,7 +270,13 @@ public class PlinkMapReader {
 			if (!isAlleleInGene(allele, gene)) {
 				continue;
 			}
-			Set<String> setIsoName = snpAnno.getSetIsoName(allele, gene);
+			Set<String> setIsoName = null;
+			if (gene.getNameSingle().endsWith(".tss")) {
+				setIsoName = new HashSet<>();
+				setIsoName.add(gene.getNameSingle());
+			} else {
+				setIsoName = snpAnno.getSetIsoName(allele, gene);
+			}
 			if (!setIsoName.isEmpty()) {
 				mapSnp2SetIsoName.put(allele, setIsoName);
 			}

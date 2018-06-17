@@ -129,7 +129,7 @@ public class TestCombineSnp {
 //		}
 		Linkage linkage = new UPGMALinkage(distance);
 		HierarchicalClustering hierarchicalClustering = new HierarchicalClustering(new UPGMALinkage(distance));
-		int[] num = hierarchicalClustering.partition(3);
+		int[] num = hierarchicalClustering.partition(2);
 		int[] num2 = hierarchicalClustering.partition(0.2);
 
 		double[] high = hierarchicalClustering.getHeight();

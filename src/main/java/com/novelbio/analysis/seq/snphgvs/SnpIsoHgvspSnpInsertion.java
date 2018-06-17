@@ -1,7 +1,7 @@
 package com.novelbio.analysis.seq.snphgvs;
 
+import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.mapping.Align;
 
 class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 	boolean isATG = false;
@@ -73,7 +73,17 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 		setVarType.add(EnumVariantClass.missense_variant);
 		return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + alt;
 	}
-
+	
+	/**
+	 * 返回变化的AA的化学性质改变形式，不在cds中则返回""；
+	 * @return
+	 */
+	public String getAAattrConvert() {
+		String ref = convertAA(refSeqNrForAA.toStringAA1().substring(0, 1));
+		String alt = convertAA(altSeqNrForAA.toStringAA1().substring(0, 1));
+		return  SeqFasta.cmpAAquality(ref, alt);
+	}
+	
 }
 
 class SnpRefAltIsoIns extends SnpIsoHgvsp {

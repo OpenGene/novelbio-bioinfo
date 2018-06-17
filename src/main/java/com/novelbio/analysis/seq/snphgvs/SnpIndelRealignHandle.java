@@ -31,9 +31,7 @@ public class SnpIndelRealignHandle {
 	String seqAlt;
 	/** 插入或缺失在reference上的位置 */
 	Align alignRef;
-	
-	/** 偏移到最尾部的align */
-	Align alignEnd;
+
 	
 	EnumHgvsVarType varType;
 	
@@ -47,8 +45,16 @@ public class SnpIndelRealignHandle {
 	char beforeBase;
 
 	boolean isDup;
-
-	/** 移动之后的realign */
+	
+	/** 偏移到最尾部的align */
+	Align alignRight;
+	String seqChangeRight;
+	String seqChangeShortRight;
+	
+	/** 移动之后的realign，考虑了剪接位点等因素，移动到了最合适的位置
+	 * 譬如如果是正向转录本则右移
+	 * 反向转录本则左移
+	 */
 	Align realign;
 	/**
 	 * 这里只可能是insertion或deletion，因此只有一条序列存在，另一条为空<br>
@@ -79,21 +85,35 @@ public class SnpIndelRealignHandle {
 	protected int getStartAfter() {
 		return startAfter;
 	}
+	
 	protected char getBeforeBase() {
 		return beforeBase;
 	}
-	public String getSeqChange() {
+	
+	protected String getSeqChange() {
 		return seqChange;
 	}
-	public String getSeqHead() {
+	protected String getSeqHead() {
 		return seqChangeShort;
 	}
-	
-	public String getSeqRef() {
+	protected String getSeqRef() {
 		return varType == EnumHgvsVarType.Deletions ? seqChange : "";
 	}
-	public String getSeqAlt() {
+	protected String getSeqAlt() {
 		return varType == EnumHgvsVarType.Deletions ? "" : seqChange;
+	}
+	
+	public String getSeqChangeRight() {
+		return seqChangeRight;
+	}
+	protected String getSeqHeadRight() {
+		return seqChangeShortRight;
+	}
+	protected String getSeqRefRight() {
+		return varType == EnumHgvsVarType.Deletions ? seqChangeRight : "";
+	}
+	protected String getSeqAltRight() {
+		return varType == EnumHgvsVarType.Deletions ? "" : seqChangeRight;
 	}
 	
 	public EnumHgvsVarType getVarType() {
@@ -128,8 +148,8 @@ public class SnpIndelRealignHandle {
 		return realign;
 	}
 	/** 移动到尾部的align，主要给hgvsc使用 */
-	public Align getAlignEnd() {
-		return alignEnd;
+	public Align getAlignRight() {
+		return alignRight;
 	}
 	/** 我们假定默认<b>align已经移动到最右端<b>，这样我们只需要将align
 	 * 向左端移动即可
@@ -165,8 +185,10 @@ public class SnpIndelRealignHandle {
 		int moveEnd = startAfter-startLoc;
 		changeSeq(moveEnd);
 		realign = generateNewAlign(moveEnd);
-		alignEnd = realign.clone();
-		return alignEnd;
+		alignRight = realign.clone();
+		seqChangeRight = seqChange;
+		seqChangeShortRight = seqChangeShort;
+		return alignRight;
 	}
 	protected Align moveAlignToBefore() {
 		int moveEnd = startBefore-startLoc;

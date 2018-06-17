@@ -90,7 +90,10 @@ public class BamReadsInfo {
 	public String toString() {
 		return mapLibrary + "\t" + strandSpecific + "\t" + cisNum + "\t" + transNum;
 	}
-	
+	/** mapLibrary "\t" strandSpecific "\t" cisNum "\t" transNum */
+	public String toStringDetail() {
+		return mapLibrary + ": " + strandSpecific + " Detail: CisReadsNum " + cisNum + ", TransReadsNum:" + transNum;
+	}
 	public static String[] getTitle() {
 		return new String[]{"Library", "StrandInfo", "CisReadsNum", "TransReadsNum"};
 	}

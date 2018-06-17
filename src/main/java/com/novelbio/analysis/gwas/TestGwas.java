@@ -139,6 +139,7 @@ public class TestGwas {
 		opts.addOption("chrFile", true, "chrFile");
 		opts.addOption("gffFile", true, "gffFile");
 		opts.addOption("out", true, "out");
+		opts.addOption("tss", true, "tss");
 
 		CommandLine cliParser = null;
 		try {
@@ -156,6 +157,7 @@ public class TestGwas {
 		String r2min = cliParser.getOptionValue("r2min", "");
 		String maxCluster = cliParser.getOptionValue("maxCluster", "");
 		String permutationNum = cliParser.getOptionValue("permutationNum", "");
+		String tss = cliParser.getOptionValue("tss", "");
 
 		
 		FileOperate.createFolders(FileOperate.getPathName(out));
@@ -171,6 +173,7 @@ public class TestGwas {
 //		String r2min = "0.8";
 //		String maxCluster = "10";
 //		String permutationNum = "3";
+//		String tss = "2000";
 		
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setChrFile(chrFile, null);
@@ -196,6 +199,9 @@ public class TestGwas {
 		if (!StringOperate.isRealNull(permutationNum)) {
 			testGwas.setPermutationNum(Integer.parseInt(permutationNum.trim()));
 		}
+		if (!StringOperate.isRealNull(tss)) {
+			testGwas.setTss(Integer.parseInt(tss.trim()));
+		}
 		
 		testGwas.setOutput(out + "permutation.plinkmap", out + "permutation.plinkmapconvertor", out + "permutation.plinkped.pre");
 		testGwas.cluster();
@@ -209,11 +215,12 @@ public class TestGwas {
 	}
 	
 	private static void printHelp() {
-		System.err.println("java -jar testGwas.jar --plinkBim plink.bim --plinkPed plink.ped --r2min 0.8 --maxCluster 10 --permutationNum 3  --chrFile chrFile --gffFile gffFile --out outPath");
+		System.err.println("java -jar testGwas.jar --plinkBim plink.bim --plinkPed plink.ped --r2min 0.8 --tss 1500 --maxCluster 10 --permutationNum 3  --chrFile chrFile --gffFile gffFile --out outPath");
 		System.err.println();
 		System.err.println("r2min: cluster the snp have r2 bigger than the value, default is 0.2");
 		System.err.println("maxCluster: cluster num less then the value, default is 0, means no cluster number limit");
 		System.err.println("permutationNum: number n in c(m,n), default is 3, while 0 means n=m");
+		System.err.println("tss: tss length, snp in tss will used to analysis");
 		System.err.println();
 		System.err.println("example:");
 		System.err.println("java -jar testGwas.jar --plinkBim /home/novelbio/plink.bim --r2min 0.8 --maxCluster 10 --permutationNum 3 --plinkPed /home/novelbio/plink.ped"
@@ -236,7 +243,7 @@ public class TestGwas {
 	int maxCluster = 0;
 	int permutationNum=3;
 	//==============================
-	
+	int tss = 1500;
 	/**
 	 * 聚类时r2超过这个值的聚在一起 
 	 * @param r2Cluster
@@ -250,7 +257,9 @@ public class TestGwas {
 	public void setPermutationNum(int permutationNum) {
 		this.permutationNum = permutationNum;
 	}
-	
+	public void setTss(int tss) {
+		this.tss = tss;
+	}
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
@@ -270,6 +279,7 @@ public class TestGwas {
 	protected void cluster() {
 		int index = 0;
 		PlinkMapReader plinkMapReader = new PlinkMapReader();
+		plinkMapReader.setTss(tss);
 		plinkMapReader.setGffChrAbs(gffChrAbs);
 		plinkMapReader.setPlinkMap(plinkBimCorrect);
 		plinkMapReader.initial();

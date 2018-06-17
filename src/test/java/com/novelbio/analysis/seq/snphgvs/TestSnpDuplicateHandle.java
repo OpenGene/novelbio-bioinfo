@@ -43,7 +43,7 @@ public class TestSnpDuplicateHandle {
 		alignRealign = snpIndelRealignHandle.moveAlignToAfter();
 		assertEquals("chr1:45-46", alignRealign.toString());
 		assertEquals("T", snpIndelRealignHandle.getSeqHead());
-		assertEquals("CAAGCTGAT", snpIndelRealignHandle.getSeqChange());
+		assertEquals("CAAGCTGAT", snpIndelRealignHandle.getSeqChangeRight());
 	}
 	
 	private void testRealignDeletion(int seqLen) {
@@ -73,7 +73,7 @@ public class TestSnpDuplicateHandle {
 		alignRealign = snpIndelRealignHandle.moveAlignToAfter();
 		assertEquals("chr1:37-45", alignRealign.toString());
 		assertEquals("T", snpIndelRealignHandle.getSeqHead());
-		assertEquals("CAAGCTGAT", snpIndelRealignHandle.getSeqChange());
+		assertEquals("CAAGCTGAT", snpIndelRealignHandle.getSeqChangeRight());
 	}
 	
 	private void testRealignSimple() {
