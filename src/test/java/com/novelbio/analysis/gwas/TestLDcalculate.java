@@ -83,6 +83,45 @@ public class TestLDcalculate {
 		assertEquals(1, lDcalculate.getDdot(), 0.01);
 	}
 	
+	@Test
+	public void testR28() {
+		StringBuilder s1 = new StringBuilder("A");
+		for (int i = 0; i <17; i++) {
+			s1.append(" A");
+		}
+		s1.append(" a");
+		StringBuilder s2 = new StringBuilder("B");
+		for (int i = 0; i < 4; i++) {
+			s2.append(" B");
+		}
+		s2.append(" b");
+		for (int i = 0; i < 13; i++) {
+			s2.append(" B");
+		}
+//		s2.append(" b");
+		
+		List<String[]> lsRef2AltSite1 = getLsSnps(s1.toString());
+		List<String[]> lsRef2AltSite2 = getLsSnps(s2.toString());
+		LDcalculate lDcalculate = generateLDinfo(lsRef2AltSite1, lsRef2AltSite2);
+		
+		assertEquals(0.00308, lDcalculate.getR2(), 0.01);
+		assertEquals(1, lDcalculate.getDdot(), 0.01);
+	}
+	
+	@Test
+	public void testR29() {
+		List<String[]> lsRef2AltSite1 = getLsSnps("A A A A A A A A A a a a");
+		List<String[]> lsRef2AltSite2 = getLsSnps("B B B B B B B B B B B B");
+		LDcalculate lDcalculate1 = generateLDinfo(lsRef2AltSite1, lsRef2AltSite2);
+		
+		lsRef2AltSite1 = getLsSnps("A A A A A A A A A a a a");
+		lsRef2AltSite2 = getLsSnps("B B B B B B B B B B B b");
+		LDcalculate lDcalculate2 = generateLDinfo(lsRef2AltSite1, lsRef2AltSite2);
+		
+		assertEquals(lDcalculate2.getR2(), lDcalculate1.getR2(), 0.01);
+		assertEquals(lDcalculate2.getDdot(), lDcalculate1.getDdot(), 0.01);
+	}
+	
 	private List<String[]> getLsSnps(String info) {
 		List<String[]> lsResult = new ArrayList<>();
 		String[] ss = info.split(" ");
@@ -94,8 +133,6 @@ public class TestLDcalculate {
 	
 	private LDcalculate generateLDinfo(List<String[]> lsRef2AltSite1, List<String[]> lsRef2AltSite2) {
 		LDcalculate lDcalculate = new LDcalculate();
-		lDcalculate.setRefa("A");
-		lDcalculate.setRefb("B");
 		lDcalculate.setLsRef2AltSite1(lsRef2AltSite1);
 		lDcalculate.setLsRef2AltSite2(lsRef2AltSite2);
 		lDcalculate.calculate();

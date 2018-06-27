@@ -167,7 +167,20 @@ public class Allele extends Align {
 		}
 		return ArrayOperate.cmbString(lsResult, "\t");
 	}
-	
+	public String toStringSimple() {
+		List<String> lsResult = new ArrayList<>();
+		lsResult.add(getRefID());
+//		lsResult.add(marker);
+//		lsResult.add(other);
+		lsResult.add(getStartAbs()+"");
+//		lsResult.add(ref);
+//		lsResult.add(alt);
+//		if (isRefMajor != null) {
+//			String isRefMajorStr = isRefMajor ? "1" : "-1";
+//			lsResult.add(isRefMajorStr);
+//		}
+		return ArrayOperate.cmbString(lsResult, "\t");
+	}
 	/**
 	 * 根据碱基频率来获取值
 	 * 譬如高频位点为A，低频位点为T

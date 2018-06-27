@@ -107,6 +107,7 @@ public class SnpAnnotation extends RunProcess {
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
+					logger.error("cannot annotate snp " + snpInfo);
 					txtWrite.writefileln(tmpResult);
 				}
 				readLines ++;

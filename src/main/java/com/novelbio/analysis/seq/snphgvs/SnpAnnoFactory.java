@@ -55,7 +55,9 @@ public class SnpAnnoFactory {
 		Set<EnumVariantClass> setVar = VariantTypeDetector.getSetVarType(iso, snpInfo);
 		setVar.addAll(snpIsoHgvsp.getSetVarType());
 		lsResult.add(VariantTypeDetector.mergeVars(setVar));
-		lsResult.add(snpIsoHgvsp.getAAattrConvert());
+		if (snpIsoHgvsp.isNeedHgvsp()) {
+			lsResult.add(snpIsoHgvsp.getAAattrConvert());
+		}
 		return lsResult;
 	}
 	

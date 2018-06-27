@@ -48,6 +48,10 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 	}
 	
 	public String getSnpChange() {
+		if (refSeqNrForAA.Length()<3) {
+			throw new ExceptionNBCSnpHgvs("aa anotation error on iso " + iso.getName()+ " due to site error! "
+					+ "reference is " + refSeqNrForAA.toString() + ", and alt is "+altSeqNrForAA.toString());
+		}
 		String ref = convertAA(refSeqNrForAA.toStringAA1().substring(0, 1));
 		String alt = convertAA(altSeqNrForAA.toStringAA1().substring(0, 1));
 		if (isUAG && !ref.equals(alt)) {

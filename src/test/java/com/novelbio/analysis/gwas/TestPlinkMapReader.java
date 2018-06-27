@@ -103,10 +103,9 @@ public class TestPlinkMapReader {
 		gene = plinkMapReader.getGeneCurrent();
 		lsAllele = plinkMapReader.getLsAllelesCurrent();
 		assertEquals("250_280", gene.getNameSingle());
-		assertEquals(3, lsAllele.size());
+		assertEquals(2, lsAllele.size());
 		assertEquals("chr2\ta\tb\t250\tA\tG", lsAllele.get(0).toString());
 		assertEquals("chr2\ta\tb\t280\tA\tG", lsAllele.get(1).toString());
-		assertEquals("chr2\ta\tb\t300\tA\tG", lsAllele.get(2).toString());
 
 		plinkMapReader.readNextLsAllele();
 		gene = plinkMapReader.getGeneCurrent();

@@ -42,6 +42,14 @@ public class CombineSnp {
 	
 	double r2;
 	int maxClusterNum;
+	
+	double variationCutoff = 0.05;
+	
+	String geneName;
+	
+	public void setGeneName(String geneName) {
+		this.geneName = geneName;
+	}
 	/** r平方超过多少的聚在一起 */
 	public void setR2(double r2) {
 		if (r2 > 1 || r2 < 0) {
@@ -49,7 +57,9 @@ public class CombineSnp {
 		}
 		this.r2 = r2;
 	}
-	
+	public void setVariationCutoff(double variationCutoff) {
+		this.variationCutoff = variationCutoff;
+	}
 	/**
 	 * 聚类最多多少个cluster
 	 * 因为就算聚类之后，依然会出现很多个cluster以至于后面很难分析
@@ -78,6 +88,10 @@ public class CombineSnp {
 	
 	public void merge() {
 		double[][] distances = calculateDistanceFromAlleles();
+		if (distances == null) {
+			mapSample2LsAllelesOut = mapSample2LsAllelesIn;
+			return;
+		}
 		clustering(distances);
 		mergeSnps();
 	}
@@ -103,35 +117,110 @@ public class CombineSnp {
 		List<Allele> lsAlleles = new ArrayList<>();
 		List<List<String[]>> lsInfos = new ArrayList<>();
 		//将list中没有变异的位点去除
+		List<Integer> lsSnpsNeed = new ArrayList<>();
+		
 		for (int i = 0; i < lsInfosRaw.size(); i++) {
+
 			List<String[]> lsSite = lsInfosRaw.get(i);
 			Allele allele = lsAllelesRaw.get(i);
+			if (allele.getStartAbs() == 3514 || allele.getStartAbs() == 3568) {
+				logger.info("stop");
+			}
 			//TODO
-			lsSite = modifyList(lsSite, allele);
+			lsSite = modifyList(lsSite, allele, variationCutoff);
 			if (lsSite != null) {
+				lsSnpsNeed.add(i);
 				lsInfos.add(lsSite);
 				lsAlleles.add(allele);
 			}
 		}
 		
+		int maxSnpInGene = 500;
+		if (lsSnpsNeed.size() > maxSnpInGene) {
+			List<List<String[]>> lsNeedForSnpInfo = new ArrayList<>();
+			logger.info("gene {} have too many snps {}, so reduce it", geneName, lsSnpsNeed.size());
+			List<Integer> lsSnpNeedNew = new ArrayList<>();
+			int skipNum = (int)Math.round((double)lsSnpsNeed.size()/500);
+			for (int i = 0; i < lsSnpsNeed.size(); i+=skipNum) {
+				lsSnpNeedNew.add(lsSnpsNeed.get(i));
+				lsNeedForSnpInfo.add(lsInfos.get(i));
+			}
+			lsInfos = lsNeedForSnpInfo;
+			lsSnpsNeed = lsSnpNeedNew;
+		}
+
+		mapSample2LsAllelesIn = filterMapSample2LsAllele(mapSample2LsAllelesIn, lsSnpsNeed);
+		
+		
+		
+		
+		if (lsAlleles.size() <= 1) {
+			return null;
+		}
 		//================== 开始计算相关性  =============================
-		int snpNum = lsAlleles.size();
+		int snpNum = lsSnpsNeed.size();
 		double[][] distance = new double[snpNum][snpNum];
 		for (int i = 0; i < snpNum-1; i++) {
 			distance[i][i] = 0;
 			for (int j = i+1; j < snpNum; j++) {
 				LDcalculate lDcalculate = new LDcalculate();
-				lDcalculate.setLsRef2AltSite1(lsInfos.get(i));
-				lDcalculate.setLsRef2AltSite2(lsInfos.get(j));
-				lDcalculate.setRefa(lsAlleles.get(i).getRefBase());
-				lDcalculate.setRefb(lsAlleles.get(j).getRefBase());
+				List<String[]> lsRef = lsInfos.get(i);
+				List<String[]> lsAlt = lsInfos.get(j);
+				Allele alleleRef = lsAlleles.get(i);
+				Allele alleleAlt = lsAlleles.get(j);
+
+				lDcalculate.setLsRef2AltSite1(lsRef);
+				lDcalculate.setLsRef2AltSite2(lsAlt);
+
 				lDcalculate.calculate();
-				distance[i][j] = 1-lDcalculate.getR2();
-				distance[j][i] = 1-lDcalculate.getR2();
+				distance[i][j] = 1-lDcalculate.getMaxR2Ddot();
+				distance[j][i] = 1-lDcalculate.getMaxR2Ddot();
+				if ((distance[i][j]+"").equals("NaN")) {
+					System.out.println(getSnps(lsRef));
+					System.out.println(getSnps(lsAlt));
+
+					
+					logger.info("stop");
+					
+					lDcalculate = new LDcalculate();
+					lsRef = lsInfos.get(i);
+					lsAlt = lsInfos.get(j);
+					alleleRef = lsAlleles.get(i);
+					alleleAlt = lsAlleles.get(j);
+
+					lDcalculate.setLsRef2AltSite1(lsRef);
+					lDcalculate.setLsRef2AltSite2(lsAlt);
+					lDcalculate.calculate();
+					distance[i][j] = 1-lDcalculate.getMaxR2Ddot();
+					distance[j][i] = 1-lDcalculate.getMaxR2Ddot();
+					
+				}
 			}
 		}
 		distance[snpNum-1][snpNum-1] = 0;
 		return distance;
+	}
+	
+	private String getSnps(List<String[]> lsSnps) {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append(lsSnps.get(0)[0]);
+		for (int i = 1; i < lsSnps.size(); i++) {
+			stringBuilder.append(" " + lsSnps.get(i)[0]);
+		}
+		return stringBuilder.toString();
+	}
+	
+	private Map<String, List<Allele>> filterMapSample2LsAllele(Map<String, List<Allele>> mapSample2LsAlleles,List<Integer> lsSnpsNeed) {
+		Map<String, List<Allele>> mapSample2LsAllelesFiltered = new LinkedHashMap<>();
+		for (String sampleName : mapSample2LsAlleles.keySet()) {
+			List<Allele> lsAlleles = mapSample2LsAlleles.get(sampleName);
+			List<Allele> lsAllelesFilter = new ArrayList<>();
+			for (Integer index : lsSnpsNeed) {
+				lsAllelesFilter.add(lsAlleles.get(index));
+			}
+			mapSample2LsAllelesFiltered.put(sampleName, lsAllelesFilter);
+		}
+		return mapSample2LsAllelesFiltered;
 	}
 	
 	/**
@@ -141,7 +230,7 @@ public class CombineSnp {
 	 * @param allele
 	 * @return
 	 */
-	private List<String[]> modifyList(List<String[]> lsSite, Allele allele) {
+	public static List<String[]> modifyList(List<String[]> lsSite, Allele allele, double variationCutoff) {
 		Map<String, int[]> mapAllele2Num = new HashMap<>();
 		for (String[] alleles : lsSite) {
 			int[] num = mapAllele2Num.get(alleles[0]);
@@ -165,8 +254,40 @@ public class CombineSnp {
 			Integer site2 = Integer.parseInt(site2Num2[1]);
 			return -site1.compareTo(site2);
 		} );
+		int lessSnpNum = Integer.parseInt(lsSite2Num.get(1)[1]);
+		if ((double)lessSnpNum/lsSite.size() < variationCutoff) {
+			return null;
+		}
+		
+		//===========test===============
+		int small = 10000;
+		int sum = 0;
+		for (String alleleStr : mapAllele2Num.keySet()) {
+			if (alleleStr.equals("N")) {
+				continue;
+			}
+			if (small > mapAllele2Num.get(alleleStr)[0]) {
+				small = mapAllele2Num.get(alleleStr)[0];
+			}
+			sum+=mapAllele2Num.get(alleleStr)[0];
+		}
+		if ((double)small/sum < variationCutoff) {
+			return null;
+		}
+		//test==========================
+		
+		
+//		return lsSite;
 		String site1 = lsSite2Num.get(0)[0];
 		String site2 = lsSite2Num.get(1)[0];
+		if (site2.equals("N") && lsSite2Num.size() > 2) {
+			int numN = Integer.parseInt(lsSite2Num.get(1)[1]);
+			int numOther = Integer.parseInt(lsSite2Num.get(2)[1]);
+			//如果N和另一个位点数量差不多，相差小于2倍，就维持不变
+			if (numN <= numOther * 2) {
+				site2 = lsSite2Num.get(2)[0];
+			}
+		}
 		if (allele.getAltBase() == null) {
 			if (allele.getRefBase().equals(site1)) {
 				allele.setAlt(site2);
@@ -267,13 +388,18 @@ public class CombineSnp {
 			List<Allele> lsAlleles = mapSample2LsAllelesIn.values().iterator().next();
 			logger.error(lsAlleles.get(0).toString());
 			logger.error(lsAlleles.get(lsAlleles.size()-1).toString());
-
+			System.out.println();
 			System.err.println(ArrayOperate.cmbString(height, "\t"));
 			System.err.println("distance is:");
 			for (double[] info : distances) {
 				System.err.println(ArrayOperate.cmbString(info, "\t"));
 			}
-			throw e;
+			try {
+				clusters = hierarchicalClustering.partition(maxClusterNum);
+			} catch (Exception e2) {
+				throw e2;
+			}
+		
 		}
 		int clusterNum = getClusterNum(clusters);
 		

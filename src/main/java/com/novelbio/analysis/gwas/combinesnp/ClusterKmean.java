@@ -84,11 +84,11 @@ public class ClusterKmean {
 		return lsResult;
 	}
 	
-	public List<String> getClusterResult() {
-		List<String> lsResult = new ArrayList<>();
+	public List<String[]> getClusterResult() {
+		List<String[]> lsResult = new ArrayList<>();
 		if (mapSample2LsAllele.values().iterator().next().size() == 1) {
 			for (List<Allele> lsAllele : mapSample2LsAllele.values()) {
-				lsResult.add(lsAllele.get(0).getAllele1() + lsAllele.get(0).getAllele2());
+				lsResult.add(new String[] {lsAllele.get(0).getAllele1(), lsAllele.get(0).getAllele2()});
 			}
 		} else {
 			for (Integer clusterValue : mapSample2ClusterResult.values()) {
@@ -131,11 +131,11 @@ public class ClusterKmean {
 		return data;
 	}
 	
-	private String getResult(int number) {
+	private String[] getResult(int number) {
 		if (number == 0) {
-			return getMajor()+getMajor();
+			return new String[] {getMajor(), getMajor()};
 		} else if (number == 1) {
-			return getMinor()+getMinor();
+			return new String[] {getMinor(), getMinor()};
 		} else {
 			throw new ExceptionNBCPlink("cannot have this condition, number is " + number);
 		}
@@ -144,11 +144,12 @@ public class ClusterKmean {
 	private Allele getResultAllele(int number) {
 		Allele allele = new Allele();
 		//我也不知道这个该写成什么
-		allele.setIndex(mapSample2LsAllele.values().iterator().next().get(0).getIndex()*10);
+		allele.setIndex(mapSample2LsAllele.values().iterator().next().get(0).getIndex());
 		List<String> lsMarker = new ArrayList<>();
 		for (Allele alleleRaw : mapSample2LsAllele.values().iterator().next()) {
 			lsMarker.add(alleleRaw.getMarker());
 		}
+		allele.setChrID(mapSample2LsAllele.values().iterator().next().get(0).getRefID());
 		allele.setMarker(ArrayOperate.cmbString(lsMarker, SepSign.SEP_INFO_SIMPLE));
 		allele.setRef(getMajor());
 		allele.setAlt(getMinor());

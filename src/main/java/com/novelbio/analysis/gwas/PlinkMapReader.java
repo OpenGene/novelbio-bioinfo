@@ -10,6 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
@@ -28,6 +31,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * @data 2018年3月10日
  */
 public class PlinkMapReader {
+	private static final Logger logger = LoggerFactory.getLogger(PlinkMapReader.class);
 	
 	int tss = 1500;
 	
@@ -54,6 +58,8 @@ public class PlinkMapReader {
 	
 	GffDetailGene geneCurrent;
 	List<Allele> lsAlleleTmp = new ArrayList<>();
+	List<Allele> lsAlleleCurrent = new ArrayList<>();
+	
 	Map<Allele, Set<String>> mapCurrentSnp2SetIsoName = new LinkedHashMap<>();
 	
 	SnpAnno snpAnno = new SnpAnno();
@@ -65,7 +71,17 @@ public class PlinkMapReader {
 		gffChrAbs.setChrFile(chrFile, null);
 		gffChrAbs.setGffHash(new GffHashGene(gffFile));
 		
-		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getLsGffDetailGenes()) {
+		setGenes(gffChrAbs);
+		snpAnno.setGffChrAbs(gffChrAbs);
+	}
+	
+	public void setGffChrAbs(GffChrAbs gffChrAbs) {
+		setGenes(gffChrAbs);
+		snpAnno.setGffChrAbs(gffChrAbs);
+	}
+	
+	private void setGenes(GffChrAbs gffChrAbs) {
+		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getLsGffDetailGenes()) {		
 			List<GffDetailGene> lsGenes = mapChrId2LsGenes.get(gffDetailGene.getRefID());
 			if (lsGenes == null) {
 				lsGenes = new ArrayList<>();
@@ -90,29 +106,13 @@ public class PlinkMapReader {
 				}
 				gffDetailGeneTss.setStartAbs(gffDetailGene.getEndAbs());
 				gffDetailGeneTss.setEndAbs(gffDetailGene.getEndAbs() + tss);
-				lsGenes.add(gffDetailGeneTss);
+				lsGenes.add(gffDetailGene);
 			}
 		
 		}
 		for (List<GffDetailGene> lsGenes : mapChrId2LsGenes.values()) {
 			Collections.sort(lsGenes, (gene1, gene2) -> {return ((Integer)gene1.getStartAbs()).compareTo(gene2.getStartAbs());});
 		}
-		snpAnno.setGffChrAbs(gffChrAbs);
-	}
-	
-	public void setGffChrAbs(GffChrAbs gffChrAbs) {
-		for (GffDetailGene gffDetailGene : gffChrAbs.getGffHashGene().getLsGffDetailGenes()) {
-			List<GffDetailGene> lsGenes = mapChrId2LsGenes.get(gffDetailGene.getRefID());
-			if (lsGenes == null) {
-				lsGenes = new ArrayList<>();
-				mapChrId2LsGenes.put(gffDetailGene.getRefID(), lsGenes);
-			}
-			lsGenes.add(gffDetailGene);
-		}
-		for (List<GffDetailGene> lsGenes : mapChrId2LsGenes.values()) {
-			Collections.sort(lsGenes, (gene1, gene2) -> {return ((Integer)gene1.getStartAbs()).compareTo(gene2.getStartAbs());});
-		}
-		snpAnno.setGffChrAbs(gffChrAbs);
 	}
 	
 	public void setPlinkMap(String plinkMap) {
@@ -144,7 +144,7 @@ public class PlinkMapReader {
 	 * 尚未测试
 	 */
 	protected List<Allele> getLsAllelesCurrent() {
-		return lsAlleleTmp;
+		return lsAlleleCurrent;
 	}
 	/**
 	 * 读取一个基因中的全体snp
@@ -161,6 +161,7 @@ public class PlinkMapReader {
 	
 	@VisibleForTesting
 	protected void readNextLsAllele() {
+		lsAlleleCurrent.clear();
 		//读完一条染色体后，根据PlinkMap的内容换下一条染色体
 		if (!itGenes.hasNext()) {
 			lsAlleleTmp.clear();
@@ -184,11 +185,13 @@ public class PlinkMapReader {
 		
 		while (itGenes.hasNext()) {
 			geneCurrent = itGenes.next();
-			
 			if (!lsAlleleTmp.isEmpty() && lsAlleleTmp.get(lsAlleleTmp.size()-1).getPosition() > geneCurrent.getStartAbs()) {
 				for (Allele allele : lsAlleleTmp) {
 					if (isAlleleLargerThanGene(allele, geneCurrent)) {
 						lsAllelesResult.add(allele);
+					}
+					if (isAlleleInGene(allele, geneCurrent)) {
+						lsAlleleCurrent.add(allele);
 					}
 				}
 				lsAlleleTmp.clear();
@@ -209,6 +212,7 @@ public class PlinkMapReader {
 		}
 		if (isAlleleInGene(alleleLast, geneCurrent)) {
 			lsAllelesResult.add(alleleLast);
+			lsAlleleCurrent.add(alleleLast);
 		} else if (alleleLast != null && alleleLast.getPosition() > geneCurrent.getEndAbs()) {
 			lsAlleleTmp = lsAllelesResult;
 			return;
@@ -238,6 +242,7 @@ public class PlinkMapReader {
 				break;
 			}
 			lsAllelesResult.add(allele);
+			lsAlleleCurrent.add(allele);
 		}
 		lsAlleleTmp = lsAllelesResult;
 	}

@@ -27,8 +27,14 @@ public class Mid2Ped {
 	private static final Logger logger = LoggerFactory.getLogger(Mid2Ped.class);
 	
 	/** 同时读多个样本，这样的话占点内存，但是可以少读几遍文本 */
-	int consistentSampleNum = 20;
-	
+	int consistentSampleNum = 80;
+	/**
+	 * 默认起点为8 
+	 * Chromosome      Position        RefBase SnpBase TotalHitNum     MAF     RefNum  SnpNum  W0101   W0102   
+	 * 样本之前有8个值
+	 * 因为也用于我们的plink.pre转plink，所以plink.pre本参数设置为0
+	 */
+	int startNum = 8;
 	int snpNum;
 	
 	public static void main(String[] args) {
@@ -67,12 +73,18 @@ public class Mid2Ped {
 		mid2Ped.convert2Ped(mid, map, ped);
 		System.out.println(dateUtil.getElapseTime());
 	}
+	
 	private static void printHelp() {
 		System.err.println("java -jar mid2ped.jar --mid mid --parallelNum 20");
 		System.err.println();
 		System.err.println("example:");
 		System.err.println("java -jar mid2ped.jar --mid /home/novelbio/my.mid");
 	}
+	
+	public void setStartNum(int startNum) {
+		this.startNum = startNum;
+	}
+	
 	public void setConsistentSampleNum(int consistentSampleNum) {
 		this.consistentSampleNum = consistentSampleNum;
 	}
@@ -95,10 +107,13 @@ public class Mid2Ped {
 			
 			int snpNum = 0;
 			for (String content : txtRead.readlines(2)) {
+				if (content.contains(",")) {
+					content = content.replace(",", "\t");
+				}
 				String[] ss = content.split("\t");
 				for (int j = 0; j < numEnd-i; j++) {
 					char[] charsnp = mapSample2Snps.get(lsSampleSub.get(j));
-					charsnp[snpNum] = ss[i+8+j].toCharArray()[0];
+					charsnp[snpNum] = ss[i+startNum+j].toCharArray()[0];
 				}
 				snpNum++;
 			}
@@ -124,22 +139,29 @@ public class Mid2Ped {
 	
 	private void setSnpNumAndConvertMap(String mid, String map) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(mid);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(map, true);				
+		TxtReadandWrite txtWrite = null;
+		if (startNum > 0) {
+			txtWrite = new TxtReadandWrite(map, true);				
+		}
 				
 		snpNum = 0;
 		for (String content : txtRead.readlines(2)) {
 			String[] ss = content.split("\t");
 			snpNum++;
-			txtWrite.writefileln(ss[0] + "\t" + snpNum + "\t0\t" + ss[1]);
+			if (txtWrite != null) {
+				txtWrite.writefileln(ss[0] + "\t" + snpNum + "\t0\t" + ss[1]);
+			}
 		}
 		txtRead.close();
-		txtWrite.close();
+		if (txtWrite != null) {
+			txtWrite.close();
+		}
 	}
 	
 	private List<String> getLsSampleName(String title) {
 		String[] ss = title.split("\t");
 		List<String> lsSamples = new ArrayList<>();
-		for (int i = 8; i < ss.length; i++) {
+		for (int i = startNum; i < ss.length; i++) {
 			lsSamples.add(ss[i]);
 		}
 		return lsSamples;

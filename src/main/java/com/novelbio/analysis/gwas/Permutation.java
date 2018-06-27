@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
 import com.novelbio.analysis.gwas.combinesnp.ClusterKmean;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
@@ -39,6 +40,7 @@ public class Permutation {
 	}
 	public void setIndex(int index) {
 		this.index = index;
+		this.indexNew = index;
 	}
 	public int getIndexNew() {
 		return indexNew;
@@ -77,6 +79,7 @@ public class Permutation {
 	protected void permutation(int number) {
 		Integer[] lsIndex = new Integer[number];
 		for (int i = 0; i < lsIndex.length; i++) {
+			lsNumber.add(Lists.newArrayList(i));
 			lsIndex[i] = i;
 		}
 		lsNumber.add(ArrayOperate.converArray2List(lsIndex));
@@ -232,6 +235,46 @@ public class Permutation {
 	
 	/**
 	 * 把排列组合的值按照Map的形式输出
+	 * 注意最后无 \n 结尾
+	 */
+	public String toStringMap(List<Integer> list ) {
+		List<String> lsResultUnit = new ArrayList<>();
+		Allele alleleFirst = lsAllele.get(list.get(0));
+		lsResultUnit.add(chrId);
+		lsResultUnit.add(geneName+ "." +(indexNew));
+		lsResultUnit.add("0");
+		lsResultUnit.add(alleleFirst.getPosition() + "");
+		if (list.size() == 1) {
+			if (alleleFirst.isRefMajor()) {
+				lsResultUnit.add(alleleFirst.getAltBase());
+				lsResultUnit.add(alleleFirst.getRefBase());
+			} else {
+				lsResultUnit.add(alleleFirst.getRefBase());
+				lsResultUnit.add(alleleFirst.getAltBase());
+			}
+		} else {
+			lsResultUnit.add(ClusterKmean.getMajor());
+			lsResultUnit.add(ClusterKmean.getMinor());
+		}
+		return ArrayOperate.cmbString(lsResultUnit, "\t");
+	}
+	
+	/**
+	 * 把排列组合的值按照Map的形式输出
+	 * 注意最后无 \n 结尾
+	 */
+	public Allele getAllele(List<Integer> list ) {
+		Allele alleleFirst = lsAllele.get(list.get(0));
+		if (list.size() > 1) {
+			alleleFirst.setRef(ClusterKmean.getMajor());
+			alleleFirst.setAlt(ClusterKmean.getMinor());
+			alleleFirst.setAllele1(ClusterKmean.getMajor());
+			alleleFirst.setAllele2(ClusterKmean.getMinor());
+		}
+		return alleleFirst;
+	}
+	/**
+	 * 把排列组合的值按照Map的形式输出
 	 * 组合前的snp与组合后的snp的对照表
 	 * 注意最后无 \n 结尾
 	 */
@@ -239,13 +282,47 @@ public class Permutation {
 		indexNew = index;
 		List<String> lsResult = new ArrayList<>();
 		for (List<Integer> list : getLsPermutations()) {
+			StringBuilder sBuilder = new StringBuilder();
+			Allele alleleFirst = null;
 			for (Integer indexAllele : list) {
 				Allele allele = lsAllele.get(indexAllele);
-				lsResult.add(allele.toString() + "\t" + geneName+ "." + indexNew);
+				if (alleleFirst == null) {
+					alleleFirst = allele;
+					sBuilder.append(alleleFirst.toStringSimple()+"\t" + allele.getMarker());
+				} else {
+					//用 "|"作为排列组合snp之间的分隔符
+					sBuilder.append("|"+allele.getMarker());
+				}
 			}
+			sBuilder.append("\t" + geneName+ "." + indexNew);
+			lsResult.add(sBuilder.toString());
 			indexNew++;
 		}
 		return ArrayOperate.cmbString(lsResult, "\n");
 	}
-
+	/**
+	 * 把排列组合的值按照Map的形式输出
+	 * 组合前的snp与组合后的snp的对照表
+	 * 注意最后无 \n 结尾
+	 */
+	public String toStringConvertor(List<Integer> lsIndex) {
+		StringBuilder sBuilder = new StringBuilder();
+		Allele alleleFirst = null;
+		for (Integer indexAllele : lsIndex) {
+			Allele allele = lsAllele.get(indexAllele);
+			if (alleleFirst == null) {
+				alleleFirst = allele;
+				sBuilder.append(alleleFirst.toStringSimple()+"\t" + allele.getMarker());
+			} else {
+				//用 "|"作为排列组合snp之间的分隔符
+				sBuilder.append("|"+allele.getMarker());
+			}
+		}
+		sBuilder.append("\t" + geneName+ "." + indexNew);
+		return sBuilder.toString();
+	}
+	
+	public void indexAdd() {
+		indexNew++;
+	}
 }
