@@ -29,6 +29,7 @@ import com.novelbio.analysis.seq.genome.gffoperate.GffCodGene;
 import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
+import com.novelbio.analysis.seq.genome.gffoperate.ListGff;
 import com.novelbio.analysis.seq.genome.gffoperate.exoncluster.ExonClusterExtract;
 import com.novelbio.analysis.seq.genome.gffoperate.exoncluster.ExonClusterSite;
 import com.novelbio.analysis.seq.genome.gffoperate.exoncluster.PredictME;
@@ -487,6 +488,10 @@ public class ExonJunction extends RunProcess {
 		if (ArrayOperate.isEmpty(lsReadReagion)) {
 			lsReadReagion = new ArrayList<>();
 			for (String chrId : mapChrId2Len.keySet()) {
+				ListGff listGff = gffHashGene.getMapChrID2LsGff().get(chrId.toLowerCase());
+				if (listGff == null || listGff.isEmpty()) {
+					continue;
+				}
 				long len = mapChrId2Len.get(chrId);
 				Align align = new Align(chrId, 1, (int)len);
 				lsReadReagion.add(align);

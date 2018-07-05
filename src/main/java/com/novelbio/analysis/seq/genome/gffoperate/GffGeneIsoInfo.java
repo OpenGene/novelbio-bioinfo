@@ -1224,9 +1224,12 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		List<ExonInfo> lsAtg = getATGLoc();
 		List<ExonInfo> lsUag = getUAGLoc();
 		boolean ismRNA = ismRNAFromCds();
+		//UAG之前的最后一个位点
+		int uagBeforeSite = getLocAALastEnd(UAGsite);
+
 		for (ExonInfo exons : this) {
 			List<String> lsTmpResult = new ArrayList<>();
-			ExonInfo cds = getCds(exons);
+			ExonInfo cds = getCds(exons, ATGsite, uagBeforeSite);
 			if (ismRNA && !lsAtg.isEmpty() && ATGsite >= exons.getStartAbs() && ATGsite <= exons.getEndAbs()) {
 				for (ExonInfo atg : lsAtg) {
 					lsTmpResult.clear();
@@ -1258,7 +1261,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				lsTmpResult.addAll(lsSuffixInfo);
 				lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
 			}
-			if (ismRNA && !lsUag.isEmpty()&& UAGsite >= exons.getStartAbs() && UAGsite <= exons.getEndAbs()) {
+			if (ismRNA && !lsUag.isEmpty()&& uagBeforeSite >= exons.getStartAbs() && uagBeforeSite <= exons.getEndAbs()) {
 				for (ExonInfo uag : lsUag) {
 					lsTmpResult.clear();
 					lsTmpResult.addAll(lsHead);
@@ -1289,28 +1292,30 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		return codNum;
 	}
 	
-	/** 根据输入的exon，判断是否存在cds，并返回<br>
+	/** 
+	 * 根据输入的exon，判断是否存在cds，并返回<br>
 	 * null表示没有cds
 	 * @param exons
+	 * @param atg
+	 * @param uagBeforeSite GTF的cds结尾是在uag之前结束的
 	 * @return
 	 */
-	private ExonInfo getCds(ExonInfo exons) {
+	private ExonInfo getCds(ExonInfo exons, int atg, int uagBeforeSite) {
 		if (!ismRNAFromCds()) {
 			return null;
 		}
 		
 		ExonInfo cdsInfo = exons.clone();
-		ExonInfo atgUag = new ExonInfo(isCis5to3(), ATGsite, UAGsite);
+		ExonInfo atgUag = new ExonInfo(isCis5to3(), atg, uagBeforeSite);
 		if (cdsInfo.getEndAbs() < atgUag.getStartAbs() || cdsInfo.getStartAbs() > atgUag.getEndAbs()) {
 			return null;
 		}
 
-		if (cdsInfo.isCodInSide(ATGsite)) {
-			cdsInfo.setStartCis(ATGsite);
+		if (cdsInfo.isCodInSide(atg)) {
+			cdsInfo.setStartCis(atg);
 		}
-		if (cdsInfo.isCodInSide(UAGsite)) {
-			int lastSite = getLocAALastEnd(UAGsite);
-			cdsInfo.setEndCis(lastSite);
+		if (cdsInfo.isCodInSide(uagBeforeSite)) {
+			cdsInfo.setEndCis(uagBeforeSite);
 		}
 		return cdsInfo;
 	}
