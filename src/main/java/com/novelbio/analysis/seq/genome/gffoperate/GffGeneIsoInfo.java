@@ -1007,7 +1007,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			if (isCds && ( Math.min(locStart, locEnd) > getStartAbs() && Math.max(locStart, locEnd) < getEndAbs())) {
 				return;
 			}
-			logger.info("The Gff file may have error on gene: " + getName() + " and exon: " + getRefID() + " " + locStart + " " + locEnd + "  please check");
+			add(exonInfo);
+//			logger.info("The Gff file may have error on gene: " + getName() + " and exon: " + getRefID() + " " + locStart + " " + locEnd + "  please check");
 
 		}
 	}
