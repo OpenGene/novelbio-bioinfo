@@ -218,12 +218,14 @@ public class GffHashGTF extends GffHashGeneAbs{
 						gffGeneIsoInfo.addCDS(cisExon, exonStart, exonEnd);
 					}
 				} else if (ss[2].toLowerCase().equals(startCodeFlag)) {
+					gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
 					if (cisExon == null || cisExon) {
 						gffGeneIsoInfo.setATG(exonStart);
 					} else {
 						gffGeneIsoInfo.setATG(exonEnd);
 					}
 				} else if (ss[2].toLowerCase().equals(stopCodeFlag)) {
+					gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
 					if (cisExon == null || cisExon) {
 						gffGeneIsoInfo.setUAG(exonEnd);
 					} else {

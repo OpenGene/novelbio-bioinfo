@@ -101,7 +101,7 @@ public class ChrBaseIter implements Closeable {
 			indexFile = samIndexRefsequence.indexSequence();
 		}
 		readIndex(indexFile);
-		seekablePathInputStream = FileOperate.getInputStreamSeekable(chrFile);
+		seekablePathInputStream = FileOperate.getSeekablePathInputStream(chrFile);
 	}
 	
 	public Iterable<Base> readBase(String chrId) {

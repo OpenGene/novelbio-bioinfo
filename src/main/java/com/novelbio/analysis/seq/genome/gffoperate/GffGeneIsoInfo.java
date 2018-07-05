@@ -3,7 +3,6 @@ package com.novelbio.analysis.seq.genome.gffoperate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -362,28 +361,36 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 //		flagTypeGene = GeneType.mRNA;
 		if (isCis5to3()) {
-			if (ATGsite < 0 || ATGsite > Math.min(atg, uag)) {
-				ATGsite = Math.min(atg, uag);
-			}
-			if (UAGsite < 0 || UAGsite < Math.max(atg, uag)) {
-				UAGsite = Math.max(atg, uag);
-			}
+			setATG(Math.min(atg, uag));
+			setUAG(Math.max(atg, uag));
 		} else {
-			if (ATGsite < 0 || ATGsite < Math.max(atg, uag)) {
-				ATGsite = Math.max(atg, uag);
-			}
-			if (UAGsite < 0 || UAGsite > Math.min(atg, uag)) {
-				UAGsite = Math.min(atg, uag);
-			}
+			setATG(Math.max(atg, uag));
+			setUAG(Math.min(atg, uag));
 		}
 	}
 	/** 如果是GTF文件指定了atg位点，就用这个设定，是ATG的第一个位点 */
 	public void setATG(int atg) {
-		ATGsite = atg;
+		if (ATGsite <= 0) {
+			ATGsite = atg;
+		} else {
+			if (isCis5to3() && atg < ATGsite) {
+				ATGsite = atg;
+			} else if (!isCis5to3() && atg > ATGsite) {
+				ATGsite = atg;
+			}
+		}
 	}
 	/** 如果是GTF文件指定了uag位点，就用这个设定，是UAG的最后一个位点 */
 	public void setUAG(int uag) {
-		UAGsite = uag;
+		if (UAGsite <= 0) {
+			UAGsite = uag;
+		} else {
+			if (isCis5to3() && uag > UAGsite) {
+				UAGsite = uag;
+			} else if (!isCis5to3() && uag < UAGsite) {
+				UAGsite = uag;
+			}
+		}
 	}
 	
 	/**
@@ -397,33 +404,21 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			UAGsite = get(size() - 1).getEndCis();
 		}
 	}
-	protected int[] getATGLoc() {
-		int[] atginfo = null;
+	private List<ExonInfo> getATGLoc() {
+		List<ExonInfo> lsAtgInfo = new ArrayList<>();
 		if (ATGsite > 0) {
-			atginfo = new int[2];
-			if (isCis5to3()) {
-				atginfo[0] = ATGsite;
-				atginfo[1] = ATGsite + 2;
-			} else {
-				atginfo[0] = ATGsite - 2;
-				atginfo[1] = ATGsite;
-			}
+			int atgEnd = getLocAAend(ATGsite);
+			lsAtgInfo = subList(ATGsite, atgEnd);
 		}
-		return atginfo;
+		return lsAtgInfo;
 	}
-	protected int[] getUAGLoc() {
-		int[] atginfo = null;
+	private List<ExonInfo> getUAGLoc() {
+		List<ExonInfo> lsUagInfo = new ArrayList<>();
 		if (UAGsite > 0) {
-			atginfo = new int[2];
-			if (isCis5to3()) {
-				atginfo[0] = UAGsite - 2;
-				atginfo[1] = UAGsite;
-			} else {
-				atginfo[0] = UAGsite;
-				atginfo[1] = UAGsite + 2;
-			}
+			int uagStart = getLocAAbefore(UAGsite);
+			lsUagInfo = subList(uagStart, UAGsite);
 		}
-		return atginfo;
+		return lsUagInfo;
 	}
 	/**
 	 * 该转录本的ATG的第一个字符坐标，从1开始计数，是闭区间
@@ -1101,21 +1096,30 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 排序并去除重复exon
 	 */
 	public void sort() {
-		super.sort();
-		LinkedHashSet<ExonInfo> setExonInfos = new LinkedHashSet<ExonInfo>();
-		boolean haveDuplicateExon = false;
-		for (ExonInfo exonInfo : this) {
-			if (setExonInfos.contains(exonInfo)) {
-				haveDuplicateExon = true;
-				continue;
-			}
-			setExonInfos.add(exonInfo);
+		if (lsElement.isEmpty()) {
+			return;
 		}
-		if (haveDuplicateExon) {
-			clearElements();
-			for (ExonInfo exonInfo : setExonInfos) {
-				add(exonInfo);
+		super.sort();
+		
+		ArrayList<ExonInfo> lsExons = new ArrayList<>();
+		lsExons.add(lsElement.get(0));
+		ExonInfo exonInfoLast = lsExons.get(0);
+		boolean isNeedReset = false;
+		for (int i = 1; i < lsElement.size(); i++) {
+			ExonInfo exonInfo = lsElement.get(i);
+			if (isCis5to3() && exonInfoLast.getEndAbs() >= exonInfo.getStartAbs()-1) {
+				exonInfoLast.setEndAbs(Math.max(exonInfoLast.getEndAbs(), exonInfo.getEndAbs()));
+				isNeedReset = true;
+			} else if (!isCis5to3() && exonInfoLast.getStartAbs()<=exonInfo.getEndAbs()+1) {
+				exonInfoLast.setStartAbs(Math.min(exonInfoLast.getStartAbs(), exonInfo.getStartAbs()));
+				isNeedReset = true;
+			} else {
+				lsExons.add(exonInfo);
+				exonInfoLast = exonInfo;
 			}
+		}
+		if (isNeedReset) {
+			lsElement = lsExons;
 		}
 	}
 	
@@ -1214,20 +1218,23 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		lsSuffixInfo.add("."); lsSuffixInfo.add(strand); lsSuffixInfo.add(".");
 		lsSuffixInfo.add("gene_id \"" + getParentGeneName() + "\"; transcript_id " + "\"" + getName()+"\"; genetype " + "\"" + getGeneType()+"\"");
 		
-		int[] atg = getATGLoc();
-		int[] uag = getUAGLoc();
+		List<ExonInfo> lsAtg = getATGLoc();
+		List<ExonInfo> lsUag = getUAGLoc();
 		boolean ismRNA = ismRNAFromCds();
 		for (ExonInfo exons : this) {
 			List<String> lsTmpResult = new ArrayList<>();
 			ExonInfo cds = getCds(exons);
-			if (ismRNA && atg != null && ATGsite >= exons.getStartAbs() && ATGsite <= exons.getEndAbs()) {
-				lsTmpResult.clear();
-				lsTmpResult.addAll(lsHead);
-				lsTmpResult.add(GffHashGTF.startCodeFlag);
-				lsTmpResult.add(atg[0] + ""); lsTmpResult.add(atg[1] + "");
-				lsSuffixInfo.set(2, ".");
-				lsTmpResult.addAll(lsSuffixInfo);
-				lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
+			if (ismRNA && !lsAtg.isEmpty() && ATGsite >= exons.getStartAbs() && ATGsite <= exons.getEndAbs()) {
+				for (ExonInfo atg : lsAtg) {
+					lsTmpResult.clear();
+					lsTmpResult.addAll(lsHead);
+					lsTmpResult.add(GffHashGTF.startCodeFlag);
+					lsTmpResult.add(atg.getStartAbs() + "");
+					lsTmpResult.add(atg.getEndAbs() + "");
+					lsSuffixInfo.set(2, getCdsCodeNum(exons.getStartCis())+"");
+					lsTmpResult.addAll(lsSuffixInfo);
+					lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
+				}
 			}
 			lsTmpResult.clear();
 			lsTmpResult.addAll(lsHead);
@@ -1248,15 +1255,17 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				lsTmpResult.addAll(lsSuffixInfo);
 				lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
 			}
-			if (ismRNA && uag != null && UAGsite >= exons.getStartAbs() && UAGsite <= exons.getEndAbs()) {
-				lsTmpResult.clear();
-				lsTmpResult.addAll(lsHead);
-				lsTmpResult.add(GffHashGTF.stopCodeFlag);
-				lsTmpResult.add(uag[0] + "");
-				lsTmpResult.add(uag[1] + "");
-				lsSuffixInfo.set(2, ".");
-				lsTmpResult.addAll(lsSuffixInfo);
-				lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
+			if (ismRNA && !lsUag.isEmpty()&& UAGsite >= exons.getStartAbs() && UAGsite <= exons.getEndAbs()) {
+				for (ExonInfo uag : lsUag) {
+					lsTmpResult.clear();
+					lsTmpResult.addAll(lsHead);
+					lsTmpResult.add(GffHashGTF.stopCodeFlag);
+					lsTmpResult.add(uag.getStartAbs() + "");
+					lsTmpResult.add(uag.getEndAbs() + "");
+					lsSuffixInfo.set(2, getCdsCodeNum(exons.getStartCis())+"");
+					lsTmpResult.addAll(lsSuffixInfo);
+					lsResult.add(ArrayOperate.cmbString(lsTmpResult.toArray(new String[0]), "\t"));
+				}
 			}
 		}
 		
@@ -1297,11 +1306,8 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			cdsInfo.setStartCis(ATGsite);
 		}
 		if (cdsInfo.isCodInSide(UAGsite)) {
-			if (isCis5to3()) {
-				cdsInfo.setEndCis(UAGsite-3);
-			} else {
-				cdsInfo.setEndCis(UAGsite+3);
-			}
+			int lastSite = getLocAALastEnd(UAGsite);
+			cdsInfo.setEndCis(lastSite);
 		}
 		return cdsInfo;
 	}
