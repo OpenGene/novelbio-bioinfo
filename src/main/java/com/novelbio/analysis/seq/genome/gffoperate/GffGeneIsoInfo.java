@@ -16,6 +16,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene.GeneStructure;
 import com.novelbio.analysis.seq.genome.gffoperate.exoncluster.ExonCluster;
@@ -404,19 +405,21 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			UAGsite = get(size() - 1).getEndCis();
 		}
 	}
-	private List<ExonInfo> getATGLoc() {
+	@VisibleForTesting
+	protected List<ExonInfo> getATGLoc() {
 		List<ExonInfo> lsAtgInfo = new ArrayList<>();
 		if (ATGsite > 0) {
 			int atgEnd = getLocAAend(ATGsite);
-			lsAtgInfo = subList(ATGsite, atgEnd);
+			lsAtgInfo = getSubExon(ATGsite, atgEnd);
 		}
 		return lsAtgInfo;
 	}
-	private List<ExonInfo> getUAGLoc() {
+	@VisibleForTesting
+	protected List<ExonInfo> getUAGLoc() {
 		List<ExonInfo> lsUagInfo = new ArrayList<>();
 		if (UAGsite > 0) {
 			int uagStart = getLocAAbefore(UAGsite);
-			lsUagInfo = subList(uagStart, UAGsite);
+			lsUagInfo = getSubExon(uagStart, UAGsite);
 		}
 		return lsUagInfo;
 	}
@@ -1368,6 +1371,28 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			gffGeneIsoInfoResult.add(exonInfoResult);
 		}
 		return gffGeneIsoInfoResult;
+	}
+	
+	public List<ExonInfo> getSubExon(int startLoc, int endLoc) {
+		int startAbs = Math.min(startLoc, endLoc);
+		int endAbs = Math.max(startLoc, endLoc);
+		List<ExonInfo> lsExons = new ArrayList<>();
+		for (ExonInfo exonInfo : this) {
+			ExonInfo exonInfoResult = exonInfo.clone();
+			if (exonInfo.getEndAbs() < startAbs || exonInfo.getStartAbs() > endAbs) {
+				continue;
+			}
+			
+			if (exonInfo.getStartAbs() <= startAbs && exonInfo.getEndAbs() >= startAbs) {
+				exonInfoResult.setStartAbs(startAbs);
+			}
+			if (exonInfo.getStartAbs() <= endAbs && exonInfo.getEndAbs() >= endAbs) {
+				exonInfoResult.setEndAbs(endAbs);
+			}
+			exonInfoResult.setParentListAbs(this);
+			lsExons.add(exonInfoResult);
+		}
+		return lsExons;
 	}
 	/**
 	 * 获得Intron的list信息，从前到后排序
