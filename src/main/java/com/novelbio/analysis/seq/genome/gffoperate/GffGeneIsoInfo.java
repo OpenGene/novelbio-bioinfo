@@ -1215,6 +1215,9 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		List<String> lsResult = new ArrayList<>();
 		
 		List<String> lsHead = new ArrayList<>();
+		if (StringOperate.isRealNull(title)) {
+			title = GffHashGene.GFFDBNAME;
+		}
 		lsHead.add(chrID); lsHead.add(title);
 		
 		List<String> lsSuffixInfo = new ArrayList<>();

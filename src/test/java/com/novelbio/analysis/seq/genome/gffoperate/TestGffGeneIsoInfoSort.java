@@ -80,12 +80,14 @@ public class TestGffGeneIsoInfoSort {
 		gffGeneIsoInfo.add(new ExonInfo(false, 3000, 4000));
 		gffGeneIsoInfo.add(new ExonInfo(false, 1000, 2000));
 		gffGeneIsoInfo.setATG(5000);
+		gffGeneIsoInfo.setUAG(3000);
+
 		gffGeneIsoInfo.sort();
 		
 		lsAtg = gffGeneIsoInfo.getATGLoc();
 		Assert.assertEquals(lsAtg.size(), 2);
 		Assert.assertEquals(new ExonInfo(gffGeneIsoInfo, false, 5000, 5000), lsAtg.get(0));
 		Assert.assertEquals(new ExonInfo(gffGeneIsoInfo, false, 4000, 3999), lsAtg.get(1));
-
+		System.out.println(gffGeneIsoInfo.getGTFformat(null, ""));
 	}
 }

@@ -86,7 +86,8 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffDetailGene, GffCo
 						logger.error("Set ATG UAG Site Error: " + gffGeneIsoInfo.getName());
 					}
 				}
-				gffDetailGene.removeDupliIso();
+
+				gffDetailGene.removeDupliIsoInGene();
 			}
 		}
 	}

@@ -198,19 +198,6 @@ public class GffHashMerge {
 		for (String chrID : setChrID) {
 			ListGff listGff = gffHashGeneResult.getMapChrID2LsGff().get(chrID);
 			listGff.sort();
-//			if (chrID.equals("chr1")) {
-//				int i  = 0 ;
-//				for (GffDetailGene gffDetailGene : listGff) {
-//					i++;
-//					for (GffGeneIsoInfo gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-//						if (gffGeneIsoInfo.getName().contains("NM_001030791")) {
-//							System.out.println();
-//						}
-//					}
-//				}
-//			}
-			
-			
 			ListGff listGffNew = listGff.combineOverlapGene();
 			gffHashGeneResult.getMapChrID2LsGff().put(chrID, listGffNew);
 			//装入hash表

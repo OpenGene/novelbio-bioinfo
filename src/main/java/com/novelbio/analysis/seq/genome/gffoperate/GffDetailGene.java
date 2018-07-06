@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -608,7 +607,23 @@ public class GffDetailGene extends ListDetailAbs {
 		}
 		return anno;
 	}
-
+	/**
+	 * 用于含有多个Gene的GffDetailGene
+	 * 不同基因之间有重复的iso是不管的
+	 * 按照基因来划分，内部去重复
+	 */
+	public void removeDupliIsoInGene() {
+		if (removeDuplicateIso) {
+			return;
+		}
+		ArrayList<GffGeneIsoInfo> lsGeneIso = new ArrayList<>();
+		List<GffDetailGene> lsGenes = getlsGffDetailGenes();
+		for (GffDetailGene gffDetailGene : lsGenes) {
+			gffDetailGene.removeDupliIso();
+			lsGeneIso.addAll(gffDetailGene.getLsCodSplit());
+		}
+		lsGffGeneIsoInfos = lsGeneIso;
+	}
 	/**
 	 * 去除重复Isoform
 	 * 如果里面含有以"tcons"开头的基因，会被替换掉，为的就是防止cufflinks的iso替换ref的iso
