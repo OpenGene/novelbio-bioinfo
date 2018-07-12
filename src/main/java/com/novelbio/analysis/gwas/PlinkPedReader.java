@@ -54,7 +54,7 @@ public class PlinkPedReader implements Closeable {
 		this.plinkPed = plinkPed;
 		readIndex(plinkPed + ".index");
 		try {
-			seekablePathInputStream = FileOperate.getInputStreamSeekable(plinkPed);
+			seekablePathInputStream = FileOperate.getSeekablePathInputStream(plinkPed);
 		} catch (Exception e) {
 			throw new ExceptionNbcFile("read file error " + plinkPed, e);
 		}

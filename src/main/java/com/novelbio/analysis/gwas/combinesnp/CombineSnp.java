@@ -47,6 +47,14 @@ public class CombineSnp {
 	
 	String geneName;
 	
+	/** 如果N太多，是否需要将N替换成别的碱基，因为N多很可能意味着这里缺失
+	 * 而直接过滤效果不佳
+	 */
+	boolean isChangeN = true;
+	
+	public void setChangeN(boolean isChangeN) {
+		this.isChangeN = isChangeN;
+	}
 	public void setGeneName(String geneName) {
 		this.geneName = geneName;
 	}
@@ -126,8 +134,8 @@ public class CombineSnp {
 			if (allele.getStartAbs() == 3514 || allele.getStartAbs() == 3568) {
 				logger.info("stop");
 			}
-			//TODO
-			lsSite = modifyList(lsSite, allele, variationCutoff);
+			//这里不过滤
+			lsSite = modifyList(lsSite, allele, variationCutoff, isChangeN);
 			if (lsSite != null) {
 				lsSnpsNeed.add(i);
 				lsInfos.add(lsSite);
@@ -230,7 +238,7 @@ public class CombineSnp {
 	 * @param allele
 	 * @return
 	 */
-	public static List<String[]> modifyList(List<String[]> lsSite, Allele allele, double variationCutoff) {
+	public static List<String[]> modifyList(List<String[]> lsSite, Allele allele, double variationCutoff, boolean isChangeN) {
 		Map<String, int[]> mapAllele2Num = new HashMap<>();
 		for (String[] alleles : lsSite) {
 			int[] num = mapAllele2Num.get(alleles[0]);
@@ -259,25 +267,39 @@ public class CombineSnp {
 			return null;
 		}
 		
-		//===========test===============
-		int small = 10000;
-		int sum = 0;
-		for (String alleleStr : mapAllele2Num.keySet()) {
-			if (alleleStr.equals("N")) {
-				continue;
+		if (!isChangeN) {
+			int alleleNum = 0;
+			for (String alleleStr : mapAllele2Num.keySet()) {
+				if (alleleStr.equals("N") || alleleStr.equals("0")) {
+					continue;
+				}
+				alleleNum++;
 			}
-			if (small > mapAllele2Num.get(alleleStr)[0]) {
-				small = mapAllele2Num.get(alleleStr)[0];
+			if (variationCutoff > 0 && alleleNum < 2) {
+				return null;
 			}
-			sum+=mapAllele2Num.get(alleleStr)[0];
+			if (alleleNum > 2) {
+				throw new RuntimeException("allele error");
+			}
+			
+			int small = 10000000;
+			int sum = 0;
+	
+			for (String alleleStr : mapAllele2Num.keySet()) {
+				if (alleleStr.equals("N") || alleleStr.equals("0")) {
+					continue;
+				}
+				if (small > mapAllele2Num.get(alleleStr)[0]) {
+					small = mapAllele2Num.get(alleleStr)[0];
+				}
+				sum+=mapAllele2Num.get(alleleStr)[0];
+			}
+			if ((double)small/sum < variationCutoff) {
+				return null;
+			}
+			return lsSite;
 		}
-		if ((double)small/sum < variationCutoff) {
-			return null;
-		}
-		//test==========================
 		
-		
-//		return lsSite;
 		String site1 = lsSite2Num.get(0)[0];
 		String site2 = lsSite2Num.get(1)[0];
 		if (site2.equals("N") && lsSite2Num.size() > 2) {

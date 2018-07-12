@@ -131,7 +131,7 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 		return lsgffDetailsMid;
 	}
 	/**
-	 * 返回与这两个坐标点有交集的gffDetail信息
+	 * 返回与这个区段有交集的gffDetail信息
 	 * @return
 	 * 空的则返回一个size为0的list
 	 */

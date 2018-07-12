@@ -77,15 +77,23 @@ public class Permutation {
 	}
 	
 	protected void permutation(int number) {
+		lsNumber.clear();
 		Integer[] lsIndex = new Integer[number];
 		for (int i = 0; i < lsIndex.length; i++) {
 			lsNumber.add(Lists.newArrayList(i));
 			lsIndex[i] = i;
 		}
-		lsNumber.add(ArrayOperate.converArray2List(lsIndex));
-		//排列组合
+		if (number == 1) {
+			return;
+		}
 		if (maxSnpNum <= 0) maxSnpNum = lsIndex.length;
 		int num = Math.min(maxSnpNum, lsIndex.length);
+		
+		if (number > num) {
+			lsNumber.add(ArrayOperate.converArray2List(lsIndex));
+		}
+
+		//排列组合
 		for (int i = 2; i <= num; i++) {
 			combinationSelect(lsIndex, 0, new Integer[i], 0);
 		}

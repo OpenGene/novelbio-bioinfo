@@ -53,6 +53,9 @@ public class Allele extends Align {
 				isRefMajor = false;
 			}
 		}
+		if (ss.length >= 8) {
+			other = ss[7];
+		}
 	}
 	public String getMarker() {
 		return marker;
@@ -135,6 +138,9 @@ public class Allele extends Align {
 	public int getPosition() {
 		return getStartAbs();
 	}
+	public String getOther() {
+		return other;
+	}
 	
 	public void setRef(Allele alleleRef) {
 		this.ref = alleleRef.getRefBase();
@@ -194,8 +200,8 @@ public class Allele extends Align {
 		boolean isAllele2SameToRef = StringOperate.isEqual(allele2, ref);
 		
 		if (StringOperate.isEqual(allele1, "0") || StringOperate.isEqual(allele2, "0")) {
-			return isRefMajor ? 1 : -1;
-//			return -9;
+//			return isRefMajor ? 1 : -1;
+			return -9;
 		}
 		
 		int result = 0;

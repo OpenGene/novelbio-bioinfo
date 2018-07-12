@@ -1,7 +1,11 @@
 package com.novelbio.analysis.gwas;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -14,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import com.novelbio.analysis.seq.genome.GffChrAbs;
 import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
@@ -23,7 +28,13 @@ import com.novelbio.analysis.seq.snphgvs.SnpAnnoFactory;
 import com.novelbio.analysis.seq.snphgvs.SnpInfo;
 import com.novelbio.analysis.seq.snphgvs.SnpIsoHgvsp;
 import com.novelbio.analysis.seq.snphgvs.VariantTypeDetector;
+import com.novelbio.base.ExceptionNbcParamError;
+import com.novelbio.base.StringOperate;
+import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.fileOperate.SeekablePathInputStream;
+import com.novelbio.base.util.IOUtil;
 
 /** 按照基因读取PlinkMap
  * 一次读取一个基因中的全体snp
@@ -33,7 +44,12 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 public class PlinkMapReader {
 	private static final Logger logger = LoggerFactory.getLogger(PlinkMapReader.class);
 	
+	public static String FILTER_BY_GENE = "FilterByGene";
+	public static String FILTER_BY_PVALUE = "FilterByPvalue";
+
 	int tss = 1500;
+	
+	String filterCriteria = FILTER_BY_GENE;
 	
 	/**
 	 * 每个位点的坐标信息<br>
@@ -59,13 +75,21 @@ public class PlinkMapReader {
 	GffDetailGene geneCurrent;
 	List<Allele> lsAlleleTmp = new ArrayList<>();
 	List<Allele> lsAlleleCurrent = new ArrayList<>();
-	
-	Map<Allele, Set<String>> mapCurrentSnp2SetIsoName = new LinkedHashMap<>();
-	
+		
 	SnpAnno snpAnno = new SnpAnno();
 	public void setTss(int tss) {
 		this.tss = tss;
 	}
+	
+	/**
+	 * @param filterCriteria
+	 * {@link #FILTER_BY_GENE}
+	 * {@link #FILTER_BY_PVALUE}
+	 */
+	public void setFilterCriteria(String filterCriteria) {
+		this.filterCriteria = filterCriteria;
+	}
+	
 	public void setGffChrAbs(String chrFile, String gffFile) {
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setChrFile(chrFile, null);
@@ -136,15 +160,15 @@ public class PlinkMapReader {
 	 * 读取一个基因中的全体snp
 	 * 尚未测试
 	 */
-	public Map<Allele, Set<String>> getLsAllelesCurrentGene() {
-		return mapCurrentSnp2SetIsoName;
-	}
-	/**
-	 * 读取一个基因中的全体snp
-	 * 尚未测试
-	 */
 	protected List<Allele> getLsAllelesCurrent() {
-		return lsAlleleCurrent;
+		if (StringOperate.isRealNull(filterCriteria)) {
+			return lsAlleleCurrent;
+		} else if (filterCriteria.equals(FILTER_BY_GENE)) {
+			return filterSnpByIso(lsAlleleCurrent, geneCurrent);
+		} else if (filterCriteria.equals(FILTER_BY_PVALUE)) {
+			return filterSnpByPvalue(lsAlleleCurrent);
+		}
+		throw new ExceptionNbcParamError("unknown filterCriteria: " + filterCriteria);
 	}
 	/**
 	 * 读取一个基因中的全体snp
@@ -155,7 +179,6 @@ public class PlinkMapReader {
 			return false;
 		}
 		readNextLsAllele();
-		mapCurrentSnp2SetIsoName = getMapSnp2SetIsoName(lsAlleleTmp, geneCurrent);
 		return true;
 	}
 	
@@ -289,5 +312,256 @@ public class PlinkMapReader {
 		return mapSnp2SetIsoName;
 	}
 	
+	/**
+	 * 落在内含子中的snp就不要了
+	 * 注意这里如果是tss区域的snp，则都要
+	 * @param lsAllele
+	 * @param gene
+	 * @return
+	 */
+	private List<Allele> filterSnpByIso(List<Allele> lsAllele, GffDetailGene gene) {
+		List<Allele> lsAlleleResult = new ArrayList<>();
+		for (Allele allele : lsAllele) {
+			if (!isAlleleInGene(allele, gene)) {
+				continue;
+			}
+			if (gene.getNameSingle().endsWith(".tss")) {
+				lsAlleleResult.add(allele);
+			} else {
+				Set<String> setIsoName = snpAnno.getSetIsoName(allele, gene);
+				if (!setIsoName.isEmpty()) {
+					lsAlleleResult.add(allele);
+				}
+			}
+		}
+		return lsAlleleResult;
+	}
+	
+	/**
+	 * 根据pvalue排序，选择最靠前的10个snp
+	 * @param lsAllele pvalue在other中
+	 * @param gene
+	 * @return
+	 */
+	private List<Allele> filterSnpByPvalue(List<Allele> lsAllele) {
+		List<Allele> lsAlleleResult = new ArrayList<>();
+		Collections.sort(lsAllele, new Comparator<Allele>() {
+			@Override
+			public int compare(Allele o1, Allele o2) {
+				Double o1d = Double.parseDouble(o1.getOther());
+				Double o2d = Double.parseDouble(o2.getOther());
+				return o1d.compareTo(o2d);
+			}
+		});
+		int i = 0;
+		for (Allele allele : lsAllele) {
+			if ( Double.parseDouble(allele.getOther()) > 0.9) {
+				continue;
+			}
+//			if (i++ > 8) {
+//				break;
+//			}
+			lsAlleleResult.add(allele);
+		}
+		Collections.sort(lsAlleleResult, new Comparator<Allele>() {
+			@Override
+			public int compare(Allele o1, Allele o2) {
+				Integer o1d = o1.getIndex();
+				Integer o2d = o2.getIndex();
+				return o1d.compareTo(o2d);
+			}
+		});
+		return lsAlleleResult;
+	}
+	
+	public static void createPlinkMapIndex(String plinkmap) {
+		if (FileOperate.isFileExistAndBigThan0(plinkmap+".index")) {
+			return;
+		}
+		List<String[]> lsIndex = createPlinkMapIndexLs(plinkmap);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(plinkmap+".index", true);
+		for (String[] contents : lsIndex) {
+			txtWrite.writefileln(contents);
+		}
+		txtWrite.close();
+	}
+	public static Map<String, Integer> readPlinkMapIndexChr2Len(String plinkmap) {
+		Map<String, Integer> mapChrId2Len = new HashMap<>();
+		if (!plinkmap.endsWith("index")) {
+			plinkmap = plinkmap+".index";
+		}
+		TxtReadandWrite txtReader = new TxtReadandWrite(plinkmap);
+		for (String content : txtReader.readlines()) {
+			String[] ss = content.split("\t");
+			mapChrId2Len.put(ss[0], Integer.parseInt(ss[1]));
+		}
+		txtReader.close();
+		return mapChrId2Len;
+	}
+	
+	public static List<String[]> createPlinkMapIndexLs(String plinkmap) {
+		try {
+			return createPlinkMapIndexExp(plinkmap);
+		} catch (Exception e) {
+			throw new ExceptionNbcParamError("read "+plinkmap+"error", e);
+		}
+	}
+	
+	/**
+	 * index 文件格式如下<br>
+	 * chrId chrStart<br>
+	 * chrId: 染色体号<br>
+	 * chrStart 起点坐标<br>
+	 * @param plinkmap 输入plinkmap文件
+	 * @throws IOException
+	 */
+	@VisibleForTesting
+	private static List<String[]> createPlinkMapIndexExp(String plinkmap) throws IOException {
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(FileOperate.getInputStream(plinkmap)));
+		
+		//String[] 其中0:chrId  1:chrStart
+		List<String[]> lsChr2Start = new ArrayList<>();
+		//用来获取 1:SampleStart 2:SampleLocStart 的flag
+		
+		int result = 0;
+		boolean isStart = true;
+		
+		StringBuilder stringBuilder = new StringBuilder();
+		String chrId = null;
+		String chrIdLast = null;
+		
+		long position = 0;
+		while ((result = bufferedReader.read()) > 0) {
+			char charInfo = (char)result;
+			if (charInfo == '\t') {
+				isStart = false;
+			}
+			if (charInfo == '\n') {
+				isStart = true;
+				stringBuilder = new StringBuilder();
+				chrId = null;
+			}
+			if (isStart) {
+				if (charInfo != '\n') {
+					stringBuilder.append(charInfo);
+				}
+			} else if (chrId == null) {
+				chrId = stringBuilder.toString();
+				if (!chrId.equals(chrIdLast)) {
+					chrIdLast = chrId;
+					lsChr2Start.add(new String[]{chrId, (position-chrId.length()) + ""});
+				}
+			}
+			position++;
+		}
+		bufferedReader.close();
+		return lsChr2Start;
+	}
 }
 
+
+/** plink的文件没有snp信息，需要把snp信息加上去 */
+class PlinkResultAnno {
+	private static final Logger logger = LoggerFactory.getLogger(PlinkResultAnno.class);
+
+	String bimAnno;
+	Map<String, Integer> mapChr2Len;
+	
+	String plinkResult;
+	String plinkResultSort;
+	
+	String bimAnnoPvalue;
+	
+	public PlinkResultAnno(String bimAnno, String plinkResult) {
+		this.bimAnno = bimAnno;
+		this.plinkResult = plinkResult;
+		this.plinkResultSort = FileOperate.changeFileSuffix(plinkResult, ".sorted", null);
+	}
+	
+	public void sortFile() {
+		PlinkMapReader.createPlinkMapIndex(bimAnno);
+		mapChr2Len = PlinkMapReader.readPlinkMapIndexChr2Len(bimAnno);
+		if (!FileOperate.isFileExistAndBigThan0(plinkResultSort)) {
+			List<String> lsSortPlinkResult = Lists.newArrayList("sort", "-k", "2,2n", "-k", "4,4n", plinkResult, ">", plinkResultSort);
+			CmdOperate cmdSortPlinkResult = new CmdOperate(lsSortPlinkResult);
+			cmdSortPlinkResult.runWithExp();
+		}
+	}
+	
+	public void annoMap() {
+		try {
+			annoMapExp();
+		} catch (Exception e) {
+			throw new ExceptionNbcParamError("error", e);
+		}
+	}
+	
+	private void annoMapExp() throws IOException {
+		String phynotype = FileOperate.getFileName(plinkResult);
+		bimAnnoPvalue = FileOperate.changeFileSuffix(bimAnno, "."+phynotype, "anno");
+		
+		String mapAnnoPvalue = FileOperate.changeFileSuffix(bimAnnoPvalue, ".annoPvalue", null);
+		TxtReadandWrite txtReadPlinkResult = new TxtReadandWrite(plinkResultSort);
+		
+		TxtReadandWrite txtWriteMap = new TxtReadandWrite(mapAnnoPvalue, true);
+		
+		SeekablePathInputStream is = FileOperate.getSeekablePathInputStream(bimAnno);
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(is));
+		String mapContent = bufferedReader.readLine();
+		String chrId = "";
+		//TODO plinkmap的顺序是不能变的，因此需要对其建索引
+		try {
+			for (String content : txtReadPlinkResult.readlines(2)) {
+				String[] plinkResultss = content.split("\t");
+				int locPlinkResult = Integer.parseInt(plinkResultss[3]);
+				while (true) {
+					String[] mapss = mapContent.split("\t");
+					int locMap = Integer.parseInt(mapss[3]);
+					
+					if (!mapss[0].equals(chrId) && !mapss[0].equals(plinkResultss[1])) {
+						is.seek(mapChr2Len.get(plinkResultss[1]));
+						bufferedReader = new BufferedReader(new InputStreamReader(is));
+						mapContent = bufferedReader.readLine();
+						mapss = mapContent.split("\t");
+						locMap = Integer.parseInt(mapss[3]);
+					}
+					
+					if (mapss[0].equals(plinkResultss[1]) && locPlinkResult < locMap) {
+						throw new ExceptionNbcParamError("error on plinkResult line " + content
+								+ "\nand map line " + mapContent);
+					}
+					
+					boolean isSame = mapss[0].equals(plinkResultss[1]) &&locPlinkResult== locMap;
+					if (isSame) {
+						mapContent += "\t" + plinkResultss[4];
+						txtWriteMap.writefileln(mapContent);
+						mapContent = bufferedReader.readLine();
+						break;
+					} else {
+						txtWriteMap.writefileln(mapContent+"\t"+1);
+						mapContent = bufferedReader.readLine();
+					}
+				}
+				chrId = plinkResultss[1];
+			}
+			
+			txtWriteMap.writefileln(mapContent+"\t"+1);
+			String content = "";
+			while ((content = bufferedReader.readLine()) != null) {
+				txtWriteMap.writefileln(content+"\t"+1);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			IOUtil.close(is);
+			txtReadPlinkResult.close();
+			txtWriteMap.close();
+		}
+		
+		IOUtil.close(is);
+		txtReadPlinkResult.close();
+		txtWriteMap.close();
+	}
+	
+}

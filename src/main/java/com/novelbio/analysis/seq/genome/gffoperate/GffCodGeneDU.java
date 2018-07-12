@@ -201,7 +201,26 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		}
 		return lsAnno;
 	}
-
+	/**
+	 * 返回两个坐标中间夹着的的GffDetail，覆盖成相应的GffDetail类
+	 * @return
+	 */
+	public ArrayList<GffDetailGene> getLsGffDetailMid() {
+		ArrayList<GffDetailGene> lsGeneMid = super.getLsGffDetailMid();
+		ArrayList<GffDetailGene> lsGeneResult = new ArrayList<>();
+		for (GffDetailGene gffDetailGene : lsGeneMid) {
+			lsGeneResult.addAll(gffDetailGene.getlsGffDetailGenes());
+		}
+		return lsGeneResult;
+	}
+	public List<GffDetailGene> getCoveredElement() {
+		List<GffDetailGene> lsCoveredGene = super.getCoveredElement();
+		ArrayList<GffDetailGene> lsGeneResult = new ArrayList<>();
+		for (GffDetailGene gffDetailGene : lsCoveredGene) {
+			lsGeneResult.addAll(gffDetailGene.getlsGffDetailGenes());
+		}
+		return lsGeneResult;
+	}
 	/**
 	 * 获得peak覆盖的具体内含子外显子的数量
 	 * 务必先设定tss等信息

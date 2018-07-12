@@ -111,7 +111,7 @@ public class PlinkPedConverter {
 	public void convertPlinkPedToAnother(String outFile) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(outFile, true);
 		try {
-			SeekablePathInputStream seekablePathInputStream = FileOperate.getInputStreamSeekable(plinkBim);
+			SeekablePathInputStream seekablePathInputStream = FileOperate.getSeekablePathInputStream(plinkBim);
 			String plinkIndex = PlinkPedReader.createPlinkPedIndex(plinkPed);		
 			List<String> lsSample = PlinkPedReader.getLsSamples(plinkIndex);
 			pedReader = new PlinkPedReader(plinkPed);

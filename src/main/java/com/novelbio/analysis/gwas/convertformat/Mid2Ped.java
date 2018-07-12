@@ -88,6 +88,9 @@ public class Mid2Ped {
 	public void setConsistentSampleNum(int consistentSampleNum) {
 		this.consistentSampleNum = consistentSampleNum;
 	}
+	public void convert2Ped(String mid, String ped) {
+		convert2Ped(mid, "", ped);
+	}
 	public void convert2Ped(String mid, String map, String ped) {
 		setSnpNumAndConvertMap(mid, map);
 		logger.info("finish convert to map");
@@ -140,7 +143,7 @@ public class Mid2Ped {
 	private void setSnpNumAndConvertMap(String mid, String map) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(mid);
 		TxtReadandWrite txtWrite = null;
-		if (startNum > 0) {
+		if (startNum > 0 && !StringOperate.isRealNull(map)) {
 			txtWrite = new TxtReadandWrite(map, true);				
 		}
 				

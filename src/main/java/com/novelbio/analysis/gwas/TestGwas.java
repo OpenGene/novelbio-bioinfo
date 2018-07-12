@@ -38,10 +38,16 @@ public class TestGwas {
 	private static final Logger logger = LoggerFactory.getLogger(TestGwas.class);
 			
 	public static void main2(String[] args) {
-		String out = "/media/winE/mywork/hongjun-gwas/result-Os01g0883800-nochange/remove-deletion/";
+		String out = "/home/novelbio/zongjiework/result-gene-8-NoChange/";
 		Mid2Ped mid2Ped = new Mid2Ped();
 		mid2Ped.setStartNum(0);
-		mid2Ped.convert2Ped(out + "permutation.plink.ped.pre", out + "permutation.plink.map.other", out + "permutation.plink.ped");			
+		mid2Ped.convert2Ped(out + "permutation.plink.filter.ped.pre", out + "permutation.plink.filter.ped");
+		
+//		out = "/home/novelbio/zongjiework/result-Os01g0883800-gene-hircluster-n-9/";
+//		mid2Ped = new Mid2Ped();
+//		mid2Ped.setStartNum(0);
+//		mid2Ped.convert2Ped(out + "permutation.plink.noN.ped.pre", 
+//				out + "permutation.plink.noN.map.other", out + "permutation.plink.noN.ped");
 	}
 	
 	public static void main(String[] args) {
@@ -89,31 +95,46 @@ public class TestGwas {
 //		
 //		FileOperate.createFolders(FileOperate.getPathName(out));
 //		String plinkBimCorrect = FileOperate.changeFileSuffix(plinkBim, ".correct", null);
-
-//		String plinkBim = "/media/winE/mywork/hongjun-gwas/619-29mio.bim";
-//		String plinkPed =  "/media/winE/mywork/hongjun-gwas/619-29mio.ped";
-//		String plinkBimCorrect = "/media/winE/mywork/hongjun-gwas/619-29mio.bim.anno";
+		
+		
+		
+//		//pvalue
+//		String parent = "/home/novelbio/zongjiework/";
+//		String plinkBim = parent + "plink/619-29mio.bim";
+//		String plinkPed =  parent + "plink/619-29mio.ped";
+//		String plinkBimCorrect = parent + "plink/619-29mio.bim.PHHN2015-619-650-LMM.txt.annoPvalue.anno";
+//		String chrFile = parent + "reference/oryza_sativa.IRGSP-1.0.dna.fa";
+//		String gffFile = parent + "reference/Oryza_sativa.IRGSP-1.0.39.gff3";
+////		String out = parent + "result-Os01g0883800-gene-hircluster-n-9/";
+//		String out = parent + "result-pvalue-8-test/";
 //		
-//		String chrFile = "/media/winE/mywork/hongjun-gwas/oryza_sativa.IRGSP-1.0.dna.fa";
-//		String gffFile = "/media/winE/mywork/hongjun-gwas/Oryza_sativa.IRGSP-1.0.39.gff3";
-//		String out = "/media/winE/mywork/hongjun-gwas/result-Os01g0883800-nochange/";
-		
-		String parent = "/media/winE/mywork/hongjun-gwas/result-Os01g0883800-nochange/remove-deletion/";
-		String plinkBim = parent+"permutation.plink.map";
-		String plinkPed =  parent+"permutation.plink.ped";
-		String plinkBimCorrect = parent+"permutation.plink.map.anno";
-		
-		String chrFile = "/media/winE/mywork/hongjun-gwas/oryza_sativa.IRGSP-1.0.dna.fa";
-		String gffFile = "/media/winE/mywork/hongjun-gwas/Oryza_sativa.IRGSP-1.0.39.gff3";
-		String out = parent+"test";
+//		String r2min = "0.8";
+//		String maxCluster = "10";
+//		String permutationNum = "3";
+//		String tss = "1000";
+//		String variationCutoff = "0.05";
+//		String parallelNum = "80";
+//		String isChangeN = "false";
+//		String snpFilterCriteria = PlinkMapReader.FILTER_BY_PVALUE;
+
+		String parent = "/home/novelbio/zongjiework/";
+		String plinkBim = parent + "plink/619-29mio.bim";
+		String plinkPed =  parent + "plink/619-29mio.ped";
+		String plinkBimCorrect = parent + "plink/619-29mio.bim.anno";
+		String chrFile = parent + "reference/oryza_sativa.IRGSP-1.0.dna.fa";
+		String gffFile = parent + "reference/Oryza_sativa.IRGSP-1.0.39.gff3";
+		String out = parent + "result-gene-8-NoChange--test2/";
 		
 		String r2min = "0.8";
 		String maxCluster = "10";
 		String permutationNum = "3";
-		String tss = "2000";
+		String tss = "1000";
+		String variationCutoffForHir = "0";
 		String variationCutoff = "0.05";
 		String parallelNum = "80";
-
+		String isChangeN = "false";
+		String snpFilterCriteria = PlinkMapReader.FILTER_BY_GENE;
+		
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setChrFile(chrFile, null);
 		GffHashGene gffHashGene = new GffHashGene();
@@ -147,6 +168,15 @@ public class TestGwas {
 		}
 		if (!StringOperate.isRealNull(variationCutoff)) {
 			testGwas.setVariationCutoff(Double.parseDouble(variationCutoff.trim()));
+		}
+		if (!StringOperate.isRealNull(isChangeN)) {
+			testGwas.setChangeN(isChangeN.equals("true"));
+		}
+		if (!StringOperate.isRealNull(snpFilterCriteria)) {
+			testGwas.setFilterCriteria(snpFilterCriteria);
+		}
+		if (!StringOperate.isRealNull(variationCutoffForHir)) {
+			testGwas.setVariationCutForHir(Double.parseDouble(variationCutoffForHir.trim()));
 		}
 		if (!FileOperate.isFileExistAndBigThan0(out + "permutation.plink.map")
 				||
@@ -196,12 +226,15 @@ public class TestGwas {
 	String plinkMapConvertorOut;
 	String plinkPedPreOut;
 	
+	String filterCriteria;
 	//=======聚类专用===============
 	/** 聚类时r2超过这个值的聚在一起 */
 	double r2Cluster = 0.2;
 	double variationCutoff = 0.05;
+	double variationCutForHir = 0.05;
 	int maxCluster = 0;
 	int permutationNum=3;
+	boolean isChangeN = true;
 	//==============================
 	int tss = 1500;
 	/**
@@ -214,6 +247,9 @@ public class TestGwas {
 	public void setMaxCluster(int maxCluster) {
 		this.maxCluster = maxCluster;
 	}
+	public void setChangeN(boolean isChangeN) {
+		this.isChangeN = isChangeN;
+	}
 	public void setPermutationNum(int permutationNum) {
 		this.permutationNum = permutationNum;
 	}
@@ -223,6 +259,9 @@ public class TestGwas {
 	public void setVariationCutoff(double variationCutoff) {
 		this.variationCutoff = variationCutoff;
 	}
+	public void setVariationCutForHir(double variationCutForHir) {
+		this.variationCutForHir = variationCutForHir;
+	}
 	public void setGffChrAbs(GffChrAbs gffChrAbs) {
 		this.gffChrAbs = gffChrAbs;
 	}
@@ -231,6 +270,14 @@ public class TestGwas {
 	}
 	public void setPlinkPed(String plinkPed) {
 		this.plinkPed = plinkPed;
+	}
+	/**
+	 * @param filterCriteria
+	 * {@link #FILTER_BY_GENE}
+	 * {@link #FILTER_BY_PVALUE}
+	 */
+	public void setFilterCriteria(String filterCriteria) {
+		this.filterCriteria = filterCriteria;
 	}
 	
 	public void setOutput(String plinkMap, String plinkMapConvertor, String plinkPedPre) {
@@ -245,13 +292,12 @@ public class TestGwas {
 		plinkMapReader.setTss(tss);
 		plinkMapReader.setGffChrAbs(gffChrAbs);
 		plinkMapReader.setPlinkMap(plinkBimCorrect);
+		plinkMapReader.setFilterCriteria(filterCriteria);
 		plinkMapReader.initial();
 		plinkPedReader = new PlinkPedReader(plinkPed);
 		
 		TxtReadandWrite txtWritePlinkMap = new TxtReadandWrite(plinkMapOut, true);
-		TxtReadandWrite txtWritePlinkMapOld = new TxtReadandWrite(plinkMapOut+".old", true);
 		TxtReadandWrite txtWritePlinkMapConvertor = new TxtReadandWrite(plinkMapConvertorOut, true);
-		TxtReadandWrite txtWritePlinkMapConvertorOld = new TxtReadandWrite(plinkMapConvertorOut+".old", true);
 
 		TxtReadandWrite txtWritePlinkPedPre = new TxtReadandWrite(plinkPedPreOut, true);
 		
@@ -264,19 +310,15 @@ public class TestGwas {
 				continue;
 			}
 			String geneName = plinkMapReader.getGeneCurrent().getNameSingle();
-			if (!geneName.contains("Os01g0883800")) {
-				continue;
+//			if (!geneName.contains("Os01g0883800")) {
+//				continue;
+//			}
+			if (geneName.contains("Os01g0101300")) {
+				logger.info("stop");
 			}
-			
 			if (i++ %10 ==0) {
 				logger.info("read {} genes", i);
 			}
-//			if (i>1000) {
-//				break;
-//			}
-//			if (i<2911) {
-//				continue;
-//			}
 			if (lsAlleles.size() > 500) {
 				logger.info("gene {} have too many snps {}", geneName, lsAlleles.size());
 			}
@@ -286,31 +328,29 @@ public class TestGwas {
 				mapSample2LsAllele.put(sample, lsAlleleSample);
 			}
 
-			if (lsAlleles.size() > 5) {
-				CombineSnp combineSnp = new CombineSnp();
-				combineSnp.setGeneName(geneName);
-				combineSnp.setR2(r2Cluster);
-				combineSnp.setVariationCutoff(variationCutoff);
-//				combineSnp.setMaxClusterNum(maxCluster);
-				combineSnp.setMaxClusterNum(500);
-				combineSnp.setMapSample2LsAlleles(mapSample2LsAllele);
-				try {
-					combineSnp.merge();
-				} catch (Exception e) {
-					logger.error("combine gene {} error", geneName);
-					txtWritePlinkMapOld.close();
-					txtWritePlinkMap.close();
-					txtWritePlinkMapConvertor.close();
-					txtWritePlinkMapConvertorOld.close();
-					txtWritePlinkPedPre.close();
-					throw e;
-				}
-
-				mapSample2LsAllele = combineSnp.getMapSample2LsAllelesResult();
-				if (mapSample2LsAllele.values().iterator().next().isEmpty()) {
-					continue;
-				}
+			//=================================
+			CombineSnp combineSnp = new CombineSnp();
+			combineSnp.setGeneName(geneName);
+			combineSnp.setR2(r2Cluster);
+			combineSnp.setVariationCutoff(variationCutForHir);
+			combineSnp.setMaxClusterNum(maxCluster);
+			combineSnp.setChangeN(isChangeN);
+			combineSnp.setMapSample2LsAlleles(mapSample2LsAllele);
+			try {
+				combineSnp.merge();
+			} catch (Exception e) {
+				logger.error("combine gene {} error", geneName);
+				txtWritePlinkMap.close();
+				txtWritePlinkMapConvertor.close();
+				txtWritePlinkPedPre.close();
+				throw e;
 			}
+
+			mapSample2LsAllele = combineSnp.getMapSample2LsAllelesResult();
+			if (mapSample2LsAllele.values().iterator().next().isEmpty()) {
+				continue;
+			}
+			//=================================
 		
 			Permutation permutation = new Permutation();
 			permutation.setMaxSnpNum(permutationNum);
@@ -327,7 +367,7 @@ public class TestGwas {
 				clusterKmean.cluster();
 				Allele allele = permutation.getAllele(lsIndex);
 				List<String[]> lsValues = clusterKmean.getClusterResult();
-				lsValues = CombineSnp.modifyList(lsValues, allele, variationCutoff);
+				lsValues = CombineSnp.modifyList(lsValues, allele, variationCutoff, isChangeN);
 				
 				if (lsValues == null) {
 					continue;
@@ -337,27 +377,27 @@ public class TestGwas {
 				txtWritePlinkPedPre.writefileln(value);
 				
 				String map = permutation.toStringMap(lsIndex);
+				
+				String[] ss = map.split("\t");
+				if (ss[4].equals("0") || ss[5].equals("0")) {
+					logger.info("stop");
+				}
+				
 				txtWritePlinkMap.writefileln(map);
 				txtWritePlinkMapConvertor.writefileln(permutation.toStringConvertor(lsIndex));
 				permutation.indexAdd();
 				if (StringOperate.isRealNull(value) || StringOperate.isRealNull(map)) {
 					txtWritePlinkMap.close();
 					txtWritePlinkMapConvertor.close();
-					txtWritePlinkMapOld.close();
-					txtWritePlinkMapConvertorOld.close();
 					txtWritePlinkPedPre.close();
 					throw new RuntimeException("error on gene " + geneName);
 				}
 			}
-			txtWritePlinkMapOld.writefileln(permutation.toStringMap());
-			txtWritePlinkMapConvertorOld.writefileln(permutation.toStringConvertor());
 			index = permutation.getIndexNew();
 		}
 		txtWritePlinkMap.close();
 		txtWritePlinkMapConvertor.close();
 		txtWritePlinkPedPre.close();
-		txtWritePlinkMapOld.close();
-		txtWritePlinkMapConvertorOld.close();
 	}
 	
 	public static boolean isClusterRight(List<String> lsValues) {
@@ -380,6 +420,11 @@ public class TestGwas {
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i = 0; i < lsValues.size(); i++) {
 			String[] ss = lsValues.get(i);
+			for (int j = 0; j < ss.length; j++) {
+				if (ss[j].equalsIgnoreCase("N")) {
+					ss[0] = "0";
+				}
+			}
 			if (i > 0) {
 				stringBuilder.append("\t");
 			}
