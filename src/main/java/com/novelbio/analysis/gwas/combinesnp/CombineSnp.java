@@ -128,14 +128,13 @@ public class CombineSnp {
 		List<Integer> lsSnpsNeed = new ArrayList<>();
 		
 		for (int i = 0; i < lsInfosRaw.size(); i++) {
-
 			List<String[]> lsSite = lsInfosRaw.get(i);
-			Allele allele = lsAllelesRaw.get(i);
+			Allele allele = lsAllelesRaw.get(i).clone();
 			if (allele.getStartAbs() == 3514 || allele.getStartAbs() == 3568) {
 				logger.info("stop");
 			}
 			//这里不过滤
-			lsSite = modifyList(lsSite, allele, variationCutoff, isChangeN);
+			lsSite = modifyList(lsSite, allele, variationCutoff, true);
 			if (lsSite != null) {
 				lsSnpsNeed.add(i);
 				lsInfos.add(lsSite);
@@ -158,10 +157,6 @@ public class CombineSnp {
 		}
 
 		mapSample2LsAllelesIn = filterMapSample2LsAllele(mapSample2LsAllelesIn, lsSnpsNeed);
-		
-		
-		
-		
 		if (lsAlleles.size() <= 1) {
 			return null;
 		}
@@ -302,7 +297,7 @@ public class CombineSnp {
 		
 		String site1 = lsSite2Num.get(0)[0];
 		String site2 = lsSite2Num.get(1)[0];
-		if (site2.equals("N") && lsSite2Num.size() > 2) {
+		if ((site2.equals("N") || site2.equals("0")) && lsSite2Num.size() > 2) {
 			int numN = Integer.parseInt(lsSite2Num.get(1)[1]);
 			int numOther = Integer.parseInt(lsSite2Num.get(2)[1]);
 			//如果N和另一个位点数量差不多，相差小于2倍，就维持不变

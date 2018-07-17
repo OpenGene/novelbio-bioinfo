@@ -123,14 +123,14 @@ public class TestGwas {
 		String plinkBimCorrect = parent + "plink/619-29mio.bim.anno";
 		String chrFile = parent + "reference/oryza_sativa.IRGSP-1.0.dna.fa";
 		String gffFile = parent + "reference/Oryza_sativa.IRGSP-1.0.39.gff3";
-		String out = parent + "result-gene-8-NoChange--test2/";
+		String out = parent + "result-gene-8-NoChange-varForHir0-changeNHir/";
 		
 		String r2min = "0.8";
 		String maxCluster = "10";
 		String permutationNum = "3";
 		String tss = "1000";
-		String variationCutoffForHir = "0";
 		String variationCutoff = "0.05";
+		String variationCutForHir = "0";
 		String parallelNum = "80";
 		String isChangeN = "false";
 		String snpFilterCriteria = PlinkMapReader.FILTER_BY_GENE;
@@ -175,8 +175,8 @@ public class TestGwas {
 		if (!StringOperate.isRealNull(snpFilterCriteria)) {
 			testGwas.setFilterCriteria(snpFilterCriteria);
 		}
-		if (!StringOperate.isRealNull(variationCutoffForHir)) {
-			testGwas.setVariationCutForHir(Double.parseDouble(variationCutoffForHir.trim()));
+		if (!StringOperate.isRealNull(variationCutForHir)) {
+			testGwas.setVariationCutForHir(Double.parseDouble(variationCutForHir.trim()));
 		}
 		if (!FileOperate.isFileExistAndBigThan0(out + "permutation.plink.map")
 				||
@@ -334,7 +334,7 @@ public class TestGwas {
 			combineSnp.setR2(r2Cluster);
 			combineSnp.setVariationCutoff(variationCutForHir);
 			combineSnp.setMaxClusterNum(maxCluster);
-			combineSnp.setChangeN(isChangeN);
+			combineSnp.setChangeN(true);
 			combineSnp.setMapSample2LsAlleles(mapSample2LsAllele);
 			try {
 				combineSnp.merge();

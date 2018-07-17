@@ -60,7 +60,7 @@ public class TestPlinkMapReader {
 		return gffDetailGene;
 	}
 	
-	private List<String> getLsMapInfo(String chrId) {
+	protected static List<String> getLsMapInfo(String chrId) {
 		List<String> lsTmp = new ArrayList<>();
 		lsTmp.add(chrId + "\ta\tb\t15\tA\tG");
 		lsTmp.add(chrId + "\ta\tb\t25\tA\tG");

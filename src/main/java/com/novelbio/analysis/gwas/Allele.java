@@ -199,7 +199,9 @@ public class Allele extends Align {
 		boolean isAllele1SameToRef = StringOperate.isEqual(allele1, ref);
 		boolean isAllele2SameToRef = StringOperate.isEqual(allele2, ref);
 		
-		if (StringOperate.isEqual(allele1, "0") || StringOperate.isEqual(allele2, "0")) {
+		if (StringOperate.isEqual(allele1, "0") || StringOperate.isEqual(allele2, "0")
+				|| StringOperate.isEqual(allele1, "N") || StringOperate.isEqual(allele2, "N")
+				) {
 //			return isRefMajor ? 1 : -1;
 			return -9;
 		}
@@ -231,5 +233,9 @@ public class Allele extends Align {
 		}
 		lsResult.add(getFrq()+"");
 		return ArrayOperate.cmbString(lsResult, "\t");
+	}
+	
+	public Allele clone() {
+		return (Allele) super.clone();
 	}
 }
