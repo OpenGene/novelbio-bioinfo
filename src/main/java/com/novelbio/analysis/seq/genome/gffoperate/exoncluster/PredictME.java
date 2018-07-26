@@ -273,12 +273,13 @@ public class PredictME extends SpliceTypePredict {
 	@Override
 	public List<Align> getDifSite() {
 		Align align = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		align.setCis5to3(exonCluster.isCis5to3());
 		List<Align> lsAligns = new ArrayList<>();
 		lsAligns.add(align);
 		return lsAligns;
 	}
 	@Override
-	public List<? extends Alignment> getBGSite() {
+	public List<? extends Alignment> getBGSiteSplice() {
 		List<Alignment> lsResult = new ArrayList<>();
 		if (!ArrayOperate.isEmpty(lsExonThisAfter)) {
 			for (List<ExonInfo> lsExons : lsExonAfter) {
@@ -288,7 +289,7 @@ public class PredictME extends SpliceTypePredict {
 			for (List<ExonInfo> lsExons : lsExonBefore) {
 				lsResult.addAll(lsExons);
 			}
-		} 
+		}
 		return lsResult;
 	}
 	

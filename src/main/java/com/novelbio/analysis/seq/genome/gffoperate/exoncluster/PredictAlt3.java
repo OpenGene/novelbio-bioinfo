@@ -25,7 +25,7 @@ public class PredictAlt3 extends PredictAlt5Or3 {
 		return SplicingAlternativeType.alt3;
 	}
 	
-	public List<? extends Alignment> getBGSite() {
+	public List<? extends Alignment> getBGSiteSplice() {
 		List<Alignment> lsAlignments = new ArrayList<Alignment>();
 		Align alignBG = null;
 		int endBGcis = exonCluster.getEndCis();

@@ -343,6 +343,9 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		for (int i = 0; i < size(); i++) {
 			E lsDetail = get(i);
 			ArrayList<String> ss = lsDetail.getName();
+			if (ss.contains("PIGY")) {
+				logger.info("stop");
+			}
 			for (String string : ss) {
 				hashID2Num.put(string.toLowerCase(), i);
 			}

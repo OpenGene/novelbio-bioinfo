@@ -90,7 +90,7 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 	 * 如果是cassette则返回全基因长度
 	 * 如果是retain intron和alt5 alt3，返回该exon的长度
 	 */
-	public List<? extends Alignment> getBGSite() {
+	public List<? extends Alignment> getBGSiteSplice() {
 		//altstart和altend只有一个类型
 		List<Align> lsDifSites = getDifSite();
 		Align align = Align.getAlignFromList(lsDifSites);
@@ -133,7 +133,11 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 				}
 			}
 		}
-		boolean isCis5to3 = lsExonInfos.get(0).isCis5to3();
+		boolean isCis5To3 = gffDetailGene.isCis5to3();
+		if (lsExonInfos.isEmpty()) {
+			logger.error("cannot get BG site of Gene " + gffDetailGene.getNameSingle() + " please check !!!");
+			return gffDetailGene.getLongestSplitMrna().getLsElement();
+		}
 		Collections.sort(lsExonInfos);
 
 		List<Align> lsResult = new ArrayList<>();
@@ -141,13 +145,13 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		alignLast = new Align(lsExonInfos.get(0));
 		lsResult.add(alignLast);
 		
-		if (isCis5to3) {
+		if (isCis5To3) {
 			for (ExonInfo exonInfo : lsExonInfos) {
 				if (exonInfo.getStartAbs() <= alignLast.getEndAbs() && exonInfo.getEndAbs() > alignLast.getEndAbs()) {
 					alignLast.setEndAbs(exonInfo.getEndAbs());
 				} else if (exonInfo.getStartAbs() > alignLast.getEndAbs()) {
 					alignLast = new Align(exonInfo.getRefID(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
-					alignLast.setCis5to3(isCis5to3);
+					alignLast.setCis5to3(isCis5To3);
 					lsResult.add(alignLast);
 				}
 			}
@@ -157,7 +161,7 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 					alignLast.setStartAbs(exonInfo.getStartAbs());
 				} else if (exonInfo.getEndAbs() < alignLast.getStartAbs()) {
 					alignLast = new Align(exonInfo.getRefID(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
-					alignLast.setCis5to3(isCis5to3);
+					alignLast.setCis5to3(isCis5To3);
 					lsResult.add(alignLast);
 				}
 			}
@@ -220,7 +224,7 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		List<Alignment> lsResult = new ArrayList<>();
 
 		List<Align> lsDifSite = getDifSite();
-		List<? extends Alignment> lsBG = getBGSite();
+		List<? extends Alignment> lsBG = getBGSiteSplice();
 		if (getType() == SplicingAlternativeType.altstart) {
 			lsResult.add(lsBG.get(0));
 		} else if (getType() == SplicingAlternativeType.altend) {

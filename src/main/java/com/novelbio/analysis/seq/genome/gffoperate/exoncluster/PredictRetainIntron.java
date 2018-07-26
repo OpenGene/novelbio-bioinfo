@@ -140,7 +140,7 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 	
 	/** 把两边的区域挑出来 */
 	@Override
-	public List<? extends Alignment> getBGSite() {
+	public List<? extends Alignment> getBGSiteSplice() {
 		List<Alignment> lsAlignments = new ArrayList<Alignment>();
 		int startBGAbs = exonCluster.getStartAbs();
 		int endBGAbs = exonCluster.getEndAbs();
@@ -170,7 +170,7 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 	/** 获得差异可变剪接的区段，用于IGV查看位点 */
 	public List<Align> getLsAligns() {
 		List<Align> lsAligns = new ArrayList<>();
-		getBGSite().forEach((alignment) -> lsAligns.add(new Align(alignment)));
+		getBGSiteSplice().forEach((alignment) -> lsAligns.add(new Align(alignment)));
 		return lsAligns;
 	}
 	/**

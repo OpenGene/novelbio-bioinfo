@@ -426,7 +426,7 @@ public abstract class MapReadsAbs extends RunProcess {
 			endNum = mapChrID2Length.get(chrID.toLowerCase()).intValue();
 		}
 		if (startNum > endNum) {
-			logger.error("起点不能比终点大: "+chrID+" "+startNum+" "+endNum);
+			logger.error("startsite cannot larger than endsite so return null : "+chrID+" "+startNum+" "+endNum);
 			return null;
 		}
 		return new int[]{startNum, endNum};

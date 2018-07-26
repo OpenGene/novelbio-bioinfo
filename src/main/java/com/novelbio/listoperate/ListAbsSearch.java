@@ -68,7 +68,7 @@ public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodA
 		
 		if (lsAbsDu.getGffCod1().getItemNumDown() >= 0) {
 			for (int i = lsAbsDu.getGffCod1().getItemNumDown(); i <= lsAbsDu.getGffCod2().getItemNumUp(); i++) {
-				lsAbsDu.getLsGffDetailMid().add(get(i));
+				lsAbsDu.lsgffDetailsMid.add(get(i));
 			}
 		}
 		return lsAbsDu;

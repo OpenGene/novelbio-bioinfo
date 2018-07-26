@@ -108,7 +108,7 @@ public class ExonJunction extends RunProcess {
 		
 	
 	private static Logger logger = LoggerFactory.getLogger(ExonJunction.class);
-	private static String stopGeneName = "OLA1";
+	private static String stopGeneName = "EMG1";
 		
 	GffHashGene gffHashGene = null;
 	
@@ -199,7 +199,7 @@ public class ExonJunction extends RunProcess {
 	
 	public ExonJunction() {
 		lsReadReagion = new ArrayList<>();
-//		lsReadReagion.add(new Align("chr5:38471964-39408845"));
+//		lsReadReagion.add(new Align("chr8:11828001-11898118"));
 	}
 	
 	/** 至少有多少条reads支持的junction才会用于重建转录本 */
@@ -437,7 +437,6 @@ public class ExonJunction extends RunProcess {
 		
 		if (isReconstructIso) {
 			generateNewIso = new GenerateNewIso(tophatJuncForReconstruct, mapReads, strandSpecific, isReconstructRI);
-			generateNewIso.setMinIntronLen(intronMinLen);
 			generateNewIso.setGffHash(gffHashGene);
 			generateNewIso.setNewIsoReadsNum(newIsoReadsNum);
 		}
@@ -538,7 +537,6 @@ public class ExonJunction extends RunProcess {
  		tophatJuncForReconstruct.conclusion();
 		if (isReconstructIso) {
 			generateNewIso = new GenerateNewIso(tophatJuncForReconstruct, mapReads, strandSpecific, isReconstructRI);
-			generateNewIso.setMinIntronLen(intronMinLen);
 			generateNewIso.setGffHash(gffHashGene);
 			generateNewIso.setNewIsoReadsNum(newIsoReadsNum);
 		}

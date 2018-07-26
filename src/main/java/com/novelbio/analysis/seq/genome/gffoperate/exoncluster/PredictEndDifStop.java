@@ -87,7 +87,7 @@ public class PredictEndDifStop extends SpliceTypePredict {
 	}
 
 	@Override
-	public List<? extends Alignment> getBGSite() {
+	public List<? extends Alignment> getBGSiteSplice() {
 		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
 	}
 	public Align getResultSite() {

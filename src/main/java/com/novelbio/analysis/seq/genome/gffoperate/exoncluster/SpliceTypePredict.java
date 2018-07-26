@@ -14,18 +14,20 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.HashMultimap;
+import com.lowagie.text.html.simpleparser.ALink;
 import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
 import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.rnaseq.TophatJunction;
+import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.Alignment;
 
 //TODO 需要返回该差异剪接位点所对应的两类Iso
 public abstract class SpliceTypePredict {
 	private static final Logger logger = Logger.getLogger(SpliceTypePredict.class);
-	ExonCluster exonCluster;
+	protected ExonCluster exonCluster;
 	TophatJunction tophatJunction;
 	Boolean isType = null;
 	HashMultimap<String, String> mapCond2Group;
@@ -93,13 +95,19 @@ public abstract class SpliceTypePredict {
 	/** 获得差异可变剪接的区段，用于IGV查看位点 */
 	public List<Align> getLsAligns() {
 		List<Align> lsDifSite = getDifSite();
-		List<? extends Alignment> lsBG = getBGSite();
-		List<Align> lsResult = new ArrayList<>();
-		for (Alignment alignment : lsBG) {
-			lsResult.add(new Align(alignment));
+		List<Align> lsBG = getBGSite();
+		List<Align> lsResult = new ArrayList<>(lsBG);
+		for (Align align : lsDifSite) {
+			align.setCis5to3(exonCluster.isCis5to3());
+			lsResult.add(align);
 		}
-		lsResult.addAll(lsDifSite);
+		try {
+			lsResult = Align.mergeLsAlign(lsResult);
+		} catch (Exception e) {
+			throw new ExceptionNbcParamError("Error on splice site " + exonCluster.toString(), e);
+		}
 		Collections.sort(lsResult, new Alignment.ComparatorAlignment());
+		//TODO 还需要把difsite单独列出来
 		return lsResult;
 	}
 	/**
@@ -109,8 +117,25 @@ public abstract class SpliceTypePredict {
 	 * <b>list中的单个Alignment不考虑方向</b><br>
 	 * 可以直接返回{@link GffGeneIsoInfo}
 	 */
-	public abstract List<? extends Alignment> getBGSite();
-	
+	public List<Align> getBGSite() {
+		List<? extends Alignment> lsBG = getBGSiteSplice();
+		List<Align> lsResult = new ArrayList<>();
+		for (Alignment alignment : lsBG) {
+			Align align = new Align(alignment);
+			align.setCis5to3(exonCluster.isCis5to3());
+			lsResult.add(align);
+		}
+		lsResult = Align.mergeLsAlign(lsResult);
+		return lsResult;
+	}
+	/**
+	 * 获得比较的位点
+	 * 如果是cassette则返回全基因长度
+	 * 如果是retain intron和alt5 alt3，返回该exon的长度<br>
+	 * <b>list中的单个Alignment不考虑方向</b><br>
+	 * 可以直接返回{@link GffGeneIsoInfo}
+	 */
+	public abstract List<? extends Alignment> getBGSiteSplice();
 	
 	/** 分别计算exon边界所参与的reads数，只取前两个值 */
 	protected ArrayListMultimap<String, Double> getlsJunInfoEdge(String condition, List<ExonInfo> lsExonInfos) {

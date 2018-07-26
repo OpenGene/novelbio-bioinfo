@@ -746,14 +746,19 @@ class MapReadsAddAlignRecord {
 			tmpOld = new int[2];//更新 tmpOld
 			summary();
 			lastChr = tmpChrID;// 实际这是新出现的ChrID
-			logger.info(lastChr);
 			
 			Long chrLength = mapReads.mapChrID2Len.get(lastChr.toLowerCase());
-			flag = true;
 			if (chrLength == null) {
 				logger.error("find unknown chrId "+lastChr);
 				flag = false; return;
 			}
+			
+			if (chrLength > 3000000) {
+				logger.info(lastChr);
+			}
+			
+			flag = true;
+
 
 			chrBpReads = new int[(int) (chrLength + 1)];// 同样为方便，0位记录总长度。这样实际bp就是实际长度
 			chrBpReads[0] = chrLength.intValue();

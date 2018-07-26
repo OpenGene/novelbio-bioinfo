@@ -47,7 +47,7 @@ public class ExonCluster implements Alignment {
 	 * 该iso跳过了这个exon，则里面装空的list
 	 *  如果该iso根本不在这个范围内,则里面就没有这个list
 	 */
-	Map<GffGeneIsoInfo, List<ExonInfo>> mapIso2LsExon = new LinkedHashMap<GffGeneIsoInfo, List<ExonInfo>>();
+	private Map<GffGeneIsoInfo, List<ExonInfo>> mapIso2LsExon = new LinkedHashMap<GffGeneIsoInfo, List<ExonInfo>>();
 	/** 记录跳过该exoncluster的Iso，和跨过该exoncluster的那对exon的，前一个exon的编号 */
 	Map<GffGeneIsoInfo, Integer> mapIso2ExonNumSkipTheCluster = new HashMap<GffGeneIsoInfo, Integer>();
 	
@@ -98,19 +98,10 @@ public class ExonCluster implements Alignment {
 				setIso2ExonNumSkipTheCluster(gffGeneIsoInfo, beforeExonNum);
 			}
 			if (junc && beforeExonNum >= gffGeneIsoInfo.size()-1) {
-				logger.error("出错拉，请检查该基因：" + gffGeneIsoInfo.getName() );
+				logger.error("error! please check the gene: " + gffGeneIsoInfo.getName() );
 			}
 		}
-		
-//		boolean isEmpty = true;
-//		for (List<ExonInfo> ls : mapIso2LsExon.values()) {
-//			if (!ls.isEmpty()) {
-//				isEmpty = false;
-//			}
-//		}
-//		if (isEmpty) {
-//			logger.debug("");
-//		}
+
 	}
 	
 	public String getRefID() {
@@ -146,7 +137,7 @@ public class ExonCluster implements Alignment {
 				return lsExonInfos.get(0).isCis5to3();
 			}
 		}
-		logger.error("本exoncluster为空");
+		logger.error("exoncluster is empty: " + getParentGene().getNameSingle());
 		return true;
 	}
 	public void setExonClusterBefore(ExonCluster exonClusterBefore) {
@@ -169,12 +160,21 @@ public class ExonCluster implements Alignment {
 	}
 	/** 返回其所在的GffGene */
 	public GffDetailGene getParentGene() {
+		GffDetailGene gffDetailGene = null;
 		for (List<ExonInfo> lsExonInfos : mapIso2LsExon.values()) {
 			if (lsExonInfos.size() > 0) {
-				return lsExonInfos.get(0).getParent().getParentGffDetailGene();
+				if (gffDetailGene == null || lsExonInfos.get(0).getParent().getParentGffDetailGene().getLsCodSplit().size() > gffDetailGene.getLsCodSplit().size()) {
+					gffDetailGene = lsExonInfos.get(0).getParent().getParentGffDetailGene();
+				}
 			}
 		}
-		return null;
+		for (GffGeneIsoInfo iso : mapIso2LsExon.keySet()) {
+			GffDetailGene gffGeneParent = iso.getParentGffDetailGene();
+			if (gffGeneParent.getNameSingle().equals(gffDetailGene.getNameSingle()) && gffGeneParent.getLsCodSplit().size() > gffDetailGene.getLsCodSplit().size()) {
+				gffDetailGene = gffGeneParent;
+			}
+		}
+		return gffDetailGene;
 	}
 	
 	/** 该iso跳过了这个exon，则里面装空的list

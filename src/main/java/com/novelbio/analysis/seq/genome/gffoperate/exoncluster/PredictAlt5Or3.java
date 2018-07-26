@@ -139,7 +139,7 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	
 	public Align getResultSite() {
 		List<Align> lsDifSite = getDifSite();
-		List<? extends Alignment> lsBG = getBGSite();
+		List<? extends Alignment> lsBG = getBGSiteSplice();
 		List<Alignment> lsResult = new ArrayList<>();
 		lsResult.addAll(lsBG);
 		lsResult.addAll(lsDifSite);

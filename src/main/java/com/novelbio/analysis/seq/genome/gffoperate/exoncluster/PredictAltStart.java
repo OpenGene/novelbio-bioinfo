@@ -104,6 +104,7 @@ public class PredictAltStart extends PredictAltStartEnd {
 		for (Double juncNum : mapJuncNum2Exon.keySet()) {
 			List<ExonInfo> lsExonInfos = mapJuncNum2Exon.get(juncNum);
 			align = new Align(exonCluster.getRefID(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
+			align.setCis5to3(exonCluster.isCis5to3());
 			break;
 		}
 		List<Align> lsAligns = new ArrayList<>();

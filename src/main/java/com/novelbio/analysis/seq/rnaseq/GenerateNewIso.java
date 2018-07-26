@@ -49,7 +49,6 @@ public class GenerateNewIso {
 	int maxExonLen = 1000;
 	int catchNum = 50000;
 
-	int minIntronLen = 25;
 	
 	TophatJunction tophatJunctionNew;
 
@@ -65,9 +64,7 @@ public class GenerateNewIso {
 		this.mapReads = mapReads;
 		this.isReconstructRI = isReconstructRI;
 	}
-	public void setMinIntronLen(int minIntronLen) {
-		this.minIntronLen = minIntronLen;
-	}
+
 	/** 至少有多少条reads支持的junction才会用于重建转录本，默认15 */
 	public void setNewIsoReadsNum(int newIsoReadsNum) {
 		this.newIsoReadsNum = newIsoReadsNum;
@@ -157,9 +154,7 @@ public class GenerateNewIso {
 		}
 		List<JunctionUnit> lsJunUnit = new ArrayList<>();
 		for (JunctionInfo junctionInfo : lsJunDu.getAllGffDetail()) {
-			for (JunctionUnit junctionUnit : junctionInfo.lsJunctionUnits) {
-				if (junctionUnit.getLength() < minIntronLen) continue;
-				
+			for (JunctionUnit junctionUnit : junctionInfo.lsJunctionUnits) {				
 				if (junctionUnit.getStartAbs() <= gffDetailGene.getStartAbs() && junctionUnit.getEndAbs() >= gffDetailGene.getEndAbs()
 						|| 
 						 junctionUnit.getLength() > 0.8 * gffDetailGene.getLength()) {
@@ -442,33 +437,28 @@ public class GenerateNewIso {
 		int exonNum = -100;
 		boolean search = true;
 		while (search) {
-			List<JunctionUnit> lsJunPrevAfter = getJunPrevAfter(beforExon, gffGeneIsoInfo.isCis5to3(), junThis);
-			if (lsJunPrevAfter.size() == 0) {
+			JunctionUnit juncPrevAfter = getJunPrevAfter(beforExon, gffGeneIsoInfo.isCis5to3(), junThis);
+			if (juncPrevAfter == null) {
 				exonNum = getExonNum(beforExon, false, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
 				break;
 			}
 			
-			for (JunctionUnit junPrevTmp : lsJunPrevAfter) {
-				if (junPrevTmp.getLength() < minIntronLen) continue;
-				
-				if (beforExon) {
-					if (!setJunInfo.contains(junThis.key(false))) {
-						lsJun.add(0, junThis);
-						setJunInfo.add(junThis.key(false));
-					}
-				} else {
-					if (!setJunInfo.contains(junThis.key(false))) {
-						lsJun.add(junThis);
-						setJunInfo.add(junThis.key(false));
-					}
+			if (beforExon) {
+				if (!setJunInfo.contains(junThis.key(false))) {
+					lsJun.add(0, junThis);
+					setJunInfo.add(junThis.key(false));
 				}
-				if (isEdgeInExon(beforExon,junThis, junPrevTmp, gffGeneIsoInfo)) {
-					exonNum = getExonNum(beforExon, true, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
-					search = false;
-					break;
+			} else {
+				if (!setJunInfo.contains(junThis.key(false))) {
+					lsJun.add(junThis);
+					setJunInfo.add(junThis.key(false));
 				}
 			}
-			junThis = lsJunPrevAfter.get(0);
+			if (isEdgeInExon(beforExon,junThis, juncPrevAfter, gffGeneIsoInfo)) {
+				exonNum = getExonNum(beforExon, true, gffGeneIsoInfo, junThis, lsJun, setJunInfo);
+				search = false;
+			}
+			junThis = juncPrevAfter;
 		}
 		return exonNum;
 	}
@@ -536,13 +526,8 @@ public class GenerateNewIso {
 		if (mapLoc2IsCovered.containsKey(keySite)) {
 			return mapLoc2IsCovered.get(keySite);
 		}
-		double[] regionFinal = null;
-		try {
-			regionFinal = mapReads.getRangeInfo(chrID, start, end, 0);
+		double[] regionFinal = mapReads.getRangeInfo(chrID, start, end, 0);
 
-		} catch (Exception e) {
-			regionFinal = mapReads.getRangeInfo(chrID, start, end, 0);
-		}
 		if (regionFinal == null) {
 			mapLoc2IsCovered.put(keySite, false);
 			return false;
@@ -578,30 +563,28 @@ public class GenerateNewIso {
 	 * @param junctionUnit
 	 * @return
 	 */
-	private List<JunctionUnit> getJunPrevAfter(boolean prev, boolean cis5to3, JunctionUnit junctionUnit) {
+	private JunctionUnit getJunPrevAfter(boolean prev, boolean cis5to3, JunctionUnit junctionUnit) {
 		try {
 			if ((prev && cis5to3) || (!prev && !cis5to3)) {
-				List<JunctionUnit> lsJunPrev = getJunPrev(junctionUnit);
-				if (lsJunPrev.size() > 0) {
-					JunctionUnit junPrev = lsJunPrev.get(0);
+				JunctionUnit junPrev = getJunPrev(junctionUnit, cis5to3);
+				if (junPrev != null) {
 					if (Math.abs(junPrev.getEndAbs() - junctionUnit.getStartAbs()) > longExon && !isContinuousExon(junPrev.getRefID(), junPrev.getEndAbs(), junctionUnit.getStartAbs())) {
-						return new ArrayList<>();
+						return null;
 					}
 				}
-				return lsJunPrev;
+				return junPrev;
 			} else {
-				List<JunctionUnit> lsJunAfter = getJunAfter(junctionUnit);
-				if (lsJunAfter.size() > 0) {
-					JunctionUnit junAfter = lsJunAfter.get(0);
+				JunctionUnit junAfter = getJunAfter(junctionUnit, cis5to3);
+				if (junAfter != null) {
 					if (Math.abs(junctionUnit.getEndAbs() - junAfter.getStartAbs()) > longExon && !isContinuousExon(junAfter.getRefID(), junctionUnit.getEndAbs(), junAfter.getStartAbs())) {
-						return new ArrayList<>();
+						return null;
 					}
 				}
-				return lsJunAfter;
+				return junAfter;
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			return new ArrayList<>();
+			return null;
 		}
 	}
 	
@@ -657,7 +640,7 @@ public class GenerateNewIso {
 	 */
 	private boolean isEdgeInExon(boolean beforExon, JunctionUnit junctionUnit, GffGeneIsoInfo gffGeneIsoInfo) {
 		int edgeLoc = 0;
-		int exonLessNum = 10;//exon最短10bp
+		int exonLessNum = 10;//exon最短10bp。一些exon可能只有4-5bp的差別，譬如 100-200 和100-202。这种就不考虑了
 		if (beforExon) {
 			if (gffGeneIsoInfo.isCis5to3()) {
 				edgeLoc = junctionUnit.getStartAbs();
@@ -678,13 +661,31 @@ public class GenerateNewIso {
 	}
 	
 	/** 选择前一个Junction Site */
-	private List<JunctionUnit> getJunPrev(JunctionUnit junctionUnit) {
+	private JunctionUnit getJunPrev(JunctionUnit junctionUnit, final boolean isCis5To3) {
 		List<JunctionUnit> lsJunctionUnits = junctionUnit.getLsJunBeforeAbs(tophatJunctionNew);
+		if (lsJunctionUnits.size() > 1) {
+			Collections.sort(lsJunctionUnits, new Comparator<JunctionUnit>() {
+				public int compare(JunctionUnit o1, JunctionUnit o2) {
+					Integer o1Start = o1.getStartAbs(), o1End = o1.getEndAbs();
+					Integer o2Start = o2.getStartAbs(), o2End = o2.getEndAbs();					
+					if (isCis5To3) {
+						return -o1End.compareTo(o2End);
+					} else {
+						return o1Start.compareTo(o2Start);
+					}
+				}
+			});
+		}
+		if (!lsJunctionUnits.isEmpty()) {
+			return lsJunctionUnits.get(0);
+		}
+		
 		//TODO 如果前面没有jun，是否要到tophatJunctionNew中去查找Jun
 		int start = getGeneStart(200);
 		if (start > junctionUnit.getStartAbs()) {
 			start = junctionUnit.getStartAbs() - maxExonLen;
 		}
+		
 		if (lsJunctionUnits.size() == 0 && tophatJunctionNew != null) {
 			ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>> lsCodDuAbs = tophatJunctionNew.searchLocation(
 					junctionUnit.getRefID(), start, junctionUnit.getStartAbs());			
@@ -705,8 +706,9 @@ public class GenerateNewIso {
 			if (junctionUnitPrev != null && (isJunInGene(junctionUnitPrev) || !isJunctionInAnotherGene(gffDetailGene, junctionUnitPrev))) {
 				lsJunctionUnits.add(junctionUnitPrev);
 			}
+			return junctionUnitPrev;
 		}
-		return lsJunctionUnits;
+		return null;
 	}
 	
 	/** 获得该基因的起点，不考虑方向
@@ -731,8 +733,26 @@ public class GenerateNewIso {
 	}
 	
 	/** 选择后一个Junction Site，返回只有一个元素的list */
-	private List<JunctionUnit> getJunAfter(JunctionUnit junctionUnit) {
+	private JunctionUnit getJunAfter(JunctionUnit junctionUnit, boolean isCis5To3) {
 		List<JunctionUnit> lsJunctionUnits= junctionUnit.getLsJunAfterAbs(tophatJunctionNew);
+		
+		if (lsJunctionUnits.size() > 1) {
+			Collections.sort(lsJunctionUnits, new Comparator<JunctionUnit>() {
+				public int compare(JunctionUnit o1, JunctionUnit o2) {
+					Integer o1Start = o1.getStartAbs(), o1End = o1.getEndAbs();
+					Integer o2Start = o2.getStartAbs(), o2End = o2.getEndAbs();					
+					if (isCis5To3) {
+						return o1Start.compareTo(o2Start);
+					} else {
+						return -o1End.compareTo(o2End);
+					}
+				}
+			});
+		}
+		if (!lsJunctionUnits.isEmpty()) {
+			return lsJunctionUnits.get(0);
+		}
+		
 		//TODO 如果后面没有jun，是否要到tophatJunctionNew中去查找Jun
 		int end = getGeneEnd(200);
 		if (end < junctionUnit.getEndAbs()) {
@@ -757,10 +777,10 @@ public class GenerateNewIso {
 				}
 			}
 			if (junctionUnitNext != null) {
-				lsJunctionUnits.add(junctionUnitNext);
+				return junctionUnitNext;
 			}
 		}
-		return lsJunctionUnits;
+		return null;
 	}
 	
 	/** 获得该基因的起点，不考虑方向

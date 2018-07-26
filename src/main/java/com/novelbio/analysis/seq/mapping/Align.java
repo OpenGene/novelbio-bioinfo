@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.novelbio.analysis.seq.chipseq.ExceptionNBCChIPAlignError;
 import com.novelbio.base.ExceptionNbcBean;
+import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -182,23 +183,38 @@ public class Align implements Alignment, Cloneable {
 		return chrID + ":" + getStartCis() + "-" + getEndCis();
 	}
 	
-	/** 不考虑方向的合并，将overlap的align合并为一个align */
+	/** 考虑方向的合并，将overlap的align合并为一个align */
 	public static List<Align> mergeLsAlign(List<Align> lsAlign) {
 		if (lsAlign.isEmpty()) {
 			return new ArrayList<Align>();
 		}
 		
+		Boolean isCis = lsAlign.get(0).isCis5to3();
 		List<double[]> lsDouble = new ArrayList<double[]>();
 		for (Align align : lsAlign) {
+			if (!isEqual(isCis, align.isCis5to3())) {
+				throw new ExceptionNbcParamError("input lsAlign have inconsistent strand");
+			}
 			lsDouble.add(new double[]{align.getStartAbs(), align.getEndAbs()});
 		}
 		List<double[]> lsMerge = MathComput.combInterval(lsDouble, 0);
 		List<Align> lsResult = new ArrayList<Align>();
 		for (double[] ds : lsMerge) {
 			Align align = new Align(lsAlign.get(0).getRefID(), (int)ds[0], (int)ds[1]);
+			align.setCis5to3(isCis);
 			lsResult.add(align);
 		}
 		return lsAlign;
+	}
+	
+	private static boolean isEqual(Boolean isCis1, Boolean isCis2) {
+		if (isCis1 == null && isCis2 == null) {
+			return true;
+		}
+		if (isCis1 == null || isCis2 == null) {
+			return false;
+		}
+		return isCis1.equals(isCis2);
 	}
 	
 	/** 判断两个align是否overlap 不考虑头尾相连的情况，意思不是 >= 和 <= */

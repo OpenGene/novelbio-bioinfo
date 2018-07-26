@@ -51,7 +51,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 		Map<String, Double> mapResult = new HashMap<>();
 		HashSet<String> setLocation = new HashSet<String>();
 		setLocation.addAll(getSkipExonLoc_From_IsoHaveExon());
-		setLocation.addAll(getSkipExonLoc_From_IsoWithoutExon(gffDetailGene));
+		setLocation.addAll(getSkipExonLoc_From_IsoWithoutExon());
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
@@ -66,7 +66,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 		GffDetailGene gffDetailGene = exonCluster.getParentGene();
 		HashSet<String> setLocation = new HashSet<String>();
 		setLocation.addAll(getSkipExonLoc_From_IsoHaveExon());
-		setLocation.addAll(getSkipExonLoc_From_IsoWithoutExon(gffDetailGene));
+		setLocation.addAll(getSkipExonLoc_From_IsoWithoutExon());
 		int numAll = 0;
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
@@ -101,7 +101,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 	
 	/**查找不含该exon的转录本， 
 	 * 获得跨过该外显子的坐标 */
-	private HashSet<String> getSkipExonLoc_From_IsoWithoutExon(GffDetailGene gffDetailGene) {
+	private HashSet<String> getSkipExonLoc_From_IsoWithoutExon() {
 		HashSet<String> setLocation = new HashSet<String>();
 		
 		Map<GffGeneIsoInfo, Integer> hashTmp = exonCluster.getMapIso2ExonIndexSkipTheCluster();
@@ -141,7 +141,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 	}
 
 	@Override
-	public List<? extends Alignment> getBGSite() {
+	public List<? extends Alignment> getBGSiteSplice() {
 		return exonCluster.getParentGene().getLongestSplitMrna().getLsElement();
 	}
 	

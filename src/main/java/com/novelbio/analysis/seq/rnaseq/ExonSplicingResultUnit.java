@@ -241,6 +241,8 @@ public class ExonSplicingResultUnit {
 	public String[] toStringArray_ASD() {
 
 		List<String> lsResult = getLsArrayBasic();
+		lsResult.add(psiCond1+"");
+		lsResult.add(psiCond2+"");
 		lsResult.add((psiCond1-psiCond2)+"");
 
 		if (isArithmeticPvalue) {
@@ -253,21 +255,21 @@ public class ExonSplicingResultUnit {
 		} else {
 			lsResult.add(fdrGeometric+"");
 		}
-		
 		lsResult.add(splicingType.toString());
+		lsResult.add(combineAligns(lsAlignFlank));
 		return lsResult.toArray(new String[0]);
 	}
 	
 	/** 获得标题,对外软件 */
 	public static String[] getTitle_ASD(String condition1, String condition2) {
 		List<String> lsTitle = getLsTitleBasic(condition1, condition2);
-		
+		lsTitle.add("PSI-" + condition1);
+		lsTitle.add("PSI-" + condition2);
 		lsTitle.add("delta_PSI");
-
 		lsTitle.add(TitleFormatNBC.Pvalue.toString());
 		lsTitle.add(TitleFormatNBC.FDR.toString());
-		
 		lsTitle.add(SplicingType);
+		lsTitle.add(AlignsFlank);
 
 		return lsTitle.toArray(new String[0]);
 	}
