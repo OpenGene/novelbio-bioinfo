@@ -208,7 +208,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void addMapCondition2MapReads(String condition, String group, MapReadsAbs mapReads) {
 		SpliceType2Value spliceType2Value = getAndCreatSpliceType2Value(condition);
 		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
-			List<? extends Alignment> lsSiteInfoBG = spliceTypePredict.getBGSiteSplice();
+			List<Align> lsSiteInfoBG = spliceTypePredict.getBGSite();
 			List<Align> lsSiteInfo = spliceTypePredict.getDifSite();
 			
 			String refId = exonCluster.getRefID();

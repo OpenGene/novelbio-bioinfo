@@ -204,7 +204,7 @@ public class Align implements Alignment, Cloneable {
 			align.setCis5to3(isCis);
 			lsResult.add(align);
 		}
-		return lsAlign;
+		return lsResult;
 	}
 	
 	private static boolean isEqual(Boolean isCis1, Boolean isCis2) {
