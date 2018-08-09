@@ -43,13 +43,13 @@ public class TestGffGeneIsoInfo {
 		gffGeneIsoInfo.extendUtr(gffGeneIsoInfoExtend1);
 		Assert.assertEquals(gffGeneIsoInfoExtendExpect1, gffGeneIsoInfo);
 		
-		List<ExonInfo> lsExons = gffGeneIsoInfo.searchLocationDu(1500, 7500).getCoveredElement();
+		List<ExonInfo> lsExons = gffGeneIsoInfo.searchLocationDu(1500, 7500).getAllGffDetail();
 		ExonInfo exonInfo1 = new ExonInfo(true, 3000, 4000); exonInfo1.setParentListAbs(gffGeneIsoInfo);
 		ExonInfo exonInfo2 = new ExonInfo(true, 5000, 6000); exonInfo2.setParentListAbs(gffGeneIsoInfo);
 		List<ExonInfo> lsExonsExp = Lists.newArrayList(exonInfo1, exonInfo2);
 		Assert.assertEquals(lsExonsExp, lsExons);
 		
-		lsExons = gffGeneIsoInfo.searchLocationDu(3000, 6000).getCoveredElement();
+		lsExons = gffGeneIsoInfo.searchLocationDu(3000, 6000).getAllGffDetail();
 		exonInfo1 = new ExonInfo(true, 3000, 4000); exonInfo1.setParentListAbs(gffGeneIsoInfo);
 		exonInfo2 = new ExonInfo(true, 5000, 6000); exonInfo2.setParentListAbs(gffGeneIsoInfo);
 		lsExonsExp = Lists.newArrayList(exonInfo1, exonInfo2);

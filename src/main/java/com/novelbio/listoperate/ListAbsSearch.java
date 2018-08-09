@@ -83,7 +83,7 @@ public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodA
 	/**
 	 * 生成一个全新的GffCod类
 	 * @param listName
-	 * @param Coordinate
+	 * @param coord
 	 * @return
 	 */
 	protected abstract K creatGffCodDu(T gffCod1, T gffCod2);

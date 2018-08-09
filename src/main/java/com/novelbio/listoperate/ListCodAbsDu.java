@@ -131,7 +131,8 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 		return lsgffDetailsMid;
 	}
 	/**
-	 * 返回与这个区段有交集的gffDetail信息
+	 * 返回与这个区段有交集的gffDetail信息<br>
+	 * <b>考虑</b> element 与两个坐标点 overlap的情况
 	 * @return
 	 * 空的则返回一个size为0的list
 	 */
@@ -156,9 +157,9 @@ public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 		return lsResult;
 	}
 	/**
-	 * 返回被这两个坐标点完全覆盖的gffDetail信息，并按照cis5to3排序
-	 * 不考虑overlap的情况
-	 * @return
+	 * 返回被这两个坐标点完全覆盖的gffDetail信息，并按照cis5to3排序<br>
+	 * <b>不考虑</b> element 与两个坐标点 overlap的情况
+	 * @return 
 	 * 空的则返回一个size为0的list
 	 */
 	public List<T> getCoveredElement() {

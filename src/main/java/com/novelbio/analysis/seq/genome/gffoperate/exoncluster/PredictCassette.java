@@ -452,7 +452,7 @@ public class PredictCassette extends SpliceTypePredict {
 		lsAligns.add(alignOld);
 		for (int i = 1; i < lsAlignTmp.size(); i++) {
 			Align align = lsAlignTmp.get(i);
-			if (Align.isOverlap(align, alignOld)) {
+			if (Alignment.isOverlap(align, alignOld)) {
 				continue;
 			} else {
 				lsAligns.add(align);

@@ -792,9 +792,10 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 					}
 					isoOld.addAll(iso.getLsElement());
 					if (isoOld.isCis5to3()) {
-						isoOld.setATGUAGauto(Math.min(iso.getATGsite(), isoOld.getATGsite()), Math.max(iso.getUAGsite(), isoOld.getUAGsite()));
+						
+						isoOld.setATGUAGauto(getMax(iso.getATGsite(), isoOld.getATGsite()), getMax(iso.getUAGsite(), isoOld.getUAGsite()));
 					} else {
-						isoOld.setATGUAGauto(Math.max(iso.getATGsite(), isoOld.getATGsite()), Math.min(iso.getUAGsite(), isoOld.getUAGsite()));
+						isoOld.setATGUAGauto(getMin(iso.getATGsite(), isoOld.getATGsite()), getMin(iso.getUAGsite(), isoOld.getUAGsite()));
 					}
 					isoOld.sort();
 				}
@@ -831,6 +832,23 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				}
 			}
 			LOCList.add(gffDetailGene);
+		}
+	}
+	
+	private int getMax(int site1, int site2) {
+		return Math.max(site1, site2);
+	}
+	private int getMin(int site1, int site2) {
+		if (site1 < 0 && site2 < 0) {
+			//说明没有终止位点
+			return Math.min(site1, site2);
+		}
+		if (site1 < 0) {
+			return site2;
+		} else if (site2 < 0) {
+			return site1;
+		} else {
+			return Math.min(site1, site2);
 		}
 	}
 

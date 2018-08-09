@@ -217,14 +217,6 @@ public class Align implements Alignment, Cloneable {
 		return isCis1.equals(isCis2);
 	}
 	
-	/** 判断两个align是否overlap 不考虑头尾相连的情况，意思不是 >= 和 <= */
-	public static boolean isOverlap(Align align1, Align align2) {
-		if (align1.getStartAbs() < align2.getEndAbs() && align1.getEndAbs() > align2.getStartAbs()) {
-			return true;
-		}
-		return false;
-	}
-	
 	/**
 	 * 从一个list中获取其最前的坐标和最后的坐标，组成一个align
 	 * @return
