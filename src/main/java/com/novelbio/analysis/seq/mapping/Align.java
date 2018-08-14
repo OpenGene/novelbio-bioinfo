@@ -6,6 +6,7 @@ import java.util.List;
 import com.novelbio.analysis.seq.chipseq.ExceptionNBCChIPAlignError;
 import com.novelbio.base.ExceptionNbcBean;
 import com.novelbio.base.ExceptionNbcParamError;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
@@ -110,6 +111,37 @@ public class Align implements Alignment, Cloneable {
 	public void setEndAbs(int end) {
 		this.end = end;
 	}
+	public void setStartCis(int start) {
+		if (isCis()) {
+			this.start = start;
+		} else {
+			this.end = start;
+		}
+	}
+	public void setEndCis(int end) {
+		if (isCis()) {
+			this.end = end;
+		} else {
+			this.start = end;
+		}
+	}
+	public void startAddLenCis(int len) {
+		if (isCis()) {
+			start+=len;
+		} else {
+			end -= len;
+		}
+		validateCis();
+	}
+	public void endAddLenCis(int len) {
+		if (isCis()) {
+			end+=len;
+		} else {
+			start -= len;
+		}
+		validateCis();
+	}
+	
 	@Override
 	public int getStartAbs() {
 		return start;
@@ -124,7 +156,9 @@ public class Align implements Alignment, Cloneable {
 	public Boolean isCis5to3() {
 		return cis5to3;
 	}
-	
+	public boolean isCis() {
+		return cis5to3 == null || cis5to3;
+	}
 	@Override
 	public int getLength() {
 		return Math.abs(start - end) + 1;
@@ -163,10 +197,7 @@ public class Align implements Alignment, Cloneable {
 		
 		if (getClass() != obj.getClass()) return false;
 		Align otherAlign = (Align)obj;
-		if (chrID.equals(otherAlign.chrID) && start == otherAlign.start && end == otherAlign.end && cis5to3 == otherAlign.cis5to3) {
-			return true;
-		}
-		return false;
+		return StringOperate.isEqual(chrID, otherAlign.chrID) && start == otherAlign.start && end == otherAlign.end && cis5to3 == otherAlign.cis5to3;
 	}
 	
 	/**
@@ -174,6 +205,12 @@ public class Align implements Alignment, Cloneable {
 	 */
 	public String toStringNoStrand() {
 		return chrID + ":" + getStartAbs() + "-" + getEndAbs();
+	}
+	
+	private void validateCis() {
+		if (start > end) {
+			throw new RuntimeException();
+		}
 	}
 	
 	/**

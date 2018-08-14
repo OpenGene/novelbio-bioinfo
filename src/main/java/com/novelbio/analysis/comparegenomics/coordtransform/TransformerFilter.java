@@ -12,6 +12,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.listoperate.BinarySearch;
+import com.novelbio.listoperate.BsearchSite;
 import com.novelbio.listoperate.BsearchSiteDu;
 
 /**
@@ -174,10 +175,6 @@ class CoordPair implements Alignment {
 	Align alignAlt;
 	/** 0-100 */
 	double identity;
-	/** 从哪里开始，正数，相对位置，表示从alignRef.getStartAbs() 向后偏移的位置 */
-	int startbias;
-	/** 到哪里结束，正数，相对位置，表示从alignRef.getEndAbs() 向前偏移的位置 */
-	int endbias;
 	
 	List<IndelForRef> lsIndel = new ArrayList<>();
 	
@@ -208,27 +205,37 @@ class CoordPair implements Alignment {
 		}
 		IndelForRef indel = null;
 		if (isNeedNewIdel(num)) {
-			indel = new IndelForRef();
+			indel = new IndelForRef(alignAlt.isCis5to3());
 			indel.setInsertion(num>0);
 			int numAbs = Math.abs(num);
 			if (num > 0) {
-				indel.setStartEndLoc(getLastSiteNum()+numAbs, getLastSiteNum()+numAbs);
+				indel.setStartEndLoc(getLastSiteRef()+numAbs, getLastSiteRef()+numAbs);
+				if (alignAlt.isCis5to3()) {
+					indel.setAltStartCis(getLastSiteAlt() + numAbs -1);
+				} else {
+					indel.setAltStartCis(getLastSiteAlt() - numAbs +1);
+				}
 			} else {
-				indel.setStartEndLoc(getLastSiteNum()+numAbs-1, getLastSiteNum()+numAbs);
+				indel.setStartEndLoc(getLastSiteRef()+numAbs-1, getLastSiteRef()+numAbs);
+				if (alignAlt.isCis5to3()) {
+					indel.setAltStartCis(getLastSiteAlt() + numAbs);
+				} else {
+					indel.setAltStartCis(getLastSiteAlt() - numAbs);
+				}
 				indel.addDelLen1();
 			}
 			lsIndel.add(indel);
 		} else {
 			indel = lsIndel.get(lsIndel.size()-1);
 			if (num > 0) {
-				indel.setEndAbs(indel.getEndAbs()+1);
+				indel.endAddLenCis(1);
 			} else {
 				indel.addDelLen1();
 			}
 		}
 	}
 	
-	private int getLastSiteNum() {
+	private int getLastSiteRef() {
 		if (lsIndel.isEmpty()) {
 			return alignRef.getStartAbs()-1;
 		}
@@ -241,6 +248,21 @@ class CoordPair implements Alignment {
 		 * 因此deletion的计算位点应该向前移一位
 		 */
 		return indelLast.isRefInsertion() ? indelLast.getEndAbs() : indelLast.getEndAbs()-1;
+	}
+	
+	private int getLastSiteAlt() {
+		if (lsIndel.isEmpty()) {
+			return alignAlt.isCis5to3() ? alignAlt.getStartCis()-1 : alignAlt.getStartCis() + 1;
+		}
+		IndelForRef indelLast = lsIndel.get(lsIndel.size()-1);
+		/**
+		 * deletion
+		 * start是缺失的前一个位点(a)，end是缺失的后一个位点(g)，都从1开始计算
+		 * 1    ca- - - gcat
+		 * 1    ca tgc gcat
+		 * 因此deletion的计算位点应该向前移一位
+		 */
+		return indelLast.isRefInsertion() ? indelLast.getEndCisAltBefore1() : indelLast.getEndCisAlt();
 	}
 	
 	private boolean isNeedNewIdel(int num) {
@@ -269,20 +291,133 @@ class CoordPair implements Alignment {
 		return identity;
 	}
 	public void setStart(int start) {
-		if (Alignment.isSiteInAlign(alignRef, start)) {
+		if (!Alignment.isSiteInAlign(alignRef, start)) {
 			throw new RuntimeException();
 		}
-		startbias = start - alignRef.getStartAbs();
+		if (lsIndel.isEmpty() || lsIndel.get(0).getStartAbs() > start) {
+			alignRef.setStartAbs(start);
+			alignAlt.startAddLenCis(start - alignRef.getStartAbs());
+			return;
+		}
+		
+		List<IndelForRef> lsIndelForRefsNew = new ArrayList<>();
+		boolean isSet = false;
+		IndelForRef indelForRefLast = null;
+		for (IndelForRef indelForRef : lsIndel) {
+			if (indelForRef.getEndAbs() < start) {
+				indelForRefLast = indelForRef;
+				continue;
+			}
+			if (!isSet && indelForRef.getStartAbs() > start) {
+				isSet = true;
+				alignRef.setStartAbs(start);
+				int length = start - indelForRefLast.getEndAbs();
+				alignAlt.setStartCis(indelForRefLast.getEndCisAlt());
+				if (indelForRefLast.isRefInsertion()) {
+					alignAlt.startAddLenCis(length-1);
+				} else {
+					alignAlt.startAddLenCis(length+1);
+				}
+			}
+			
+			if (Alignment.isSiteInAlign(indelForRef, start)) {
+				isSet = true;
+				if (indelForRef.isRefInsertion()) {
+					// ref atc ctga atc
+					// alt atc  ----  atc
+					start = indelForRef.getEndAbs()+1;
+					alignRef.setStartAbs(start);
+					alignAlt.setStartCis(indelForRef.getEndCisAlt());
+					continue;
+				} else {
+					alignRef.setStartAbs(start);
+					// ref at[c]  ----  atc
+					// alt atc ctga atc
+					if (start == indelForRef.getStartAbs()) {
+						alignAlt.setStartCis(indelForRef.getStartCisAlt());
+						alignAlt.startAddLenCis(-1);
+					} else {
+						// ref atc  ----  [a]tc
+						// alt atc ctga atc
+						alignAlt.setStartCis(indelForRef.getEndCisAlt());
+						alignAlt.endAddLenCis(1);
+						continue;
+					}
+				}
+			}
+			lsIndelForRefsNew.add(indelForRef);
+		}
+		lsIndel = lsIndelForRefsNew;
 	}
+	
 	public void setEnd(int end) {
-		if (Alignment.isSiteInAlign(alignRef, end)) {
+		if (!Alignment.isSiteInAlign(alignRef, end)) {
 			throw new RuntimeException();
 		}
-		endbias = alignRef.getEndAbs() - end;
+		if (lsIndel.isEmpty() || lsIndel.get(lsIndel.size()-1).getEndAbs() < end) {
+			alignRef.setEndAbs(end);
+			alignAlt.endAddLenCis(alignRef.getEndAbs()-end);
+			return;
+		}
+		
+		boolean isSet = false;
+		IndelForRef indelForRefLast = null;
+		List<IndelForRef> lsIndelForRefsNew = new ArrayList<>();
+		for (IndelForRef indelForRef : lsIndel) {
+			
+			if (indelForRef.getStartAbs() > end) {
+				if (!isSet) {
+					alignRef.setEndAbs(end);
+					int length = end -indelForRefLast.getEndAbs() ;
+					alignAlt.setEndCis(indelForRefLast.getEndCisAlt());
+					if (indelForRefLast.isRefInsertion()) {
+						// ref atc ctga atc
+						// alt atc  ----  atc
+						alignAlt.endAddLenCis(length-1);
+					} else {
+						// ref atc  ----  atc
+						// alt atc ctga atc
+						alignAlt.endAddLenCis(length+1);
+					}
+				}
+				
+				break;
+			}
+			
+			if (Alignment.isSiteInAlign(indelForRef, end)) {
+				isSet = true;
+				if (indelForRef.isRefInsertion()) {
+					// ref atc ctga atc
+					// alt atc  ----  atc
+					end = indelForRef.getStartAbs()-1;
+					alignRef.setEndAbs(end);
+					alignAlt.setEndCis(indelForRef.getStartCisAlt());
+					break;
+				} else {
+					alignRef.setEndAbs(end);
+					// ref at[c]  ----  atc
+					// alt atc ctga atc
+					if (end == indelForRef.getStartAbs()) {
+						alignAlt.setEndCis(indelForRef.getStartCisAlt());
+						alignAlt.startAddLenCis(-1);
+						break;
+					} else {
+						// ref atc  ----  [a]tc
+						// alt atc ctga atc
+						alignAlt.setEndCis(indelForRef.getEndCisAlt());
+						alignAlt.endAddLenCis(1);
+					}
+				}
+			}
+			indelForRefLast = indelForRef;
+			lsIndelForRefsNew.add(indelForRef);
+		}
+		lsIndel = lsIndelForRefsNew;
 	}
-	/** 本比较实际的长度，考虑了startbias和endbias */
+
+	/** 本比较实际的长度 */
 	public int getLength() {
-		return Math.max(alignRef.getLength(), alignAlt.getLength()) - startbias - endbias + 1 ;
+		return Math.max(alignRef.getLength(), alignAlt.getLength());
 	}
 	
 	public String getChrRef() {
@@ -308,24 +443,131 @@ class CoordPair implements Alignment {
 		double coeff = isSameChr()? 1 : 0.8;
 		return identity/100*getLength()*coeff;
 	}
+
+	
+	public VarInfo searchVarInfo(int start, int end) {
+		validateSiteInCoord(start);
+		validateSiteInCoord(end);
+		BinarySearch<IndelForRef> binarySearch = new BinarySearch<>(lsIndel, true);
+		VarInfo varInfo = new VarInfo();
+		varInfo.setCis5to3(this.getAlignAlt().isCis5to3());
+		varInfo.setChrID(this.getChrAlt());
+		//单个位点
+		if (start == end) {
+			BsearchSite<IndelForRef> bsite = binarySearch.searchLocation(start);
+			int[] startAlt2Bias = getAltSiteStart(bsite, start);
+			if (startAlt2Bias[1] > 0) {
+				return null;
+			}
+			varInfo.setStartCis(startAlt2Bias[0]);
+			varInfo.setEndCis(startAlt2Bias[0]);
+			return varInfo;
+		}
+		
+		BsearchSiteDu<IndelForRef> bsiteDu = binarySearch.searchLocationDu(start, end);
+		int[] startAlt2Bias = getAltSiteStart(bsiteDu.getSiteLeft(), start);
+		int[] endAlt2Bias = getAltSiteEnd(bsiteDu.getSiteRight(), end);
+		//区段位于ref相对于alt多的区段
+		if (this.getAlignAlt().isCis() && endAlt2Bias[0] < startAlt2Bias[0]
+				|| !this.getAlignAlt().isCis() && startAlt2Bias[0] < endAlt2Bias[0]
+				) {
+			return null;
+		}
+		varInfo.setStartCis(startAlt2Bias[0]);
+		varInfo.setEndCis(endAlt2Bias[0]);
+		varInfo.setStartBias(startAlt2Bias[1]);
+		varInfo.setEndBias(endAlt2Bias[1]);
+		
+		List<IndelForRef> lsIndels =bsiteDu.getCoveredElement();
+		if (lsIndels.isEmpty()) {
+			return varInfo;
+		}
+		IndelForRef indelStart = lsIndels.get(0);
+		if (start == indelStart.getStartAbs() && indelStart.isRefInsertion()) {
+			lsIndels.remove(0);
+		}
+		if (lsIndels.isEmpty()) {
+			return varInfo;
+		}
+		IndelForRef indelEnd = lsIndels.get(lsIndels.size()-1);
+		if (end == indelEnd.getEndAbs() && indelEnd.isRefInsertion()) {
+			lsIndels.remove(lsIndels.size()-1);
+		}
+		if (!lsIndels.isEmpty()) {
+			varInfo.setLsIndelForRefs(lsIndels);
+		}
+		return varInfo;
+	}
+	
+	private void validateSiteInCoord(int site) {
+		if (!Alignment.isSiteInAlign(this, site)) {
+			throw new ExceptionNBCCoordTransformer("refsite " + site + " is not in " + this.toString());
+		}
+	}
+	/**
+	 * 获取refsite起点所对应的位置
+	 * @param refSite
+	 * @return 0：向右偏移之后的起点，1：偏移的bp 
+	 */
+	public int[] getAltSiteStart(BsearchSite<IndelForRef> bsite, int refSite) {
+		return getAltSite(bsite, refSite, true);
+	}
+	/**
+	 * 获取refsite终点所对应的位置
+	 * @param refSite
+	 * @return 0：向左偏移之后的起点，1：偏移的bp 
+	 */
+	public int[] getAltSiteEnd(BsearchSite<IndelForRef> bsite, int refSite) {
+		return getAltSite(bsite, refSite, false);
+	}
+	/**
+	 * 获取refsite起点所对应的位置
+	 * @param refSite
+	 * @param isStart 是起点还是终点
+	 * @return 0：偏移之后的起点，1：偏移的bp
+	 * 注意如果是 isStart 则向右偏移， isEnd向左偏移 
+	 */
+	private int[] getAltSite(BsearchSite<IndelForRef> bsite, int refSite, boolean isStart) {
+		int altSite = 0, bias = 0;
+		if (!bsite.isInsideLoc()) {
+			IndelForRef IndelBefore = bsite.getAlignUp();
+			if (IndelBefore == null) {
+				int length = refSite - alignRef.getStartAbs();
+				altSite = alignAlt.isCis() ? alignAlt.getStartAbs()+length : alignAlt.getEndAbs() - length;
+			} else {
+				int length = IndelBefore.isRefInsertion() ? refSite - IndelBefore.getEndAbs()-1: refSite - IndelBefore.getEndAbs()+1;
+				altSite = alignAlt.isCis() ? IndelBefore.getEndCisAlt() + length : IndelBefore.getEndCisAlt() - length;
+			}
+		} else {
+			IndelForRef indelThis = bsite.getAlignThis();
+			if (indelThis.isRefInsertion()) {
+				bias = isStart? indelThis.getEndAbs() - refSite + 1 : refSite - indelThis.getStartAbs() + 1;
+				altSite = isStart? indelThis.getEndCisAlt() : indelThis.getStartCisAlt();
+			} else {
+				altSite = indelThis.getStartAbs() == refSite ? indelThis.getStartCisAltBefore1() : indelThis.getEndCisAltAfter1();
+			}
+		}
+		return new int[] {altSite, bias};
+	}
 	
 	@Override
 	public int getStartAbs() {
-		return alignRef.getStartAbs()+startbias;
+		return alignRef.getStartAbs();
 	}
 	
 	@Override
 	public int getEndAbs() {
-		return alignRef.getEndAbs()-endbias;
+		return alignRef.getEndAbs();
 	}
 	
 	@Override
 	public int getStartCis() {
-		return alignRef.getStartAbs()+startbias;
+		return alignRef.getStartAbs();
 	}
+	
 	@Override
 	public int getEndCis() {
-		return alignRef.getEndAbs()-endbias;
+		return alignRef.getEndAbs();
 	}
 	
 	/**
@@ -376,9 +618,64 @@ class CoordPair implements Alignment {
  */
 class IndelForRef extends Align {
 	
+	int altStartCis;
+	boolean isAltCis;
+	
 	boolean isRefInsertion;
 	/** 仅当缺失时有效，表示缺失的长度 */
 	int deletionLen = 0;
+	
+	public IndelForRef(boolean isAltCis) {
+		this.isAltCis = isAltCis;
+	}
+	
+	/** 设置alt的起点 */
+	public void setAltStartCis(int altStartCis) {
+		this.altStartCis = altStartCis;
+	}
+
+	/** 跟 {@link #getStartAbs()} 一样
+	 *  * insertion
+	 * start是插入的具体起点(t)，end是插入的具体终点(c)，都从1开始计算
+	 * 1    ca tgc gcat : alt
+	 * 1    ca- - - gcat : ref
+	 * 
+	 * deletion
+	 * start是缺失的前一个位点(a)，end是缺失的后一个位点(g)，都从1开始计算
+	 * 1    ca- - - gcat : alt
+	 * 1    ca tgc gcat : ref
+	 * @return
+	 */
+	public int getStartCisAlt() {
+		return altStartCis;
+	}
+	public int getEndCisAlt() {
+		if (isAltCis) {
+			return isRefInsertion ? altStartCis+1 : altStartCis + deletionLen - 1;
+		} else {
+			return isRefInsertion ? altStartCis-1 : altStartCis - deletionLen + 1;
+		}
+	}
+	/** end往前退一位 */
+	public int getStartCisAltBefore1() {
+		int start = getStartCisAlt();
+		return isAltCis ? start-1 : start + 1;
+	}
+	/** end往前退一位 */
+	public int getStartCisAltAfter1() {
+		int start = getStartCisAlt();
+		return isAltCis ? start+1 : start-1;
+	}
+	/** end往前退一位 */
+	public int getEndCisAltBefore1() {
+		int end = getEndCisAlt();
+		return isAltCis ? end-1 : end + 1;
+	}
+	/** end往前退一位 */
+	public int getEndCisAltAfter1() {
+		int end = getEndCisAlt();
+		return isAltCis ? end+1 : end-1;
+	}
 	/** 是否ref相对于alt为插入 */
 	public void setInsertion(boolean isRefInsertion) {
 		this.isRefInsertion = isRefInsertion;
@@ -399,6 +696,19 @@ class IndelForRef extends Align {
 	 */
 	public boolean isRefInsertion() {
 		return isRefInsertion;
+	}
+	
+	public boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj == null) return false;
+		
+		if (getClass() != obj.getClass()) return false;
+		if (!super.equals(obj)) {
+			return false;
+		}
+		IndelForRef otherAlign = (IndelForRef)obj;
+		return altStartCis == otherAlign.altStartCis && deletionLen == otherAlign.deletionLen
+				&& isAltCis == otherAlign.isAltCis && isRefInsertion == otherAlign.isRefInsertion;
 	}
 	
 }

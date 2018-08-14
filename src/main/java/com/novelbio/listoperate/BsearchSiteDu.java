@@ -127,7 +127,7 @@ public class BsearchSiteDu<T extends Alignment>  {
 		return lsResult;
 	}
 	/**
-	 * 返回与这个区段有交集的gffDetail信息<br>
+	 * 返回被这两个坐标完全覆盖的element信息<br>
 	 * <b>不考虑</b> element 与两个坐标点 overlap的情况
 	 * @return
 	 * 空的则返回一个size为0的list
@@ -139,13 +139,13 @@ public class BsearchSiteDu<T extends Alignment>  {
 		int endAbs = Math.max(start, end);
 		Set<T> lsGffDetailAll = new LinkedHashSet<T>();
 		if (getSiteLeft() != null && getSiteLeft().isInsideLoc()) {
-			if (isBeCovered(startAbs, endAbs, getSiteLeft().getAlignUp())) {
+			if (isCoverElement(startAbs, endAbs, getSiteLeft().getAlignUp())) {
 				lsGffDetailAll.add(getSiteLeft().getAlignUp());
 			}
-			if (isBeCovered(startAbs, endAbs, getSiteLeft().getAlignThis())) {
+			if (isCoverElement(startAbs, endAbs, getSiteLeft().getAlignThis())) {
 				lsGffDetailAll.add(getSiteLeft().getAlignThis());
 			}
-			if (isBeCovered(startAbs, endAbs, getSiteLeft().getAlignDown())) {
+			if (isCoverElement(startAbs, endAbs, getSiteLeft().getAlignDown())) {
 				lsGffDetailAll.add(getSiteLeft().getAlignDown());
 			}
 		}
@@ -155,13 +155,13 @@ public class BsearchSiteDu<T extends Alignment>  {
 			}
 		}
 		if (getSiteRight() != null && getSiteRight().isInsideLoc()) {
-			if (isBeCovered(startAbs, endAbs, getSiteRight().getAlignUp())) {
+			if (isCoverElement(startAbs, endAbs, getSiteRight().getAlignUp())) {
 				lsGffDetailAll.add(getSiteRight().getAlignUp());
 			}
-			if (isBeCovered(startAbs, endAbs, getSiteRight().getAlignThis())) {
+			if (isCoverElement(startAbs, endAbs, getSiteRight().getAlignThis())) {
 				lsGffDetailAll.add(getSiteRight().getAlignThis());
 			}
-			if (isBeCovered(startAbs, endAbs, getSiteRight().getAlignDown())) {
+			if (isCoverElement(startAbs, endAbs, getSiteRight().getAlignDown())) {
 				lsGffDetailAll.add(getSiteRight().getAlignDown());
 			}
 		}
@@ -170,7 +170,8 @@ public class BsearchSiteDu<T extends Alignment>  {
 		return lsResult;
 	}
 	
-	private boolean isBeCovered(int startAbs, int endAbs, T element) {
+	/** 起点和终点完全覆盖element */
+	private boolean isCoverElement(int startAbs, int endAbs, T element) {
 		if (element == null) {
 			return false;
 		}
