@@ -17,6 +17,7 @@ import com.novelbio.analysis.seq.genome.mappingoperate.SiteSeqInfo;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 
@@ -149,6 +150,16 @@ public class SeqHash implements SeqHashInt {
 		}
 		return seqFasta;
 	}
+	
+	/** 总是返回正向序列 */
+	public SeqFasta getSeqCis(Alignment alignment) {
+		SeqFasta seqFasta = seqHashAbs.getSeqCis(alignment);
+		if (seqFasta != null) {
+			seqFasta.setTOLOWCASE(TOLOWCASE);
+		}
+		return seqFasta;
+	}
+	
 	@Override
 	public SeqFasta getSeq(StrandType strandType, String chrID, List<ExonInfo> lsInfo, boolean getIntron) {
 		return seqHashAbs.getSeq(strandType, chrID, lsInfo, getIntron);
@@ -166,6 +177,11 @@ public class SeqHash implements SeqHashInt {
 		return getSeq(chrID, start, end);
 	}
 	
+	/**
+	 * 根据align的方向，如果是反向，会将序列进行反向互补
+	 * @param align
+	 * @return
+	 */
 	public SeqFasta getSeq(Align align) {
 		if (align == null) {
 			return null;
@@ -174,6 +190,9 @@ public class SeqHash implements SeqHashInt {
 		SeqFasta seqFasta = seqHashAbs.getSeq(align.getRefID(), align.getStartAbs(), align.getEndAbs());
 		if (seqFasta != null) {
 			seqFasta.setTOLOWCASE(TOLOWCASE);
+		}
+		if (!align.isCis()) {
+			seqFasta = seqFasta.reservecom();
 		}
 		return seqFasta;
 	}

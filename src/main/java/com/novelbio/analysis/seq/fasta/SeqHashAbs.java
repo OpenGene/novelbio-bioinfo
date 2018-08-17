@@ -232,11 +232,11 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 		SeqFasta seqFasta = getSeq(chrID, startlocation, endlocation);
 		if (seqFasta == null) return null;
 		if (cisseq == null) cisseq = true;
-		
-		if (cisseq )
-			return seqFasta;
-		else
-			return seqFasta.reservecom();
+		return cisseq ? seqFasta : seqFasta.reservecom();
+	}
+	/** 总是返回正向序列 */
+	public SeqFasta getSeqCis(Alignment alignment) {
+		return getSeq(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 	}
 	/**
 	 * 给出peak位点，查找指定范围的sequence，根据CaseChange改变大小写

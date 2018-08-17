@@ -7,8 +7,7 @@ import org.junit.Test;
 import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.analysis.seq.snphgvs.SnpInfo;
-import com.novelbio.analysis.seq.snphgvs.SnpIsoHgvsc;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo.EnumHgvsVarType;
 import com.novelbio.database.domain.modgeneid.GeneType;
 
 public class TestSnpHgvsc {

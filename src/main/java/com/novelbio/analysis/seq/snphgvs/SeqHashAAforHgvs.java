@@ -11,6 +11,7 @@ import com.novelbio.analysis.seq.fasta.StrandType;
 import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingoperate.SiteSeqInfo;
+import com.novelbio.base.dataStructure.Alignment;
 
 /** 用于氨基酸重复的偏移工作
  * 譬如 GMCDARM-[M]-MCK
@@ -146,6 +147,10 @@ public class SeqHashAAforHgvs implements SeqHashInt {
 	public SeqFasta getSeq(String seqName) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	@Override
+	public SeqFasta getSeqCis(Alignment alignment) {
+		return getSeq(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 	}
 
 }

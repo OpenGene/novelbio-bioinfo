@@ -11,6 +11,7 @@ import com.novelbio.analysis.seq.fasta.StrandType;
 import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingoperate.SiteSeqInfo;
+import com.novelbio.base.dataStructure.Alignment;
 
 public class SeqHashStub implements SeqHashInt {
 	String seq;
@@ -81,11 +82,17 @@ public class SeqHashStub implements SeqHashInt {
 		}
 		return new SeqFasta(seq.substring((int)startlocation-1, (int)endlocation));
 	}
-
+	@Override
+	public SeqFasta getSeqCis(Alignment alignment) {
+		return new SeqFasta(seq.substring(alignment.getStartAbs()-1, alignment.getEndAbs()));
+	}
 	@Override
 	public SeqFasta getSeq(Boolean cis5to3, String chrID, long startlocation, long endlocation) {
-		// TODO Auto-generated method stub
-		return null;
+		SeqFasta seqFasta = getSeq(chrID, startlocation, endlocation);
+		if (cis5to3 != null && !cis5to3) {
+			seqFasta = seqFasta.reservecom();
+		}
+		return seqFasta;
 	}
 
 	@Override
@@ -132,7 +139,6 @@ public class SeqHashStub implements SeqHashInt {
 
 	@Override
 	public void setMaxExtractSeqLength(int maxSeqLen) {
-		// TODO Auto-generated method stub
 		
 	}
 
@@ -141,5 +147,6 @@ public class SeqHashStub implements SeqHashInt {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 
 }

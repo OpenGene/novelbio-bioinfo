@@ -264,7 +264,7 @@ public class TestCoordPair {
 	private static String getIndelInfo(IndelForRef indelForRef) {
 		String insert = indelForRef.isRefInsertion() ? "i" : "d";
 		String info = insert + ":" + indelForRef.getStartAbs() + "-" +indelForRef.getEndAbs();
-		int len = indelForRef.isRefInsertion() ? indelForRef.getLength() : indelForRef.getDelLen();
+		int len = indelForRef.isRefInsertion() ? indelForRef.getLength() : indelForRef.getAltLen();
 		info = info + ":" + len;
 
 		String info2 = "|"+ indelForRef.getStartCisAlt() + "-" +indelForRef.getEndCisAlt();

@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.genome.gffoperate.EnumMrnaLocate;
 import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo.EnumHgvsVarType;
 
 
 /**

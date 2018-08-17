@@ -8,7 +8,7 @@ import java.util.Set;
 
 import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
-import com.novelbio.base.StringOperate;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo.EnumHgvsVarType;
 
 import smile.math.Math;
 

@@ -6,9 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import com.novelbio.analysis.comparegenomics.coordtransform.VarInfo;
 import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
 import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
 import com.novelbio.analysis.seq.genome.mappingoperate.SiteSeqInfo;
+import com.novelbio.base.dataStructure.Alignment;
 
 public interface SeqHashInt extends Closeable {
 	/**
@@ -67,7 +69,7 @@ public interface SeqHashInt extends Closeable {
 	public ArrayList<String> getLsSeqName();
 	
 	/**
-	 * 
+	 * startlocation必须小于endlocation
 	 * @param chrID
 	 * @param startlocation 序列起点 从1开始
 	 * @param endlocation
@@ -133,5 +135,8 @@ public interface SeqHashInt extends Closeable {
 	
 	/** 给定名字获得序列 */
 	SeqFasta getSeq(String seqName);
+	
+	/** 总是返回正向序列 */
+	public SeqFasta getSeqCis(Alignment alignment);
 	
 }

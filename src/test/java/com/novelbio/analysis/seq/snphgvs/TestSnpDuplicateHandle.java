@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo.EnumHgvsVarType;
 
 public class TestSnpDuplicateHandle {
 	SeqHashStub seqHashStub = new SeqHashStub();

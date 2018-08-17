@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo.EnumHgvsVarType;
 import com.novelbio.base.StringOperate;
 
 /**
@@ -32,7 +33,6 @@ public class SnpIndelRealignHandle {
 	/** 插入或缺失在reference上的位置 */
 	Align alignRef;
 
-	
 	EnumHgvsVarType varType;
 	
 	/** 传入的坐标 */
@@ -191,9 +191,9 @@ public class SnpIndelRealignHandle {
 		return alignRight;
 	}
 	protected Align moveAlignToBefore() {
-		int moveEnd = startBefore-startLoc;
-		changeSeq(moveEnd);
-		realign = generateNewAlign(moveEnd);
+		int moveAfter = startBefore-startLoc;
+		changeSeq(moveAfter);
+		realign = generateNewAlign(moveAfter);
 		return realign;
 	}
 	/**

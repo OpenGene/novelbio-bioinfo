@@ -82,6 +82,7 @@ public class SnpInfo {
 		alignRefRaw = new Align(refId, position, positionEnd);
 		this.seqRefRaw = seqRef;
 		this.seqAltRaw = seqAlt;
+		copeInputVar();
 	}
 	/** 仅用于测试 */
 	@VisibleForTesting
@@ -220,7 +221,6 @@ public class SnpInfo {
 	 * 因此如果存在这种情况，先比尾部看有没有duplicate，再比头部<br>
 	 */
 	public void initial(SeqHashInt seqHash) {
-		copeInputVar();
 		realign(seqHash);
 		
 		mapIso2Hgvsc.clear();
@@ -379,26 +379,32 @@ public class SnpInfo {
 		}
 		return align.getEndAbs();
 	}
-	
-	protected String getSeqRef() {
+	public Align getAlign() {
+		return snpRealignHandler == null ? alignChange : snpRealignHandler.getRealign();
+	}
+	public String getSeqRef() {
 		return snpRealignHandler == null ? seqRef : snpRealignHandler.getSeqRef();
 	}
-	protected String getSeqAlt() {
+	public String getSeqAlt() {
 		return snpRealignHandler == null ? seqAlt : snpRealignHandler.getSeqAlt();
 	}
-	protected String getSeqHead() {
+	public String getSeqHead() {
 		return snpRealignHandler == null ? seqHead : snpRealignHandler.getSeqHead();
 	}
 	
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
 	public Align getAlignRefRight() {
 		return snpRealignHandler == null ? alignChange : snpRealignHandler.getAlignRight();
 	}
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
 	public String getSeqRefRight() {
 		return snpRealignHandler == null ? seqRef : snpRealignHandler.getSeqRefRight();
 	}
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
 	public String getSeqAltRight() {
 		return snpRealignHandler == null ? seqAlt : snpRealignHandler.getSeqAltRight();
 	}
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
 	public String getSeqHeadRight() {
 		return snpRealignHandler == null ? seqHead : snpRealignHandler.getSeqHeadRight();
 	}
@@ -446,20 +452,22 @@ public class SnpInfo {
 		}
 		return new int[]{startSameIndex, endSameIndex};
 	}
+	
+	/**
+	 * 具体解释看这个
+	 * http://www.hgvs.org/mutnomen/recs-DNA.html#inv
+	 */
+	public static enum EnumHgvsVarType {
+		Substitutions,
+		Deletions,
+		Duplications,
+		Insertions,
+		Indels,
+		//后面这几个不好界定，先缓缓
+		Inversions,
+		Conversions,
+		Translocations,
+	}
+
 }
 
-/**
- * 具体解释看这个
- * http://www.hgvs.org/mutnomen/recs-DNA.html#inv
- */
-enum EnumHgvsVarType {
-	Substitutions,
-	Deletions,
-	Duplications,
-	Insertions,
-	Indels,
-	//后面这几个不好界定，先缓缓
-	Inversions,
-	Conversions,
-	Translocations,
-}

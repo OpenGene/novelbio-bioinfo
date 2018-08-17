@@ -4,7 +4,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.novelbio.analysis.seq.fasta.SeqFasta;
+import com.novelbio.analysis.seq.fasta.SeqHash;
+import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo;
+import com.novelbio.analysis.seq.snphgvs.SnpInfo.EnumHgvsVarType;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.listoperate.BinarySearch;
 import com.novelbio.listoperate.BsearchSiteDu;
@@ -12,6 +17,65 @@ import com.novelbio.listoperate.BsearchSiteDu;
 public class CoordTransformer {
 	
 	Map<String, List<CoordPair>> mapChrId2LsCoorPairs;
+	
+	SeqHashInt seqHashRef;
+	SeqHashInt seqHashAlt;
+	
+	public static void main(String[] args) {
+		SnpInfo snpInfo = new SnpInfo("chr1", 1234, "A", "AAT");
+		System.out.println(snpInfo.getAlign());
+	}
+	
+	public void setMapChrId2LsCoorPairs(Map<String, List<CoordPair>> mapChrId2LsCoorPairs) {
+		this.mapChrId2LsCoorPairs = mapChrId2LsCoorPairs;
+	}
+	public void setSeqHashAlt(SeqHashInt seqHashAlt) {
+		this.seqHashAlt = seqHashAlt;
+	}
+	
+	public SnpInfo coordTransform(SnpInfo snpInfo) {
+		Align alignRef = new Align(snpInfo.getAlign());
+		VarInfo varInfo = coordTransform(alignRef);
+		if (varInfo == null) {
+			return null;
+		}
+		return transformSnpInfo(snpInfo, varInfo, seqHashAlt);
+	}
+	
+	//TODO 待测试
+	@VisibleForTesting
+	protected static SnpInfo transformSnpInfo(SnpInfo snpInfo, VarInfo varInfo, SeqHashInt seqHashAlt) {
+		String ref = snpInfo.getSeqRef();
+		String alt = snpInfo.getSeqAlt();
+
+		String refAlt, altAlt;
+		SnpInfo snpInfoAlt;
+		if (snpInfo.getVarType() == EnumHgvsVarType.Substitutions) {
+			refAlt = seqHashAlt.getSeqCis(varInfo).toString();
+			altAlt = varInfo.isCis() ? alt : SeqFasta.reverseComplement(alt);
+			snpInfoAlt = new SnpInfo(varInfo.getRefID(), varInfo.getStartAbs(), refAlt, altAlt);
+		} else if (snpInfo.getVarType() == EnumHgvsVarType.Insertions) {
+			int start = varInfo.isCis() ? varInfo.getStartAbs() : varInfo.getStartAbs()-1;
+			String snpHead = seqHashAlt.getSeq(varInfo.getRefID(), start, start).toString();
+			altAlt = varInfo.isCis() ? alt : SeqFasta.reverseComplement(alt);
+			snpInfoAlt = new SnpInfo(varInfo.getRefID(), start, snpHead, snpHead+altAlt);
+		} else if (snpInfo.getVarType() == EnumHgvsVarType.Deletions) {
+			int start = varInfo.getStartAbs();
+			String snpHead = seqHashAlt.getSeq(varInfo.getRefID(), start-1, start-1).toString();
+			altAlt = seqHashAlt.getSeqCis(varInfo).toString();
+			snpInfoAlt = new SnpInfo(varInfo.getRefID(),start-1, snpHead + altAlt, snpHead);
+		} else if (snpInfo.getVarType() == EnumHgvsVarType.Indels) {
+			refAlt = seqHashAlt.getSeqCis(varInfo).toString();
+			altAlt = varInfo.isCis() ? alt : SeqFasta.reverseComplement(alt);
+			if (varInfo.getStartBias() > 0 || varInfo.getEndBias() > 0) {
+				return null;
+			}
+			snpInfoAlt = new SnpInfo(varInfo.getRefID(), varInfo.getStartAbs(), refAlt, altAlt);
+		} else {
+			throw new ExceptionNBCCoordTransformer("unsupported type " + snpInfo.getVarType() + " " + snpInfo.toString());
+		}
+		return snpInfoAlt;
+	}
 	
 	/** 坐标转换 */
 	public VarInfo coordTransform(Align alignRef) {
