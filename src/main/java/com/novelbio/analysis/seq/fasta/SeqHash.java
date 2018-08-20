@@ -259,6 +259,11 @@ public class SeqHash implements SeqHashInt {
 		return samSequenceDictionary;
 	}
 	
+	/**
+	 * 读取fai文件，获取染色体长度，注意染色体名字没有修改为小写
+	 * @param seqFai
+	 * @return
+	 */
 	public static Map<String, Long> getMapChrId2Len(String seqFai) {
 		Map<String, Long> mapChrId2Len = new LinkedHashMap<>();
 		SAMSequenceDictionary samSequenceDictionary = getDictionaryFromFai(seqFai, " ");

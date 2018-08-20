@@ -3,6 +3,7 @@ package com.novelbio.analysis.comparegenomics.coordtransform;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -67,6 +68,14 @@ public class TestCoordTransformer {
 		snpInfo = new SnpInfo("1", 98, "atggtg", "catac");
 		snpInfoAlt = coordTransformer.coordTransform(snpInfo);
 		assertEquals("1	82	atggtg	catac", snpInfoAlt.toString());
+		
+		snpInfo = new SnpInfo("1", 98, "atggtg", "catac");
+		snpInfoAlt = coordTransformer.coordTransform(snpInfo);
+		assertEquals("1	82	atggtg	catac", snpInfoAlt.toString());
+		
+		snpInfo = new SnpInfo("1", 106, "atgc", "cag");
+		snpInfoAlt = coordTransformer.coordTransform(snpInfo);
+		assertEquals("1	90	atacagtttcactgaaatac	cag", snpInfoAlt.toString());
 	}
 	
 	
@@ -78,7 +87,7 @@ public class TestCoordTransformer {
 	 * 490   ......t...........aagtccaaaagcatgtagccccatcatagaa<br>
  	 *           ^^^^^^ ^^^^^^^^^^^             ^ ^               <br>
 	 * 98            atggtgaaa...........tg.....cgtgtagcttgcaaccttggaa<br>
-	 * 458   atggtgaaatacagtttcactgaaatacgtgtagcttgcaaccttggaa<br>
+	 * 458          atggtgaaatacagtttcactgaaatacgtgtagcttgcaaccttggaa<br>
 	 *                                           ^^^^^^^^^^^  ^^^^^                      <br>
 	 * 131           tgaaacccaatacaagaaatcccctctgtggcttgtcaggagctactat<br>
 	 * 409   tgaaacccaatacaagaa..........tggcttgtcaggagctactat<br>
@@ -126,6 +135,10 @@ public class TestCoordTransformer {
 		snpInfo = new SnpInfo("1", 98, "atggtg", "catac");
 		snpInfoAlt = coordTransformer.coordTransform(snpInfo);
 		assertEquals("1	453	caccat	gtatg", snpInfoAlt.toString());
+		
+		snpInfo = new SnpInfo("1", 106, "atgc", "cag");
+		snpInfoAlt = coordTransformer.coordTransform(snpInfo);
+		assertEquals("1	431	gtatttcagtgaaactgtat	ctg", snpInfoAlt.toString());
 	}
 	
 	
@@ -157,15 +170,51 @@ public class TestCoordTransformer {
 		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
 		varInfoExp = generateVarInfo("1:45024997-45024997", 6, 2, null, true);
 		assertEqualsVar(varInfoExp, varInfo);
-		
+		/**
+		 * 
+		 * 9285           gatatgaggaat-gatttatcatgtgaggtgaaagaagagcaccgggtg
+		 * 45024948   gatatgaggaatggttttatcatgtgaggtgaaagaagagcaccgtgtg
+	 	 *                                                         ^  ^                                                                       ^   
+		 * 9333       aacagttacacaagaagaaagtccaaaagcaggaagccccatcatagaa
+		 * 45024997   ......t...........aagtccaaaagcatgtagccccatcatagaa
+	 	 *           ^^^^^^ ^^^^^^^^^^^             ^ ^               
+		 * 9382            atggtgaaa...........tg.....cgtgtagcttgcaaccttggaa
+		 * 45025029    atggtgaaatacagtttcactgaaatacgtgtagcttgcaaccttggaa
+		 *                                           ^^^^^^^^^^^  ^^^^^                      
+		 * 9415           tgaaacccaatacaagaaatcccctctgtggcttgtcaggagctactat
+		 * 45025078   tgaaacccaatacaagaa..........tggcttgtcaggagctactat
+	  	 *                                                                  ^^^^^^^^^^                     
+		 */
 		alignRef = new Align("1:9347-9392");
 		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
-		varInfoExp = generateVarInfo("1:45024998-45025050", 4, 0, coord.getLsIndel().subList(3, 4), true);
+		varInfoExp = generateVarInfo("1:45024998-45025037", 4, 2, null, true);
+		assertEqualsVar(varInfoExp, varInfo);
+		
+		coord = getCoordPairCis();
+		coord.lsIndel = new ArrayList<>();
+		lsCoordPairs = Lists.newArrayList(coord);
+		alignRef = new Align("1:9283-9296");
+		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfoExp = generateVarInfo("1:45024948-45024959", 2, 0, null, true);
 		assertEqualsVar(varInfoExp, varInfo);
 	}
 	
 	@Test
 	public void testSearchTrans() {
+		/**
+		 * 9285           gatatgaggaat-gatttatcatgtgaggtgaaagaagagcaccgggtg<br>
+		 * 45025486   gatatgaggaatggttttatcatgtgaggtgaaagaagagcaccgtgtg<br>
+	 	 *                                                         ^  ^                                                                       ^   <br>
+		 * 9333       aacagttacacaagaagaaagtccaaaagcaggaagccccatcatagaa<br>
+		 * 45025437   ......t...........aagtccaaaagcatgtagccccatcatagaa<br>
+	 	 *           ^^^^^^ ^^^^^^^^^^^             ^ ^               <br>
+		 * 9382            atggtgaaa...........tg.....cgtgtagcttgcaaccttggaa<br>
+		 * 45025405    atggtgaaatacagtttcactgaaatacgtgtagcttgcaaccttggaa<br>
+		 *                                           ^^^^^^^^^^^  ^^^^^                      <br>
+		 * 9415           tgaaacccaatacaagaaatcccctctgtggcttgtcaggagctactat<br>
+		 * 45025356   tgaaacccaatacaagaa..........tggcttgtcaggagctactat<br>
+	  	 *                                                                  ^^^^^^^^^^                     <br>
+		 */
 		CoordPair coord = getCoordPairTrans();
 		List<CoordPair> lsCoordPairs = Lists.newArrayList(coord);
 		Align alignRef = new Align("1:9283-9296");
@@ -194,7 +243,15 @@ public class TestCoordTransformer {
 		
 		alignRef = new Align("1:9347-9392");
 		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
-		varInfoExp = generateVarInfo("1:45025436-45025384", 4, 0, coord.getLsIndel().subList(3, 4), false);
+		varInfoExp = generateVarInfo("1:45025436-45025397", 4, 2, null, false);
+		assertEqualsVar(varInfoExp, varInfo);
+		
+		coord = getCoordPairTrans();
+		coord.lsIndel = new ArrayList<>();
+		lsCoordPairs = Lists.newArrayList(coord);
+		alignRef = new Align("1:9283-9296");
+		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfoExp = generateVarInfo("1:45025486-45025475", 2, 0, null, false);
 		assertEqualsVar(varInfoExp, varInfo);
 	}
 	
@@ -233,7 +290,8 @@ public class TestCoordTransformer {
   	 *                                                                  ^^^^^^^^^^                     
 	 */
 	private CoordPair getCoordPairCis() {
-		CoordPair coordPair = new CoordPair("    9285     9834  | 45024948 45025486   |      550      539  |    85.49  | 1	1");
+		CoordPair coordPair = new CoordPair();
+		coordPair.initialMummer("    9285     9834  | 45024948 45025486   |      550      539  |    85.49  | 1	1");
 		coordPair.addIndelMummer(-13);
 		
 		coordPair.addIndelMummer(37);
@@ -242,32 +300,30 @@ public class TestCoordTransformer {
 		coordPair.addIndelMummer(2);
 		addCoordPairNum(coordPair, 10, 1);
 		
-		coordPair.addIndelMummer(-41);
-		addCoordPairNum(coordPair, 10, -1);
-		
-		coordPair.addIndelMummer(-3);
-		addCoordPairNum(coordPair, 4, -1);
+		coordPair.addChainLiftover(40, 2, 18);
 		
 		coordPair.addIndelMummer(41);
 		addCoordPairNum(coordPair, 9, 1);
 		return coordPair;
 	}	
 	/**
-	 * 9285           gatatgaggaat-gatttatcatgtgaggtgaaagaagagcaccgggtg
-	 * 45025486   gatatgaggaatggttttatcatgtgaggtgaaagaagagcaccgtgtg
- 	 *                                                         ^  ^                                                                       ^   
-	 * 9333       aacagttacacaagaagaaagtccaaaagcaggaagccccatcatagaa
-	 * 45025437   ......t...........aagtccaaaagcatgtagccccatcatagaa
- 	 *           ^^^^^^ ^^^^^^^^^^^             ^ ^               
-	 * 9382            atggtgaaa...........tg.....cgtgtagcttgcaaccttggaa
-	 * 45025405   atggtgaaatacagtttcactgaaatacgtgtagcttgcaaccttggaa
-	 *                                           ^^^^^^^^^^^  ^^^^^                      
-	 * 9415           tgaaacccaatacaagaaatcccctctgtggcttgtcaggagctactat
-	 * 45025356   tgaaacccaatacaagaa..........tggcttgtcaggagctactat
-  	 *                                                                  ^^^^^^^^^^                     
+	 * 9285           gatatgaggaat-gatttatcatgtgaggtgaaagaagagcaccgggtg<br>
+	 * 45025486   gatatgaggaatggttttatcatgtgaggtgaaagaagagcaccgtgtg<br>
+ 	 *                                                         ^  ^                                                                       ^   <br>
+	 * 9333       aacagttacacaagaagaaagtccaaaagcaggaagccccatcatagaa<br>
+	 * 45025437   ......t...........aagtccaaaagcatgtagccccatcatagaa<br>
+ 	 *           ^^^^^^ ^^^^^^^^^^^             ^ ^               <br>
+	 * 9382            atggtgaaa...........tg.....cgtgtagcttgcaaccttggaa<br>
+	 * 45025405   atggtgaaatacagtttcactgaaatacgtgtagcttgcaaccttggaa<br>
+	 *                                           ^^^^^^^^^^^  ^^^^^                      <br>
+	 * 9415           tgaaacccaatacaagaaatcccctctgtggcttgtcaggagctactat<br>
+	 * 45025356   tgaaacccaatacaagaa..........tggcttgtcaggagctactat<br>
+  	 *                                                                  ^^^^^^^^^^                     <br>
 	 */
 	private CoordPair getCoordPairTrans() {
-		CoordPair coordPair = new CoordPair("    9285     9834  | 45025486 45024948  |      550      539  |    85.49  | 1	1");
+		CoordPair coordPair = new CoordPair();
+		coordPair.initialMummer("    9285     9834  | 45025486 45024948  |      550      539  |    85.49  | 1	1");
+
 		coordPair.addIndelMummer(-13);
 		
 		coordPair.addIndelMummer(37);
@@ -276,11 +332,7 @@ public class TestCoordTransformer {
 		coordPair.addIndelMummer(2);
 		addCoordPairNum(coordPair, 10, 1);
 		
-		coordPair.addIndelMummer(-41);
-		addCoordPairNum(coordPair, 10, -1);
-		
-		coordPair.addIndelMummer(-3);
-		addCoordPairNum(coordPair, 4, -1);
+		coordPair.addChainLiftover(40, 2, 18);
 		
 		coordPair.addIndelMummer(41);
 		addCoordPairNum(coordPair, 9, 1);
@@ -302,7 +354,9 @@ public class TestCoordTransformer {
   	 *                                                                  ^^^^^^^^^^                     <br>
 	 */
 	private CoordPair getCoordPairCis1() {
-		CoordPair coordPair = new CoordPair("    1     550  | 1 539   |      550      539  |    85.49  | 1	1");
+		CoordPair coordPair = new CoordPair();
+		coordPair.initialMummer("    1     550  | 1 539   |      550      539  |    85.49  | 1	1");
+
 		coordPair.addIndelMummer(-13);
 		
 		coordPair.addIndelMummer(37);
@@ -311,12 +365,8 @@ public class TestCoordTransformer {
 		coordPair.addIndelMummer(2);
 		addCoordPairNum(coordPair, 10, 1);
 		
-		coordPair.addIndelMummer(-41);
-		addCoordPairNum(coordPair, 10, -1);
-		
-		coordPair.addIndelMummer(-3);
-		addCoordPairNum(coordPair, 4, -1);
-		
+		coordPair.addChainLiftover(40, 2, 18);
+
 		coordPair.addIndelMummer(41);
 		addCoordPairNum(coordPair, 9, 1);
 		return coordPair;
@@ -336,7 +386,9 @@ public class TestCoordTransformer {
   	 *                                                                  ^^^^^^^^^^                     <br>
 	 */
 	private CoordPair getCoordPairTrans1() {
-		CoordPair coordPair = new CoordPair("    1     550  | 539  1  |      550      539  |    85.49  | 1	1");
+		CoordPair coordPair = new CoordPair();
+		coordPair.initialMummer("    1     550  | 539  1  |      550      539  |    85.49  | 1	1");
+
 		coordPair.addIndelMummer(-13);
 		
 		coordPair.addIndelMummer(37);
@@ -345,11 +397,7 @@ public class TestCoordTransformer {
 		coordPair.addIndelMummer(2);
 		addCoordPairNum(coordPair, 10, 1);
 		
-		coordPair.addIndelMummer(-41);
-		addCoordPairNum(coordPair, 10, -1);
-		
-		coordPair.addIndelMummer(-3);
-		addCoordPairNum(coordPair, 4, -1);
+		coordPair.addChainLiftover(40, 2, 18);
 		
 		coordPair.addIndelMummer(41);
 		addCoordPairNum(coordPair, 9, 1);

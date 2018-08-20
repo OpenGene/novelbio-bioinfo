@@ -1,181 +1,29 @@
 package com.novelbio.analysis.comparegenomics.coordtransform;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
 
 import com.novelbio.analysis.seq.mapping.Align;
-import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.listoperate.BinarySearch;
 import com.novelbio.listoperate.BsearchSite;
 import com.novelbio.listoperate.BsearchSiteDu;
 
-/**
- * 比较基因组处理MUMMER的结果<br>	
- * <br>
- * 思路，按照score把一对一对的比较装到list中，从大到小排序<br>
- * 然后把一对一对的compare放到list中。<br>
- * <br>
- * 如果后出现的和新出现的overlap了，则截取没有overlap的部分放进去<br>
- * 如果后出现的和老的完全覆盖，无论是后出现覆盖老的还是相反，统统跳过<br>
- * <br>
- * 因为后出现覆盖老的只有一种场景<br>
- * 新元素覆盖老元素的场景，老元素是chr1-vs-chr1，新元素是另一条染色体 chr1-vs-chr2<br>
- * 因为染色体如果不一致，会对元素降权重。这时候如果chr1某个区域同时比对上了 chr1 和chr2，<br>
- * 就可能出现chr2明明比chr1比对的区段长，但是还是优先chr1<br>
- * 这时候新元素就覆盖老元素，但是一样跳过<br>
- * 
- * @author zong0jie
- * @data 2018年8月5日
- */
-public class TransformerFilter {
+/** mummer的一对比较，或者是liftover的一个chain */
+public class CoordPair implements Alignment {
+	long refLen;
+	long altLen;
+	int chainId;
 	
-	LinkedList<CoordPair> lsPairs;
-	List<CoordPair> lsPairsResult = new ArrayList<>();
-	
-	public static void main(String[] args) {
-		CoordPairReader coordPairReader = new CoordPairReader("/media/winE/mywork/coordTransform/GRCh38VShg19/GRCh38VShg19.coords");
-		coordPairReader.setIdentityCutoff(99.00);
-		String resultFile = "/media/winE/mywork/coordTransform/GRCh38VShg19/GRCh38VShg19.simple.coords";
-		TxtReadandWrite txtWrite = new TxtReadandWrite(resultFile, true);
-		while (coordPairReader.hasNext()) {
-			List<CoordPair> lsCoordPairs = coordPairReader.readNext();
-			TransformerFilter transformerFilter = new TransformerFilter();
-			transformerFilter.setLsPairs(new LinkedList<>(lsCoordPairs));
-			transformerFilter.handleLsCoordPairs();
-			List<CoordPair> lsCoordResult = transformerFilter.getLsPairsResult();
-			for (CoordPair coordPair : lsCoordResult) {
-				txtWrite.writefileln(coordPair.toString());
-			}
-		}
-		coordPairReader.close();
-		txtWrite.close();
-	}
-	
-	public void setLsPairs(LinkedList<CoordPair> lsPairs) {
-		this.lsPairs = lsPairs;
-	}
-
-	public List<CoordPair> getLsPairsResult() {
-		return lsPairsResult;
-	}
-	public void handleLsCoordPairs() {
-		Collections.sort(lsPairs, (c1, c2)->{return -c1.getScore().compareTo(c2.getScore());});
-		LinkedList<CoordPair> lsPairQueue = new LinkedList<>(lsPairs);
-		
-		while (!lsPairQueue.isEmpty()) {
-			CoordPair coordPair = lsPairQueue.poll();
-			if (lsPairsResult.isEmpty()) {
-				lsPairsResult.add(coordPair);
-				continue;
-			}
-			BinarySearch<CoordPair> binarySearch = new BinarySearch<>(lsPairsResult);
-			BsearchSiteDu<CoordPair> bSiteDu = binarySearch.searchLocationDu(coordPair.getStartAbs(), coordPair.getEndAbs());
-			List<CoordPair> lsOverlapElement = bSiteDu.getAllElement();
-			//没找到，直接插入
-			if (lsOverlapElement.isEmpty()) {
-				insertElementInResult(bSiteDu, coordPair);
-			}
-			//场景同下面的新元素覆盖老元素的场景，直接跳过
-			else if (lsOverlapElement.size() > 2) {
-				continue;
-			}
-			
-			//跟其中一个element有交集
-			else if (lsOverlapElement.size() == 1) {
-				CoordPair element = lsOverlapElement.get(0);
-				/**
-				 * 完全覆盖，则跳过。老元素覆盖新元素很好理解
-				 * 
-				 * 新元素覆盖老元素的场景，老元素是chr1-vs-chr1，新元素是另一条染色体 chr1-vs-chr2
-				* 因为染色体如果不一致，会对元素降权重。这时候如果chr1某个区域同时比对上了 chr1 和chr2，
-				* 就可能出现chr2明明比chr1比对的区段长，但是还是优先chr1
-				* 这时候新元素就覆盖老元素，但是一样跳过
-				*/
-				if (isCoverOnAnother(element, coordPair)) {
-					continue;
-				}
-				//部分覆盖，修正后放回lsComparesQueen中去
-				if (Alignment.isOverlap(element, coordPair)) {
-					if (element.getStartAbs() <= coordPair.getStartAbs()) {
-						coordPair.setStart(element.getEndAbs()+1);
-					} else if (element.getEndAbs() >= coordPair.getEndAbs()) {
-						coordPair.setEnd(element.getStartAbs()-1);
-					}
-				}
-			}
-			//跟两个element有交集
-			else if (lsOverlapElement.size() == 2) {
-				if (isCoverOnAnother(lsOverlapElement.get(0), coordPair)
-						|| isCoverOnAnother(lsOverlapElement.get(1), coordPair)
-						) {
-					continue;
-				}
-				//这两个都要执行，所以不能用 if else。考虑两个if的else都抛出异常
-				if (lsOverlapElement.get(0).getStartAbs() <= coordPair.getStartAbs()) {
-					coordPair.setStart(lsOverlapElement.get(0).getEndAbs()+1);
-				}
-				if (lsOverlapElement.get(1).getEndAbs() >= coordPair.getEndAbs()) {
-					coordPair.setEnd(lsOverlapElement.get(1).getStartAbs()-1);
-				}
-			}
-			
-			insertElementQueue(coordPair);
-		}
-		
-
-	}
-	
-	/** 两个元素是否有一个覆盖了另一个 */
-	private static boolean isCoverOnAnother(Alignment align1, Alignment align2) {
-		return Alignment.isOverlap(align1, align2) || Alignment.isOverlap(align2, align1);
-	}
-	
-	/** 把修改过的element重新插入LinkedList队列 */
-	private void insertElementQueue(CoordPair element) {
-		if (lsPairs.getLast().getScore() >= element.getScore()) {
-			lsPairs.add(element);
-			return;
-		}
-		if (lsPairs.getFirst().getScore() <= element.getScore()) {
-			lsPairs.addFirst(element);
-			return;
-		}
-		ListIterator<CoordPair> lsItQueue = lsPairs.listIterator();
-		while (lsItQueue.hasNext()) {
-			CoordPair elementOld = lsItQueue.next();
-			if (elementOld.getScore() <= element.getScore()) {
-				lsItQueue.previous();
-				lsItQueue.add(element);
-				break;
-			}
-		}
-	}
-	
-	/** 插入元素 */
-	private void insertElementInResult(BsearchSiteDu<CoordPair> bSiteDu, CoordPair element) {
-		int index = bSiteDu.getSiteRight().getItemNumDown();
-		if (index == -1) {
-			lsPairsResult.add(element);
-		} else {
-			lsPairsResult.add(index, element);
-		}
-	}
-	
-}
-
-/** 一对比较 */
-class CoordPair implements Alignment {
 	Align alignRef;
 	Align alignAlt;
 	/** 0-100 */
 	double identity;
-	
+		
 	List<IndelForRef> lsIndel = new ArrayList<>();
 	
 	/**
@@ -183,7 +31,7 @@ class CoordPair implements Alignment {
 	 *     1001 10053455  |        1 10052411  | 10052455 10052411  |    99.99  | 1	1<br>
 	 * @param mummerLine
 	 */
-	public CoordPair(String mummerLine) {
+	public void initialMummer(String mummerLine) {
 		String[] ss = mummerLine.split("\\|");
 		String[] chrId = ss[4].trim().split("\t");
 		String[] refloc = ss[0].trim().split(" +");
@@ -192,6 +40,70 @@ class CoordPair implements Alignment {
 		alignRef = new Align(chrId[0], Integer.parseInt(refloc[0]), Integer.parseInt(refloc[1]));
 		alignAlt = new Align(chrId[1], Integer.parseInt(altloc[0]), Integer.parseInt(altloc[1]));
 		identity = Double.parseDouble(ss[3].trim());
+	}
+	/**
+	 * liftover 的 chain 文件需要
+	 * 如果是读取的liftover文件，则不需要设置这个
+	 * @param refLen
+	 * @param altLen
+	 */
+	public void setRefAltLen(long refLen, long altLen) {
+		this.refLen = refLen;
+		this.altLen = altLen;
+	}
+	/**
+	 * liftover 的 chain 文件需要
+	 * 如果是读取的liftover文件，则不需要设置这个
+	 */
+	public void setChainId(int chainId) {
+		this.chainId = chainId;
+	}
+	/**
+	 * 将liftoverChain的一行转换成对象<br>
+	 * chain 20849626768 chr1 248956422 + 10000 248946422 chr1 249250621 + 10000 249240621 2
+	 * @param mummerLine
+	 */
+	public void initialChainLiftover(String liftoverChain) {
+		String[] ss = liftoverChain.split(" +");
+		alignRef = new Align(ss[2], Integer.parseInt(ss[5])+1, Integer.parseInt(ss[6]));
+		alignRef.setCis5to3(ss[4].equals("+"));
+		alignAlt = new Align(ss[7], Integer.parseInt(ss[10])+1, Integer.parseInt(ss[11]));
+		alignAlt.setCis5to3(ss[9].equals("+"));
+		identity = Double.parseDouble(ss[1]);
+		
+		refLen = Integer.parseInt(ss[3]);
+		altLen = Integer.parseInt(ss[8]);
+		chainId = Integer.parseInt(ss[12]);
+	}
+	public void addChainLiftover(String chainLine) {
+		String[] ss = chainLine.split("\t");
+		int len = Integer.parseInt(ss[0]);
+
+		if (ss.length == 1) {
+			int endSiteRef = len + getLastSiteRef();
+			if (endSiteRef != alignRef.getEndAbs()) {
+				throw new RuntimeException(alignRef.toString() + "end is not equal to " + endSiteRef);
+			}
+			int endSiteAlt = alignAlt.isCis() ? getLastSiteAlt()+len : getLastSiteAlt()-len;
+			if (endSiteAlt != alignAlt.getEndCis()) {
+				throw new RuntimeException(alignAlt.toString() + "end is not equal to " + endSiteAlt);
+			}
+			return;
+		}
+		
+		int gapRef= Integer.parseInt(ss[1]);
+		int gapAlt = Integer.parseInt(ss[2]);
+		addChainLiftover(len, gapRef, gapAlt);
+	}
+
+	public void addChainLiftover(int len, int gapRef, int gapAlt) {
+		IndelForRef indel = new IndelForRef(alignAlt.isCis5to3());
+		indel.setRefStart(getLastSiteRef() + len);
+		indel.setAltStartCis(getLastSiteAlt());
+		indel.setAltStartCis(indel.getStartExtendAlt(-len));
+		indel.setRefLen(gapRef);
+		indel.setAltLen(gapAlt);
+		lsIndel.add(indel);
 	}
 	
 	/**
@@ -204,52 +116,39 @@ class CoordPair implements Alignment {
 			return;
 		}
 		IndelForRef indel = null;
+		if (!lsIndel.isEmpty()) {
+			indel = lsIndel.get(lsIndel.size()-1);
+		}
+		
 		if (isNeedNewIdel(num)) {
 			indel = new IndelForRef(alignAlt.isCis5to3());
-			int numAbs = Math.abs(num);
-			if (num > 0) {
-				indel.setRefStart(getLastSiteRef()+numAbs);
-				if (alignAlt.isCis5to3()) {
-					indel.setAltStartCis(getLastSiteAlt() + numAbs -1);
-				} else {
-					indel.setAltStartCis(getLastSiteAlt() - numAbs +1);
-				}
-				indel.addRefLen1();
-			} else {
-				indel.setRefStart(getLastSiteRef()+numAbs-1);
-				if (alignAlt.isCis5to3()) {
-					indel.setAltStartCis(getLastSiteAlt() + numAbs);
-				} else {
-					indel.setAltStartCis(getLastSiteAlt() - numAbs);
-				}
-				indel.addAltLen1();
-			}
+			int numAbs = Math.abs(num)-1;
+			indel.setRefStart(getLastSiteRef()+numAbs);
+			indel.setAltStartCis(getLastSiteAlt());
+			indel.setAltStartCis(indel.getStartExtendAlt(-numAbs));
 			lsIndel.add(indel);
+		}
+		if (num > 0) {
+			indel.addRefLen1();
 		} else {
-			indel = lsIndel.get(lsIndel.size()-1);
-			if (num > 0) {
-				indel.addRefLen1();
-			} else {
-				indel.addAltLen1();
-			}
+			indel.addAltLen1();
 		}
 	}
-	
+	/** 获得上一个site前一位的坐标 */
 	private int getLastSiteRef() {
 		if (lsIndel.isEmpty()) {
 			return alignRef.getStartAbs()-1;
 		}
 		IndelForRef indelLast = lsIndel.get(lsIndel.size()-1);
 		/**
-		 * deletion
 		 * start是缺失的前一个位点(a)，end是缺失的后一个位点(g)，都从1开始计算
 		 * 1    ca- - - gcat
 		 * 1    ca tgc gcat
 		 * 因此deletion的计算位点应该向前移一位
 		 */
-		return indelLast.isRefInsertion() ? indelLast.getEndAbs() : indelLast.getEndAbs()-1;
+		return  indelLast.getEndExtend(-1);
 	}
-	
+	/** 获得上一个site前一位的坐标 */
 	private int getLastSiteAlt() {
 		if (lsIndel.isEmpty()) {
 			return alignAlt.isCis5to3() ? alignAlt.getStartCis()-1 : alignAlt.getStartCis() + 1;
@@ -262,7 +161,7 @@ class CoordPair implements Alignment {
 		 * 1    ca tgc gcat
 		 * 因此deletion的计算位点应该向前移一位
 		 */
-		return indelLast.isAltInsertion() ? indelLast.getEndCisAlt(): indelLast.getEndCisAltBefore1();
+		return indelLast.getEndExtendAlt(-1);
 	}
 	
 	private boolean isNeedNewIdel(int num) {
@@ -312,44 +211,19 @@ class CoordPair implements Alignment {
 				isSet = true;
 				alignRef.setStartAbs(start);
 				int length = start - indelForRefLast.getEndAbs();
-				if (!indelForRefLast.isRefInsertion()) length++;
 				alignAlt.setStartCis(indelForRefLast.getEndCisAlt());
-				if (indelForRefLast.isAltInsertion()) {
-					// ref atc  ----  atc
-					// alt atc ctga atc
-					alignAlt.startAddLenCis(length);
-				} else {
-					// ref atc  ctga  atc
-					// alt atc   ----   atc
-					alignAlt.startAddLenCis(length-1);
-				}
+				alignAlt.startAddLenCis(length);
 			}
 			
 			if (Alignment.isSiteInAlign(indelForRef, start)) {
 				isSet = true;
-				if (indelForRef.isRefInsertion()) {
-					// ref atc ctga atc
-					// alt atc  ----  atc
-					alignRef.setStartAbs(indelForRef.getEndAbs()+1);
-					alignAlt.setStartCis(indelForRef.getEndCisAlt());
-					if (indelForRef.isAltInsertion()) {
-						alignAlt.startAddLenCis(1);
-					}
-					continue;
+				if (start == indelForRef.getStartAbs()) {
+					alignRef.setStartAbs(indelForRef.getStartAbs());
+					alignAlt.setStartCis(indelForRef.getStartCisAlt());
 				} else {
-					alignRef.setStartAbs(start);
-					// ref at[c]  ----  atc
-					// alt atc ctga atc
-					if (start == indelForRef.getStartAbs()) {
-						alignAlt.setStartCis(indelForRef.getStartCisAlt());
-						alignAlt.startAddLenCis(-1);
-					} else {
-						// ref atc  ----  [a]tc
-						// alt atc ctga atc
-						alignAlt.setStartCis(indelForRef.getEndCisAlt());
-						alignAlt.startAddLenCis(1);
-						continue;
-					}
+					alignRef.setStartAbs(indelForRef.getEndAbs());
+					alignAlt.setStartCis(indelForRef.getEndCisAlt());
+					continue;
 				}
 			}
 			lsIndelForRefsNew.add(indelForRef);
@@ -376,48 +250,21 @@ class CoordPair implements Alignment {
 				if (!isSet) {
 					alignRef.setEndAbs(end);
 					int length = end -indelForRefLast.getEndAbs();
-					if (!indelForRefLast.isRefInsertion()) length++;
-					
 					alignAlt.setEndCis(indelForRefLast.getEndCisAlt());
-					if (indelForRefLast.isAltInsertion()) {
-						// ref atc ctga atc
-						// alt atc  ----  atc
-						alignAlt.endAddLenCis(length);
-					} else {
-						// ref atc  ----  atc
-						// alt atc ctga atc
-						alignAlt.endAddLenCis(length-1);
-					}
+					alignAlt.endAddLenCis(length);
 				}
 				break;
 			}
 			
 			if (Alignment.isSiteInAlign(indelForRef, end)) {
 				isSet = true;
-				if (indelForRef.isRefInsertion()) {
-					// ref atc ctga atc
-					// alt atc  ----  atc
-					alignRef.setEndAbs(indelForRef.getStartAbs()-1);
-					alignAlt.setEndCis(indelForRef.getStartCisAlt());
-					if (indelForRef.isAltInsertion()) {
-						alignAlt.endAddLenCis(-1);
-					}
-					break;
+				if (end == indelForRef.getEndAbs()) {
+					alignRef.setEndAbs(indelForRef.getEndAbs());
+					alignAlt.setEndCis(indelForRef.getEndCisAlt());
 				} else {
-					//ref没有插入，此时alt一定插入
-					alignRef.setEndAbs(end);
-					// ref at[c]  ----  atc
-					// alt atc ctga atc
-					if (end == indelForRef.getStartAbs()) {
-						alignAlt.setEndCis(indelForRef.getStartCisAlt());
-						alignAlt.endAddLenCis(-1);
-						break;
-					} else {
-						// ref atc  ----  [a]tc
-						// alt atc ctga atc
-						alignAlt.setEndCis(indelForRef.getEndCisAlt());
-						alignAlt.endAddLenCis(1);
-					}
+					alignRef.setEndAbs(indelForRef.getStartAbs());
+					alignAlt.setEndCis(indelForRef.getStartCisAlt());
+					break;
 				}
 			}
 			indelForRefLast = indelForRef;
@@ -459,10 +306,24 @@ class CoordPair implements Alignment {
 	public VarInfo searchVarInfo(int start, int end) {
 		validateSiteInCoord(start);
 		validateSiteInCoord(end);
-		BinarySearch<IndelForRef> binarySearch = new BinarySearch<>(lsIndel, true);
+		
 		VarInfo varInfo = new VarInfo();
 		varInfo.setCis5to3(this.getAlignAlt().isCis5to3());
 		varInfo.setChrID(this.getChrAlt());
+		
+		if (ArrayOperate.isEmpty(lsIndel)) {
+			int[] startAlt2Bias = getAltSiteStart(null, start);
+			int[] endAlt2Bias = getAltSiteStart(null, end);
+			varInfo.setStartCis(startAlt2Bias[0]);
+			varInfo.setEndCis(endAlt2Bias[0]);
+			varInfo.setStartBias(startAlt2Bias[1]);
+			varInfo.setEndBias(endAlt2Bias[1]);
+			return varInfo;
+		}
+		
+		
+		BinarySearch<IndelForRef> binarySearch = new BinarySearch<>(lsIndel, true);
+
 		//单个位点
 		if (start == end) {
 			BsearchSite<IndelForRef> bsite = binarySearch.searchLocation(start);
@@ -490,20 +351,6 @@ class CoordPair implements Alignment {
 		varInfo.setEndBias(endAlt2Bias[1]);
 		
 		List<IndelForRef> lsIndels =bsiteDu.getCoveredElement();
-		if (lsIndels.isEmpty()) {
-			return varInfo;
-		}
-		IndelForRef indelStart = lsIndels.get(0);
-		if (start == indelStart.getStartAbs() && indelStart.isRefInsertion()) {
-			lsIndels.remove(0);
-		}
-		if (lsIndels.isEmpty()) {
-			return varInfo;
-		}
-		IndelForRef indelEnd = lsIndels.get(lsIndels.size()-1);
-		if (end == indelEnd.getEndAbs() && indelEnd.isRefInsertion()) {
-			lsIndels.remove(lsIndels.size()-1);
-		}
 		if (!lsIndels.isEmpty()) {
 			varInfo.setLsIndelForRefs(lsIndels);
 		}
@@ -540,32 +387,37 @@ class CoordPair implements Alignment {
 	 */
 	private int[] getAltSite(BsearchSite<IndelForRef> bsite, int refSite, boolean isStart) {
 		int altSite = 0, bias = 0;
+		if (bsite == null) {
+			int length = refSite - alignRef.getStartAbs();
+			altSite = alignAlt.isCis() ? alignAlt.getStartAbs()+length : alignAlt.getEndAbs() - length;
+			return new int[] {altSite, bias};
+		}
+		
 		if (!bsite.isInsideLoc()) {
 			IndelForRef IndelBefore = bsite.getAlignUp();
 			if (IndelBefore == null) {
 				int length = refSite - alignRef.getStartAbs();
 				altSite = alignAlt.isCis() ? alignAlt.getStartAbs()+length : alignAlt.getEndAbs() - length;
 			} else {
-				int length = IndelBefore.isRefInsertion() ? refSite - IndelBefore.getEndAbs(): refSite - IndelBefore.getEndAbs()+1;
-				length = IndelBefore.isAltInsertion() ? length : length-1;
-				altSite = alignAlt.isCis() ? IndelBefore.getEndCisAlt() + length : IndelBefore.getEndCisAlt() - length;
+				int length = refSite - IndelBefore.getEndAbs();
+				altSite = IndelBefore.getEndExtendAlt(length);
 			}
 		} else {
 			IndelForRef indelThis = bsite.getAlignThis();
-			if (indelThis.isRefInsertion()) {
-				bias = isStart? indelThis.getEndAbs() - refSite + 1 : refSite - indelThis.getStartAbs() + 1;
-			}
-			if (indelThis.isAltInsertion()) {
-				if (indelThis.isRefInsertion()) {
-					altSite = isStart? indelThis.getEndCisAltAfter1() : indelThis.getStartCisAltBefore1();
-				} else {
-					altSite = indelThis.getStartAbs() == refSite ? indelThis.getStartCisAltBefore1() : indelThis.getEndCisAltAfter1();
-				}
+			if (refSite == indelThis.getStartAbs()) {
+				altSite = indelThis.getStartCisAlt();
+				bias = 0;
+			} else if (refSite == indelThis.getEndAbs()) {
+				altSite = indelThis.getEndCisAlt();
+				bias = 0;
 			} else {
-				if (indelThis.isRefInsertion()) {
-					altSite = isStart? indelThis.getEndCisAlt() : indelThis.getStartCisAlt();
+				//在indel里面
+				if (isStart) {
+					altSite = indelThis.getEndCisAlt();
+					bias = indelThis.getEndAbs()-refSite;
 				} else {
-					throw new RuntimeException("cannot happen condition!!");
+					altSite = indelThis.getStartCisAlt();
+					bias = refSite-indelThis.getStartAbs();
 				}
 			}
 		}
@@ -623,6 +475,127 @@ class CoordPair implements Alignment {
 		return ArrayOperate.cmbString(lsKey, " ");
 	}
 	
+	public String toStringHead() {
+		List<String> lsChain = new ArrayList<>();
+		lsChain.add("chain");
+		int length = 0;
+		for (IndelForRef indelForRef : lsIndel) {
+			length+=indelForRef.getRefLen();
+		}
+		if (identity == 0) {
+			identity = (1-(double)length/alignRef.getLength()) * 10 * alignRef.getLength();
+		}
+		lsChain.add((long)identity+"");
+		lsChain.add(alignRef.getRefID());
+		lsChain.add(refLen+"");
+		String strandRef = alignRef.isCis() ? "+" : "-";
+		lsChain.add(strandRef);
+		lsChain.add(alignRef.getStartAbs()-1 + "");
+		lsChain.add(alignRef.getEndAbs() + "");
+
+		lsChain.add(alignAlt.getRefID());
+		lsChain.add(altLen+"");
+		String strandAlt = alignAlt.isCis() ? "+" : "-";
+		lsChain.add(strandAlt);
+		lsChain.add(alignAlt.getStartAbs()-1 + "");
+		lsChain.add(alignAlt.getEndAbs() + "");
+		lsChain.add(chainId + "");
+		String[] ss = lsChain.toArray(new String[0]);
+		return ArrayOperate.cmbString(ss, " ");
+	}
+	
+	/**
+	 * 迭代读取文件
+	 * @param filename
+	 * @return
+	 * @throws Exception 
+	 * @throws IOException
+	 */
+	public Iterable<String> readPerIndel() {
+		Iterator<IndelForRef> itIndels = lsIndel.iterator();
+		return new Iterable<String>() {
+			IndelForRef indel;
+			public Iterator<String> iterator() {
+				return new Iterator<String>() {
+					public boolean hasNext() {
+						return line != null;
+					}
+					public String next() {
+						String retval = line;
+						line = getLine();
+						return retval;
+					}
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+					String getLine() {
+						if (!itIndels.hasNext()) {
+							if (indel == null) {
+								return null;
+							}
+							int length = alignRef.getEndAbs()-indel.getEndExtend(-1);
+							indel = null;
+							return length+"";
+						}
+						if (indel == null) {
+							indel = itIndels.next();
+							return indel.getStartAbs() - alignRef.getStartAbs()+1 + "\t" + indel.getRefLen() + "\t" + indel.getAltLen();
+						}
+						IndelForRef indelthis = itIndels.next();
+						String line = indelthis.getStartAbs() - indel.getEndAbs() +1 + "\t" + indelthis.getRefLen() + "\t" + indelthis.getAltLen();
+						indel = indelthis;
+						return line;
+					}
+					String line = getLine();
+				};
+			}
+		};
+	}
+	
+	public boolean isCanAdd(CoordPair coordPair) {
+		Align alignRefNext = coordPair.getAlignRef();
+		Align alignAltNext = coordPair.getAlignAlt();
+		return isAlignSequence(alignRef, alignRefNext) && isAlignSequence(alignAlt, alignAltNext);
+	}
+	
+	/** 在一个list里面，方向都相同的coord可以合并起来 */
+	public void addCoordPair(CoordPair coordPair) {
+		if (!isCanAdd(coordPair)) {
+			throw new ExceptionNBCCoordTransformer("cannot add coord,\n"
+					+ "coord1: " + toString() + "\n"
+					+ "coord2: " + coordPair.toString() + "\n");
+		}
+
+		Align alignRefNext = coordPair.getAlignRef();
+		Align alignAltNext = coordPair.getAlignAlt();
+
+		IndelForRef indelForRef = new IndelForRef(alignAlt.isCis());
+		indelForRef.setRefStart(alignRef.getEndAbs());
+		indelForRef.setAltStartCis(alignAlt.getEndCis());
+		indelForRef.setRefLen(alignRefNext.getStartAbs()-alignRef.getEndAbs()-1);
+		indelForRef.setAltLen(Math.abs(alignAltNext.getStartCis()-alignAlt.getEndCis())-1);
+		lsIndel.add(indelForRef);
+		for (IndelForRef indel : coordPair.getLsIndel()) {
+			lsIndel.add(indel);
+		}
+		alignRef.setEndCis(alignRefNext.getEndCis());
+		alignAlt.setEndCis(alignAltNext.getEndCis());
+	}
+	
+	private boolean isAlignSequence(Align align1, Align align2) {
+		if (!align1.getRefID().equals(align2.getRefID())
+				|| align1.isCis5to3() != align2.isCis5to3()
+				) {
+			return false;
+		}
+		if (align1.isCis() && align1.getEndAbs() >= align2.getStartAbs()
+				|| !align1.isCis() && align1.getStartAbs() <= align2.getEndAbs()
+				) {
+			return false;
+		}
+		return true;
+	}
+	
 }
 
 /** 对于ref来说的indel
@@ -656,55 +629,99 @@ class IndelForRef implements Alignment {
 	public IndelForRef(boolean isAltCis) {
 		this.isAltCis = isAltCis;
 	}
+	/**
+	 * 如果ref为插入，则为插入前的位点<br>
+	 * ATA[C] ACATCGGCA T<br>
+	 * 如果ref为缺失，则为缺失前的位点<br>
+	 * ATA[C] -------CGGCA T
+	 * @param start
+	 */
 	public void setRefStart(int start) {
 		this.refStart = start;
 	}
-	/** 设置alt的起点 */
+	/**
+	 * 如果alt为插入，则为插入前的位点<br>
+	 * ATA[C] ACATCGGCA T<br>
+	 * 如果alt为缺失，则为缺失前的位点<br>
+	 * ATA[C] -------CGGCA T
+	 * @param start
+	 */
 	public void setAltStartCis(int altStartCis) {
 		this.altStartCis = altStartCis;
 	}
 
-	/** 跟 {@link #getStartAbs()} 一样
-	 *  * insertion
-	 * start是插入的具体起点(t)，end是插入的具体终点(c)，都从1开始计算
-	 * 1    ca tgc gcat : alt
-	 * 1    ca- - - gcat : ref
-	 * 
-	 * deletion
-	 * start是缺失的前一个位点(a)，end是缺失的后一个位点(g)，都从1开始计算
-	 * 1    ca- - - gcat : alt
-	 * 1    ca tgc gcat : ref
+	/** 跟 {@link #getStartAbs()} 一样<br>
+	 *  * insertion<br>
+	 * start是插入前的位点，end是插入的后一个位点，都从1开始计算<br>
+	 * 1    c[a] tgc [g]cat : alt<br>
+	 * 1      ca  - - - gcat : ref<br>
+	 * <br>
+	 * deletion<br>
+	 * start是缺失的前一个位点(a)，end是缺失的后一个位点(g)，都从1开始计算<br>
+	 * 1    c[a]- - - [g]cat : alt<br>
+	 * 1    ca   tgc  gcat : ref
 	 * @return
 	 */
 	public int getStartCisAlt() {
 		return altStartCis;
 	}
+	/** 跟 {@link #getEndAbs()} 一样<br>
+	 *  * insertion<br>
+	 * start是插入前的位点，end是插入的后一个位点，都从1开始计算<br>
+	 * 1    c[a] tgc [g]cat : alt<br>
+	 * 1      ca  - - - gcat : ref<br>
+	 * <br>
+	 * deletion<br>
+	 * start是缺失的前一个位点(a)，end是缺失的后一个位点(g)，都从1开始计算<br>
+	 * 1    c[a]- - - [g]cat : alt<br>
+	 * 1    ca   tgc  gcat : ref
+	 * @return
+	 */
 	public int getEndCisAlt() {
-		if (isAltCis) {
-			return altLen == 0 ? altStartCis+1 : altStartCis + altLen - 1;
-		} else {
-			return altLen == 0 ? altStartCis-1 : altStartCis - altLen + 1;
-		}
+		return isAltCis ? altStartCis + altLen+1 : altStartCis - altLen-1;
 	}
-	/** end往前退一位 */
-	public int getStartCisAltBefore1() {
-		int start = getStartCisAlt();
-		return isAltCis ? start-1 : start + 1;
+	public boolean isAltCis() {
+		return isAltCis;
 	}
-	/** end往前退一位 */
-	public int getStartCisAltAfter1() {
-		int start = getStartCisAlt();
-		return isAltCis ? start+1 : start-1;
+	/** end向后延长n为多少，注意不修改值<br>
+	 * 1    c[a]- - - [g]cat : alt<br>
+	 * 延长3bp变成<br>
+	 * 1    c[a]- - - gca[t] : alt
+	 * @param num
+	 * @return
+	 */
+	public int getEndExtendAlt(int num) {
+		return isAltCis() ? getEndCisAlt() + num : getEndCisAlt()-num;
 	}
-	/** end往前退一位 */
-	public int getEndCisAltBefore1() {
-		int end = getEndCisAlt();
-		return isAltCis ? end-1 : end + 1;
+	/** start向前延长n为多少，注意不修改值
+	 * 1    atgc[a]- - - [g]cat : alt
+	 * 延长3bp变成
+	 * 1    a[t]gca- - - gca[t] : alt
+	 * @param num
+	 * @return
+	 */
+	public int getStartExtendAlt(int num) {
+		return isAltCis() ? getStartCisAlt() - num : getStartCisAlt()+num;
 	}
-	/** end往前退一位 */
-	public int getEndCisAltAfter1() {
-		int end = getEndCisAlt();
-		return isAltCis ? end+1 : end-1;
+	/** end向后延长n为多少，注意不修改值<br>
+	 * 1    c[a]- - - [g]cat : ref<br>
+	 * 延长3bp变成<br>
+	 * 1    c[a]- - - gca[t] : ref
+	 * @param num
+	 * @return
+	 */
+	public int getEndExtend(int num) {
+		return getEndAbs() + num;
+	}
+	/** start向前延长n为多少，注意不修改值<br>
+	 * 1    atgc[a]- - - [g]cat : ref<br>
+	 * 延长3bp变成<br>
+	 * 1    a[t]gca- - - gca[t] : ref
+	 * @param num
+	 * @return
+	 */
+	public int getStartExtend(int num) {
+		return getStartAbs() - num;
 	}
 	public void setRefLen(int refLen) {
 		this.refLen = refLen;
@@ -763,14 +780,25 @@ class IndelForRef implements Alignment {
 				&& isAltCis == otherAlign.isAltCis && refLen == otherAlign.refLen;
 	}
 
+	/**
+	 * 如果ref为插入，则为插入前的位点
+	 * ATA[C] ACATCGGCA T
+	 * 如果ref为缺失，则为缺失前的位点
+	 * ATA[C] -------CGGCA T
+	 */
 	@Override
 	public int getStartAbs() {
 		return refStart;
 	}
-
+	/**
+	 * 如果ref为插入，则为插入后的位点
+	 * ATAC ACAT  [C]GGCA
+	 * 如果ref为缺失，则为缺失后的位点
+	 * ATAC -------[C]GGCA
+	 */
 	@Override
 	public int getEndAbs() {
-		return refLen > 0 ? refStart+refLen-1:refStart+1;
+		return refStart+refLen+1;
 	}
 
 	@Override

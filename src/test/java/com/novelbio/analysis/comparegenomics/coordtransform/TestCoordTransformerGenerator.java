@@ -2,65 +2,42 @@ package com.novelbio.analysis.comparegenomics.coordtransform;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.Test;
 
 import com.novelbio.analysis.seq.mapping.Align;
 
-public class TestCoordPair {
+public class TestCoordTransformerGenerator {
 	
 	@Test
-	public void testConstruct() {
-		CoordPair coordPair = new CoordPair();
-		coordPair.initialMummer("    2533     2927  | 25917838 25917435  |      395      404  |    90.89  | 1	5");
-		assertEquals(new Align("1:2533-2927"), coordPair.getAlignRef());
-		assertEquals(new Align("5:25917838-25917435"), coordPair.getAlignAlt());
-		assertEquals( 90.89, coordPair.getIdentity(), 0.01);
-		
-		coordPair = new CoordPair();
-		coordPair.initialChainLiftover("chain 20849626768 chr1 248956422 + 10000 248946422 chr1 249250621 + 10000 249240621 2");
-		assertEquals(new Align("chr1:10001-248946422"), coordPair.getAlignRef());
-		assertEquals(new Align("chr1:10001-249240621"), coordPair.getAlignAlt());
-		assertEquals( 20849626768l, coordPair.getIdentity(), 0.01);
-	}
-	
-	@Test
-	public void testAddCoordPairTrans() {
+	public void testAddCoordPair() {
 		CoordPair coordPair = new CoordPair();
 		coordPair.initialMummer("    2533     2927  | 25917838 25917435  |      395      404  |    90.89  | 1	5");
 		CoordPair coordPair2 = new CoordPair();
 		coordPair2.initialMummer("    2998     3015  | 25917420 25917390  |      8      21  |    90.89  | 1	5");
 		coordPair2.addChainLiftover(10, 3, 2);
-		coordPair.addCoordPair(coordPair2);
 		
-		assertEquals(new Align("1:2533-3015"), coordPair.getAlignRef());
-		assertEquals(new Align("5:25917838-25917390"), coordPair.getAlignAlt());
-		List<IndelForRef> lsIndels = coordPair.getLsIndel();
-		assertEquals(2, lsIndels.size());
-		assertEquals("i:2927-2998:70|i:25917435-25917420:14", getIndelInfo(lsIndels.get(0)));
-		assertEquals("i:3007-3011:3|i:25917411-25917408:2", getIndelInfo(lsIndels.get(1)));
+		CoordPair coordPair3 = new CoordPair();
+		coordPair3.initialMummer("    2533     2927  | 25917837 25917435  |      395      404  |    90.89  | 1	6");
+		CoordPair coordPair4 = new CoordPair();
+		coordPair4.initialMummer("    2998     3015  | 25917420 25917390  |      8      21  |    90.89  | 1	6");
+		coordPair4.addChainLiftover(10, 3, 2);
 		
-		assertEquals( 90.89, coordPair.getIdentity(), 0.01);
-	}
-	
-	@Test
-	public void testAddCoordPairCis() {
-		CoordPair coordPair = new CoordPair();
-		coordPair.initialMummer("    2533     2927  | 25917435 25917838  |      395      404  |    90.89  | 1	5");
-		CoordPair coordPair2 = new CoordPair();
-		coordPair2.initialMummer("    2998     3015  | 25917990 25918020  |      8      21  |    90.89  | 1	5");
-		coordPair2.addChainLiftover(10, 3, 2);
-		coordPair.addCoordPair(coordPair2);
+		List<CoordPair> lsCoordPairs = new ArrayList<>();
+		lsCoordPairs.add(coordPair);
+		lsCoordPairs.add(coordPair2);
+		lsCoordPairs.add(coordPair3);
+		lsCoordPairs.add(coordPair4);
+		List<CoordPair> lsCoordPairMerge = CoordTransformerGenerator.mergeLsCoord(lsCoordPairs);
+		assertEquals(2, lsCoordPairMerge.size());
 		
-		assertEquals(new Align("1:2533-3015"), coordPair.getAlignRef());
-		assertEquals(new Align("5:25917435-25918020"), coordPair.getAlignAlt());
-		List<IndelForRef> lsIndels = coordPair.getLsIndel();
-		assertEquals(2, lsIndels.size());
-		assertEquals("i:2927-2998:70|i:25917838-25917990:151", getIndelInfo(lsIndels.get(0)));
-		assertEquals("i:3007-3011:3|i:25917999-25918002:2", getIndelInfo(lsIndels.get(1)));
+		assertEquals(new Align("1:2533-3015"), lsCoordPairMerge.get(0).getAlignRef());
+		assertEquals(new Align("5:25917838-25917390"), lsCoordPairMerge.get(0).getAlignAlt());
 		
-		assertEquals( 90.89, coordPair.getIdentity(), 0.01);
+		assertEquals(new Align("1:2533-3015"), lsCoordPairMerge.get(1).getAlignRef());
+		assertEquals(new Align("6:25917837-25917390"), lsCoordPairMerge.get(1).getAlignAlt());
 	}
 	
 	/**

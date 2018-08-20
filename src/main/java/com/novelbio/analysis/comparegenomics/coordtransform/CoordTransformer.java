@@ -5,11 +5,11 @@ import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.mapping.Align;
 import com.novelbio.analysis.seq.snphgvs.SnpInfo;
 import com.novelbio.analysis.seq.snphgvs.SnpInfo.EnumHgvsVarType;
+import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.listoperate.BinarySearch;
 import com.novelbio.listoperate.BsearchSiteDu;
@@ -18,7 +18,6 @@ public class CoordTransformer {
 	
 	Map<String, List<CoordPair>> mapChrId2LsCoorPairs;
 	
-	SeqHashInt seqHashRef;
 	SeqHashInt seqHashAlt;
 	
 	public static void main(String[] args) {
@@ -26,10 +25,10 @@ public class CoordTransformer {
 		System.out.println(snpInfo.getAlign());
 	}
 	
-	public void setMapChrId2LsCoorPairs(Map<String, List<CoordPair>> mapChrId2LsCoorPairs) {
+	void setMapChrId2LsCoorPairs(Map<String, List<CoordPair>> mapChrId2LsCoorPairs) {
 		this.mapChrId2LsCoorPairs = mapChrId2LsCoorPairs;
 	}
-	public void setSeqHashAlt(SeqHashInt seqHashAlt) {
+	void setSeqHashAlt(SeqHashInt seqHashAlt) {
 		this.seqHashAlt = seqHashAlt;
 	}
 	
@@ -42,7 +41,6 @@ public class CoordTransformer {
 		return transformSnpInfo(snpInfo, varInfo, seqHashAlt);
 	}
 	
-	//TODO 待测试
 	@VisibleForTesting
 	protected static SnpInfo transformSnpInfo(SnpInfo snpInfo, VarInfo varInfo, SeqHashInt seqHashAlt) {
 		String ref = snpInfo.getSeqRef();
@@ -99,7 +97,7 @@ public class CoordTransformer {
 			return null;
 		}
 		
-		CoordPair coordPair = lsCoordPairs.get(0);
+		CoordPair coordPair = lsCoordPairsOverlap.get(0);
 		//暂时不支持
 		int biasStart = 0, biasEnd = 0;
 		if (alignRef.getStartAbs() < coordPair.getStartAbs()) {
@@ -119,6 +117,31 @@ public class CoordTransformer {
 		varInfo.setStartBias(varInfo.getStartBias()+biasStart);
 		varInfo.setEndBias(varInfo.getEndBias()+biasEnd);
 		return varInfo;
+	}
+	
+	/** 输出为liftover的chain格式 */
+	public void writeToChain(String chainFile) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(chainFile, true);
+		for (List<CoordPair> lsCoordPair : mapChrId2LsCoorPairs.values()) {
+			for (CoordPair coordPair : lsCoordPair) {
+				txtWrite.writefileln(coordPair.toStringHead());
+				for (String indel : coordPair.readPerIndel()) {
+					txtWrite.writefileln(indel);
+				}
+			}
+		}
+		txtWrite.close();
+	}
+	
+	/** 输出为mummer的coord格式 */
+	public void writeToMummer(String mummerCoord) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(mummerCoord, true);
+		for (List<CoordPair> lsCoordPair : mapChrId2LsCoorPairs.values()) {
+			for (CoordPair coordPair : lsCoordPair) {
+				txtWrite.writefileln(coordPair.toString());
+			}
+		}
+		txtWrite.close();
 	}
 	
 }
