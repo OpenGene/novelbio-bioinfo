@@ -121,16 +121,7 @@ public class CoordTransformer {
 	
 	/** 输出为liftover的chain格式 */
 	public void writeToChain(String chainFile) {
-		TxtReadandWrite txtWrite = new TxtReadandWrite(chainFile, true);
-		for (List<CoordPair> lsCoordPair : mapChrId2LsCoorPairs.values()) {
-			for (CoordPair coordPair : lsCoordPair) {
-				txtWrite.writefileln(coordPair.toStringHead());
-				for (String indel : coordPair.readPerIndel()) {
-					txtWrite.writefileln(indel);
-				}
-			}
-		}
-		txtWrite.close();
+		writeToChain(mapChrId2LsCoorPairs, chainFile);
 	}
 	
 	/** 输出为mummer的coord格式 */
@@ -144,4 +135,17 @@ public class CoordTransformer {
 		txtWrite.close();
 	}
 	
+	/** 输出为liftover的chain格式 */
+	public static void writeToChain(Map<String, List<CoordPair>> mapChrId2LsCoorPairs, String chainFile) {
+		TxtReadandWrite txtWrite = new TxtReadandWrite(chainFile, true);
+		for (List<CoordPair> lsCoordPair : mapChrId2LsCoorPairs.values()) {
+			for (CoordPair coordPair : lsCoordPair) {
+				txtWrite.writefileln(coordPair.toStringHead());
+				for (String indel : coordPair.readPerIndel()) {
+					txtWrite.writefileln(indel);
+				}
+			}
+		}
+		txtWrite.close();
+	}
 }
