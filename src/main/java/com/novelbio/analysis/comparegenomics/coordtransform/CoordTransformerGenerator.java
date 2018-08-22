@@ -10,6 +10,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.analysis.seq.fasta.SeqHash;
 import com.novelbio.analysis.seq.fasta.SeqHashInt;
 import com.novelbio.analysis.seq.mapping.Align;
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -27,34 +28,40 @@ public class CoordTransformerGenerator {
 		coordTransformer.writeToChain(mummerPath+"irgsp-4vs1.chain");
 		coordTransformer.writeToMummer(mummerPath+"irgsp-4vs1.mummer.coord");
 		
-		TxtReadandWrite txtWriteUnknown = new TxtReadandWrite(mummerPath + "unknownsite.txt", true);
+		TxtReadandWrite txtWriteAll = new TxtReadandWrite(mummerPath + "allsite.txt", true);
 		
 		List<String> lsFiles = FileOperate.getLsFoldFileName("/media/winE/mywork/hongjun-gwas/MAP文件");
 		for (String file : lsFiles) {
 			TxtReadandWrite txtRead = new TxtReadandWrite(file);
-			TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.changeFileSuffix(file, ".irgsp1", null), true);
+			TxtReadandWrite txtWriteExist = new TxtReadandWrite(FileOperate.changeFileSuffix(file, ".irgsp1", null), true);
+			TxtReadandWrite txtWriteNone = new TxtReadandWrite(FileOperate.changeFileSuffix(file, ".irgsp1.notexist", null), true);
 			for (String content : txtRead.readlines()) {
 				String[] ss = content.split("\t");
 				Align align = new Align(ss[0], Integer.parseInt(ss[3]), Integer.parseInt(ss[3]));
 				VarInfo varInfoAlt = coordTransformer.coordTransform(align);
 				if (varInfoAlt == null) {
-					txtWriteUnknown.writefileln(content);
+					txtWriteNone.writefileln(ss[1]);
+					txtWriteAll.writefileln(ss[0] +"\t" + ss[3] + "\tNONE\tNONE");
 					continue;
 				}
-				txtWrite.writefileln(varInfoAlt.getRefID() + "\t" + ss[1] + "\t" + ss[2] + "\t" + varInfoAlt.getStartCis());
+				txtWriteExist.writefileln(varInfoAlt.getRefID() + "\t" + ss[1] + "\t" + ss[2] + "\t" + varInfoAlt.getStartCis());
+				txtWriteAll.writefileln(ss[0] +"\t" + ss[3] + "\t"+ varInfoAlt.getRefID() + "\t" + varInfoAlt.getStartCis());
 			}
-			txtWrite.close();
+			txtWriteExist.close();
+			txtWriteNone.close();
 			txtRead.close();
 		}
-		txtWriteUnknown.close();
+		txtWriteAll.close();
 	}
 	
 	public static CoordTransformer generateTransformerChain(String chainFile, String chrAlt) {
 		Map<String, List<CoordPair>> mapChrId2LsCoordPair = readChainFile(chainFile);
 		CoordTransformer coordTransformer = new CoordTransformer();
 		coordTransformer.setMapChrId2LsCoorPairs(mapChrId2LsCoordPair);
-		SeqHashInt seqHashAlt = new SeqHash(chrAlt);
-		coordTransformer.setSeqHashAlt(seqHashAlt);
+		if (StringOperate.isRealNull(chrAlt)) {
+			SeqHashInt seqHashAlt = new SeqHash(chrAlt);
+			coordTransformer.setSeqHashAlt(seqHashAlt);
+		}
 		return coordTransformer;
 	}
 	
@@ -66,6 +73,13 @@ public class CoordTransformerGenerator {
 		coordTransformer.setSeqHashAlt(seqHashAlt);
 		return coordTransformer;
 	}
+	
+	/** 将mummer转换为liftover chain文件 */
+	public static void convertMummer2Chain(String mummerFile, String mummerDelta, String refFai, String altFai, double cutoff, String chainFile) {
+		Map<String, List<CoordPair>> mapChrId2LsCoordPair = readMummerFile(mummerFile, mummerDelta, refFai, altFai, cutoff);
+		CoordTransformer.writeToChain(mapChrId2LsCoordPair, chainFile);
+	}
+	
 	
 	public static Map<String, List<CoordPair>> readChainFile(String chainFile) {
 		Map<String, List<CoordPair>> mapChrId2LsCoordPair = new LinkedHashMap<>();

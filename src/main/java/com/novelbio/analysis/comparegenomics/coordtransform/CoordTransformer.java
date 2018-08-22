@@ -41,6 +41,15 @@ public class CoordTransformer {
 		return transformSnpInfo(snpInfo, varInfo, seqHashAlt);
 	}
 	
+	/** 坐标转换 */
+	public VarInfo coordTransform(Align alignRef) {
+		List<CoordPair> lsCoordPairs = mapChrId2LsCoorPairs.get(alignRef.getRefID());
+		if (ArrayOperate.isEmpty(lsCoordPairs)) {
+			return null;
+		}
+		return coordTransform(lsCoordPairs, alignRef);
+	}
+	
 	@VisibleForTesting
 	protected static SnpInfo transformSnpInfo(SnpInfo snpInfo, VarInfo varInfo, SeqHashInt seqHashAlt) {
 		String ref = snpInfo.getSeqRef();
@@ -73,15 +82,6 @@ public class CoordTransformer {
 			throw new ExceptionNBCCoordTransformer("unsupported type " + snpInfo.getVarType() + " " + snpInfo.toString());
 		}
 		return snpInfoAlt;
-	}
-	
-	/** 坐标转换 */
-	public VarInfo coordTransform(Align alignRef) {
-		List<CoordPair> lsCoordPairs = mapChrId2LsCoorPairs.get(alignRef.getRefID());
-		if (ArrayOperate.isEmpty(lsCoordPairs)) {
-			return null;
-		}
-		return coordTransform(lsCoordPairs, alignRef);
 	}
 	
 	@VisibleForTesting
