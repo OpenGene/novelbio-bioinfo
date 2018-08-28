@@ -67,15 +67,13 @@ public class PathDetailNBC {
 	/** 有最后的"/" */
 	public static String getGenomePath() {
 		String genomePath = properties.getProperty("GenomePath");
-//		if (!genomePath.startsWith("/") && !genomePath.startsWith("\\")) {
-//			if (!FileOperate.isFileDirectory(genomePath)) {
-//				genomePath = PathDetail.getProjectPathLinux() + genomePath;
-//			}
-//		}
-		
 		return FileOperate.addSep(genomePath);
 	}
-	
+	/** 没有最后的"/" */
+	public static String getGenomePathWithoutSep() {
+		String genomePath = properties.getProperty("GenomePath");
+		return FileOperate.removeSep(genomePath);
+	}
 	/** 内部自动加空格 */
 	public static String getSpeciesFile() {
 		String speciesFile = properties.getProperty("SpeciesFile");
