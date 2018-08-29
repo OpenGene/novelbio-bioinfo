@@ -64,9 +64,7 @@ public class ExonSplicingResultUnit {
 		accId = gffDetailGene.getNameSingle();
 		alignLoc = exonSplicingTest.getDifSite();
 		alignLoc.setChrID(mapChrIdLowcase2ChrId.get(alignLoc.getRefID().toLowerCase()));
-		
 		lsAlignFlank = exonSplicingTest.getLsSpliceSitFlank();
-		alignLoc.setChrID(mapChrIdLowcase2ChrId.get(alignLoc.getRefID().toLowerCase()));
 		
 		try {
 			lsBeforeThisAfterAlign = exonSplicingTest.getLsAlignBeforeThisAfter(mapChrIdLowcase2ChrId);
