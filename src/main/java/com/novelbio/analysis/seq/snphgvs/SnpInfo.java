@@ -468,6 +468,11 @@ public class SnpInfo {
 		Conversions,
 		Translocations,
 	}
-
+	
+	@Override
+	public boolean equals(Object obj) {
+		// TODO-实现SnpInfo的equals方法
+		return super.equals(obj);
+	}
 }
 
