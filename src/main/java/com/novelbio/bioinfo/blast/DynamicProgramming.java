@@ -1,7 +1,7 @@
-package com.novelbio.bioinfo.blastzj;
+package com.novelbio.bioinfo.blast;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.bioinfo.blastzj.Cell;
+import com.novelbio.bioinfo.blast.Cell;
 
 /**
  * @author Paul Reiners

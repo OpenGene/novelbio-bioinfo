@@ -1,4 +1,4 @@
-package com.novelbio.bioinfo.blastzj;
+package com.novelbio.bioinfo.blast;
 
 import com.novelbio.bioinfo.fasta.SeqFasta;
 
