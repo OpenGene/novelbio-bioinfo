@@ -1,9 +1,9 @@
 package uk.ac.babraham.FastQC.Modules;
 
-import uk.ac.babraham.FastQC.Sequence.Sequence;
+import com.novelbio.bioinfo.fastq.FQrecordCopeInt;
+import com.novelbio.bioinfo.fastq.FastQRecord;
 
-import com.novelbio.analysis.seq.fastq.FQrecordCopeInt;
-import com.novelbio.analysis.seq.fastq.FastQRecord;
+import uk.ac.babraham.FastQC.Sequence.Sequence;
 
 public abstract class FastQCmodules implements FQrecordCopeInt, QCModule {
 

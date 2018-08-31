@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.novelbio.analysis.seq.genome.gffoperate.GffCodGeneDU;
-import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
 import com.novelbio.base.SepSign;
+import com.novelbio.bioinfo.gff.GffCodGeneDU;
+import com.novelbio.bioinfo.gff.GffGene;
+import com.novelbio.bioinfo.gff.GffHashGene;
 /**
  * ID转换，已知两个gff文件，将一个gff与另一个gff进行比对，找到相同的基因然后做ID转换。
  * @author zong0jie
@@ -42,11 +42,11 @@ public class GffIDconvert {
 	public void convert() {
 		setGeneAlreadFind.clear();
 		mapQgene2Sgene.clear();
-		for (GffDetailGene gffDetailGene : gffHashGeneQuery.getLsGffDetailGenes()) {
+		for (GffGene gffDetailGene : gffHashGeneQuery.getLsGffDetailGenes()) {
 			searchGffGene(gffDetailGene, gffHashGeneSub, true);
 		}
 		
-		for (GffDetailGene gffDetailGene : gffHashGeneSub.getLsGffDetailGenes()) {
+		for (GffGene gffDetailGene : gffHashGeneSub.getLsGffDetailGenes()) {
 			if (setGeneAlreadFind.contains(gffDetailGene.getNameSingle())) {
 				continue;
 			}
@@ -60,7 +60,7 @@ public class GffIDconvert {
 	 * @param gffCodGeneDU
 	 * @param q2s 是query 到 subject 还是 subject 到 query
 	 */
-	private void searchGffGene(GffDetailGene gffDetailGene, GffHashGene gffHash, boolean q2s) {
+	private void searchGffGene(GffGene gffDetailGene, GffHashGene gffHash, boolean q2s) {
 		String chrId = gffDetailGene.getRefID();
 		int start = gffDetailGene.getStartAbs(), end = gffDetailGene.getEndAbs();
 		String keyQ = gffDetailGene.getNameSingle();
@@ -69,11 +69,11 @@ public class GffIDconvert {
 		if (gffCodGeneDU == null) {
 			return;
 		}
-		Set<GffDetailGene> setGenes = gffCodGeneDU.getCoveredOverlapGffGene();
+		Set<GffGene> setGenes = gffCodGeneDU.getCoveredOverlapGffGene();
 
 		if (!setGenes.isEmpty()) {
-			for (GffDetailGene gffDetailGeneSub : setGenes) {
-				for (GffDetailGene gffDetailGeneSubFinal : gffDetailGeneSub.getlsGffDetailGenes()) {
+			for (GffGene gffDetailGeneSub : setGenes) {
+				for (GffGene gffDetailGeneSubFinal : gffDetailGeneSub.getlsGffDetailGenes()) {
 					String keyS = gffDetailGeneSubFinal.getNameSingle();
 					if (q2s) {
 						String keyQ2S = keyQ + SepSign.SEP_ID + keyS;

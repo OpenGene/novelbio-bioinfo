@@ -2,10 +2,10 @@ package com.novelbio.database.updatedb.database;
 
 import java.util.ArrayList;
 
-import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.fasta.SeqFasta;
+import com.novelbio.bioinfo.fasta.SeqFastaHash;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.modgeneid.GeneID;
 public class Petunia {

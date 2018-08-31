@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.bioinfo.gff.GffGene;
+import com.novelbio.bioinfo.gff.GffHashGene;
 import com.novelbio.database.domain.species.Species;
 import com.sun.corba.se.spi.orb.StringPair;
 
@@ -85,7 +85,7 @@ public class Rice3KIndel {
 		for (String content : txtRead.readlines(2)) {
 			String[] ss = content.split("\t");
 			List<String> lsInfo = ArrayOperate.converArray2List(ss);
-			GffDetailGene detailGene = gffHashGene.searchLOC(ss[0]);
+			GffGene detailGene = gffHashGene.searchLOC(ss[0]);
 			if (detailGene == null) {
 				txtRead.close();
 				txtWrite.close();

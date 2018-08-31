@@ -2,7 +2,7 @@ package com.novelbio.database.model.geneanno;
 
 import junit.framework.TestCase;
 
-import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
+import com.novelbio.database.domain.species.IndexMappingMaker;
 import com.novelbio.database.domain.species.Species;
 import com.novelbio.database.domain.species.SpeciesIndexMappingMaker;
 import com.novelbio.database.domain.species.Species.SeqType;

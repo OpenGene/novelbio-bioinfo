@@ -3,8 +3,8 @@ package com.novelbio.database.updatedb.database;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.fasta.SeqFastaHash;
 import com.novelbio.database.domain.modgeneid.GeneID;
 /**
  * 常规affy的注释文件，仅导入affy探针，其他注释通通不导入<br>

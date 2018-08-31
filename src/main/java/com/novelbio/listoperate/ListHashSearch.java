@@ -11,8 +11,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.analysis.seq.genome.ExceptionNbcGFF;
 import com.novelbio.base.fileOperate.ExceptionNbcFile;
+import com.novelbio.bioinfo.gff.ExceptionNbcGFF;
 
 
 /**

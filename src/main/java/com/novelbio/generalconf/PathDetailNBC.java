@@ -12,9 +12,9 @@ import java.util.Properties;
 import org.apache.log4j.Logger;
 import org.assertj.core.util.VisibleForTesting;
 
-import com.novelbio.analysis.annotation.cog.EnumCogType;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.annotation.cog.EnumCogType;
 
 public class PathDetailNBC {
 	private static final Logger logger = Logger.getLogger(PathDetailNBC.class);

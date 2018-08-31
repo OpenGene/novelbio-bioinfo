@@ -13,9 +13,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.annotation.blast.BlastType;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.model.species.TaxInfo;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;

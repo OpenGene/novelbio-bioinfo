@@ -1,7 +1,7 @@
 package com.novelbio.database.domain.species;
 
-import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.mirna.ListMiRNAdat;
 import com.novelbio.database.model.species.TaxInfo;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.generalconf.PathDetailNBC;

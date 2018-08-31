@@ -10,11 +10,11 @@ import org.apache.log4j.Logger;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.novelbio.analysis.seq.genome.gffoperate.GffType;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.gff.GffType;
 import com.novelbio.database.model.geneanno.SpeciesFile;
 import com.novelbio.database.model.species.TaxInfo;
 import com.novelbio.generalconf.PathDetailNBC;

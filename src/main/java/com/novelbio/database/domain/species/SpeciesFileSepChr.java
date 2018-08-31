@@ -8,10 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
-import com.novelbio.analysis.seq.fasta.format.NCBIchromFaChangeFormat;
-import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
-import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.curator.CuratorNBC;
@@ -19,6 +15,10 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.util.ServiceEnvUtil;
+import com.novelbio.bioinfo.fasta.format.ChrFileFormat;
+import com.novelbio.bioinfo.fasta.format.NCBIchromFaChangeFormat;
+import com.novelbio.bioinfo.gff.GffHashGene;
+import com.novelbio.bioinfo.sam.SamIndexRefsequence;
 import com.novelbio.database.model.geneanno.SpeciesFile;
 import com.novelbio.generalconf.PathDetailNBC;
 

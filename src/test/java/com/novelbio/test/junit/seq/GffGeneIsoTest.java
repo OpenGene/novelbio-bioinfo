@@ -6,12 +6,12 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoCis;
-import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoTrans;
-import com.novelbio.analysis.seq.genome.gffoperate.ListGff;
+import com.novelbio.bioinfo.gff.ExonInfo;
+import com.novelbio.bioinfo.gff.GffGene;
+import com.novelbio.bioinfo.gff.GffIso;
+import com.novelbio.bioinfo.gff.GffIsoCis;
+import com.novelbio.bioinfo.gff.GffIsoTrans;
+import com.novelbio.bioinfo.gff.ListGff;
 import com.novelbio.database.domain.modgeneid.GeneType;
 import com.novelbio.listoperate.ListAbsSearch;
 
@@ -19,8 +19,8 @@ public class GffGeneIsoTest extends TestCase {
 	@Test
 	public void testGffGeneIsoCis()
 	{
-		GffDetailGene gffDetailGene = new GffDetailGene("chr1","sefes", true);
-		GffGeneIsoInfo gffGeneIsoCis = GffGeneIsoInfo.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, true);
+		GffGene gffDetailGene = new GffGene("chr1","sefes", true);
+		GffIso gffGeneIsoCis = GffIso.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, true);
 		gffGeneIsoCis.add(new ExonInfo(true, 0, 3));
 		gffGeneIsoCis.add(new ExonInfo(true,5, 10));
 		gffGeneIsoCis.add(new ExonInfo(true,20, 30));
@@ -63,8 +63,8 @@ public class GffGeneIsoTest extends TestCase {
 
 	@Test
 	public void testGffGeneIsoTrans() {
-		GffDetailGene gffDetailGene = new GffDetailGene("chr1","sefes", false);
-		GffGeneIsoInfo gffGeneIsoTrans = GffGeneIsoInfo.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, false);
+		GffGene gffDetailGene = new GffGene("chr1","sefes", false);
+		GffIso gffGeneIsoTrans = GffIso.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, false);
 
 		gffGeneIsoTrans.add(new ExonInfo(false, 50, 40));
 		gffGeneIsoTrans.add(new ExonInfo(false, 30, 20));

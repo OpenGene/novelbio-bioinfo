@@ -8,12 +8,12 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.fasta.SeqFastaReader;
-import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.fasta.SeqFasta;
+import com.novelbio.bioinfo.fasta.SeqFastaHash;
+import com.novelbio.bioinfo.fasta.SeqFastaReader;
+import com.novelbio.bioinfo.mirna.ListMiRNAdat;
 
 /** 提取小RNA的一系列序列 */
 public class ExtractSmallRNASeq {

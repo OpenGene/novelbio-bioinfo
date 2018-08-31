@@ -5,15 +5,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.novelbio.analysis.seq.genome.gffoperate.GffCodGeneDU;
-import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffoperate.GffHashGenePlant;
-import com.novelbio.analysis.seq.genome.gffoperate.GffType;
-import com.novelbio.analysis.seq.genome.gffoperate.ListDetailBin;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.gff.GffCodGeneDU;
+import com.novelbio.bioinfo.gff.GffGene;
+import com.novelbio.bioinfo.gff.GffHashGene;
+import com.novelbio.bioinfo.gff.GffHashGenePlant;
+import com.novelbio.bioinfo.gff.GffType;
+import com.novelbio.bioinfo.gff.ListDetailBin;
 
 /**
  * 用id对应的方法，将gm的ID对应到NCBI上去
@@ -99,11 +99,11 @@ public class GlyMaxIDNCBI {
 		for (ArrayList<ListDetailBin> lsGffGene : hashLsGffGene.values()) {
 			for (ListDetailBin gffDetailGene : lsGffGene) {
 				GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(gffDetailGene.getRefID(), (int)gffDetailGene.getStartAbs(), (int)gffDetailGene.getEndAbs());
-				List<GffDetailGene> lsOverlapGffGene = gffCodGeneDU.getAllGffDetail();
+				List<GffGene> lsOverlapGffGene = gffCodGeneDU.getAllGffDetail();
 				if (lsOverlapGffGene.size() > 3) {
 					lsOverlapGffGene = gffCodGeneDU.getLsGffDetailMid();
 				}
-				for (GffDetailGene gffDetailGene2 : lsOverlapGffGene) {
+				for (GffGene gffDetailGene2 : lsOverlapGffGene) {
 					txtOutGene.writefileln(gffDetailGene2.getName() + "\t" + gffDetailGene.getNameSingle() + "\t" + gffDetailGene.getName().get(1));
 				}
 			}

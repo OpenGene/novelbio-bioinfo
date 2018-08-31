@@ -10,9 +10,9 @@ import org.powermock.api.mockito.PowerMockito;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffoperate.GffType;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.gff.GffHashGene;
+import com.novelbio.bioinfo.gff.GffType;
 import com.novelbio.database.domain.species.SpeciesFileExtract;
 import com.novelbio.database.model.geneanno.EnumSpeciesFile;
 import com.novelbio.database.model.geneanno.SpeciesFile;

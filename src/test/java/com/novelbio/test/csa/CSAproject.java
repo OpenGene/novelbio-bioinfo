@@ -13,13 +13,13 @@ import java.util.TreeMap;
 
 import com.google.common.collect.HashMultimap;
 import com.mongodb.util.StringParseUtil;
-import com.novelbio.analysis.seq.GeneExpTable;
-import com.novelbio.analysis.seq.GeneExpTable.EnumAddAnnoType;
-import com.novelbio.analysis.seq.rnaseq.RPKMcomput.EnumExpression;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.base.GeneExpTable;
+import com.novelbio.bioinfo.base.GeneExpTable.EnumAddAnnoType;
+import com.novelbio.software.expression.RPKMcomput.EnumExpression;
 
 public class CSAproject {
 	

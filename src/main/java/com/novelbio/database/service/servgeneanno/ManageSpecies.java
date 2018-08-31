@@ -11,12 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.novelbio.analysis.seq.genome.gffoperate.GffType;
-import com.novelbio.analysis.seq.mirna.ListMiRNAdat;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.gff.GffType;
+import com.novelbio.bioinfo.mirna.ListMiRNAdat;
 import com.novelbio.database.dao.geneanno.RepoSpeciesFile;
 import com.novelbio.database.dao.species.RepoTaxInfo;
 import com.novelbio.database.model.geneanno.EnumSpeciesFile;

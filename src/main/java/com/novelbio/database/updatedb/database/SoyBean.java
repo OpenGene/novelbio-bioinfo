@@ -1,9 +1,9 @@
 package com.novelbio.database.updatedb.database;
 
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.fasta.SeqFastaHash;
 import com.novelbio.database.DBAccIDSource;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.model.geneanno.Gene2Go;

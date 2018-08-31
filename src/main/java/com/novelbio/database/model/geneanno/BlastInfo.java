@@ -14,11 +14,11 @@ import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.novelbio.analysis.annotation.blast.BlastStatistics;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.bioinfo.annotation.blast.BlastStatistics;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.service.servgeneanno.ManageBlastInfo;
 

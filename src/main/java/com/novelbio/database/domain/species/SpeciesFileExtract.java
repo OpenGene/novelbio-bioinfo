@@ -6,20 +6,20 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.analysis.seq.fasta.FastaDictMake;
-import com.novelbio.analysis.seq.fasta.SeqFasta;
-import com.novelbio.analysis.seq.fasta.SeqFastaReader;
-import com.novelbio.analysis.seq.fasta.SeqHash;
-import com.novelbio.analysis.seq.genome.GffChrAbs;
-import com.novelbio.analysis.seq.genome.GffChrSeq;
-import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffoperate.GffType;
-import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene.GeneStructure;
-import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.fasta.FastaDictMake;
+import com.novelbio.bioinfo.fasta.SeqFasta;
+import com.novelbio.bioinfo.fasta.SeqFastaReader;
+import com.novelbio.bioinfo.fasta.SeqHash;
+import com.novelbio.bioinfo.gff.GffHashGene;
+import com.novelbio.bioinfo.gff.GffIso;
+import com.novelbio.bioinfo.gff.GffType;
+import com.novelbio.bioinfo.gff.GffGene.GeneStructure;
+import com.novelbio.bioinfo.gffchr.GffChrAbs;
+import com.novelbio.bioinfo.gffchr.GffChrSeq;
+import com.novelbio.bioinfo.sam.SamIndexRefsequence;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modgeneid.GeneType;
 import com.novelbio.database.model.geneanno.EnumSpeciesFile;
@@ -174,7 +174,7 @@ public class SpeciesFileExtract {
 			String isoName = seqFasta.getSeqName();
 			String symbol = null;
 			if (gffHashGene != null) {
-				GffGeneIsoInfo gffGeneIsoInfo = gffHashGene.searchISO(isoName);
+				GffIso gffGeneIsoInfo = gffHashGene.searchISO(isoName);
 				if (gffGeneIsoInfo != null) {
 					symbol = gffGeneIsoInfo.getParentGeneName();
 				}

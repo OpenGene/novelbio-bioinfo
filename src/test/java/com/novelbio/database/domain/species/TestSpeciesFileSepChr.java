@@ -8,12 +8,12 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.fasta.ChrSeqHash;
-import com.novelbio.analysis.seq.fasta.format.ChrFileFormat;
-import com.novelbio.analysis.seq.fasta.format.TestChrFileFormat;
-import com.novelbio.analysis.seq.genome.gffoperate.GffType;
-import com.novelbio.analysis.seq.sam.SamIndexRefsequence;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.fasta.ChrSeqHash;
+import com.novelbio.bioinfo.fasta.format.ChrFileFormat;
+import com.novelbio.bioinfo.fasta.format.TestChrFileFormat;
+import com.novelbio.bioinfo.gff.GffType;
+import com.novelbio.bioinfo.sam.SamIndexRefsequence;
 import com.novelbio.database.domain.species.SpeciesFileSepChr;
 import com.novelbio.database.model.geneanno.SpeciesFile;
 

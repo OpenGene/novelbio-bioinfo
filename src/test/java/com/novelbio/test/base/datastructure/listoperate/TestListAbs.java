@@ -7,10 +7,10 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.genome.gffoperate.ExonInfo;
-import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoCis;
-import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoTrans;
+import com.novelbio.bioinfo.gff.ExonInfo;
+import com.novelbio.bioinfo.gff.GffIso;
+import com.novelbio.bioinfo.gff.GffIsoCis;
+import com.novelbio.bioinfo.gff.GffIsoTrans;
 import com.novelbio.database.domain.modgeneid.GeneType;
 import com.novelbio.listoperate.ListAbs;
 /**
@@ -32,8 +32,8 @@ public class TestListAbs extends TestCase {
 	 */
 	@Test
 	public void testTransIsoNorm() {
-		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
-		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
+		GffIso isoTrans1 = GffIso.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
+		GffIso isoTrans2 = GffIso.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
 		//<----------20--30--------------40-50------------------60-70--------------80-90---<
 		//<----------20---33--------------------------------------55-69---------------80--92---<
 		isoTrans1.add(new ExonInfo(false, 80, 90));
@@ -44,7 +44,7 @@ public class TestListAbs extends TestCase {
 		isoTrans2.add(new ExonInfo(false, 80, 92));
 		isoTrans2.add(new ExonInfo(false, 55, 69));
 		isoTrans2.add(new ExonInfo(false, 20, 33));
-		ArrayList<GffGeneIsoInfo> lsIso = new ArrayList<GffGeneIsoInfo>();
+		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
 		ArrayList<int[]> lsSep = ListAbs.getCombSep(false, lsIso, false);
@@ -66,8 +66,8 @@ public class TestListAbs extends TestCase {
 	 */
 	@Test
 	public void testTransIsoCasstteDouble() {
-		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
-		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
+		GffIso isoTrans1 = GffIso.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
+		GffIso isoTrans2 = GffIso.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
 		//<----------20--30--------------40-50----52-54--------------60-70--------------80-90---<
 		//<----------20---33-----------------------------------------------55-69---------------80--92---<
 		isoTrans1.add(new ExonInfo(false, 80, 90));
@@ -79,7 +79,7 @@ public class TestListAbs extends TestCase {
 		isoTrans2.add(new ExonInfo(false, 80, 92));
 		isoTrans2.add(new ExonInfo(false, 55, 69));
 		isoTrans2.add(new ExonInfo(false, 20, 33));
-		ArrayList<GffGeneIsoInfo> lsIso = new ArrayList<GffGeneIsoInfo>();
+		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
 		ArrayList<int[]> lsSep = ListAbs.getCombSep(false, lsIso, false);
@@ -102,8 +102,8 @@ public class TestListAbs extends TestCase {
 	 */
 	@Test
 	public void testCisIsoCasstteDouble() {
-		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, true);
-		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, true);
+		GffIso isoTrans1 = GffIso.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, true);
+		GffIso isoTrans2 = GffIso.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, true);
 		//<----------20--30-----------------40-50----52-54--------------60----70----------80-------90---<
 		//<----------20---33----35-36----------------------------------55------69-------71---82---84--92---<
 		isoTrans1.add(new ExonInfo(true, 20, 30));
@@ -118,7 +118,7 @@ public class TestListAbs extends TestCase {
 		isoTrans2.add(new ExonInfo(true, 71, 82));
 		isoTrans2.add(new ExonInfo(true, 84, 92));
 		
-		ArrayList<GffGeneIsoInfo> lsIso = new ArrayList<GffGeneIsoInfo>();
+		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
 		ArrayList<int[]> lsSep = ListAbs.getCombSep(true, lsIso, false);
@@ -144,8 +144,8 @@ public class TestListAbs extends TestCase {
 	 */
 	@Test
 	public void testCisIsoSep() {
-		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, true);
-		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, true);
+		GffIso isoTrans1 = GffIso.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, true);
+		GffIso isoTrans2 = GffIso.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, true);
 		//<----------20--30-----------------40-50----52-54--------------60----70----------80-------90---<
 		//<----------20---33----35-36----------------------------------55------69-------71---82---84--92---<
 		isoTrans1.add(new ExonInfo(true, 20, 30));
@@ -160,7 +160,7 @@ public class TestListAbs extends TestCase {
 		isoTrans2.add(new ExonInfo(true, 71, 82));
 		isoTrans2.add(new ExonInfo(true, 84, 92));
 		
-		ArrayList<GffGeneIsoInfo> lsIso = new ArrayList<GffGeneIsoInfo>();
+		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
 		ArrayList<int[]> lsSep = ListAbs.getSep(true, lsIso);
@@ -192,8 +192,8 @@ public class TestListAbs extends TestCase {
 	 */
 	@Test
 	public void testTransIsoSep() {
-		GffGeneIsoInfo isoTrans1 = GffGeneIsoInfo.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
-		GffGeneIsoInfo isoTrans2 = GffGeneIsoInfo.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
+		GffIso isoTrans1 = GffIso.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
+		GffIso isoTrans2 = GffIso.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
 		//<----------20--30-----------------40-50----52-54--------------60----70----------80-------90---<
 		//<----------20---33----35-36----------------------------------55------69-------71---82---84--92---<
 		isoTrans1.add(new ExonInfo(false, 20, 30));
@@ -210,7 +210,7 @@ public class TestListAbs extends TestCase {
 		isoTrans2.add(new ExonInfo(false, 84, 92));
 		isoTrans2.sort();
 		
-		ArrayList<GffGeneIsoInfo> lsIso = new ArrayList<GffGeneIsoInfo>();
+		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
 		ArrayList<int[]> lsSep = ListAbs.getSep(false, lsIso);

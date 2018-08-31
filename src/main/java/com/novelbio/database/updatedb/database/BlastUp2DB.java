@@ -7,9 +7,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.annotation.blast.BlastType;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.annotation.blast.BlastType;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.species.Species;
 import com.novelbio.database.model.geneanno.BlastFileInfo;

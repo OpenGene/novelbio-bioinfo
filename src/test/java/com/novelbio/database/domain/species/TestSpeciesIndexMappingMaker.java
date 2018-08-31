@@ -5,12 +5,11 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.novelbio.analysis.seq.mapping.IndexMappingMaker;
-import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexMapSplice;
-import com.novelbio.analysis.seq.mapping.IndexMappingMaker.IndexTophat;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.species.SpeciesFileExtract;
 import com.novelbio.database.domain.species.SpeciesIndexMappingMaker;
+import com.novelbio.database.domain.species.IndexMappingMaker.IndexMapSplice;
+import com.novelbio.database.domain.species.IndexMappingMaker.IndexTophat;
 import com.novelbio.database.model.geneanno.EnumSpeciesFile;
 import com.novelbio.database.model.geneanno.SpeciesFile;
 import com.novelbio.database.model.information.SoftWareInfo.SoftWare;

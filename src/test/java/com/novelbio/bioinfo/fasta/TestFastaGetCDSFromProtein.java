@@ -1,0 +1,85 @@
+package com.novelbio.bioinfo.fasta;
+
+import com.novelbio.bioinfo.fasta.FastaGetCDSFromProtein;
+import com.novelbio.bioinfo.fasta.SeqFasta;
+import com.novelbio.bioinfo.gff.GffIso;
+
+import junit.framework.TestCase;
+
+public class TestFastaGetCDSFromProtein extends TestCase{
+//	public static void main(String[] args) {
+//		SeqFasta seqFasta = new SeqFasta("TCCTCCGCTGCCGAGGCATCATGGCCGCTAAGTCAGACGGGAGGCTGAAGATGAA" +
+//				"GAAGAGCAGCGACGTGGCGTTCACCCCGCTGCAGAACTCGGACAATTCGGGCTCTTAGCAAGGACTGGCTCCAGGCTTGCC");
+//		System.out.println(seqFasta.toStringAA(true, 0));
+//		System.out.println(seqFasta.toStringAA(true, 1));
+//		System.out.println(seqFasta.toStringAA(true, 2));
+//	}
+	
+	
+	FastaGetCDSFromProtein fastaGetCDSFromProtein;
+	protected void setUp() throws Exception {
+		
+	}
+	
+	@Override
+	protected void tearDown() throws Exception {
+		// TODO Auto-generated method stub
+		super.tearDown();
+	}
+	
+	public void test() {
+		assertStartEndUsual();
+		assertStartEndNoStartEnd();
+		assertStartEndNoStartEndAndWithATGUAG();
+		assertStartEndNoStartEndAndNoATGUAG2();
+	}
+	
+	private void assertStartEndUsual() {
+		SeqFasta seqFasta = new SeqFasta("testaaa", "TCCTCCGCTGCCGAGGCATCATGGCCGCTAAGTCAGACGGGAGGCTGAAGATGAA" +
+				"GAAGAGCAGCGACGTGGCGTTCACCCCGCTGCAGAACTCGGACAATTCGGGCTCTTAGCAAGGACTGGCTCCAGGCTTGCC");
+		String proteinSeq = "MAAKSDGRLKMKKSSDVAFTPLQNSDNSGS";
+		fastaGetCDSFromProtein = new FastaGetCDSFromProtein(seqFasta, proteinSeq);
+		GffIso gffGeneIsoInfo = fastaGetCDSFromProtein.getGffGeneIsoInfo();
+		assertEquals(21, gffGeneIsoInfo.getATGsite());
+		assertEquals(113, gffGeneIsoInfo.getUAGsite());
+	}
+	/** protein 没有端点并且有错配的测试 */
+	private void assertStartEndNoStartEnd() {
+		SeqFasta seqFasta = new SeqFasta("testaaa", "TCCTCCGCTGCCGAGGCATCATGGCCGCTAAGTCAGACGGGAGGCTGAAGATGAA" +
+				"GAAGAGCAGCGACGTGGCGTTCACCCCGCTGCAGAACTCGGACAATTCGGGCTCTTAGCAAGGACTGGCTCCAGGCTTGCC");
+		String proteinSeq = "XKSDGRLKMK_KSSDVAFTPLQNXDNS"; //蛋白没有起点和终点，下划线表示gap，X表示错配
+		fastaGetCDSFromProtein = new FastaGetCDSFromProtein(seqFasta, proteinSeq);
+		GffIso gffGeneIsoInfo = fastaGetCDSFromProtein.getGffGeneIsoInfo();
+		assertEquals(21, gffGeneIsoInfo.getATGsite());
+		assertEquals(113, gffGeneIsoInfo.getUAGsite());
+	}
+	
+	/** protein 没有端点并且有错配
+	 * 序列有ATG和UAG
+	 */
+	private void assertStartEndNoStartEndAndWithATGUAG() {
+		SeqFasta seqFasta = new SeqFasta("testaaa", "TCTAGCGCTGCCGAGGCATCCTGGCCGCTAAGTCAGACGGGAGGCTGAAGATGAA" +
+				"GAAGAGCAGCGACGTGGCGTTCACCCCGCTGCAGAACTCGGACAATTCGGGCTCTAACTAAGGACTGGCTCCAGGCTTGCC");
+		String proteinSeq = "XKSDGRLKMK_KSSDVAFTPLQNXDNS"; //蛋白没有起点和终点，下划线表示gap，X表示错配
+		
+		fastaGetCDSFromProtein = new FastaGetCDSFromProtein(seqFasta, proteinSeq);
+		fastaGetCDSFromProtein.setGetBlastIso(true);
+		GffIso gffGeneIsoInfo = fastaGetCDSFromProtein.getGffGeneIsoInfo();
+		assertEquals(6, gffGeneIsoInfo.getATGsite());
+		assertEquals(116, gffGeneIsoInfo.getUAGsite());
+	}
+	
+	/** protein 没有端点并且有错配
+	 * 序列没有ATG和UAG
+	 * 但是蛋白的最前面有个UAG，那么设定ATG位点应该在UAG后面
+	 */
+	private void assertStartEndNoStartEndAndNoATGUAG2() {
+		SeqFasta seqFasta = new SeqFasta("testaaa", "TCCTCCGCTGCTAAGGCATCCTGGCCGCTAAGTCAGACGGGAGGCTGAAGATGAA" +
+				"GAAGAGCAGCGACGTGGCGTTCACCCCGCTGCAGAACTCGGACAATTCGGGCTCTAAGCAAGGACTGGCTCCAGGCTTGCC");
+		String proteinSeq = "XKSDGRLKMK_KSSDVAFTPLQNXDNS"; //蛋白没有起点和终点，下划线表示gap，X表示错配
+		fastaGetCDSFromProtein = new FastaGetCDSFromProtein(seqFasta, proteinSeq);
+		GffIso gffGeneIsoInfo = fastaGetCDSFromProtein.getGffGeneIsoInfo();
+		assertEquals(15, gffGeneIsoInfo.getATGsite());
+		assertEquals(134, gffGeneIsoInfo.getUAGsite());
+	}
+}

@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.PagingAndSortingRepository;
 
-import com.novelbio.analysis.seq.genome.gffoperate.GffFileUnit;
+import com.novelbio.bioinfo.gff.GffFileUnit;
 
 public interface RepoGffFileUnit extends PagingAndSortingRepository<GffFileUnit, String> {	
 	@Query(value="{ 'gffFileId' : ?0, 'chrId': ?1, 'trunkNum': ?2 }")

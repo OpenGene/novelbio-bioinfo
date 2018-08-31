@@ -18,12 +18,12 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.novelbio.analysis.seq.genome.gffoperate.GffType;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.gff.GffType;
 import com.novelbio.database.domain.species.ExceptionNbcSpeciesNotExist;
 import com.novelbio.database.service.servgeneanno.IManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;

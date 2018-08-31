@@ -4,7 +4,10 @@ import java.awt.Color;
 import java.awt.Font;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
+import org.apache.commons.math3.analysis.function.Add;
 import org.apache.log4j.Logger;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -26,9 +29,10 @@ import com.novelbio.base.plot.PlotBar;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.PlotBox.BoxInfo;
 
-public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin>, ListCodAbsDu<HistBin,ListCodAbs<HistBin>>> {
-	private static final Logger logger = Logger.getLogger(HistList.class);
-	private static final long serialVersionUID = 1481673037539688125L;
+public abstract class HistList implements Iterable<HistBin> {
+	List<HistBin> lsHistBins = new ArrayList<>();
+	
+	String name;
 	
 	/** 总共多少数字 */
 	long allNum = 0;
@@ -36,6 +40,11 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	
 	PlotScatter plotScatter;
 	
+	protected abstract boolean isCis5To3();
+	
+	public String getName() {
+		return name;
+	}
 	/**
 	 * 默认是左开右闭
 	 * @param histBinType
@@ -43,52 +52,35 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	public void setHistBinType(HistBinType histBinType) {
 		this.histBinType = histBinType;
 	}
-	
-	@Override
-	protected ListCodAbs<HistBin> creatGffCod(String listName, int Coordinate) {
-		ListCodAbs<HistBin> lsAbs = new ListCodAbs<HistBin>(listName, Coordinate);
-		return lsAbs;
+	public List<HistBin> getLsHistBins() {
+		return lsHistBins;
 	}
-
-	@Override
-	protected ListCodAbsDu<HistBin, ListCodAbs<HistBin>> creatGffCodDu(
-			ListCodAbs<HistBin> gffCod1, ListCodAbs<HistBin> gffCod2) {
-		ListCodAbsDu<HistBin, ListCodAbs<HistBin>> lsResult= new ListCodAbsDu<HistBin, ListCodAbs<HistBin>>(gffCod1, gffCod2);
-		return lsResult;
-	}
-	
-	/**
-	 * 获得的每一个信息都是实际的而没有clone
-	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
-	 * 采用clone的方法获得信息
-	 * 没找到就返回null
-	 */
-	@Deprecated
-	public ListCodAbs<HistBin> searchLocation(int Coordinate) {
-		return super.searchLocation(Coordinate);
-	}
-	@Deprecated
-	public boolean add(HistBin e) {
-		// TODO Auto-generated method stub
-		return super.add(e);
-	}
-	/**
-	 * 返回双坐标查询的结果，内部自动判断 cod1 和 cod2的大小
-	 * 如果cod1 和cod2 有一个小于0，那么坐标不存在，则返回null
-	 * @param chrID 内部自动小写
-	 * @param cod1 必须大于0
-	 * @param cod2 必须大于0
-	 * @return
-	 */
-	@Deprecated
-	public ListCodAbsDu<HistBin, ListCodAbs<HistBin>> searchLocationDu(int cod1, int cod2) {
-		return super.searchLocationDu(cod1, cod2);
+	public void remove(int index) {
+		lsHistBins.remove(index);
 	}
 	
 	public void setPlotScatter(PlotScatter plotScatter) {
 		this.plotScatter = plotScatter;
 	}
-	
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int size() {
+		return lsHistBins.size();
+	}
+	public HistBin get(int index) {
+		return lsHistBins.get(index);
+	}
+	public boolean add(HistBin histBin) {
+		return lsHistBins.add(histBin);
+	}
+	public void add(int index, HistBin histBin) {
+		lsHistBins.add(index, histBin);
+	}
+	@Override
+	public Iterator<HistBin> iterator() {
+		return lsHistBins.iterator();
+	}
 	/**
 	 * 自动设置histlist的bin，从0开始，每隔interval设置一位，名字就起interval
 	 * @param histList
@@ -97,7 +89,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	 * @param maxSize 最大值，如果最后一位bin都没到最大值，接下来一个bin就和最大值合并
 	 */
 	public void setBinAndInterval(int binNum, int interval,int maxSize) {
-		clearElements();
+		lsHistBins.clear();
 		setStartBin(interval, interval + "", 0, interval);
 		int binNext = interval*2;
 		for (int i = 1; i < binNum; i++) {
@@ -115,7 +107,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	 * @param interval 间隔
 	 */
 	public void setBinAndInterval(int binNum, int interval) {
-		clearElements();
+		lsHistBins.clear();
 		setStartBin(interval, interval + "", 0, interval);
 		int binNext = interval*2;
 		for (int i = 1; i < binNum; i++) {
@@ -142,10 +134,11 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	 */
 	public void setStartBin(Double number, String name, int start, int end) {
 		HistBin histBinThis = new HistBin(number);
+		histBinThis.setCis5to3(isCis5To3());
 		histBinThis.setStartCis(start);
 		histBinThis.setEndCis(end);
-		histBinThis.addItemName(name);
-		add(histBinThis);
+		histBinThis.setName(name);
+		lsHistBins.add(histBinThis);
 	}
 
 	/**
@@ -168,14 +161,15 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	 * @param thisNum 本bin的终点
 	 */
 	public void addHistBin(Double number, String name, int thisNum) {
-		HistBin histBinLast = get(size() - 1);
+		HistBin histBinLast = lsHistBins.get(lsHistBins.size() - 1);
 		histBinLast.getEndCis();
 		HistBin histBinThis = new HistBin(number);
-		histBinThis.addItemName(name);
+		histBinThis.setCis5to3(isCis5To3());
+		histBinThis.setName(name);
 		histBinThis.setStartCis(histBinLast.getEndCis());
 		histBinThis.setEndCis(thisNum);
-		histBinThis.setParentName(getName());
-		add(histBinThis);
+		histBinThis.setParentName(name);
+		lsHistBins.add(histBinThis);
 	}
 	
 	/**
@@ -206,7 +200,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	 * @return
 	 */
 	public BoxInfo getBoxInfo() {
-		BoxInfo boxInfo = new BoxInfo(getName());
+		BoxInfo boxInfo = new BoxInfo(name);
 		boxInfo.setInfo25And75(getPercentInfo(25).getThisNumber(), getPercentInfo(75).getThisNumber());
 		boxInfo.setInfoMedian(getPercentInfo(50).getThisNumber());
 		boxInfo.setInfoMinAndMax(getPercentInfo(1).getThisNumber(), getPercentInfo(99).getThisNumber());
@@ -220,14 +214,14 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		long thisNumThreshold = (long) ((double)percentage/100 * allNum);
 		long thisNum = 0;
 		
-		for (HistBin histBin : this) {
+		for (HistBin histBin : lsHistBins) {
 			thisNum = thisNum + histBin.getCountNumber();
 			if (thisNum >= thisNumThreshold) {
 				return histBin;
 			}
 		}
 		//全找了一遍没找到么说明数字太大了那就返回最后一位的HistBin吧
-		return get(size() - 1);		
+		return lsHistBins.get(lsHistBins.size() - 1);		
 	}
 	
 	/**
@@ -242,11 +236,11 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		String[] xName = getRangeX();
 		HashMap<Double, String> mapX2Name = new HashMap<Double, String>();
 		for (int i = 0; i < xName.length; i++) {
-			HistBin histBin = get(i);
-			if (histBin.getNameSingle() == null || histBin.getNameSingle().trim().equals("")) {
+			HistBin histBin = lsHistBins.get(i);
+			if (histBin.getName() == null || histBin.getName().trim().equals("")) {
 				mapX2Name.put(Xrange[i], xName[i]);
 			} else {
-				mapX2Name.put(Xrange[i], histBin.getNameSingle());
+				mapX2Name.put(Xrange[i], histBin.getName());
 			}
 		}
 		if (plotScatter == null) {
@@ -367,7 +361,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 		
 		double[] numberY = new double[size()];
 		int i = 0;
-		for (HistBin histBin : this) {
+		for (HistBin histBin : lsHistBins) {
 			numberY[i] = histBin.getCountNumber();;
 			i++;
 		}
@@ -385,7 +379,7 @@ public abstract class HistList extends ListAbsSearch<HistBin, ListCodAbs<HistBin
 	private String[] getRangeX() {
 		String[] rangeX = new String[size()];
 		int i = 0;
-		for (HistBin histBin : this) {
+		for (HistBin histBin : lsHistBins) {
 			rangeX[i] = histBin.getStartCis() + "_" + histBin.getEndCis();
 			i++;
 		}
@@ -506,10 +500,11 @@ class HistListCis extends HistList {
 	 * @return
 	 */
 	public HistBin searchHistBin(int coordinate) {
-		ListCodAbs<HistBin> lsHistBin = searchLocation(coordinate);
-		HistBin histThis = lsHistBin.getGffDetailThis();
-		HistBin histLast = lsHistBin.getGffDetailUp();
-		HistBin histNext = lsHistBin.getGffDetailDown();
+		BinarySearch<HistBin> binarySearch = new BinarySearch<>(lsHistBins, true);
+		BsearchSite<HistBin> lsHistBin = binarySearch.searchLocation(coordinate);
+		HistBin histThis = lsHistBin.getAlignThis();
+		HistBin histLast = lsHistBin.getAlignUp();
+		HistBin histNext = lsHistBin.getAlignDown();
 		
 		HistBin resultBin = histThis;
 		
@@ -553,6 +548,11 @@ class HistListCis extends HistList {
 		return resultBin;
 	}
 
+	@Override
+	protected boolean isCis5To3() {
+		return true;
+	}
+
 }
 
 class HistListTrans extends HistList {
@@ -568,10 +568,13 @@ class HistListTrans extends HistList {
 	 * @return
 	 */
 	public HistBin searchHistBin(int coordinate) {
-		ListCodAbs<HistBin> lsHistBin = searchLocation(coordinate);
-		HistBin histThis = lsHistBin.getGffDetailThis();
-		HistBin histLast = lsHistBin.getGffDetailUp();
-		HistBin histNext = lsHistBin.getGffDetailDown();
+		BinarySearch<HistBin> binarySearch = new BinarySearch<>(lsHistBins, false);
+		BsearchSite<HistBin> lsHistBin = binarySearch.searchLocation(coordinate);
+		
+		HistBin histThis = lsHistBin.getAlignThis();
+		HistBin histLast = lsHistBin.getAlignUp();
+		HistBin histNext = lsHistBin.getAlignDown();
+		
 		
 		HistBin resultBin = histThis;
 		if (histBinType == HistBinType.LcloseRopen) {
@@ -593,6 +596,10 @@ class HistListTrans extends HistList {
 		}
 		return resultBin;
 	}
-	
+	@Override
+	protected boolean isCis5To3() {
+		return true;
+	}
+
 }
 

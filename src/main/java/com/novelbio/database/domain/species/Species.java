@@ -12,14 +12,14 @@ import java.util.TreeMap;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.analysis.seq.fasta.SeqFastaHash;
-import com.novelbio.analysis.seq.genome.gffoperate.GffType;
 import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.ExceptionNullParam;
 import com.novelbio.base.dataOperate.ExcelTxtRead;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.fasta.SeqFastaHash;
+import com.novelbio.bioinfo.gff.GffType;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.model.geneanno.EnumSpeciesFile;
 import com.novelbio.database.model.geneanno.SpeciesFile;

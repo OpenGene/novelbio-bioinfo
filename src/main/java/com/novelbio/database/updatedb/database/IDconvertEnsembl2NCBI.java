@@ -4,11 +4,11 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Set;
 
-import com.novelbio.analysis.seq.genome.gffoperate.GffCodGeneDU;
-import com.novelbio.analysis.seq.genome.gffoperate.GffDetailGene;
-import com.novelbio.analysis.seq.genome.gffoperate.GffGeneIsoInfo;
-import com.novelbio.analysis.seq.genome.gffoperate.GffHashGene;
-import com.novelbio.analysis.seq.genome.gffoperate.GffType;
+import com.novelbio.bioinfo.gff.GffCodGeneDU;
+import com.novelbio.bioinfo.gff.GffGene;
+import com.novelbio.bioinfo.gff.GffHashGene;
+import com.novelbio.bioinfo.gff.GffIso;
+import com.novelbio.bioinfo.gff.GffType;
 import com.novelbio.database.domain.modgeneid.GeneID;
 /**
  * ID转换，将ensembl的表转化为NCBI的表，以及类似功能
@@ -41,17 +41,17 @@ public class IDconvertEnsembl2NCBI {
 		this.taxID = taxID;
 	}
 	public void update() {
-		for (GffDetailGene gffDetailGene : gffHashEnsembl.getLsGffDetailGenes()) {
-			for (GffGeneIsoInfo iso : gffDetailGene.getLsCodSplit()) {
+		for (GffGene gffDetailGene : gffHashEnsembl.getLsGffDetailGenes()) {
+			for (GffIso iso : gffDetailGene.getLsCodSplit()) {
 				if (isExist(iso)) {
 					continue;
 				}
 				int start = iso.getStartAbs();
 				int end = iso.getEndAbs();
 				GffCodGeneDU gffCodGeneDU = gffHashNCBI.searchLocation(gffDetailGene.getRefID(), start, end);
-				Set<GffDetailGene> setGffDetailGenes = gffCodGeneDU.getCoveredOverlapGffGene();
-				for (GffDetailGene gffDetailGene2 : setGffDetailGenes) {
-					GffGeneIsoInfo iso2 = gffDetailGene2.getSimilarIso(iso, 0.8);
+				Set<GffGene> setGffDetailGenes = gffCodGeneDU.getCoveredOverlapGffGene();
+				for (GffGene gffDetailGene2 : setGffDetailGenes) {
+					GffIso iso2 = gffDetailGene2.getSimilarIso(iso, 0.8);
 					if (iso2 == null) {
 						continue;
 					}
@@ -63,7 +63,7 @@ public class IDconvertEnsembl2NCBI {
 		
 	}
 	
-	private boolean isExist(GffGeneIsoInfo iso) {
+	private boolean isExist(GffIso iso) {
 		GeneID geneIDGene = new GeneID(iso.getParentGeneName(), taxID);
 		GeneID geneIDTrans = new GeneID(iso.getName(), taxID);
 		if (geneIDGene.getIDtype() != GeneID.IDTYPE_GENEID && geneIDTrans.getIDtype() != GeneID.IDTYPE_GENEID) {

@@ -3,10 +3,10 @@ package com.novelbio.database.domain.species;
 import java.io.IOException;
 import java.io.InputStream;
 
-import com.novelbio.analysis.seq.genome.gffoperate.GffType;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.gff.GffType;
 import com.novelbio.database.model.geneanno.EnumSpeciesFile;
 import com.novelbio.database.model.geneanno.SpeciesFile;
 import com.novelbio.database.model.species.TaxInfo;
