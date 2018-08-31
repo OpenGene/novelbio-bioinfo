@@ -1651,7 +1651,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 	double ratio = 有多少exon的边界是相同的 / Math.min(gffGeneIsoInfo1.Size, gffGeneIsoInfo2.Size);
 	 *  */
 	public static double compareIsoRatio(GffGeneIsoInfo gffGeneIsoInfo1, GffGeneIsoInfo gffGeneIsoInfo2) {
-		int[] compareInfo = compareIso(gffGeneIsoInfo1, gffGeneIsoInfo2);
+		int[] compareInfo = compareIsoBorder(gffGeneIsoInfo1, gffGeneIsoInfo2);
 		double ratio = (double)compareInfo[0]/Math.min(compareInfo[2], compareInfo[3]);
 		return ratio;
 	}
@@ -1666,7 +1666,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 	 * 2: gffGeneIsoInfo1-Size<br>
 	 * 3: gffGeneIsoInfo2-Size<br>
 	 */
-	public static int[] compareIso(GffGeneIsoInfo gffGeneIsoInfo1, GffGeneIsoInfo gffGeneIsoInfo2) {
+	public static int[] compareIsoBorder(GffGeneIsoInfo gffGeneIsoInfo1, GffGeneIsoInfo gffGeneIsoInfo2) {
 		//完全没有交集
 		if (!gffGeneIsoInfo1.isCis5to3().equals(gffGeneIsoInfo2.isCis5to3()) 
 				|| gffGeneIsoInfo1.getEndAbs() <= gffGeneIsoInfo2.getStartAbs() 
@@ -1686,6 +1686,51 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 			sameBounds = sameBounds + getSameBoundsNum(exonCluster);
 		}
 		return new int[]{sameBounds, lsExonClusters.size()*2, gffGeneIsoInfo1.size()*2, gffGeneIsoInfo2.size()*2};
+	}
+	
+	/**
+	 * 返回两个iso比较的信息，外显子有重合就认为相同
+	 * 0说明完全不相同。方向不同或没有交集则直接返回0
+	 * @param gffGeneIsoInfo1
+	 * @param gffGeneIsoInfo2
+	 * @return int[2] <br>
+	 * 0:有多少exon是overlap的<br>
+	 * 1:lsExonClusters number<br>
+	 * 2: gffGeneIsoInfo1-在lsExonClusters中的数量，如果其中的exonCluster中含有该转录本两个exon，仅计算1次<br>
+	 * 3: gffGeneIsoInfo2-Size<br>
+	 */
+	public static int[] compareIso(GffGeneIsoInfo gffGeneIsoInfo1, GffGeneIsoInfo gffGeneIsoInfo2) {
+		//完全没有交集
+		if (!gffGeneIsoInfo1.isCis5to3().equals(gffGeneIsoInfo2.isCis5to3()) 
+				|| gffGeneIsoInfo1.getEndAbs() <= gffGeneIsoInfo2.getStartAbs() 
+				|| gffGeneIsoInfo1.getStartAbs() >= gffGeneIsoInfo2.getEndAbs()) {
+			return new int[]{0,gffGeneIsoInfo1.size() * 2, gffGeneIsoInfo1.size()*2, gffGeneIsoInfo2.size()*2};
+		} else if (gffGeneIsoInfo1.equals(gffGeneIsoInfo2)) {
+			int edgeNum = gffGeneIsoInfo1.size();
+			return new int[]{edgeNum, edgeNum*2, edgeNum, edgeNum};
+		}
+		ArrayList<GffGeneIsoInfo> lsGffGeneIsoInfos = new ArrayList<GffGeneIsoInfo>();
+		lsGffGeneIsoInfos.add(gffGeneIsoInfo1); lsGffGeneIsoInfos.add(gffGeneIsoInfo2);
+		ArrayList<ExonCluster> lsExonClusters = getExonCluster(gffGeneIsoInfo1.isCis5to3(), lsGffGeneIsoInfos);
+		//相同的边界数量，一个外显子有两个相同边界
+		int overlapExon = 0;
+		int iso1Num = 0;
+		int iso2Num = 0;
+		for (ExonCluster exonCluster : lsExonClusters) {
+			if (isExonOverlap(exonCluster)) {
+				overlapExon++;
+			}
+			List<ExonInfo> lsExon1 = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfo1);
+			if (!ArrayOperate.isEmpty(lsExon1)) {
+				iso1Num++;
+			}
+			
+			List<ExonInfo> lsExon2 = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfo2);
+			if (!ArrayOperate.isEmpty(lsExon2)) {
+				iso2Num++;
+			}
+		}
+		return new int[]{overlapExon, lsExonClusters.size(), iso1Num, iso2Num};
 	}
 	
 	//TODO 该方法待测试
@@ -1714,7 +1759,7 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 				return false;
 			}
 		}
-		int[] compareInfo = GffGeneIsoInfo.compareIso(gffGeneIsoInfo1, gffGeneIsoInfo2);
+		int[] compareInfo = GffGeneIsoInfo.compareIsoBorder(gffGeneIsoInfo1, gffGeneIsoInfo2);
 		double ratio = (double)compareInfo[0]/Math.min(compareInfo[2], compareInfo[3]);
 		int exonNumSmall = Math.min(gffGeneIsoInfo1.size(), gffGeneIsoInfo2.size()), exonNumBig = Math.min(gffGeneIsoInfo1.size(), gffGeneIsoInfo2.size());
 		if (ratio > 0.75 && exonNumSmall/exonNumBig > 0.75) {
@@ -1753,6 +1798,27 @@ public abstract class GffGeneIsoInfo extends ListAbsSearch<ExonInfo, ListCodAbs<
 		}
 		return 0;
 	}
+	
+	/**
+	 * 当exoncluster中的exon不一样时，查看具体有几条边是相同的。
+	 * 因为一致的exon也仅有2条相同边，所以返回的值为0，1，2
+	 * @param exonCluster
+	 * @return
+	 */
+	private static boolean isExonOverlap(ExonCluster exonCluster) {
+		if (exonCluster.isSameExon()) {
+			return true;
+		}
+
+		List<List<ExonInfo>> lsExon = exonCluster.getLsIsoExon();
+		if (lsExon.size() < 2) {
+			return false;
+		}
+		List<ExonInfo> lsExon1 = lsExon.get(0);
+		List<ExonInfo> lsExon2 = lsExon.get(1);
+		return lsExon1.size() > 0 && lsExon2.size() > 0;
+	}
+	
 	/**
 	 * 按照分组好的边界exon，将每个转录本进行划分，
 	 * 划分好的ExonCluster里面每组的lsExon都是考虑

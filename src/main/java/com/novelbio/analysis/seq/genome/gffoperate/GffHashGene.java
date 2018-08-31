@@ -83,11 +83,15 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 	}
 	/** geneName是哪一项，默认是 gene_name */
 	public void addGeneNameFlag(String geneNameFlag) {
-		lsGeneIds.add(geneNameFlag);
+		if (!StringOperate.isRealNull(geneNameFlag)) {
+			lsGeneIds.add(geneNameFlag);
+		}
 	}
 	/** geneName是哪一项，默认是 gene_name */
 	public void addTranscriptNameFlag(String transcriptNameFlag) {
-		lsmRNA.add(transcriptNameFlag);
+		if (!StringOperate.isRealNull(transcriptNameFlag)) {
+			lsmRNA.add(transcriptNameFlag);
+		}
 	}
 	
 	/**

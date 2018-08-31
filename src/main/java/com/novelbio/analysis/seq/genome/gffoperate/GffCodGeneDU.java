@@ -305,6 +305,35 @@ public class GffCodGeneDU extends ListCodAbsDu<GffDetailGene, GffCodGene> {
 		}
 		return setResult;
 	}
+	
+	/**
+	 * 不查询数据库，直接返回gffDetailGene<br>
+	 * 如果一个基因的某些iso没有和两个位点区域有交集，则去除这些iso<br>
+	 * <br>
+	 * 譬如转录本为<br>
+	 * chr1 30366 30900 <br>
+	 * chr1 30350 31200<br>
+	 * 不扩展tes区域<br>
+	 * <br>
+	 * 而left位点为chr1 31000<br>
+	 * 则返回基因时将chr1 30366 30900 这个转录本删掉<br>
+	 * 
+	 * @return LinkedHashSet
+	 * 不需要调用 {@link GffDetailGene#getlsGffDetailGenes()}
+	 */
+	public List<GffDetailGene> getLsCoveredOverlapGffGene() {
+		setHashCoveredGenInfo();
+		Set<GffDetailGene> setResult = new LinkedHashSet<GffDetailGene>();
+		for (GffDetailGene gffDetailGene : setGffDetailGene) {
+			for (GffDetailGene gene : gffDetailGene.getlsGffDetailGenes()) {
+				if (setResult.contains(gene)) {
+					continue;
+				}
+				setResult.add(gene);
+			}
+		}
+		return new ArrayList<>(setResult);
+	}
 	/**
 	 * 不查询数据库，直接返回gffDetailGene
 	 * 如果一个基因的某些iso没有和两个位点区域有交集，则去除这些iso

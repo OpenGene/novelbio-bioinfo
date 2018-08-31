@@ -58,5 +58,6 @@ public class GffCompareUCSCandNCBI {
 				logger.error("出现不一致的Iso " + gffGeneIsoInfoNCBI.getName());
 			}
 		}
+		txtOut.close();
 	}
 }

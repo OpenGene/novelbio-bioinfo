@@ -51,52 +51,54 @@ public class TestGwas {
 	}
 	
 	public static void main(String[] args) {
-//		if (args == null || args.length == 0) {
-//			printHelp();
-//			System.exit(1);
-//		}
-//		for (String string : args) {
-//			if (string.toLowerCase().contains("help")) {
-//				printHelp();
-//				System.exit(1);
-//			}
-//		}
-//		
-//		Options opts = new Options();
-//		opts.addOption("r2min", true, "r2min");
-//		opts.addOption("maxCluster", true, "maxCluster");
-//		opts.addOption("permutationNum", true, "permutationNum");
-//		
-//		opts.addOption("plinkBim", true, "plinkBim");
-//		opts.addOption("plinkPed", true, "plinkPed");
-//		opts.addOption("chrFile", true, "chrFile");
-//		opts.addOption("gffFile", true, "gffFile");
-//		opts.addOption("out", true, "out");
-//		opts.addOption("tss", true, "tss");
-//
-//		CommandLine cliParser = null;
-//		try {
-//			cliParser = new GnuParser().parse(opts, args);
-//		} catch (Exception e) {
-//			printHelp();
-//			System.exit(1);
-//		}
-//		
-//		String plinkBim = cliParser.getOptionValue("plinkBim", "");
-//		String plinkPed = cliParser.getOptionValue("plinkPed", "");
-//		String chrFile = cliParser.getOptionValue("chrFile", "");
-//		String gffFile = cliParser.getOptionValue("gffFile", "");
-//		String out = cliParser.getOptionValue("out", "");
-//		String r2min = cliParser.getOptionValue("r2min", "");
-//		String variationCutoff = cliParser.getOptionValue("variationCutoff", "");
-//		String maxCluster = cliParser.getOptionValue("maxCluster", "");
-//		String permutationNum = cliParser.getOptionValue("permutationNum", "");
-//		String tss = cliParser.getOptionValue("tss", "");
-//		
-//		FileOperate.createFolders(FileOperate.getPathName(out));
-//		String plinkBimCorrect = FileOperate.changeFileSuffix(plinkBim, ".correct", null);
+		if (args == null || args.length == 0) {
+			printHelp();
+			System.exit(1);
+		}
+		for (String string : args) {
+			if (string.toLowerCase().contains("help")) {
+				printHelp();
+				System.exit(1);
+			}
+		}
 		
+		Options opts = new Options();
+		opts.addOption("r2min", true, "r2min");
+		opts.addOption("maxCluster", true, "maxCluster");
+		opts.addOption("permutationNum", true, "permutationNum");
 		
+		opts.addOption("plinkBim", true, "plinkBim");
+		opts.addOption("plinkPed", true, "plinkPed");
+		opts.addOption("chrFile", true, "chrFile");
+		opts.addOption("gffFile", true, "gffFile");
+		opts.addOption("out", true, "out");
+		opts.addOption("tss", true, "tss");
+
+		CommandLine cliParser = null;
+		try {
+			cliParser = new GnuParser().parse(opts, args);
+		} catch (Exception e) {
+			printHelp();
+			System.exit(1);
+		}
+		
+		String plinkBim = cliParser.getOptionValue("plinkBim", "");
+		String plinkPed = cliParser.getOptionValue("plinkPed", "");
+		String chrFile = cliParser.getOptionValue("chrFile", "");
+		String gffFile = cliParser.getOptionValue("gffFile", "");
+		String out = cliParser.getOptionValue("out", "");
+		String r2min = cliParser.getOptionValue("r2min", "");
+		String variationCutoff = cliParser.getOptionValue("variationCutoff", "0.05");
+		String maxCluster = cliParser.getOptionValue("maxCluster", "10");
+		String permutationNum = cliParser.getOptionValue("permutationNum", "");
+		String tss = cliParser.getOptionValue("tss", "");
+		
+		FileOperate.createFolders(FileOperate.getPathName(out));
+		String plinkBimCorrect = FileOperate.changeFileSuffix(plinkBim, ".correct", null);
+		String isChangeN = "false";
+		String snpFilterCriteria = PlinkMapReader.FILTER_BY_GENE;
+		String variationCutForHir = "0";
+		String parallelNum = "80";
 		
 //		//pvalue
 //		String parent = "/home/novelbio/zongjiework/";
@@ -117,23 +119,23 @@ public class TestGwas {
 //		String isChangeN = "false";
 //		String snpFilterCriteria = PlinkMapReader.FILTER_BY_PVALUE;
 
-		String parent = "/home/novelbio/zongjiework/";
-		String plinkBim = parent + "plink/619-29mio.bim";
-		String plinkPed =  parent + "plink/619-29mio.ped";
-		String plinkBimCorrect = parent + "plink/619-29mio.bim.anno";
-		String chrFile = parent + "reference/oryza_sativa.IRGSP-1.0.dna.fa";
-		String gffFile = parent + "reference/Oryza_sativa.IRGSP-1.0.39.gff3";
-		String out = parent + "result-gene-8-NoChange-varForHir0-changeNHir/";
-		
-		String r2min = "0.8";
-		String maxCluster = "10";
-		String permutationNum = "3";
-		String tss = "1000";
-		String variationCutoff = "0.05";
-		String variationCutForHir = "0";
-		String parallelNum = "80";
-		String isChangeN = "false";
-		String snpFilterCriteria = PlinkMapReader.FILTER_BY_GENE;
+//		String parent = "/home/novelbio/zongjiework/";
+//		String plinkBim = parent + "plink/619-29mio.bim";
+//		String plinkPed =  parent + "plink/619-29mio.ped";
+//		String plinkBimCorrect = parent + "plink/619-29mio.bim.anno";
+//		String chrFile = parent + "reference/oryza_sativa.IRGSP-1.0.dna.fa";
+//		String gffFile = parent + "reference/Oryza_sativa.IRGSP-1.0.39.gff3";
+//		String out = parent + "result-gene-8-NoChange-varForHir0-changeNHir/";
+//		
+//		String r2min = "0.8";
+//		String maxCluster = "10";
+//		String permutationNum = "3";
+//		String tss = "1000";
+//		String variationCutoff = "0.05";
+//		String variationCutForHir = "0";
+//		String parallelNum = "80";
+//		String isChangeN = "false";
+//		String snpFilterCriteria = PlinkMapReader.FILTER_BY_GENE;
 		
 		GffChrAbs gffChrAbs = new GffChrAbs();
 		gffChrAbs.setChrFile(chrFile, null);
@@ -202,7 +204,7 @@ public class TestGwas {
 	}
 	
 	private static void printHelp() {
-		System.err.println("java -jar testGwas.jar --plinkBim plink.bim --plinkPed plink.ped --r2min 0.8 --tss 1500 --variationCutoff 0.05 --maxCluster 10 --permutationNum 3  --chrFile chrFile --gffFile gffFile --out outPath");
+		System.err.println("java -jar testGwas.jar --plinkBim plink.bim --plinkPed plink.ped --r2min 0.8 --maxCluster 10 --permutationNum 3 --tss 1500 --variationCutoff 0.05 --maxCluster 10   --chrFile chrFile --gffFile gffFile --out outPath");
 		System.err.println();
 		System.err.println("r2min: cluster the snp have r2 bigger than the value, default is 0.2");
 		System.err.println("maxCluster: cluster num less then the value, default is 0, means no cluster number limit");

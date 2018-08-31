@@ -29,7 +29,7 @@ public class Go2Term implements Cloneable {
 	@Id
 	String id;
 	@Indexed(unique = true)
-    private Set<String> setQueryGoID = new HashSet<String>();
+	private Set<String> setQueryGoID = new HashSet<String>();
 	@Indexed
 	private String goID;
 	private String goTerm;
