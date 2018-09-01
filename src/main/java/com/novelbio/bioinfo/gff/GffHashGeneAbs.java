@@ -18,10 +18,16 @@ import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSite;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
+import com.novelbio.bioinfo.base.binarysearch.ListEleSearch;
 import com.novelbio.bioinfo.base.binarysearch.ListHashSearch;
 import com.novelbio.database.domain.modgeneid.GeneID;
 
-public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
+public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> implements GffHashGeneInf 
+
+{
 	private static final Logger logger = LoggerFactory.getLogger(GffHashGeneAbs.class);
 
 
@@ -67,7 +73,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 		sort();
 		setItemDistance();
 		setOther();
-		getMapName2DetailNum();
 		getMapName2Detail();
 	}
 	
@@ -76,7 +81,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 		for (ListGff listGff : mapChrID2ListGff.values()) {
 			for (int i = 0; i < listGff.size(); i++) {
 				GffGene gffDetailGene = listGff.get(i);
-				gffDetailGene.setParentListAbs(listGff);
+				gffDetailGene.setParent(listGff);
 				for (GffIso gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 					gffGeneIsoInfo.sortOnly();
 					try {
@@ -90,7 +95,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 			}
 		}
 	}
-
 	
 	public void setVersion(String version) {
 		this.version = version;
@@ -149,7 +153,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 		}
 		mapName2DetailAbs = new LinkedHashMap<String, GffGene>();
 		for (GffGene gffGene : getLsGffDetailGenes()) {
-			for (String name : gffGene.getName()) {
+			for (String name : gffGene.getLsNameAll()) {
 				if (!mapName2DetailAbs.containsKey(name.toLowerCase()) || 
 						mapName2DetailAbs.containsKey(name.toLowerCase()) && gffGene.getRefID().toLowerCase().startsWith("chr"))
 				{
@@ -159,6 +163,35 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 			}
 		}
 		return mapName2DetailAbs;
+	}
+	
+	/**
+	 * 获得的每一个信息都是实际的而没有clone
+	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
+	 * 采用clone的方法获得信息
+	 * 没找到就返回null
+	 * @param chrID 内部自动转化为小写
+	 * @param cod1 坐标
+	 */
+	public GffCodGene searchLocation(String chrID, int cod1) {
+		chrID = chrID.toLowerCase();
+		ListGff Loclist =  getMapChrID2LsGff().get(chrID);// 某一条染色体的信息
+		if (Loclist == null) {
+			addChrIdCannotFind(chrID);
+			return null;
+		}
+		BinarySearch<GffGene> binarySearch = new BinarySearch<>(Loclist.getLsElement());
+		return new GffCodGene(binarySearch.searchLocation(cod1));//(chrID, Math.min(cod1, cod2));
+	}
+	public GffCodGeneDU searchLocation(String chrID, int cod1, int cod2) {
+		ListGff Loclist =  getMapChrID2LsGff().get(chrID.toLowerCase());// 某一条染色体的信息
+		if (Loclist == null) {
+			addChrIdCannotFind(chrID);
+			return null;
+		}
+		BinarySearch<GffGene> binarySearch = new BinarySearch<>(Loclist.getLsElement());
+		BsearchSiteDu<GffGene> gffCodDu = binarySearch.searchLocationDu(cod1, cod2);
+		return new GffCodGeneDU(gffCodDu);
 	}
 	
 	public GffCodGeneDU searchLocation(Alignment alignment) {
@@ -181,7 +214,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 			return null;
 		}
 		for (GffGene gene : gffDetailGene.getlsGffDetailGenes()) {
-			if (gene.getNameSingle().equalsIgnoreCase(accID)) {
+			if (gene.getName().equalsIgnoreCase(accID)) {
 				return gene;
 			}
 		}
@@ -240,61 +273,9 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 		return lsIntronLen;
 	}
 	
-	/**
-	 * 输入
-	 * @param txtaccID2GeneID
-	 * @return
-	 * hashGeneID2Acc，一个geneID对应多个accID的时候，accID用“//”隔开
-	 */
-	private HashMap<String, String> getMapGeneID2Acc(String txtaccID2GeneID) {
-		if (mapGeneID2AccID != null && mapGeneID2AccID.size() > 0) {
-			return mapGeneID2AccID;
-		}
-		if (!FileOperate.isFileExistAndBigThanSize(txtaccID2GeneID, 3)) {
-			writeAccID2GeneID(txtaccID2GeneID);
-		}
-		mapGeneID2AccID = new HashMap<String, String>();
-		List<String> lsAccID = TxtReadandWrite.readfileLs(txtaccID2GeneID);
-		for (String string : lsAccID) {
-			if (string == null || string.trim().equals("")) {
-				continue;
-			}
-			String[] ss = string.split("\t");
-			if (mapGeneID2AccID.containsKey(ss[1])) {
-				mapGeneID2AccID.put(ss[1], mapGeneID2AccID.get(ss[1])+"//"+ss[0]);
-			}
-			else {
-				mapGeneID2AccID.put(ss[1], ss[0]);
-			}
-		}
-		return mapGeneID2AccID;
-	}
-	/**
-	 * 一个Gff文件只跑一次就好
-	 * 将读取的Gff文件中的AccID转化为GeneID并且保存在文本中，下次直接读取该文本即可获得AccID与GeneID的对照表，快速查找
-	 * @param txtAccID2GeneID
-	 */
-	private void writeAccID2GeneID(String txtaccID2GeneID) {
-		TxtReadandWrite txtAccID2GeneID = new TxtReadandWrite(txtaccID2GeneID, true);
-		txtAccID2GeneID.ExcelWrite(getGene2ID());
-		txtAccID2GeneID.close();
-	}
-	
-	/**
-	 * 获得Gene2GeneID在数据库中的信息，并且写入文本，一般不用
-	 */
-	private ArrayList<String[]> getGene2ID() {
-		ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		
-		ArrayList<String> lsAccID = getLsNameAll();
-		for (String accID : lsAccID) {
-			GeneID copedID = new GeneID(accID, taxID, false);
-			String[] tmpAccID = new String[2];
-			tmpAccID[0] = copedID.getAccID();
-			tmpAccID[1] = copedID.getGeneUniID();
-			lsResult.add(tmpAccID);
-		}
-		return lsResult;
+	/** 染色体都小写 */
+	public  HashMap<String, ListGff> getMapChrID2LsGff() {
+		return mapChrID2ListGff;
 	}
 	
 	public List<String> getLsRefID() {

@@ -112,8 +112,8 @@ public class PlinkMapReader {
 				mapChrId2LsGenes.put(gffDetailGene.getRefID(), lsGenes);
 			}
 			GffGene gffDetailGeneTss = new GffGene();
-			gffDetailGeneTss.setParentName(gffDetailGene.getRefID());
-			gffDetailGeneTss.addItemName(gffDetailGene.getNameSingle() + ".tss");
+			gffDetailGeneTss.setChrID(gffDetailGene.getRefID());
+			gffDetailGeneTss.setName(gffDetailGene.getName() + ".tss");
 			gffDetailGeneTss.setCis5to3(gffDetailGene.isCis5to3());
 			if (gffDetailGene.isCis5to3()) {
 				int start = gffDetailGene.getStartAbs()-tss;
@@ -299,9 +299,9 @@ public class PlinkMapReader {
 				continue;
 			}
 			Set<String> setIsoName = null;
-			if (gene.getNameSingle().endsWith(".tss")) {
+			if (gene.getName().endsWith(".tss")) {
 				setIsoName = new HashSet<>();
-				setIsoName.add(gene.getNameSingle());
+				setIsoName.add(gene.getName());
 			} else {
 				setIsoName = snpAnno.getSetIsoName(allele, gene);
 			}
@@ -325,7 +325,7 @@ public class PlinkMapReader {
 			if (!isAlleleInGene(allele, gene)) {
 				continue;
 			}
-			if (gene.getNameSingle().endsWith(".tss")) {
+			if (gene.getName().endsWith(".tss")) {
 				lsAlleleResult.add(allele);
 			} else {
 				Set<String> setIsoName = snpAnno.getSetIsoName(allele, gene);

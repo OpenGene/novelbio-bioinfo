@@ -120,11 +120,11 @@ public class GffHashModifyNewGffORF {
 					logger.warn("cannot find gene on:" + gffDetailGeneRef.getRefID() + " " + median );
 					continue;
 				}
-				GffGene gffDetailGeneThis = gffCodGene.getGffDetailThis();
+				GffGene gffDetailGeneThis = gffCodGene.getAlignThis();
 				modifyGffDetailGene(gffDetailGeneRef, gffDetailGeneThis);
-				GffGene gffDetailGeneUp = gffCodGene.getGffDetailUp();
+				GffGene gffDetailGeneUp = gffCodGene.getAlignUp();
 				modifyGffDetailGene(gffDetailGeneRef, gffDetailGeneUp);
-				GffGene gffDetailGeneDown = gffCodGene.getGffDetailDown();
+				GffGene gffDetailGeneDown = gffCodGene.getAlignDown();
 				modifyGffDetailGene(gffDetailGeneRef, gffDetailGeneDown);
 			}
 		}
@@ -201,7 +201,7 @@ public class GffHashModifyNewGffORF {
 		}
 		
 		if (renameGene&&refChangeName) {
-			gffDetailGeneThis.addItemName(gffDetailGeneRef.getNameSingle());
+			gffDetailGeneThis.setName(gffDetailGeneRef.getName());
 		}
 	}
 	

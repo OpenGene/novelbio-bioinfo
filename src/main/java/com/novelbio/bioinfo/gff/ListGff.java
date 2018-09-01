@@ -8,20 +8,12 @@ import org.slf4j.LoggerFactory;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.binarysearch.ListAbsSearch;
+import com.novelbio.bioinfo.base.binarysearch.ListEle;
 
-public class ListGff extends ListAbsSearch<GffGene, GffCodGene, GffCodGeneDU> {
+public class ListGff extends ListEle<GffGene> {
 	private static Logger logger = LoggerFactory.getLogger(ListGff.class);
 	private static final long serialVersionUID = -1121905415019539320L;
-	@Override
-	protected GffCodGene creatGffCod(String chrID, int Coordinate) {
-		GffCodGene gffCodGene = new GffCodGene(chrID, Coordinate);
-		return gffCodGene;
-	}
-	@Override
-	protected GffCodGeneDU creatGffCodDu(GffCodGene gffCod1, GffCodGene gffCod2) {
-		GffCodGeneDU gffCodGeneDU = new GffCodGeneDU(gffCod1, gffCod2);
-		return gffCodGeneDU;
-	}
+
 	/** 会将gffDetailGene进行拆分，把独立的gene文件拿出来 */
 	public ArrayList<GffGene> getLsElement() {
 		ArrayList<GffGene> lsGenes = new ArrayList<>();

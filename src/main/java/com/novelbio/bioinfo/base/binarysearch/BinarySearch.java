@@ -72,7 +72,6 @@ public class BinarySearch<T extends Alignment> {
 		if (coordLocationInfo.isInsideElement()) {
 			gffCod.setAlignThis( lsElement.get(coordLocationInfo.getIndexEleThis() ) );
 			gffCod.setIndexAlignThis(coordLocationInfo.getIndexEleThis() );
-			gffCod.booFindCod = true;
 			gffCod.insideLOC = true;
 		}
 		if (coordLocationInfo.getIndexEleLast() >= 0) {

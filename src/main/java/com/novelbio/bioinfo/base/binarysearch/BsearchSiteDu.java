@@ -49,6 +49,11 @@ public class BsearchSiteDu<T extends Alignment>  {
 	public BsearchSite<T> getSiteRight() {
 		return siteRight;
 	}
+	/** 仅供GffCodGeneDU 使用*/
+	@Deprecated
+	public List<T> getLsAlignMid() {
+		return lsAlignMid;
+	}
 	public void setLsAlignMid(List<T> lsAlignMid) {
 		this.lsAlignMid = lsAlignMid;
 	}

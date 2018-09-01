@@ -61,7 +61,7 @@ public class ExonSplicingResultUnit {
 	public ExonSplicingResultUnit(ExonSplicingTest exonSplicingTest, Map<String, String> mapChrIdLowcase2ChrId, boolean isArithmeticPvalue) {
 		GffGene gffDetailGene = exonSplicingTest.exonCluster.getParentGene();
 		PvalueCalculate pvalueCalculate = exonSplicingTest.getSpliceTypePvalue();
-		accId = gffDetailGene.getNameSingle();
+		accId = gffDetailGene.getName();
 		alignLoc = exonSplicingTest.getDifSite();
 		alignLoc.setChrID(mapChrIdLowcase2ChrId.get(alignLoc.getRefID().toLowerCase()));
 		lsAlignFlank = exonSplicingTest.getLsSpliceSitFlank();

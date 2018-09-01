@@ -202,7 +202,7 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 		if (!StringOperate.isRealNull(geneName)) {
 			return geneName;
 		}
-		return gffGene.getNameSingle();
+		return gffGene.getName();
 	}
 	/**
 	 * coord是否在promoter区域的范围内，从Tss上游UpStreamTSSbp到Tss下游DownStreamTssbp

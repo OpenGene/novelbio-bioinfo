@@ -18,11 +18,11 @@ public class TestGffGeneIsoInfo1 extends TestCase {
 	GffGene gffDetailGeneCis = new GffGene("chr1", "test", true);
 	GffGene gffDetailGeneTrans = new GffGene("chr1", "test", false);
 	
-	GffIso gffGeneIsoInfoRefCis = GffIso.createGffGeneIso("CisRef", gffDetailGeneCis.getNameSingle(), gffDetailGeneCis, GeneType.mRNA, true);
-	GffIso gffGeneIsoInfoThisCis = GffIso.createGffGeneIso("CisThis", gffDetailGeneCis.getNameSingle(), gffDetailGeneCis, GeneType.mRNA, true);
+	GffIso gffGeneIsoInfoRefCis = GffIso.createGffGeneIso("CisRef", gffDetailGeneCis.getName(), gffDetailGeneCis, GeneType.mRNA, true);
+	GffIso gffGeneIsoInfoThisCis = GffIso.createGffGeneIso("CisThis", gffDetailGeneCis.getName(), gffDetailGeneCis, GeneType.mRNA, true);
 
-	GffIso gffGeneIsoInfoRefTrans = GffIso.createGffGeneIso("CisRef", gffDetailGeneTrans.getNameSingle(), gffDetailGeneTrans, GeneType.mRNA, false);
-	GffIso gffGeneIsoInfoThisTrans = GffIso.createGffGeneIso("CisThis", gffDetailGeneTrans.getNameSingle(), gffDetailGeneTrans, GeneType.mRNA, false);
+	GffIso gffGeneIsoInfoRefTrans = GffIso.createGffGeneIso("CisRef", gffDetailGeneTrans.getName(), gffDetailGeneTrans, GeneType.mRNA, false);
+	GffIso gffGeneIsoInfoThisTrans = GffIso.createGffGeneIso("CisThis", gffDetailGeneTrans.getName(), gffDetailGeneTrans, GeneType.mRNA, false);
 	
 	@Override
 	protected void setUp() throws Exception {

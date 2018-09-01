@@ -311,7 +311,7 @@ public class TestGwas {
 			if (lsAlleles.isEmpty()) {
 				continue;
 			}
-			String geneName = plinkMapReader.getGeneCurrent().getNameSingle();
+			String geneName = plinkMapReader.getGeneCurrent().getName();
 //			if (!geneName.contains("Os01g0883800")) {
 //				continue;
 //			}

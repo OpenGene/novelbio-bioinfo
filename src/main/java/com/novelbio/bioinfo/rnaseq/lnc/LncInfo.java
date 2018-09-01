@@ -112,23 +112,23 @@ public class LncInfo {
 		
 		Set<GffGene> setGffDetailGenes = gffCodGeneDU.getCoveredOverlapGffGene();
 		if (setGffDetailGenes.size() == 0) {
-			GffGene gffDetailGeneUp = gffCodGeneDU.getGffCod1().getGffDetailUp();
+			GffGene gffDetailGeneUp = gffCodGeneDU.getSiteLeft().getAlignUp();
 			if (gffDetailGeneUp != null) {
 				int spaceUp = Math.abs(gffDetailGeneUp.getEndAbs() - align.getStartAbs());
 
 				if (Math.abs(spaceUp) <= upDownExtend) {
-					upGene = gffDetailGeneUp.getLongestSplitMrna().getParentGffDetailGene().getNameSingle();
+					upGene = gffDetailGeneUp.getLongestSplitMrna().getParentGffDetailGene().getName();
 					upDistance = spaceUp;
 				}
 				
 			}
 			
-			GffGene gffDetailGeneDown = gffCodGeneDU.getGffCod2().getGffDetailDown();
+			GffGene gffDetailGeneDown = gffCodGeneDU.getSiteRight().getAlignDown();
 			if (gffDetailGeneDown != null) {
 				int spaceDown = Math.abs(align.getEndAbs() - gffDetailGeneDown.getStartAbs());
 				
 				if (Math.abs(spaceDown) <= upDownExtend) {
-					downGene = gffDetailGeneDown.getLongestSplitMrna().getParentGffDetailGene().getNameSingle();
+					downGene = gffDetailGeneDown.getLongestSplitMrna().getParentGffDetailGene().getName();
 					downDistance = spaceDown;
 				}
 			}
@@ -298,7 +298,7 @@ public class LncInfo {
 			}
 			int space = Math.abs(detailGeneUp.getEndAbs() - gffLncIso.getStartAbs());
 			if (Math.abs(space) <= upDownExtend) {
-				upGene = detailGeneUp.getLongestSplitMrna().getParentGffDetailGene().getNameSingle();
+				upGene = detailGeneUp.getLongestSplitMrna().getParentGffDetailGene().getName();
 				upDistance = space;
 			} else {
 				return;
@@ -323,7 +323,7 @@ public class LncInfo {
 		}
 		int space = Math.abs(gffLncIso.getEndAbs() - detailGeneDown.getStartAbs());
 		if (Math.abs(space) <= upDownExtend) {
-			downGene = detailGeneDown.getLongestSplitMrna().getParentGffDetailGene().getNameSingle();
+			downGene = detailGeneDown.getLongestSplitMrna().getParentGffDetailGene().getName();
 			downDistance = space;
 		} else {
 			return;

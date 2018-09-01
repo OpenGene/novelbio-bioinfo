@@ -82,19 +82,19 @@ public class GffBasedIdConvertor {
 				GffGene geneAlt = setGeneAlt.iterator().next();
 				GffIso isoAlt = geneAlt.getMostSameIso(isoRef);
 				if (isoAlt == null) {
-					txtOut.writefileln(geneRef.getNameSingle() + "\t" + "None");
+					txtOut.writefileln(geneRef.getName() + "\t" + "None");
 					continue;
 				}
 				int[] sameBorderInfo = GffIso.compareIso(isoRef, isoAlt);
 				if (isSame(sameBorderInfo)) {
-					txtOut.writefileln(geneRef.getNameSingle() + "\t" + setGeneAlt.iterator().next().getNameSingle());
+					txtOut.writefileln(geneRef.getName() + "\t" + setGeneAlt.iterator().next().getName());
 				} else {
-					logger.error("please check single " + geneRef.getNameSingle() + " " + geneAlt.getNameSingle());
-					txtOutWrong.writefileln("single " + geneRef.getNameSingle() + "\t" + geneAlt.getNameSingle());
-					txtOut.writefileln(geneRef.getNameSingle() + "\t" + "None");
+					logger.error("please check single " + geneRef.getName() + " " + geneAlt.getName());
+					txtOutWrong.writefileln("single " + geneRef.getName() + "\t" + geneAlt.getName());
+					txtOut.writefileln(geneRef.getName() + "\t" + "None");
 				}
 			} else if (setGeneAlt.isEmpty()) {
-				txtOut.writefileln(geneRef.getNameSingle() + "\t" + "None");
+				txtOut.writefileln(geneRef.getName() + "\t" + "None");
 			} else {
 				int[] sameBorderInfo = null;
 				GffGene geneAlt = null;
@@ -110,13 +110,13 @@ public class GffBasedIdConvertor {
 					}
 				}
 				if (sameBorderInfo == null) {
-					txtOut.writefileln(geneRef.getNameSingle() + "\t" + "None");
+					txtOut.writefileln(geneRef.getName() + "\t" + "None");
 				} else if (isSame(sameBorderInfo)) {
-					txtOut.writefileln(geneRef.getNameSingle() + "\t" + setGeneAlt.iterator().next().getNameSingle());
+					txtOut.writefileln(geneRef.getName() + "\t" + setGeneAlt.iterator().next().getName());
 				} else {
-					logger.error("please check " + geneRef.getNameSingle() + " " + geneAlt.getNameSingle());
-					txtOutWrong.writefileln("multi " + geneRef.getNameSingle() + "\t" + geneAlt.getNameSingle());
-					txtOut.writefileln(geneRef.getNameSingle() + "\t" + "None");
+					logger.error("please check " + geneRef.getName() + " " + geneAlt.getName());
+					txtOutWrong.writefileln("multi " + geneRef.getName() + "\t" + geneAlt.getName());
+					txtOut.writefileln(geneRef.getName() + "\t" + "None");
 				}
 			}
 			

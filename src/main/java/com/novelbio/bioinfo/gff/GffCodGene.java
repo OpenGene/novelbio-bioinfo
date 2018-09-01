@@ -3,20 +3,28 @@ package com.novelbio.bioinfo.gff;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSite;
 
 /**
  * UCSC konwn gene的基因坐标信息
  * @author zong0jie
  *
  */
-public class GffCodGene extends ListCodAbs<GffGene> {
+public class GffCodGene extends BsearchSite<GffGene> {
 	/**
 	 * 从原始的ListCodAbs生成本类
 	 * @param lsSuper
 	 */
-	public GffCodGene(String chrID, int Coordinate) {
-		super(chrID, Coordinate);
+	public GffCodGene(BsearchSite<GffGene> bsearchSite) {
+		super(bsearchSite.getCoord());
+		setAlignThis(bsearchSite.getAlignThis());
+		setIndexAlignThis(bsearchSite.getIndexAlignThis());
+		
+		setAlignUp(bsearchSite.getAlignUp());
+		setIndexAlignUp(bsearchSite.getIndexAlignUp());
+		
+		setAlignDown(bsearchSite.getAlignDown());
+		setIndexAlignDown(bsearchSite.getIndexAlignDown());
 	}
 	
 	/** 返回距离该位点最近的基因
@@ -26,25 +34,25 @@ public class GffCodGene extends ListCodAbs<GffGene> {
 	 */
 	public GffGene getNearestGffGene(int range) {
 		if (isInsideLoc()) {
-			return getGffDetailThis();
-		} else if (getGffDetailUp() == null) {
-			return getGffDetailDown();
-		} else if (getGffDetailDown() == null) {
-			return getGffDetailUp();
+			return getAlignThis();
+		} else if (getAlignUp() == null) {
+			return getAlignDown();
+		} else if (getAlignDown() == null) {
+			return getAlignUp();
 		} else {
-			int upDistance = Math.abs(Coordinate - getGffDetailUp().getEndAbs());
-			if (getGffDetailUp().isCis5to3() != null && getGffDetailUp().isCis5to3() == true) {
+			int upDistance = Math.abs(coord - getAlignUp().getEndAbs());
+			if (getAlignUp().isCis5to3() != null && getAlignUp().isCis5to3() == true) {
 				upDistance = upDistance*3;
 			}
-			int downDistance = Math.abs(Coordinate - getGffDetailDown().getStartAbs());
-			if (getGffDetailDown().isCis5to3() != null && getGffDetailDown().isCis5to3() == false) {
+			int downDistance = Math.abs(coord - getAlignDown().getStartAbs());
+			if (getAlignDown().isCis5to3() != null && getAlignDown().isCis5to3() == false) {
 				downDistance = downDistance*3;
 			}
 			
 			if (upDistance <= downDistance && upDistance <= range) {
-				return getGffDetailUp();
+				return getAlignUp();
 			} else if (downDistance <= upDistance && downDistance <= range) {
-				return getGffDetailDown();
+				return getAlignDown();
 			} else {
 				return null;
 			}
@@ -55,13 +63,13 @@ public class GffCodGene extends ListCodAbs<GffGene> {
 	public Set<GffGene> getSetGeneCodIn() {
 		Set<GffGene> setGene = new HashSet<>();
 		if (isInsideUp()) {
-			setGene.add(getGffDetailUp());
+			setGene.add(getAlignUp());
 		}
 		if (isInsideLoc()) {
-			setGene.add(getGffDetailThis());
+			setGene.add(getAlignThis());
 		}
 		if (isInsideDown()) {
-			setGene.add(getGffDetailDown());
+			setGene.add(getAlignDown());
 		}
 		return setGene;
 	}
@@ -74,7 +82,7 @@ public class GffCodGene extends ListCodAbs<GffGene> {
 		GffIso gffGeneIsoInfoTmp = null;
 		GffIso gffGeneIsoInfo;
 		if (isInsideLoc()) {
-			gffGeneIsoInfo = getCodInCDS(getGffDetailThis(), super.getCoord());
+			gffGeneIsoInfo = getCodInCDS(getAlignThis(), super.getCoord());
 			if (  gffGeneIsoInfo != null ) {
 				if (gffGeneIsoInfo.ismRNA() && 
 					gffGeneIsoInfo.getCodLocUTRCDS(super.getCoord()) == GffIso.COD_LOCUTR_CDS
@@ -87,14 +95,14 @@ public class GffCodGene extends ListCodAbs<GffGene> {
 			}
 		}
 		if (isInsideUp()) {
-			gffGeneIsoInfo = getCodInCDS(getGffDetailUp(), super.getCoord());
+			gffGeneIsoInfo = getCodInCDS(getAlignUp(), super.getCoord());
 			if (  gffGeneIsoInfo != null && gffGeneIsoInfo.ismRNA() 
 					&& gffGeneIsoInfo.getCodLocUTRCDS(super.getCoord()) == GffIso.COD_LOCUTR_CDS) {
 				return gffGeneIsoInfo;
 			}
 		}
 		if (isInsideDown()) {
-			gffGeneIsoInfo = getCodInCDS(getGffDetailDown(), super.getCoord());
+			gffGeneIsoInfo = getCodInCDS(getAlignDown(), super.getCoord());
 			if (  gffGeneIsoInfo != null && gffGeneIsoInfo.ismRNA()
 					&& gffGeneIsoInfo.getCodLocUTRCDS(super.getCoord()) == GffIso.COD_LOCUTR_CDS) {
 				return gffGeneIsoInfo;

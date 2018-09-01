@@ -15,9 +15,9 @@ public class BsearchSite<T extends Alignment> {
 	
 	/** 所有坐标的起始信息  */
 	public static final int LOC_ORIGINAL = -1000000000;
+	
+	
 	protected int coord = -1;
-	/**  坐标是否查到 查找到/没找到  */
-	protected boolean booFindCod = false;
 	
 	/** 上个条目在ChrHash-list中的编号，从0开始，<b>如果上个条目不存在，则为-1*/
 	protected int indexAlignUp = -1;
@@ -48,13 +48,6 @@ public class BsearchSite<T extends Alignment> {
 	 */
 	public int getCoord() {
 		return coord;
-	}
-	/**
-	 * 是否成功找到cod
-	 * @return
-	 */
-	public boolean findCod() {
-		return booFindCod;
 	}
 	/**
 	 * 定位情况 条目内/条目外

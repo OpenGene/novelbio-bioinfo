@@ -212,8 +212,8 @@ public class ReadsOnRepeatGene implements AlignmentRecorder {
 			int[] result = new int[]{GffIso.COD_LOC_OUT, 0};
 			return result;
 		}
-		int locationInfo = gffCodGene.getGffDetailThis().getLongestSplitMrna().getCodLoc(gffCodGene.getCoord());
-		boolean cisFinal = (gffCodGene.getGffDetailThis().getLongestSplitMrna().isCis5to3() == cis5to3);
+		int locationInfo = gffCodGene.getAlignThis().getLongestSplitMrna().getCodLoc(gffCodGene.getCoord());
+		boolean cisFinal = (gffCodGene.getAlignThis().getLongestSplitMrna().isCis5to3() == cis5to3);
 		int ori = 0;//方向
 		if (cisFinal) {
 			ori = 1;

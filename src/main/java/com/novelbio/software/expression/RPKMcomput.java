@@ -252,11 +252,11 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		
 		Set<String> setDetailGenes = getGffDetailKeySetStart(gffCodGeneStart);
-		if (!setDetailGenes.contains(getGffDetailKey(gffCodGeneEnd.getGffDetailUp()))
+		if (!setDetailGenes.contains(getGffDetailKey(gffCodGeneEnd.getAlignUp()))
 				&&
-				(!gffCodGeneEnd.isInsideLoc() || setDetailGenes.contains(getGffDetailKey(gffCodGeneEnd.getGffDetailThis())))
+				(!gffCodGeneEnd.isInsideLoc() || setDetailGenes.contains(getGffDetailKey(gffCodGeneEnd.getAlignThis())))
 				&&
-				!setDetailGenes.contains(getGffDetailKey(gffCodGeneEnd.getGffDetailDown()))
+				!setDetailGenes.contains(getGffDetailKey(gffCodGeneEnd.getAlignDown()))
 				) {
 			lsResult.add(samRecord);
 			return lsResult;
@@ -301,15 +301,15 @@ public class RPKMcomput implements AlignmentRecorder {
 	
 	private Set<String> getGffDetailKeySetStart(GffCodGene gffCodGeneStart) {
 		Set<String> setKey = new HashSet<String>();
-		if (gffCodGeneStart.getGffDetailUp() != null) {
-			setKey.add(getGffDetailKey(gffCodGeneStart.getGffDetailUp()));
+		if (gffCodGeneStart.getAlignUp() != null) {
+			setKey.add(getGffDetailKey(gffCodGeneStart.getAlignUp()));
 		}
 		if (gffCodGeneStart.isInsideLoc()) {
-			GffGene gffDetailGene = gffCodGeneStart.getGffDetailThis();
+			GffGene gffDetailGene = gffCodGeneStart.getAlignThis();
 			setKey.add(getGffDetailKey(gffDetailGene));
 		}
-		if (gffCodGeneStart.getGffDetailDown() != null) {
-			setKey.add(getGffDetailKey(gffCodGeneStart.getGffDetailDown()));
+		if (gffCodGeneStart.getAlignDown() != null) {
+			setKey.add(getGffDetailKey(gffCodGeneStart.getAlignDown()));
 		}
 		return setKey;
 	}
@@ -479,7 +479,7 @@ public class RPKMcomput implements AlignmentRecorder {
 			return new HashSet<>();
 		}
 		
-		GffGene gffDetailGene = gffCodGene.getGffDetailThis();
+		GffGene gffDetailGene = gffCodGene.getAlignThis();
 		Set<GffIso> setIso = new HashSet<>();
 		for (GffIso gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			if (gffGeneIsoInfo.getCodLoc(gffCodGene.getCoord()) == GffIso.COD_LOC_EXON) {

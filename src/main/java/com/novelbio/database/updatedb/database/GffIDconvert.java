@@ -47,7 +47,7 @@ public class GffIDconvert {
 		}
 		
 		for (GffGene gffDetailGene : gffHashGeneSub.getLsGffDetailGenes()) {
-			if (setGeneAlreadFind.contains(gffDetailGene.getNameSingle())) {
+			if (setGeneAlreadFind.contains(gffDetailGene.getName())) {
 				continue;
 			}
 			searchGffGene(gffDetailGene, gffHashGeneQuery, false);
@@ -63,7 +63,7 @@ public class GffIDconvert {
 	private void searchGffGene(GffGene gffDetailGene, GffHashGene gffHash, boolean q2s) {
 		String chrId = gffDetailGene.getRefID();
 		int start = gffDetailGene.getStartAbs(), end = gffDetailGene.getEndAbs();
-		String keyQ = gffDetailGene.getNameSingle();
+		String keyQ = gffDetailGene.getName();
 		setGeneAlreadFind.add(keyQ);
 		GffCodGeneDU gffCodGeneDU = gffHash.searchLocation(chrId, start, end);
 		if (gffCodGeneDU == null) {
@@ -74,7 +74,7 @@ public class GffIDconvert {
 		if (!setGenes.isEmpty()) {
 			for (GffGene gffDetailGeneSub : setGenes) {
 				for (GffGene gffDetailGeneSubFinal : gffDetailGeneSub.getlsGffDetailGenes()) {
-					String keyS = gffDetailGeneSubFinal.getNameSingle();
+					String keyS = gffDetailGeneSubFinal.getName();
 					if (q2s) {
 						String keyQ2S = keyQ + SepSign.SEP_ID + keyS;
 						mapQgene2Sgene.put(keyQ2S, new String[]{keyQ, keyS});

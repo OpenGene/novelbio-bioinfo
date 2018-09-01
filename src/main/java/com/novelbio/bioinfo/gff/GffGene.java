@@ -28,8 +28,12 @@ import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.AlignExtend;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListEle;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modgeneid.GeneType;
 import com.novelbio.generalconf.TitleFormatNBC;
@@ -58,7 +62,7 @@ import com.novelbio.generalconf.TitleFormatNBC;
 	@CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1, 'parentName': 1, 'numberstart': 1, 'numberend': 1}"),
     @CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1 , 'parentName': 1, 'numberstart': 1, 'numberend': 1}")
 })
-public class GffGene extends ListDetailAbs {
+public class GffGene extends AlignExtend {
 	private final static Logger logger = LoggerFactory.getLogger(GffGene.class);
 	/** 两个转录本的overlap 覆盖 必须大于0.6才算是一个基因 */
 	public final static double OVERLAP_RATIO = 0.6;
@@ -77,9 +81,11 @@ public class GffGene extends ListDetailAbs {
 	@Transient
 	boolean removeDuplicateIso = false;
 	
-	/** 仅保存数据库使用 */
-	Set<String> setNameLowcase;
-		
+	String name;
+	
+	String geneId;
+	
+	ListGff listGff;
 	public GffGene() {}
 	/**
 	 * @param listGff
@@ -87,7 +93,10 @@ public class GffGene extends ListDetailAbs {
 	 * @param cis5to3
 	 */
 	public GffGene(ListGff listGff, String locString, boolean cis5to3) {
-		super(listGff, locString, cis5to3);
+		setParent(listGff);
+		this.setChrID(listGff.getName());
+		this.name = locString;
+		this.cis5to3 = cis5to3;
 	}
 	/**
 	 * @param chrID 内部小写
@@ -95,9 +104,27 @@ public class GffGene extends ListDetailAbs {
 	 * @param cis5to3
 	 */
 	public GffGene(String chrID, String locString, boolean cis5to3) {
-		super(chrID, locString, cis5to3);
+		this.setChrID(chrID);
+		this.name = locString;
+		this.cis5to3 = cis5to3;
 	}
-
+	public void setName(String name) {
+		this.name = name;
+	}
+	@Override
+	public String getName() {
+		return name;
+	}
+	@Override
+	public void setParent(ListEle<? extends AlignExtend> parent) {
+		listGff = (ListGff) parent;
+	}
+	/** 
+	 * <b>从0开始计算</b>
+	 * 该条目在List-GffDetail中的具体位置 */
+	public int getItemNum() {
+		return listGff.indexOf(this);
+	}
 	/** 仅供数据库使用 */
 	public void setGffFileId(String gffFileId) {
 		this.gffFileId = gffFileId;
@@ -153,7 +180,7 @@ public class GffGene extends ListDetailAbs {
 			GffGene gffDetailGene = mapName2Gene.get(parentName);
 			if (gffDetailGene == null) {
 				gffDetailGene = getGffDetailGeneClone();
-				gffDetailGene.setItemName.add(parentName);
+				gffDetailGene.setName(parentName);
 				mapName2Gene.put(parentName, gffDetailGene);
 			}
 			gffDetailGene.addIsoSimple(gffGeneIsoInfo);
@@ -164,7 +191,7 @@ public class GffGene extends ListDetailAbs {
 	/** 返回一个和现在GffDetailGene一样的GffDetailGene */
 	private GffGene getGffDetailGeneClone() {
 		GffGene gffDetailGene = this.clone();
-		gffDetailGene.setItemName.clear();
+		gffDetailGene.name = null;
 		gffDetailGene.setStartAbs(-1);
 		gffDetailGene.setEndAbs(-1);
 		gffDetailGene.setCis5to3(null);
@@ -188,7 +215,7 @@ public class GffGene extends ListDetailAbs {
 		for (GffIso iso : lsGffGeneIsoInfos) {
 			if (iso.getName().equalsIgnoreCase(isoName)) {
 				if (num++>0) {
-					throw new ExceptionNbcGFF("gene " + getNameSingle() + " cannot have two iso with same name " + isoName);
+					throw new ExceptionNbcGFF("gene " + getName() + " cannot have two iso with same name " + isoName);
 				}
 				
 				isoResult = iso;
@@ -224,11 +251,9 @@ public class GffGene extends ListDetailAbs {
 		return -1;
 	}
 	/** 全体item的名字 */
-	public ArrayList<String > getName() {
+	public ArrayList<String> getLsNameAll() {
 		HashSet<String> setIsoName = new LinkedHashSet<String>();
-		for (String string : this.setItemName) {
-			setIsoName.add(string);
-		}
+		setIsoName.add(name);
 		for (GffIso gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			setIsoName.add(gffGeneIsoInfo.getName());
 		}
@@ -264,7 +289,7 @@ public class GffGene extends ListDetailAbs {
 	 */
 	protected void addExon(Boolean cis5to3, int locStart,int locEnd) {
 		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
-			addsplitlist(getNameSingle(), getNameSingle(), GeneType.pseudogene);
+			addsplitlist(getName(), getName(), GeneType.pseudogene);
 		}
 		GffIso gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExon(cis5to3, locStart, locEnd);
@@ -275,7 +300,7 @@ public class GffGene extends ListDetailAbs {
 	 */
 	protected void addExonNorm(Boolean cis5to3, int locStart,int locEnd) {
 		if (lsGffGeneIsoInfos.size() == 0) {//如果发现一个没有转录本的，则新添加一个gene设置类型为pseudo
-			addsplitlist(getNameSingle(), getNameSingle(), GeneType.pseudogene);
+			addsplitlist(getName(), getName(), GeneType.pseudogene);
 		}
 		GffIso gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
 		gffGeneIsoInfo.addExonNorm(cis5to3, locStart, locEnd);
@@ -550,12 +575,12 @@ public class GffGene extends ListDetailAbs {
 		return -1000000;
 	}
 	public void clearIso() {
-		setItemName.clear();
+		name = null;
 		cis5to3 = null;
-		numberstart = ListCodAbs.LOC_ORIGINAL; // loc start number
-		numberend = ListCodAbs.LOC_ORIGINAL; //loc end number
-		tss2UpGene = ListCodAbs.LOC_ORIGINAL;
-		tes2DownGene = ListCodAbs.LOC_ORIGINAL;
+		setStartAbs(Align.LOC_ORIGINAL);
+		setEndAbs(Align.LOC_ORIGINAL);
+		tss2UpGene = Align.LOC_ORIGINAL;
+		tes2DownGene = Align.LOC_ORIGINAL;
 		lsGffGeneIsoInfos.clear();
 	}
 	
@@ -612,7 +637,6 @@ public class GffGene extends ListDetailAbs {
 	 * @param gffDetailGene
 	 */
 	public void addIsoSimple(GffGene gffDetailGene) {
-		setItemName.addAll(gffDetailGene.getName());
 		for (GffIso gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
 			addIso(gffGeneIsoInfo);
 		}
@@ -625,40 +649,8 @@ public class GffGene extends ListDetailAbs {
 	 * @param gffGeneIsoInfo 输入的iso必须不能为null，并且要有exon信息的存在
 	 */
 	public void addIso(GffIso gffGeneIsoInfo) {
-		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0) {
-			return;
-		}
-		
-		gffGeneIsoInfo.setGffDetailGeneParent(this);
-		removeDuplicateIso = false;
-		if (cis5to3 != null && gffGeneIsoInfo.isCis5to3() != cis5to3) {
-			cis5to3 = null;
-		}
-		
-		for (GffIso gffGeneIsoInfoOld : lsGffGeneIsoInfos) {
-			if (gffGeneIsoInfoOld.equalsIso(gffGeneIsoInfo) && gffGeneIsoInfoOld.getName().equals(gffGeneIsoInfo.getName())) {//比较两个list是否一致，exon的equals只比较起点终点
-				return;
-			}
-		}
-
-		String IsoName = gffGeneIsoInfo.getName();
-		int i = lsGffGeneIsoInfos.size();
-		//修改名字
-		while (isContainsIso(IsoName)) {
-			IsoName = FileOperate.changeFileSuffix(IsoName, "", ""+i).replace("/", "");
-			i++;
-		}
-		gffGeneIsoInfo.setName(IsoName);
-		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
-		
-		if (numberstart < 0 || numberstart > gffGeneIsoInfo.getStartAbs()) {
-			numberstart = gffGeneIsoInfo.getStartAbs();
-		}
-		if (numberend < 0 || numberend < gffGeneIsoInfo.getEndAbs()) {
-			numberend = gffGeneIsoInfo.getEndAbs();
-		}
+		addIso(gffGeneIsoInfo, true);
 	}
-	
 	/**
 	 * 添加新的转录本，不设定removeDuplicateIso和cis5to3
 	 * 不考虑重复iso，不修改同名iso
@@ -666,6 +658,10 @@ public class GffGene extends ListDetailAbs {
 	 * @param gffGeneIsoInfo 输入的iso必须不能为null，并且要有exon信息的存在
 	 */
 	public void addIsoSimple(GffIso gffGeneIsoInfo) {
+		addIso(gffGeneIsoInfo, false);
+	}
+
+	private void addIso(GffIso gffGeneIsoInfo, boolean isCheckExist) {
 		if (gffGeneIsoInfo == null || gffGeneIsoInfo.size() == 0) {
 			return;
 		}
@@ -675,6 +671,14 @@ public class GffGene extends ListDetailAbs {
 			}
 		} else if (cis5to3 != gffGeneIsoInfo.isCis5to3()) {
 			cis5to3 = null;
+		}
+		
+		if (isCheckExist) {
+			for (GffIso gffGeneIsoInfoOld : lsGffGeneIsoInfos) {
+				if (gffGeneIsoInfoOld.equalsIso(gffGeneIsoInfo) && gffGeneIsoInfoOld.getName().equals(gffGeneIsoInfo.getName())) {//比较两个list是否一致，exon的equals只比较起点终点
+					return;
+				}
+			}
 		}
 		
 		//修改名字
@@ -688,11 +692,11 @@ public class GffGene extends ListDetailAbs {
 		gffGeneIsoInfo.setGffDetailGeneParent(this);
 		lsGffGeneIsoInfos.add(gffGeneIsoInfo);
 		
-		if (numberstart < 0 || numberstart > gffGeneIsoInfo.getStartAbs()) {
-			numberstart = gffGeneIsoInfo.getStartAbs();
+		if (getStartAbs() < 0 || getStartAbs() > gffGeneIsoInfo.getStartAbs()) {
+			setStartAbs(gffGeneIsoInfo.getStartAbs());
 		}
-		if (numberend < 0 || numberend < gffGeneIsoInfo.getEndAbs()) {
-			numberend = gffGeneIsoInfo.getEndAbs();
+		if (getEndAbs() < gffGeneIsoInfo.getEndAbs()) {
+			setEndAbs(gffGeneIsoInfo.getEndAbs());
 		}
 	}
 	
@@ -893,7 +897,7 @@ public class GffGene extends ListDetailAbs {
 		
 		List<String> lsGene = new ArrayList<>();
 		lsGene.add(chrId); lsGene.add(title); lsGene.add("gene"); lsGene.add(getStartAbs() + ""); lsGene.add(getEndAbs() + "");
-		lsGene.add(".");  lsGene.add(strand); lsGene.add("."); lsGene.add("ID=" + getNameSingle() + ";" + "Name=" + getNameSingle());
+		lsGene.add(".");  lsGene.add(strand); lsGene.add("."); lsGene.add("ID=" + getName() + ";" + "Name=" + getName());
 		String geneGFF = ArrayOperate.cmbString(lsGene.toArray(new String[0]), "\t");
 		lsResult.add(geneGFF);
 		//TODO 这里的getLsCodSplit 以后要改成获得不同的分组，这样可以将相同来源的iso放在一组
@@ -1026,18 +1030,5 @@ public class GffGene extends ListDetailAbs {
 			return mapGeneStructure2Str;
 		}
 	}
-	
-	/** 仅数据库使用 */
-	public void setNameLowcase() {
-		setNameLowcase = new HashSet<>();
-		for (String string : this.setItemName) {
-			setNameLowcase.add(string.toLowerCase());
-		}
-		for (GffIso gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			setNameLowcase.add(gffGeneIsoInfo.getName().toLowerCase());
-			setNameLowcase.add(GeneID.removeDot(gffGeneIsoInfo.getName().toLowerCase()));
-			GeneID geneID = new GeneID(gffGeneIsoInfo.getName(), taxID);
-			setNameLowcase.add(geneID.getGeneUniID().toLowerCase());
-		}
-	}
+
 }

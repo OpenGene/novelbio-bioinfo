@@ -101,7 +101,7 @@ public class GffHashGeneUCSC extends GffHashGeneAbs{
 				}
 				
 				// 将本基因(转录本)的ID装入locString中
-				lastGffdetailUCSCgene.addItemName(geneInfo[0]);
+				lastGffdetailUCSCgene.setName(geneInfo[0]);
 				if (Math.abs(Integer.parseInt(geneInfo[5]) - Integer.parseInt(geneInfo[6])) <= 2) {
 					lastGffdetailUCSCgene.addsplitlist(geneInfo[0], geneInfo[0], GeneType.miRNA, geneInfo[2].equals("+"));
 				}

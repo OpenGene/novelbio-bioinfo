@@ -13,7 +13,7 @@ public class GffGeneIsoTest extends TestCase {
 	@Test
 	public void testGffGeneIsoCis() {
 		GffGene gffDetailGene = new GffGene("chr1","sefes", true);
-		GffIso gffGeneIsoCis = GffIso.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, true);
+		GffIso gffGeneIsoCis = GffIso.createGffGeneIso("aaa",gffDetailGene.getName(), gffDetailGene, GeneType.mRNA, true);
 		gffGeneIsoCis.add(new ExonInfo(true, 0, 3));
 		gffGeneIsoCis.add(new ExonInfo(true,5, 10));
 		gffGeneIsoCis.add(new ExonInfo(true,20, 30));
@@ -57,7 +57,7 @@ public class GffGeneIsoTest extends TestCase {
 	@Test
 	public void testGffGeneIsoTrans() {
 		GffGene gffDetailGene = new GffGene("chr1","sefes", false);
-		GffIso gffGeneIsoTrans = GffIso.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, false);
+		GffIso gffGeneIsoTrans = GffIso.createGffGeneIso("aaa",gffDetailGene.getName(), gffDetailGene, GeneType.mRNA, false);
 
 		gffGeneIsoTrans.add(new ExonInfo(false, 50, 40));
 		gffGeneIsoTrans.add(new ExonInfo(false, 30, 20));

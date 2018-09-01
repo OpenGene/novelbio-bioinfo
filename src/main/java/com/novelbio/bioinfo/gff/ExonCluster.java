@@ -137,7 +137,7 @@ public class ExonCluster implements Alignment {
 				return lsExonInfos.get(0).isCis5to3();
 			}
 		}
-		logger.error("exoncluster is empty: " + getParentGene().getNameSingle());
+		logger.error("exoncluster is empty: " + getParentGene().getName());
 		return true;
 	}
 	public void setExonClusterBefore(ExonCluster exonClusterBefore) {
@@ -170,7 +170,7 @@ public class ExonCluster implements Alignment {
 		}
 		for (GffIso iso : mapIso2LsExon.keySet()) {
 			GffGene gffGeneParent = iso.getParentGffDetailGene();
-			if (gffGeneParent.getNameSingle().equals(gffDetailGene.getNameSingle()) && gffGeneParent.getLsCodSplit().size() > gffDetailGene.getLsCodSplit().size()) {
+			if (gffGeneParent.getName().equals(gffDetailGene.getName()) && gffGeneParent.getLsCodSplit().size() > gffDetailGene.getLsCodSplit().size()) {
 				gffDetailGene = gffGeneParent;
 			}
 		}
@@ -714,7 +714,7 @@ public class ExonCluster implements Alignment {
 
 	/** 根据坐标设定一个key */
 	public String toString() {
-		return getRefID() + " " +getStartAbs() + " " + getEndAbs() + " " + getParentGene().getNameSingle();
+		return getRefID() + " " +getStartAbs() + " " + getEndAbs() + " " + getParentGene().getName();
 	}
 	
 	

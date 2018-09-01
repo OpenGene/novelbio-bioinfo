@@ -105,7 +105,7 @@ public class GffHashGeneGBK extends GffHashGeneAbs {
 		txtRead.close();
 		for (GffGene gffDetailGeneTmp : listGff) {
 			   if (gffDetailGeneTmp.getLsCodSplit().size() == 0) {
-				   gffDetailGeneTmp.addsplitlist(gffDetailGeneTmp.getNameSingle(), gffDetailGeneTmp.getNameSingle(), GeneType.ncRNA);
+				   gffDetailGeneTmp.addsplitlist(gffDetailGeneTmp.getName(), gffDetailGeneTmp.getName(), GeneType.ncRNA);
 				   gffDetailGeneTmp.addExon(null, gffDetailGeneTmp.getStartAbs(), gffDetailGeneTmp.getEndAbs());
 			   }
 			   for (GffIso gffGeneIsoInfo : gffDetailGeneTmp.getLsCodSplit()) {
@@ -132,7 +132,7 @@ public class GffHashGeneGBK extends GffHashGeneAbs {
 	
 	private void setGeneName(GffGene gffDetailGene, String content) {
 		content = content.trim();
-		gffDetailGene.addItemName(content.split("=")[1].replace("\"", ""));
+		gffDetailGene.setName(content.split("=")[1].replace("\"", ""));
 	}
 	
 	private GffIso addmRNA(GffGene gffDetailGene, GeneType geneTypes, String content) {
@@ -142,7 +142,7 @@ public class GffHashGeneGBK extends GffHashGeneAbs {
 			cis5to3 = false;
 		}
 		GffIso gffGeneIsoInfo = null;
-		gffGeneIsoInfo = GffIso.createGffGeneIso(gffDetailGene.getNameSingle(), gffDetailGene.getNameSingle(), gffDetailGene, geneTypes, cis5to3);
+		gffGeneIsoInfo = GffIso.createGffGeneIso(gffDetailGene.getName(), gffDetailGene.getName(), gffDetailGene, geneTypes, cis5to3);
 		String[] exonInfo = ss[1].replace("complement", "").replace("join", "").replace("(", "").replace(")", "").split(",");
 		for (String exonTmp : exonInfo) {
 			String[] exonLoc = exonTmp.split("\\.\\.");

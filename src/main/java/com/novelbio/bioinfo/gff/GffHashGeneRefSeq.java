@@ -18,13 +18,13 @@ public class GffHashGeneRefSeq extends GffHashGeneAbs{
 		gffHashGeneRefSeq.setProteinSeq(proteinSeq);
 		gffHashGeneRefSeq.ReadGffarray(gfffilename);
 		GffCodGene gffCodGene = gffHashGeneRefSeq.searchLocation("XM_003494920", 73);
-		GffGene gffDetailGene = gffCodGene.getGffDetailThis();
+		GffGene gffDetailGene = gffCodGene.getAlignThis();
 		System.out.println(gffDetailGene.getLongestSplitMrna().getATGsite());
 		System.out.println(gffDetailGene.getLongestSplitMrna().getCod2ATG(74));
 		
 		
 		gffCodGene = gffHashGeneRefSeq.searchLocation("xm_003494920", 74);
-		gffDetailGene = gffCodGene.getGffDetailThis();
+		gffDetailGene = gffCodGene.getAlignThis();
 		System.out.println(gffDetailGene.getLongestSplitMrna().getATGsite());
 		System.out.println(gffDetailGene.getLongestSplitMrna().getCod2ATG(74));
 	}

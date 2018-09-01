@@ -40,16 +40,15 @@ public class TestGffUCSCInfo extends TestCase{
 	public void testchr1_1385068()
 	{
 		Boolean aa = true;
-		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.findCod());
-		assertEquals("NM_022834"+SepSign.SEP_ID+"NM_199121",gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().getName());
-		assertEquals(aa,gffCodInfoUCSCgenechr1_1385068.getGffDetailUp().isCis5to3());
-		assertEquals(aa,gffCodInfoUCSCgenechr1_1385068.getGffDetailDown().isCis5to3());
+		assertEquals("NM_022834"+SepSign.SEP_ID+"NM_199121",gffCodInfoUCSCgenechr1_1385068.getAlignUp().getName());
+		assertEquals(aa,gffCodInfoUCSCgenechr1_1385068.getAlignUp().isCis5to3());
+		assertEquals(aa,gffCodInfoUCSCgenechr1_1385068.getAlignDown().isCis5to3());
 		assertEquals(true, gffCodInfoUCSCgenechr1_1385068.isInsideLoc());
-		assertEquals(-995, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplitMrna().getCod2ATG(1385069));
-		assertEquals(-18841, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplitMrna().getCod2UAG(1385069));
-		assertEquals(-20469, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplitMrna().getCod2Tes(1385069));
-		assertEquals(0, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplitMrna().getCod2Tss(1385069));
-		assertEquals(GffIso.COD_LOC_EXON, gffCodInfoUCSCgenechr1_1385068.getGffDetailThis().getLongestSplitMrna().getCodLoc(1385069));
+		assertEquals(-995, gffCodInfoUCSCgenechr1_1385068.getAlignThis().getLongestSplitMrna().getCod2ATG(1385069));
+		assertEquals(-18841, gffCodInfoUCSCgenechr1_1385068.getAlignThis().getLongestSplitMrna().getCod2UAG(1385069));
+		assertEquals(-20469, gffCodInfoUCSCgenechr1_1385068.getAlignThis().getLongestSplitMrna().getCod2Tes(1385069));
+		assertEquals(0, gffCodInfoUCSCgenechr1_1385068.getAlignThis().getLongestSplitMrna().getCod2Tss(1385069));
+		assertEquals(GffIso.COD_LOC_EXON, gffCodInfoUCSCgenechr1_1385068.getAlignThis().getLongestSplitMrna().getCodLoc(1385069));
 	}
 	
 	@Test

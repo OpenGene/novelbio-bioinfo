@@ -705,7 +705,7 @@ public class ExonJunction extends RunProcess {
 				logger.debug("stop");
 			}
 
-			logger.debug("reconstruct splicing event " + gffDetailGene.getNameSingle());
+			logger.debug("reconstruct splicing event " + gffDetailGene.getName());
 			reconstructIso(generateNewIso, gffDetailGene);
 			gffDetailGene.removeDupliIso();
 			
@@ -972,7 +972,7 @@ public class ExonJunction extends RunProcess {
 			List<ExonSplicingTest> lsIsoExonSplicingResult = doTest(lsIsoExonSplicingTests);
 			if (lsIsoExonSplicingResult.isEmpty()) {
 				logger.debug("gene " +
-						lsIsoExonSplicingTests.get(0).getCurrentExonCluster().getParentGene().getNameSingle() + " has unknown splicing site");
+						lsIsoExonSplicingTests.get(0).getCurrentExonCluster().getParentGene().getName() + " has unknown splicing site");
 				continue;
 			}
 			lsIsoExonSplicingResult = combineMXE(lsIsoExonSplicingResult);
@@ -1445,7 +1445,7 @@ public class ExonJunction extends RunProcess {
 		}
 		int exonNum = 0;
 		GffIso isoGetSeq = null;
-		for (GffIso iso : gffCodGene.getGffDetailThis().getLsCodSplit()) {
+		for (GffIso iso : gffCodGene.getAlignThis().getLsCodSplit()) {
 			int exonNumThis = iso.getNumCodInEle(codMid);
 			if (exonNumThis > 0) {
 				exonNum = exonNumThis;

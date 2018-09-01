@@ -122,7 +122,6 @@ public class MgmtGffDetailGene {
 				gffGeneIsoInfo.setGffFileId(gffFile.getId());
 				repoGffIso.save(gffGeneIsoInfo);
 			}
-			gffDetailGene.setNameLowcase();
 			gffDetailGene.setGffFileId(gffFile.getId());
 			repoGffGene.save(gffDetailGene);
 		}

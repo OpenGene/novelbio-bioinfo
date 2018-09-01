@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.novelbio.bioinfo.base.AlignExtend;
 import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.ListEle;
 
 public class ExonClusterOperator {
 
@@ -141,7 +143,7 @@ public class ExonClusterOperator {
 	 * 如果cis5to3为false，从大到小排列
 	 * 内部的int[] 0: startAbs 1: endAbs
 	 */
-	public static List<int[]> getCombSep(Boolean cis5to3, List<GffIso> lsIso, boolean sepSingle) {
+	public static List<int[]> getCombSep(Boolean cis5to3, List<? extends ListEle<? extends AlignExtend>> lsIso, boolean sepSingle) {
 		ArrayList<AlignWithParent> lsAllelement = combListAbs(cis5to3, lsIso);
 		ArrayList<int[]> lsSep = null;
 		if (sepSingle) {
@@ -158,15 +160,15 @@ public class ExonClusterOperator {
 	 * @param lsIso
 	 * @return
 	 */
-	private static ArrayList<AlignWithParent> combListAbs(Boolean cis5to3, List<GffIso> lsIso) {
+	private static ArrayList<AlignWithParent> combListAbs(Boolean cis5to3, List<? extends ListEle<? extends AlignExtend>> lsIso) {
 		ArrayList<AlignWithParent> lsAll = new ArrayList<>();
 		//将全部的exon放在一个list里面并且排序
 		for (int i = 0; i < lsIso.size(); i++) {
-			GffIso gffIso = lsIso.get(i);
+			ListEle<? extends AlignExtend> gffIso = lsIso.get(i);
 			if (cis5to3 != null && gffIso.isCis5to3() != cis5to3) {
 				continue;
 			}
-			for (ExonInfo exonInfo : gffIso) {
+			for (AlignExtend exonInfo : gffIso) {
 				lsAll.add(new AlignWithParent(exonInfo, i));
 			}
 		}

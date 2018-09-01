@@ -266,9 +266,9 @@ public class GffChrStatistics extends RunProcess implements Cloneable, Alignment
 			return false;
 		}
 		if (gffCodGene.isInsideLoc()) {
-			flagIntraGenic = setStatisticsNum(prop, gffCodGene.getGffDetailThis(), align.getMidSite());
+			flagIntraGenic = setStatisticsNum(prop, gffCodGene.getAlignThis(), align.getMidSite());
 		} else {
-			flagIntraGenic = setStatisticsNum(prop, gffCodGene.getGffDetailUp(), gffCodGene.getGffDetailDown(), align.getMidSite());
+			flagIntraGenic = setStatisticsNum(prop, gffCodGene.getAlignUp(), gffCodGene.getAlignDown(), align.getMidSite());
 		}
 		if (flagIntraGenic) {
 			intraGenic += prop*1;

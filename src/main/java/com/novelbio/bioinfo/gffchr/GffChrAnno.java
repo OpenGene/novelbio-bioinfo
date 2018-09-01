@@ -367,14 +367,14 @@ public class GffChrAnno extends RunProcess {
 			return lsResultAnno;
 		}
 		//在上一个gene内
-		if (gffCodGene.getGffDetailUp() != null) {
-			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailUp(), summit);
+		if (gffCodGene.getAlignUp() != null) {
+			getAnnoLocSumit(lsResultAnno, gffCodGene.getAlignUp(), summit);
 		}
-		if (gffCodGene.getGffDetailThis() != null) {
-			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailThis(), summit);
+		if (gffCodGene.getAlignThis() != null) {
+			getAnnoLocSumit(lsResultAnno, gffCodGene.getAlignThis(), summit);
 		}
-		if (gffCodGene.getGffDetailDown() != null) {
-			getAnnoLocSumit(lsResultAnno, gffCodGene.getGffDetailDown(), summit);
+		if (gffCodGene.getAlignDown() != null) {
+			getAnnoLocSumit(lsResultAnno, gffCodGene.getAlignDown(), summit);
 		}
 		return lsResultAnno;
 	}

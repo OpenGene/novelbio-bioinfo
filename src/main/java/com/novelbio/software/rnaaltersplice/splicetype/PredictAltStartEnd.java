@@ -136,7 +136,7 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		}
 		boolean isCis5To3 = gffDetailGene.isCis5to3();
 		if (lsExonInfos.isEmpty()) {
-			logger.error("cannot get BG site of Gene " + gffDetailGene.getNameSingle() + " please check !!!");
+			logger.error("cannot get BG site of Gene " + gffDetailGene.getName() + " please check !!!");
 			return gffDetailGene.getLongestSplitMrna().getLsElement();
 		}
 		Collections.sort(lsExonInfos);
@@ -169,9 +169,9 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		}
 		if (lsResult.isEmpty()) {
 			if (type == SplicingAlternativeType.altstart) {
-				logger.error("gene {} cannot find exons before alt start exon {}, use all iso as background", gffDetailGene.getNameSingle(), align.toString());
+				logger.error("gene {} cannot find exons before alt start exon {}, use all iso as background", gffDetailGene.getName(), align.toString());
 			} else {
-				logger.error("gene {} cannot find exons after alt end exon {}, use all iso as background", gffDetailGene.getNameSingle(), align.toString());
+				logger.error("gene {} cannot find exons after alt end exon {}, use all iso as background", gffDetailGene.getName(), align.toString());
 			}
 			return gffDetailGene.getLongestSplitMrna().getLsElement();
 		}

@@ -279,10 +279,6 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 		gffHashGene.sort();
 	}
 	
-	/** 顺序存储ChrHash中的ID，这个就是ChrHash中实际存储的ID，如果两个Item是重叠的，就全加入 */
-	public ArrayList<String> getLsNameAll() {
-		return gffHashGene.getLsNameAll();
-	}
 	@Override
 	public ArrayList<String> getLsNameNoRedundent() {
 		return gffHashGene.getLsNameNoRedundent();
@@ -620,7 +616,7 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 			}
 			if (gffDetailGene.getStartAbs() <= 0 || gffDetailGene.getEndAbs() > chrLen) {
 				throw new ExceptionNbcGFF("gff or chromosome file error: " 
-						+ gffDetailGene.getRefID() + " " + gffDetailGene.getNameSingle() + " " + gffDetailGene.getStartAbs() + " " + gffDetailGene.getEndAbs() 
+						+ gffDetailGene.getRefID() + " " + gffDetailGene.getName() + " " + gffDetailGene.getStartAbs() + " " + gffDetailGene.getEndAbs() 
 						+ " out of chr Range: " + gffDetailGene.getRefID() + " " + chrLen);
 			}
 		}

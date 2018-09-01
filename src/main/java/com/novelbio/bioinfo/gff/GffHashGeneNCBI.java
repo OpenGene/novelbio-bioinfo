@@ -367,7 +367,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			GffIso iso= mapRnaID2Iso.get(rnaID);
 			if (iso == null) {
 				iso = gffDetailGene.addsplitlist(rnaName,
-						gffDetailGene.getNameSingle(), mRNAtype, ss[6].equals("+")
+						gffDetailGene.getName(), mRNAtype, ss[6].equals("+")
 								|| ss[6].equals("."));// 每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 				mapRnaID2Iso.put(rnaID, iso);
 			}
@@ -719,8 +719,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				return null;
 			}
 			GffIso gffGeneIsoInfo = gffDetailGene.addsplitlist(
-					gffDetailGene.getNameSingle(),
-					gffDetailGene.getNameSingle(), geneType);
+					gffDetailGene.getName(),
+					gffDetailGene.getName(), geneType);
 
 			mapRnaID2Iso.put(rnaID, gffGeneIsoInfo);
 			iso = mapRnaID2Iso.get(rnaID);
@@ -756,11 +756,11 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				iso.sortAndCombine();
 			}
 			
-			if (!mapName2LsGene.containsKey(gene.getNameSingle())) {
-				mapName2LsGene.put(gene.getNameSingle(), gene);
+			if (!mapName2LsGene.containsKey(gene.getName())) {
+				mapName2LsGene.put(gene.getName(), gene);
 				continue;
 			}
-			List<GffGene> lsGenes = mapName2LsGene.get(gene.getNameSingle());
+			List<GffGene> lsGenes = mapName2LsGene.get(gene.getName());
 			
 			boolean isFinish = false;
 			for (GffGene gffDetailGene : lsGenes) {
@@ -801,7 +801,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 				gffDetailGene.resetStartEnd();
 			}
 			if (!gene.getLsCodSplit().isEmpty()) {
-				mapName2LsGene.put(gene.getNameSingle(), gene);
+				mapName2LsGene.put(gene.getName(), gene);
 			}
 		}
 		//====================================================
@@ -819,8 +819,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			}
 
 			if (gffDetailGene.getLsCodSplit().size() == 0) {
-				gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(),
-						gffDetailGene.getNameSingle(), GeneType.ncRNA);
+				gffDetailGene.addsplitlist(gffDetailGene.getName(),
+						gffDetailGene.getName(), GeneType.ncRNA);
 				gffDetailGene.addExon(null, gffDetailGene.getStartAbs(),
 						gffDetailGene.getEndAbs());
 			}

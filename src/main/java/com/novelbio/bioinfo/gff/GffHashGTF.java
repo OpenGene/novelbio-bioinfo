@@ -710,21 +710,21 @@ public class GffHashGTF extends GffHashGeneAbs{
 				return true;
 			}
 			if (gffCodGene.isInsideLoc()) {
-				return gffCodGene.getGffDetailThis().isCis5to3();
+				return gffCodGene.getAlignThis().isCis5to3();
 			} else {
 				int a = Integer.MAX_VALUE;
 				int b = Integer.MAX_VALUE;
-				if (gffCodGene.getGffDetailUp() != null) {
-					a = gffCodGene.getGffDetailUp().getCod2End(LocID);
+				if (gffCodGene.getAlignUp() != null) {
+					a = gffCodGene.getAlignUp().getCod2End(LocID);
 				}
-				if (gffCodGene.getGffDetailDown() != null) {
-					b = gffCodGene.getGffDetailDown().getCod2Start(LocID);
+				if (gffCodGene.getAlignDown() != null) {
+					b = gffCodGene.getAlignDown().getCod2Start(LocID);
 				}
 				if (a < b) {
-					return gffCodGene.getGffDetailUp().isCis5to3();
+					return gffCodGene.getAlignUp().isCis5to3();
 				}
 				else {
-					return gffCodGene.getGffDetailDown().isCis5to3();
+					return gffCodGene.getAlignDown().isCis5to3();
 				}
 			}
 		}

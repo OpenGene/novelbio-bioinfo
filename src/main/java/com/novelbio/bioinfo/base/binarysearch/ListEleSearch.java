@@ -172,7 +172,7 @@ public abstract class ListEleSearch <T extends AlignExtend, E extends ListEle<T>
 		return gffCodDu;
 	}
 	
-	private void addChrIdCannotFind(String chrId) {
+	protected void addChrIdCannotFind(String chrId) {
 		int[] chrIdNum = mapChrId2Num.get(chrId);
 		if (chrIdNum == null) {
 			chrIdNum = new int[1];

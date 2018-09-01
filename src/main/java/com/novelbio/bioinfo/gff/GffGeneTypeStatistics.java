@@ -55,9 +55,9 @@ public class GffGeneTypeStatistics {
 		Collection<String> setGene = new HashSet<>();
 		Collection<String> setGeneMrna = new HashSet<>();
 		for (GffGene gffDetailGene : gffHash.getLsGffDetailGenes()) {
-			setGene.add(gffDetailGene.getNameSingle());
+			setGene.add(gffDetailGene.getName());
 			if (gffDetailGene.isMRNAgeneType()) {
-				setGeneMrna.add(gffDetailGene.getNameSingle());
+				setGeneMrna.add(gffDetailGene.getName());
 			}
 			for (GffIso iso : gffDetailGene.getLsCodSplit()) {
 				try {

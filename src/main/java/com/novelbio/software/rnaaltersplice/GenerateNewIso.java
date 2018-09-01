@@ -217,8 +217,8 @@ public class GenerateNewIso {
 		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(junctionUnit.getRefID(), start, end);
 		if (gffCodGeneDU.getLsGffDetailMid().size() > 0) return true;
 		//TODO
-		GffCodGene gffCodGeneStart = gffCodGeneDU.getGffCod1();
-		GffCodGene gffCodGeneEnd = gffCodGeneDU.getGffCod2();
+		GffCodGene gffCodGeneStart = gffCodGeneDU.getSiteLeft();
+		GffCodGene gffCodGeneEnd = gffCodGeneDU.getSiteRight();
 		if (!gffCodGeneStart.isInsideLoc() || !gffCodGeneEnd.isInsideLoc()) {
 			return false;
 		}
@@ -257,8 +257,8 @@ public class GenerateNewIso {
 		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(junctionUnit.getRefID(), junctionUnit.getStartAbs(), junctionUnit.getEndAbs());
 		if (gffCodGeneDU.getLsGffDetailMid().size() > 0) return true;
 		//TODO
-		GffCodGene gffCodGeneStart = gffCodGeneDU.getGffCod1();
-		GffCodGene gffCodGeneEnd = gffCodGeneDU.getGffCod2();
+		GffCodGene gffCodGeneStart = gffCodGeneDU.getSiteLeft();
+		GffCodGene gffCodGeneEnd = gffCodGeneDU.getSiteRight();
 		
 		Set<GffGene> setGeneUp = gffCodGeneStart.getSetGeneCodIn();
 		Set<GffGene> setGeneDown = gffCodGeneEnd.getSetGeneCodIn();
@@ -306,7 +306,7 @@ public class GenerateNewIso {
 				continue;
 			}
 			if (exonNumEnd < exonNumStart) {
-				logger.error("出错" + gffDetailGene.getNameSingle() + " " + junctionUnit.getStartAbs() + " " + junctionUnit.getEndAbs());
+				logger.error("出错" + gffDetailGene.getName() + " " + junctionUnit.getStartAbs() + " " + junctionUnit.getEndAbs());
 			}
 			if (exonNumEnd - exonNumStart == 1) {
 				findJun = true;
@@ -727,7 +727,7 @@ public class GenerateNewIso {
 		if (gffCodGene.isInsideUp() || (gffCodGene.isInsideLoc() && gffCodGene.isInsideDown())) {
 			return start;
 		}
-		GffGene gffDetailGeneLast = gffCodGene.getGffDetailUp();
+		GffGene gffDetailGeneLast = gffCodGene.getAlignUp();
 		if (gffDetailGeneLast == null) {
 			start = start - 200;
 		} else if (start > (gffDetailGeneLast.getEndAbs() + extend + 100)) {
@@ -799,7 +799,7 @@ public class GenerateNewIso {
 		if (gffCodGene.isInsideDown() || (gffCodGene.isInsideLoc() && gffCodGene.isInsideUp())) {
 			return end;
 		}
-		GffGene gffDetailGeneNext = gffCodGene.getGffDetailDown();
+		GffGene gffDetailGeneNext = gffCodGene.getAlignDown();
 		if (gffDetailGeneNext == null) {
 			end = end + extend;
 		} else if (end < (gffDetailGeneNext.getStartAbs() - extend - 100)) {
@@ -814,7 +814,7 @@ public class GenerateNewIso {
 		try {
 			lsJuncUnit = getLsJuncUnitNoOverlap();
 		} catch (Exception e) {
-			logger.error("reconstructRI error " + gffDetailGene.getNameSingle() + " " + gffDetailGene.getRefID()
+			logger.error("reconstructRI error " + gffDetailGene.getName() + " " + gffDetailGene.getRefID()
 					+ " " + gffDetailGene.getStartAbs() + " " + gffDetailGene.getEndAbs());
 			lsJuncUnit = getLsJuncUnitNoOverlap();
 			
@@ -996,7 +996,7 @@ public class GenerateNewIso {
 			GffGene gffDetailGene = mapStrand2Gene.get(gffGeneIsoInfo.isCis5to3());
 			if (gffDetailGene == null) {
 				gffDetailGene = getGffDetailGeneClone(gene);
-				gffDetailGene.addItemName(parentName);
+				gffDetailGene.setName(parentName);
 				mapStrand2Gene.put(gffGeneIsoInfo.isCis5to3(), gffDetailGene);
 			}
 			gffDetailGene.addIsoSimple(gffGeneIsoInfo);

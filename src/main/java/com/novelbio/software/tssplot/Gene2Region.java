@@ -66,7 +66,7 @@ public class Gene2Region {
 	public void setToGenomeWideGene() {
 		setGeneName.clear();
 		for (GffGene gffGene : gffHashGene.getLsGffDetailGenes()) {
-			setGeneName.add(gffGene.getNameSingle());
+			setGeneName.add(gffGene.getName());
 		}
 	}
 	

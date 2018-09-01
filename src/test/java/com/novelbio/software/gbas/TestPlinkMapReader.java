@@ -55,8 +55,8 @@ public class TestPlinkMapReader {
 	
 	private GffGene generateGene(String chrId, int start, int end) {
 		GffGene gffDetailGene = new GffGene();
-		gffDetailGene.setParentName(chrId);
-		gffDetailGene.addItemName(start + "_" + end);
+		gffDetailGene.setChrID(chrId);
+		gffDetailGene.setName(start + "_" + end);
 		gffDetailGene.setStartAbs(start);
 		gffDetailGene.setEndAbs(end);
 		return gffDetailGene;
@@ -85,7 +85,7 @@ public class TestPlinkMapReader {
 		plinkMapReader.readNextLsAllele();
 		GffGene gene = plinkMapReader.getGeneCurrent();
 		List<Allele> lsAllele = plinkMapReader.getLsAllelesCurrent();
-		assertEquals("50_100", gene.getNameSingle());
+		assertEquals("50_100", gene.getName());
 		assertEquals(3, lsAllele.size());
 		assertEquals("chr2\ta\tb\t50\tA\tG", lsAllele.get(0).toString());
 		assertEquals("chr2\ta\tb\t80\tA\tG", lsAllele.get(1).toString());
@@ -94,7 +94,7 @@ public class TestPlinkMapReader {
 		plinkMapReader.readNextLsAllele();
 		gene = plinkMapReader.getGeneCurrent();
 		lsAllele = plinkMapReader.getLsAllelesCurrent();
-		assertEquals("200_300", gene.getNameSingle());
+		assertEquals("200_300", gene.getName());
 		assertEquals(4, lsAllele.size());
 		assertEquals("chr2\ta\tb\t200\tA\tG", lsAllele.get(0).toString());
 		assertEquals("chr2\ta\tb\t250\tA\tG", lsAllele.get(1).toString());
@@ -104,7 +104,7 @@ public class TestPlinkMapReader {
 		plinkMapReader.readNextLsAllele();
 		gene = plinkMapReader.getGeneCurrent();
 		lsAllele = plinkMapReader.getLsAllelesCurrent();
-		assertEquals("250_280", gene.getNameSingle());
+		assertEquals("250_280", gene.getName());
 		assertEquals(2, lsAllele.size());
 		assertEquals("chr2\ta\tb\t250\tA\tG", lsAllele.get(0).toString());
 		assertEquals("chr2\ta\tb\t280\tA\tG", lsAllele.get(1).toString());
@@ -112,7 +112,7 @@ public class TestPlinkMapReader {
 		plinkMapReader.readNextLsAllele();
 		gene = plinkMapReader.getGeneCurrent();
 		lsAllele = plinkMapReader.getLsAllelesCurrent();
-		assertEquals("290_350", gene.getNameSingle());
+		assertEquals("290_350", gene.getName());
 		assertEquals(2, lsAllele.size());
 		assertEquals("chr2\ta\tb\t300\tA\tG", lsAllele.get(0).toString());
 		assertEquals("chr2\ta\tb\t330\tA\tG", lsAllele.get(1).toString());
@@ -120,14 +120,14 @@ public class TestPlinkMapReader {
 		plinkMapReader.readNextLsAllele();
 		gene = plinkMapReader.getGeneCurrent();
 		lsAllele = plinkMapReader.getLsAllelesCurrent();
-		assertEquals("700_800", gene.getNameSingle());
+		assertEquals("700_800", gene.getName());
 		assertEquals(1, lsAllele.size());
 		assertEquals("chr2\ta\tb\t720\tA\tG", lsAllele.get(0).toString());
 		
 		plinkMapReader.readNextLsAllele();
 		gene = plinkMapReader.getGeneCurrent();
 		lsAllele = plinkMapReader.getLsAllelesCurrent();
-		assertEquals("50_100", gene.getNameSingle());
+		assertEquals("50_100", gene.getName());
 		assertEquals(3, lsAllele.size());
 		assertEquals("chr1\ta\tb\t50\tA\tG", lsAllele.get(0).toString());
 		assertEquals("chr1\ta\tb\t80\tA\tG", lsAllele.get(1).toString());

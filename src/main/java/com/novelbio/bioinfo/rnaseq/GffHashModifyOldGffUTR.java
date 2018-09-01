@@ -43,7 +43,7 @@ public class GffHashModifyOldGffUTR {
 					logger.warn("cannot find gene on:" + gffDetailGeneRef.getRefID() + " " + median );
 					continue;
 				}
-				GffGene gffDetailGeneThis = gffCodGene.getGffDetailThis();
+				GffGene gffDetailGeneThis = gffCodGene.getAlignThis();
 				if (gffDetailGeneThis == null) {
 					logger.error("stop");
 				}

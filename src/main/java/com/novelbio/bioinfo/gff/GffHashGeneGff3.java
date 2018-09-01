@@ -226,9 +226,9 @@ public class GffHashGeneGff3 extends GffHashGeneAbs {
 			   }
 			   GffGene gffDetailGene = mapGenID2GffDetail.get(geneId);
 			   try {
-				   addMRNA(new String[]{geneId, gffDetailGene.getNameSingle()}, ss);
+				   addMRNA(new String[]{geneId, gffDetailGene.getName()}, ss);
 			   } catch (Exception e) {
-				   addMRNA(new String[]{geneId, gffDetailGene.getNameSingle()}, ss);
+				   addMRNA(new String[]{geneId, gffDetailGene.getName()}, ss);
             }
 			  
 		   }
@@ -241,10 +241,10 @@ public class GffHashGeneGff3 extends GffHashGeneAbs {
 				   rnaIDandName = new String[]{parentId, iso.getName()};
 				   String geneId = mapRnaID2GeneID.get(parentId);
 				   if (geneId != null) {
-					   geneIDandName = new String[]{geneId, mapGenID2GffDetail.get(geneId).getNameSingle()};
+					   geneIDandName = new String[]{geneId, mapGenID2GffDetail.get(geneId).getName()};
                 }
 			   } else {
-				   geneIDandName = new String[]{parentId, mapGenID2GffDetail.get(parentId).getNameSingle()};
+				   geneIDandName = new String[]{parentId, mapGenID2GffDetail.get(parentId).getName()};
 			   }
 			   if (ss[4].equals("")) {
 				   continue;
@@ -262,10 +262,10 @@ public class GffHashGeneGff3 extends GffHashGeneAbs {
 				   rnaIDandName = new String[]{parentId, iso.getName()};
 				   String geneId = mapRnaID2GeneID.get(parentId);
 				   if (geneId != null) {
-					   geneIDandName = new String[]{geneId, mapGenID2GffDetail.get(geneId).getNameSingle()};
+					   geneIDandName = new String[]{geneId, mapGenID2GffDetail.get(geneId).getName()};
                 }
 			   } else {
-				   geneIDandName = new String[]{parentId, mapGenID2GffDetail.get(parentId).getNameSingle()};
+				   geneIDandName = new String[]{parentId, mapGenID2GffDetail.get(parentId).getName()};
 			   }
 			   addCDS(geneIDandName, rnaIDandName, ss);
 		   }
@@ -344,7 +344,7 @@ public class GffHashGeneGff3 extends GffHashGeneAbs {
 	   String rnaName = add_MapRnaID2RnaName_And_MapRnaID2GeneID(lastGeneIDandName, rnaID, ss, mRNAtype);
 	   GffGene gffDetailGene = getGffDetailRnaID(rnaID);
 	   try {
-		   GffIso gffGeneIsoInfo = gffDetailGene.addsplitlist(rnaName, gffDetailGene.getNameSingle(), mRNAtype, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
+		   GffIso gffGeneIsoInfo = gffDetailGene.addsplitlist(rnaName, gffDetailGene.getName(), mRNAtype, ss[6].equals("+") || ss[6].equals("."));//每遇到一个mRNA就添加一个可变剪接,先要类型转换为子类
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
 		   ExonInfo exonInfo = new ExonInfo(true, Integer.parseInt(ss[3]), Integer.parseInt(ss[4]));
 		   mapRnaID2LsIsoLocInfo.put(rnaID, exonInfo);
@@ -625,7 +625,7 @@ public class GffHashGeneGff3 extends GffHashGeneAbs {
 	   if (lsGffGeneIsoInfo.size() == 0) {
 		   mapRnaID2GeneID.put(rnaID, rnaID);
 		   GffGene gffDetailGene = getGffDetailGenID(rnaID);
-		   GffIso gffGeneIsoInfo = gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), gffDetailGene.getNameSingle(), geneType);
+		   GffIso gffGeneIsoInfo = gffDetailGene.addsplitlist(gffDetailGene.getName(), gffDetailGene.getName(), geneType);
 		
 		   mapRnaID2LsIso.put(rnaID, gffGeneIsoInfo);
 		   lsGffGeneIsoInfo = mapRnaID2LsIso.get(rnaID);
@@ -662,7 +662,7 @@ public class GffHashGeneGff3 extends GffHashGeneAbs {
 		   }
 		   
 		   if (gffDetailGene.getLsCodSplit().size() == 0) {
-			   gffDetailGene.addsplitlist(gffDetailGene.getNameSingle(), gffDetailGene.getNameSingle(), GeneType.ncRNA);
+			   gffDetailGene.addsplitlist(gffDetailGene.getName(), gffDetailGene.getName(), GeneType.ncRNA);
 			   gffDetailGene.addExon(null, gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs());
 		   }
 		   for (GffIso gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {

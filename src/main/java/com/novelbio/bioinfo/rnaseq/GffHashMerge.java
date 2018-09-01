@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.bioinfo.base.binarysearch.ListAbs;
 import com.novelbio.bioinfo.fasta.SeqHash;
+import com.novelbio.bioinfo.gff.ExonClusterOperator;
 import com.novelbio.bioinfo.gff.GffCodGene;
 import com.novelbio.bioinfo.gff.GffGene;
 import com.novelbio.bioinfo.gff.GffHashGene;
@@ -112,7 +113,7 @@ public class GffHashMerge {
 				}
 				lsGffAll.add(listGff);
 			}
-			ArrayList<int[]> lsGeneBound = ListAbs.getCombSep(null, lsGffAll, true);
+			List<int[]> lsGeneBound = ExonClusterOperator.getCombSep(null, lsGffAll, true);
 			ArrayList<GffGeneCluster> lsGffCluster = getListGeneCluster(chrID, lsGeneBound, lsGffHashGenes);
 			mapChrID2LsGffCluster.put(chrID.toLowerCase(), lsGffCluster);
 		}
@@ -124,7 +125,7 @@ public class GffHashMerge {
 	 * @param lsGeneBount
 	 * @param lsGffHashGenes
 	 */
-	private ArrayList<GffGeneCluster> getListGeneCluster(String chrID, ArrayList<int[]> lsGeneBound, ArrayList<GffHashGene> lsGffHashGenes) {
+	private ArrayList<GffGeneCluster> getListGeneCluster(String chrID, List<int[]> lsGeneBound, ArrayList<GffHashGene> lsGffHashGenes) {
 		ArrayList<GffGeneCluster> lsGffGeneClusters = new ArrayList<GffGeneCluster>();
 		for (int[] geneBound : lsGeneBound) {
 			GffGeneCluster gffGeneCluster = new GffGeneCluster();
@@ -163,13 +164,13 @@ public class GffHashMerge {
 		}
 		
 		if (gffCodGene.isInsideLoc()) {
-			return gffCodGene.getItemNumThis();
+			return gffCodGene.getIndexAlignThis();
 		}
 		
 		if (start) {
-			return gffCodGene.getItemNumDown();
+			return gffCodGene.getIndexAlignDown();
 		} else {
-			return gffCodGene.getItemNumUp();
+			return gffCodGene.getIndexAlignUp();
 		}
 	}
 	/**
