@@ -11,11 +11,11 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.listoperate.ListAbs;
-import com.novelbio.listoperate.ListCodAbs;
-import com.novelbio.listoperate.ListCodAbsDu;
+import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.ListAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
 import com.novelbio.software.rnaaltersplice.splicetype.SpliceTypePredict;
 import com.novelbio.software.rnaaltersplice.splicetype.SpliceTypePredict.SplicingAlternativeType;
 

@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,7 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.bioinfo.base.Alignment;
 
 /**
  * 双坐标
@@ -96,9 +96,9 @@ public class BsearchSiteDu<T extends Alignment>  {
 	}
 	
 	/** 返回两个坐标中间夹着的的元素 */
-	public List<T> getLsAlignMid() {
-		return lsAlignMid;
-	}
+//	private List<T> getLsAlignMid() {
+//		return lsAlignMid;
+//	}
 	
 	/**
 	 * 返回与这个区段有交集的gffDetail信息<br>

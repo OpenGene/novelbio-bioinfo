@@ -15,12 +15,12 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.bioinfo.IntCmdSoft;
+import com.novelbio.bioinfo.base.freqcount.HistList;
 import com.novelbio.bioinfo.fasta.N50AndSeqLen;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 import com.novelbio.bioinfo.fasta.SeqFastaReader;
 import com.novelbio.database.model.information.SoftWareInfo;
 import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
-import com.novelbio.listoperate.HistList;
 
 /**
  * simple script : cap3 trinity.fa -f 20 -o 100 -p 90 -z 3 > trinity.cap3.result.txt

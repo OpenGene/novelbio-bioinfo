@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 
 import com.novelbio.base.StringOperate;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.sam.SamIndexRefsequence;
 import com.novelbio.database.domain.modgeneid.GeneType;
 

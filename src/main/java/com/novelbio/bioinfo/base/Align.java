@@ -6,7 +6,6 @@ import java.util.List;
 import com.novelbio.base.ExceptionNbcBean;
 import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.StringOperate;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.software.tssplot.ExceptionNBCChIPAlignError;

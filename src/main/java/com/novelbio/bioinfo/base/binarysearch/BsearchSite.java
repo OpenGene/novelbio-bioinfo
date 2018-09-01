@@ -1,9 +1,9 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.bioinfo.base.Alignment;
 
 /**
  * peak定位查找信息的基本类,并且直接可以用于CG与Peak<br>

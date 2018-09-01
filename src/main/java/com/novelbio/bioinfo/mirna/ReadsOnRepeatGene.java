@@ -11,13 +11,13 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
 import com.novelbio.bioinfo.base.AlignSeq;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 import com.novelbio.bioinfo.gff.GffCodGene;
 import com.novelbio.bioinfo.gff.GffDetailRepeat;
 import com.novelbio.bioinfo.gff.GffHashRepeat;
 import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.bioinfo.gffchr.GffChrAbs;
 import com.novelbio.bioinfo.sam.AlignmentRecorder;
-import com.novelbio.listoperate.ListCodAbs;
 /**
  * bed文件在repeat和gene上的分布情况，可以单独设定repeat或者是gene
  * @author zong0jie

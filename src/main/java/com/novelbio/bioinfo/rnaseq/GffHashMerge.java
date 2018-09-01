@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.bioinfo.base.binarysearch.ListAbs;
 import com.novelbio.bioinfo.fasta.SeqHash;
 import com.novelbio.bioinfo.gff.GffCodGene;
 import com.novelbio.bioinfo.gff.GffGene;
@@ -15,7 +16,6 @@ import com.novelbio.bioinfo.gff.GffHashGene;
 import com.novelbio.bioinfo.gff.GffType;
 import com.novelbio.bioinfo.gff.ListGff;
 import com.novelbio.database.domain.species.Species;
-import com.novelbio.listoperate.ListAbs;
 /**
  * merge转录本的，不过现在就用其统计模块把<br>
  * merge工作交给cuffmerge来做

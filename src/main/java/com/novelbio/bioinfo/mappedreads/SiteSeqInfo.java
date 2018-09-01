@@ -7,10 +7,10 @@ import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 import com.novelbio.bioinfo.fasta.SeqFasta;
-import com.novelbio.listoperate.ListCodAbs;
 
 /**
  * 含有序列信息的Alignment

@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.freqcount;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

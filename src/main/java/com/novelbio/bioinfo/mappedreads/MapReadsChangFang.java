@@ -3,9 +3,9 @@ package com.novelbio.bioinfo.mappedreads;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.bioinfo.base.AlignSeq;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.mappedreads.MapReadsBSP.EnumCpGmethyType;
 
 /**

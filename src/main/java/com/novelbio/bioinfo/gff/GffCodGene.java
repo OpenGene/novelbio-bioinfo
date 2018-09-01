@@ -3,7 +3,7 @@ package com.novelbio.bioinfo.gff;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 
 /**
  * UCSC konwn gene的基因坐标信息

@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,15 +14,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-import com.novelbio.base.dataStructure.Alignment;
-import com.novelbio.listoperate.ListDetailAbs.ListDetailAbsCompareNoStrand;
-import com.novelbio.listoperate.ListDetailAbs.ListDetailAbsCompareStrand;
+import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs.ListDetailAbsCompareNoStrand;
+import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs.ListDetailAbsCompareStrand;
 /**
  * 考虑将其拆分成为三个不同的list，一个cis，一个trans，一个null
  * @author zong0jie
  *
  * @param <E>
  */
+@Deprecated
 public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E> {
 	private static final long serialVersionUID = -3356076601369239937L;
 	private static final Logger logger = LoggerFactory.getLogger(ListAbs.class);

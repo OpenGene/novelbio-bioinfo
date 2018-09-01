@@ -21,13 +21,13 @@ import com.novelbio.base.SepSign;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.bioinfo.base.binarysearch.ListAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListAbsSearch;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
 import com.novelbio.bioinfo.gff.GffGene.GeneStructure;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modgeneid.GeneType;
-import com.novelbio.listoperate.ListAbs;
-import com.novelbio.listoperate.ListAbsSearch;
-import com.novelbio.listoperate.ListCodAbs;
-import com.novelbio.listoperate.ListCodAbsDu;
 
 /**
  * 	重写hash，不包含基因名信息，包含基因taxID，chrID，atg，uag，tss，长度，以及每一个exon的信息<br>

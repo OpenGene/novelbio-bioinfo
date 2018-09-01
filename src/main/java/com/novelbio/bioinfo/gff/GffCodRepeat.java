@@ -1,6 +1,6 @@
 package com.novelbio.bioinfo.gff;
 
-import com.novelbio.listoperate.ListCodAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 
 public class GffCodRepeat extends ListCodAbs<GffDetailRepeat>{
 

@@ -16,10 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import com.novelbio.base.SepSign;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.ListHashSearch;
 import com.novelbio.database.domain.modgeneid.GeneID;
-import com.novelbio.listoperate.ListHashSearch;
 
 public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene, GffCodGeneDU, ListGff> implements GffHashGeneInf {
 	private static final Logger logger = LoggerFactory.getLogger(GffHashGeneAbs.class);

@@ -8,11 +8,11 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.novelbio.bioinfo.base.binarysearch.ListAbs;
 import com.novelbio.bioinfo.gff.ExonCluster;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.database.domain.modgeneid.GeneType;
-import com.novelbio.listoperate.ListAbs;
 
 public class TestExonCluster extends TestCase {
 	@Before

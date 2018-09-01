@@ -5,9 +5,9 @@ import java.util.List;
 import java.util.Map;
 
 import com.novelbio.base.ExceptionNullParam;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.mappedreads.MapReadsAbs;
 
 /**

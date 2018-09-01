@@ -5,8 +5,8 @@ import java.util.Collections;
 import java.util.List;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.gff.ExonCluster;
 import com.novelbio.bioinfo.gff.ExonInfo;
 

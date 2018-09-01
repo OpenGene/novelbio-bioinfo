@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.bioinfo.mappedreads.SiteSeqInfo;

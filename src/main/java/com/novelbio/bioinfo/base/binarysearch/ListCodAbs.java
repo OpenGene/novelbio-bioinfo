@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
 
 
@@ -7,6 +7,7 @@ package com.novelbio.listoperate;
  * 子类有GffCodInfoGene 
  * @author zong0jie
  */
+@Deprecated
 public class ListCodAbs<T extends ListDetailAbs> {
 
 	/** 所有坐标的起始信息  */

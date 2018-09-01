@@ -7,10 +7,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 import com.novelbio.bioinfo.fasta.SeqHashInt;
-import com.novelbio.listoperate.BinarySearch;
-import com.novelbio.listoperate.BsearchSiteDu;
 import com.novelbio.software.snpanno.SnpInfo;
 import com.novelbio.software.snpanno.SnpInfo.EnumHgvsVarType;
 

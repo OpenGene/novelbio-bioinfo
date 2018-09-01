@@ -1,4 +1,4 @@
-package com.novelbio.bioinfo.sam;
+package com.novelbio.bioinfo.sam.pileup;
 
 import htsjdk.samtools.DefaultSAMRecordFactory;
 import htsjdk.samtools.SAMFileHeader;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 
 import com.novelbio.bioinfo.sam.SamFile;
 import com.novelbio.bioinfo.sam.SamRecord;
-import com.novelbio.bioinfo.sam.SamRecordPileUp;
+import com.novelbio.bioinfo.sam.pileup.SamRecordPileUp;
 
 import junit.framework.TestCase;
 

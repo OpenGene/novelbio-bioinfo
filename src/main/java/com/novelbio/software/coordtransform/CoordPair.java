@@ -6,12 +6,12 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
-import com.novelbio.listoperate.BinarySearch;
-import com.novelbio.listoperate.BsearchSite;
-import com.novelbio.listoperate.BsearchSiteDu;
+import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSite;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 
 /** mummer的一对比较，或者是liftover的一个chain */
 public class CoordPair implements Alignment {

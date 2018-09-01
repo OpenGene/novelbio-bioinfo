@@ -2,8 +2,8 @@ package com.novelbio.bioinfo.annotation.cog;
 
 import com.novelbio.bioinfo.annotation.cog.COGanno;
 import com.novelbio.bioinfo.annotation.cog.EnumCogType;
+import com.novelbio.bioinfo.base.freqcount.HistList;
 import com.novelbio.generalconf.PathDetailNBC;
-import com.novelbio.listoperate.HistList;
 
 public class TestCOGanno {
 	public static void main(String[] args) {

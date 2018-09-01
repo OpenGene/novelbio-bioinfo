@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.freqcount;
 
 import com.novelbio.bioinfo.base.Align;
 

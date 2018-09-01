@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
 import java.io.FileNotFoundException;
 import java.nio.file.NoSuchFileException;
@@ -22,6 +22,7 @@ import com.novelbio.bioinfo.gff.ExceptionNbcGFF;
  * @locHashtable hash（LOCID）--GeneInforlist
  * @LOCIDList 顺序存储每个基因号或条目号
  */
+@Deprecated
 public abstract class ListHashSearch <T extends ListDetailAbs, E extends ListCodAbs<T>, 
 K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 	private static final Logger logger = LoggerFactory.getLogger(ListHashSearch.class);

@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,6 +16,7 @@ import java.util.HashSet;
  *
  * @param <T>
  */
+@Deprecated
 public class ListDetailComb<T extends ListDetailAbs> extends ListDetailAbs {
 	public ListDetailComb() {
 		super("", "", null);

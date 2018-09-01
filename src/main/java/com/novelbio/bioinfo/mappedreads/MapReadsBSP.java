@@ -12,8 +12,8 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.mappedreads.MapReads.ChrMapReadsInfo;
 import com.novelbio.bioinfo.mappedreads.MapReadsBSP.EnumCpGmethyType;
 

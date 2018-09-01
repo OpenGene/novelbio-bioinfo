@@ -1,8 +1,8 @@
 package com.novelbio.bioinfo.mirna;
 
-import com.novelbio.listoperate.ListCodAbs;
-import com.novelbio.listoperate.ListCodAbsDu;
-import com.novelbio.listoperate.ListHashSearch;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
+import com.novelbio.bioinfo.base.binarysearch.ListHashSearch;
 
 /** 存储miRNA的list */
 public abstract class MiRNAList extends ListHashSearch<MirMature, ListCodAbs<MirMature>, 

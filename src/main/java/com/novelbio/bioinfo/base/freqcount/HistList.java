@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.freqcount;
 
 import java.awt.Color;
 import java.awt.Font;
@@ -28,6 +28,8 @@ import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotBar;
 import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.base.plot.PlotBox.BoxInfo;
+import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSite;
 
 public abstract class HistList implements Iterable<HistBin> {
 	List<HistBin> lsHistBins = new ArrayList<>();

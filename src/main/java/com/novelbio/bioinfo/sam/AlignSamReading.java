@@ -8,9 +8,9 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.StringOperate;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.bioinfo.base.AlignRecord;
 import com.novelbio.bioinfo.base.AlignSeq;
+import com.novelbio.bioinfo.base.Alignment;
 
 import htsjdk.samtools.SAMException;
 

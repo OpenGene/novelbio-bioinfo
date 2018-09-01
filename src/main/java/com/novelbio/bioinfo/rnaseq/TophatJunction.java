@@ -16,15 +16,15 @@ import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
+import com.novelbio.bioinfo.base.binarysearch.ListBin;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
+import com.novelbio.bioinfo.base.binarysearch.ListHashSearch;
 import com.novelbio.bioinfo.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.bioinfo.sam.AlignmentRecorder;
 import com.novelbio.bioinfo.sam.SamFile;
 import com.novelbio.bioinfo.sam.SamRecord;
 import com.novelbio.bioinfo.sam.StrandSpecific;
-import com.novelbio.listoperate.ListBin;
-import com.novelbio.listoperate.ListCodAbs;
-import com.novelbio.listoperate.ListCodAbsDu;
-import com.novelbio.listoperate.ListHashSearch;
 
 public class TophatJunction extends ListHashSearch<JunctionInfo, ListCodAbs<JunctionInfo>, 
 ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> implements AlignmentRecorder {

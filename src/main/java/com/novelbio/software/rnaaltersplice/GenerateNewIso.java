@@ -14,6 +14,10 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.SepSign;
+import com.novelbio.bioinfo.base.binarysearch.ListAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
+import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs.ListDetailAbsCompareStrand;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffCodGene;
 import com.novelbio.bioinfo.gff.GffCodGeneDU;
@@ -25,10 +29,6 @@ import com.novelbio.bioinfo.rnaseq.JunctionInfo;
 import com.novelbio.bioinfo.rnaseq.TophatJunction;
 import com.novelbio.bioinfo.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.bioinfo.sam.StrandSpecific;
-import com.novelbio.listoperate.ListAbs;
-import com.novelbio.listoperate.ListCodAbs;
-import com.novelbio.listoperate.ListCodAbsDu;
-import com.novelbio.listoperate.ListDetailAbs.ListDetailAbsCompareStrand;
 
 /** 根据junction reads，产生新的iso
  * 暂时没有考虑链特异性测序

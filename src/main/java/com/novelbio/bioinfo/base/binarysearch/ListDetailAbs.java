@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -11,7 +11,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 import com.novelbio.base.SepSign;
-import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.bioinfo.base.Alignment;
 
 /**
  * compare的比较取决于父节点的方向，如果父节点的方向为null，则按照绝对值排序，如果是cis，那么就按cis的排序，如果为trans就按照trans的方式排序
@@ -26,6 +26,7 @@ import com.novelbio.base.dataStructure.Alignment;
  * 条目方向 cis5to3
  * @author zong0jie
  */
+@Deprecated
 public class ListDetailAbs implements Alignment, Cloneable {
 	private static final Logger logger = LoggerFactory.getLogger(ListDetailAbs.class);
 

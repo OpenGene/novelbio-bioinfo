@@ -1,6 +1,6 @@
 package com.novelbio.bioinfo.gff;
 
-import com.novelbio.listoperate.ListDetailAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
 
 /**
  * 针对UCSC的CpGall文件设计的Detai信息

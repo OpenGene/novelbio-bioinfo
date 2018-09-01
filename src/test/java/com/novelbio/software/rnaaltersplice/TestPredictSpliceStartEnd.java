@@ -7,8 +7,8 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import com.google.common.collect.Lists;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.gff.ExonCluster;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffGene;

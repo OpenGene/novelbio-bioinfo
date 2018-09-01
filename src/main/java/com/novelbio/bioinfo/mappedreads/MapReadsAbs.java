@@ -13,15 +13,15 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.ListAbs;
 import com.novelbio.database.domain.species.Species;
-import com.novelbio.listoperate.ListAbs;
 
 /**
  * 不考虑内存限制的编

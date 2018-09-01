@@ -9,12 +9,12 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
 import com.novelbio.bioinfo.gff.GffGene.GeneStructure;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modgeneid.GeneType;
 import com.novelbio.database.service.servgeneanno.ManageSpecies;
 import com.novelbio.database.service.servgeneanno.ManageSpeciesDB;
-import com.novelbio.listoperate.ListCodAbsDu;
 
 /**
  * 待检查，默认走全部覆盖该基因，没有5UTR和3UTR

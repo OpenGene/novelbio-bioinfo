@@ -6,8 +6,8 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.mappedreads.MapReadsAddAlignRecord;
 
 public class TestMapReads {

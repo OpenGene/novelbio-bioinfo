@@ -1,7 +1,7 @@
 package com.novelbio.bioinfo.mirna;
 
+import com.novelbio.bioinfo.base.binarysearch.ListBin;
 import com.novelbio.bioinfo.fasta.SeqFasta;
-import com.novelbio.listoperate.ListBin;
 
 public class MirPre extends ListBin<MirMature> {
 	SeqFasta seqMirPre;

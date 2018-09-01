@@ -16,12 +16,12 @@ import java.util.Set;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modgeneid.GeneType;
 

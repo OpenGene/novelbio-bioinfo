@@ -10,10 +10,10 @@ import org.apache.log4j.Logger;
 import org.jfree.data.RangeType;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.gff.ExonCluster;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffIso;

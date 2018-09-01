@@ -9,11 +9,11 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.plot.java.HeatChartDataInt;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
 /**
  * 内建根据score排序的方法
  * @author zong0jie

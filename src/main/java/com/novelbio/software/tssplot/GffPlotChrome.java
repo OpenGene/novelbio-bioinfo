@@ -9,11 +9,11 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.DotStyle;
 import com.novelbio.base.plot.PlotScatter;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffGene;
 import com.novelbio.bioinfo.gff.GffHashGene;

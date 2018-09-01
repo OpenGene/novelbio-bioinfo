@@ -1,7 +1,7 @@
 package com.novelbio.bioinfo.mirna;
 
+import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
 import com.novelbio.bioinfo.fasta.SeqFasta;
-import com.novelbio.listoperate.ListDetailAbs;
 
 public class MirMature extends ListDetailAbs {
 	String mirAccID;

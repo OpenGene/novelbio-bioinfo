@@ -1,4 +1,4 @@
-package com.novelbio.bioinfo.sam;
+package com.novelbio.bioinfo.sam.pileup;
 
 import htsjdk.samtools.CigarElement;
 import htsjdk.samtools.CigarOperator;
@@ -9,6 +9,8 @@ import java.util.Queue;
 import java.util.concurrent.ArrayBlockingQueue;
 
 import org.apache.log4j.Logger;
+
+import com.novelbio.bioinfo.sam.SamRecord;
 
 /** 专门为pileup准备的samrecord */
 public class SamRecordPileUp {

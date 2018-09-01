@@ -2,7 +2,6 @@ package com.novelbio.bioinfo.base;
 
 import java.util.ArrayList;
 
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 import com.novelbio.bioinfo.fastq.FastQRecord;
 

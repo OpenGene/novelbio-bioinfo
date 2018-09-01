@@ -9,9 +9,9 @@ import java.util.TreeMap;
 import java.util.TreeSet;
 
 import com.google.common.collect.ArrayListMultimap;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.gff.ExonCluster;
 import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.bioinfo.rnaseq.JunctionInfo.JunctionUnit;

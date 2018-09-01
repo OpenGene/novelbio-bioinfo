@@ -1,6 +1,6 @@
 package com.novelbio.bioinfo.gff;
 
-import com.novelbio.listoperate.ListDetailAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
 /**
  * 继承 Comparable 接口，只比较score
  * @author zong0jie

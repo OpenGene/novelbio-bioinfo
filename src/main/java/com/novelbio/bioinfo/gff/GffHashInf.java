@@ -3,9 +3,9 @@ package com.novelbio.bioinfo.gff;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import com.novelbio.listoperate.ListCodAbs;
-import com.novelbio.listoperate.ListCodAbsDu;
-import com.novelbio.listoperate.ListDetailAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
+import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
 
 public interface GffHashInf<T extends ListDetailAbs, K extends ListCodAbs<T>, M extends ListCodAbsDu<T, K>> {
 	

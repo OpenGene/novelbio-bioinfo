@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.gffchr.GffChrStatistics;
 import com.novelbio.database.domain.modgeneid.GeneID;
 /**

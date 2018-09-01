@@ -14,13 +14,13 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.SepSign;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
 import com.novelbio.bioinfo.gff.ExonCluster;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffIso;
-import com.novelbio.listoperate.ListCodAbs;
-import com.novelbio.listoperate.ListCodAbsDu;
 
 public class PredictCassette extends SpliceTypePredict {
 	private static final Logger logger = Logger.getLogger(PredictCassette.class);

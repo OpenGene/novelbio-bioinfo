@@ -1,25 +1,66 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.bioinfo.base.Alignment;
 
 public class BinarySearch<T extends Alignment> {
 	private static final Logger logger = LoggerFactory.getLogger(BinarySearch.class);
 	
 	List<T> lsElement;
 	Boolean isCis5To3;
-
+	
+	/**
+	 * @param lsElement 必须排好序
+	 * @param isCis5To3 lsElemet是从小到大还是从大到小排
+	 */
 	public BinarySearch(List<T> lsElement, Boolean isCis5To3) {
 		this.lsElement = lsElement;
 		this.isCis5To3 = isCis5To3;
 	}
+	/**
+	 * @param lsElement 必须排好序
+	 * 自动判定lsElement的排序
+	 */
 	public BinarySearch(List<T> lsElement) {
+		if (lsElement.isEmpty()) {
+			throw new RuntimeException("input should not be empty so that the module can judge the strand");
+		}
+		Boolean isCis5to3 = lsElement.get(0).isCis5to3();
+		for (int i = 1; i < 5; i++) {
+			if (i >= lsElement.size()) {
+				break;
+			}
+			if (!isEqual(lsElement.get(i-1).isCis5to3(), isCis5to3)) {
+				throw new RuntimeException("BinarySearch error, elements in list is not same strand");
+			}
+			if (isCis5to3 == null || isCis5to3 ) {
+				if (lsElement.get(i-1).getStartAbs() >= lsElement.get(i).getStartAbs() ) {
+					throw new RuntimeException("BinarySearch error, elements in list is not same strand");
+				}
+			} else {
+				if (lsElement.get(i-1).getEndAbs() <= lsElement.get(i).getEndAbs() ) {
+					throw new RuntimeException("BinarySearch error, elements in list is not same strand");
+				}
+			}
+		}
 		this.lsElement = lsElement;
+		this.isCis5To3 = isCis5to3;
 	}
+	
+	public static boolean isEqual(Boolean bool1, Boolean bool2) {
+		if (bool1 == null && bool2 == null) {
+			return true;
+		}
+		if (bool1 == null || bool2 == null) {
+			return false;
+		}
+		return bool1.equals(bool2);
+	}
+	
 	/**
 	 * 获得的每一个信息都是实际的而没有clone
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置

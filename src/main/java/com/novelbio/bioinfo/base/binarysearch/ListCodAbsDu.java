@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,7 +10,7 @@ import java.util.Set;
 
 import org.simpleframework.xml.Transient;
 
-import com.novelbio.base.dataStructure.Alignment;
+import com.novelbio.bioinfo.base.Alignment;
 
 
 /**
@@ -18,6 +18,7 @@ import com.novelbio.base.dataStructure.Alignment;
  * @author zong0jie
  *
  */
+@Deprecated
 public class ListCodAbsDu<T extends ListDetailAbs, K extends ListCodAbs<T>>  {
 	//这两个都会在具体的类中新建
 	/** peak与左端Item交集时，交集在左端Item中所占的比例 */

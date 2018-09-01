@@ -1,4 +1,4 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
 import java.util.ArrayList;
 
@@ -12,6 +12,7 @@ import org.apache.log4j.Logger;
  * @author zong0jie
  *
  */
+@Deprecated
 public abstract class ListComb<T extends ListDetailAbs, M extends ListDetailComb<T>, E extends ListAbs<T>> 
 extends ListAbs<M>
 {

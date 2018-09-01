@@ -1,9 +1,10 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 /**
  * 一般的序列查找就用这个就行
  * @author zong0jie
  *
  */
+@Deprecated
 public class ListBin<T extends ListDetailAbs> extends ListAbsSearch<T, ListCodAbs<T>, ListCodAbsDu<T,ListCodAbs<T>>>{
 	private static final long serialVersionUID = 8632727637919902406L;
 	String description = "";

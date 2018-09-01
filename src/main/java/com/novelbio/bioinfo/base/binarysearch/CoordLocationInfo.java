@@ -1,6 +1,5 @@
-package com.novelbio.listoperate;
+package com.novelbio.bioinfo.base.binarysearch;
 
-public 
 /**
  * 前提，第一个element的起点就是list的起点，最后一个element的终点就是list的终点
  * 否则就要<b>重写getElementNumThisAbs() 方法</b>
@@ -14,8 +13,7 @@ public
  * 不在为0
  * 从0开始的数目，可以直接用get(i)提取
  */
-
-class CoordLocationInfo {
+public class CoordLocationInfo {
 	/**待查找的list的元素个数 */
 	int listSize;
 	/** 表示该点在第几个元素中<br>

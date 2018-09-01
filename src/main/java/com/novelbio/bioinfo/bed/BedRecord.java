@@ -4,10 +4,10 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 import com.novelbio.bioinfo.fastq.FastQRecord;
 import com.novelbio.bioinfo.mappedreads.SiteSeqInfo;

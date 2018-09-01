@@ -8,9 +8,9 @@ import java.util.Map;
 import java.util.Random;
 
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.freqcount.HistBin;
+import com.novelbio.bioinfo.base.freqcount.HistList;
 import com.novelbio.bioinfo.sam.StrandSpecific;
-import com.novelbio.listoperate.HistBin;
-import com.novelbio.listoperate.HistList;
 
 /** 将RNAseq的数据进行打乱处理 */
 public class ShuffleReads {

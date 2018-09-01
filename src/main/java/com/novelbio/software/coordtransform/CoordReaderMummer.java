@@ -10,11 +10,11 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 import com.novelbio.bioinfo.fasta.SeqHash;
-import com.novelbio.listoperate.BinarySearch;
-import com.novelbio.listoperate.BsearchSiteDu;
 
 /**
  * 比较基因组处理MUMMER的结果<br>	

@@ -14,12 +14,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.novelbio.base.dataStructure.Alignment;
 import com.novelbio.base.dataStructure.Equations;
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
 import com.novelbio.bioinfo.base.AlignSeq;
+import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.ListAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 import com.novelbio.bioinfo.bed.BedFile;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.ListDetailBin;
@@ -29,8 +31,6 @@ import com.novelbio.bioinfo.sam.AlignmentRecorder;
 import com.novelbio.bioinfo.sam.ExceptionSequenceFileNotSorted;
 import com.novelbio.bioinfo.sam.SamFile;
 import com.novelbio.database.domain.species.Species;
-import com.novelbio.listoperate.ListAbs;
-import com.novelbio.listoperate.ListCodAbs;
 /**
  * 输入的mapping结果已经排序好，并且染色体已经分开好。
  * 不考虑内存限制的编<br>
