@@ -149,7 +149,7 @@ public abstract class ListSearch <T extends AlignExtend> {
 			addChrIdCannotFind(chrID);
 			return null;
 		}
-		BinarySearch<T> binarySearch = new BinarySearch<>(Loclist);
+		BinarySearch<T> binarySearch = new BinarySearch<>(Loclist, isCis5to3);
 		BsearchSite<T> gffCod1 = binarySearch.searchLocation(cod1);//(chrID, Math.min(cod1, cod2));
 		return gffCod1;
 	}
@@ -168,7 +168,7 @@ public abstract class ListSearch <T extends AlignExtend> {
 			addChrIdCannotFind(chrID);
 			return null;
 		}
-		BinarySearch<T> binarySearch = new BinarySearch<>(Loclist);
+		BinarySearch<T> binarySearch = new BinarySearch<>(Loclist, isCis5to3);
 		BsearchSiteDu<T> gffCodDu = binarySearch.searchLocationDu(cod1, cod2);
 		return gffCodDu;		
 	}

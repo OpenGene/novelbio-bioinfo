@@ -31,7 +31,7 @@ public class BsearchSiteDu<T extends Alignment>  {
 	
 	protected BsearchSite<T> siteLeft;
 	protected BsearchSite<T> siteRight;	
-
+	
 	public BsearchSiteDu(List<T> lsAlignMid, BsearchSite<T> siteLeft, BsearchSite<T> siteRight) {
 		this.lsAlignMid = lsAlignMid;
 		this.siteLeft = siteLeft;
@@ -203,7 +203,7 @@ public class BsearchSiteDu<T extends Alignment>  {
 		/**
 		 * 如果peak两个端点都在在同一条目之内
 		 */
-		if (siteLeft.insideLOC && siteRight.insideLOC && 
+		if (siteLeft.isInsideLoc() && siteRight.isInsideLoc() && 
 				gffDetail1.equals(gffDetail2)
 		)
 		{
@@ -212,8 +212,8 @@ public class BsearchSiteDu<T extends Alignment>  {
 			opLeftBp = peakLength; opRightInItem = opLeftInItem; opRightInCod = 100; opRightBp = opLeftBp;
 		}
 		// 如果peak左端点在一个条目内，右端点在另一个条目内
-		else if (siteLeft.insideLOC
-				&& siteRight.insideLOC
+		else if (siteLeft.isInsideLoc()
+				&& siteRight.isInsideLoc()
 				&& !siteLeft.equals(siteRight) )
 		{
 			opLeftInItem = 100 * (double) leftoverlap / leftItemLength;
@@ -224,14 +224,14 @@ public class BsearchSiteDu<T extends Alignment>  {
 			opRightBp = rightoverlap;
 		}
 		// peak只有左端点在条目内
-		else if (siteLeft.insideLOC && !siteRight.insideLOC) {
+		else if (siteLeft.isInsideLoc() && !siteRight.isInsideLoc()) {
 			opLeftInItem = 100 * (double) leftoverlap / leftItemLength;
 			opLeftInCod = 100 * (double) leftoverlap / peakLength;
 			opLeftBp = leftoverlap;
 			opRightInItem = 0; opRightInCod = 0; opRightBp = 0;
 		}
 		// peak只有右端点在条目内
-		else if (!siteLeft.insideLOC && siteRight.insideLOC) {
+		else if (!siteLeft.isInsideLoc() && siteRight.isInsideLoc()) {
 			opLeftInItem = 0; opLeftInCod = 0; opLeftBp = 0;
 			opRightInItem = 100 * (double) rightoverlap / rightItemLength;
 			opRightInCod = 100 * (double) rightoverlap / peakLength;

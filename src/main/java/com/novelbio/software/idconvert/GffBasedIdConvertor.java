@@ -34,7 +34,7 @@ public class GffBasedIdConvertor {
 		GffBasedIdConvertor gffBasedIdConvertor = new GffBasedIdConvertor();
 		gffBasedIdConvertor.setGffRef("/home/novelbio/mywork/nongkeyuan/rice_anno/ref_IRGSP-1.0_top_level.gff3", "Dbxref=GeneID:");
 		gffBasedIdConvertor.setGffAlt("/home/novelbio/mywork/nongkeyuan/rice_anno/tigr-msu-all.gff3");
-		gffBasedIdConvertor.setIdConvertResult("/home/novelbio/mywork/nongkeyuan/rice_anno/ncbi2tigr.txt");
+		gffBasedIdConvertor.setIdConvertResult("/home/novelbio/mywork/nongkeyuan/rice_anno/ncbi2tigr.3.txt");
 		gffBasedIdConvertor.convert();
 	}
 	
@@ -71,7 +71,9 @@ public class GffBasedIdConvertor {
 
 		for (GffGene geneRef : gffGeneRef.getLsGffDetailGenes()) {
 			GffIso isoRef = geneRef.getLongestSplitMrna();
-			
+			if (geneRef.getName().equals("4351233")) {
+				logger.info("stop");
+			}
 			GffCodGeneDU gffCodGeneDU = gffGeneAlt.searchLocation(geneRef.getRefID(), geneRef.getStartAbs(), geneRef.getEndAbs());
 			if (gffCodGeneDU == null) {
 				continue;

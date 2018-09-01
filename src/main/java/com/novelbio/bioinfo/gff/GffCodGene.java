@@ -17,14 +17,17 @@ public class GffCodGene extends BsearchSite<GffGene> {
 	 */
 	public GffCodGene(BsearchSite<GffGene> bsearchSite) {
 		super(bsearchSite.getCoord());
+		setInsideLOC(bsearchSite.isInsideLoc());
+
 		setAlignThis(bsearchSite.getAlignThis());
 		setIndexAlignThis(bsearchSite.getIndexAlignThis());
 		
 		setAlignUp(bsearchSite.getAlignUp());
 		setIndexAlignUp(bsearchSite.getIndexAlignUp());
-		
+
 		setAlignDown(bsearchSite.getAlignDown());
 		setIndexAlignDown(bsearchSite.getIndexAlignDown());
+
 	}
 	
 	/** 返回距离该位点最近的基因

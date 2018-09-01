@@ -29,32 +29,10 @@ public class BinarySearch<T extends Alignment> {
 	}
 	/**
 	 * @param lsElement 必须排好序
-	 * 自动判定lsElement的排序
 	 */
 	public BinarySearch(List<T> lsElement) {
-		if (lsElement.isEmpty()) {
-			throw new RuntimeException("input should not be empty so that the module can judge the strand");
-		}
-		Boolean isCis5to3 = lsElement.get(0).isCis5to3();
-		for (int i = 1; i < 5; i++) {
-			if (i >= lsElement.size()) {
-				break;
-			}
-			if (!Alignment.isEqual(lsElement.get(i-1).isCis5to3(), isCis5to3)) {
-				throw new RuntimeException("BinarySearch error, elements in list is not same strand");
-			}
-			if (isCis5to3 == null || isCis5to3 ) {
-				if (lsElement.get(i-1).getStartAbs() >= lsElement.get(i).getStartAbs() ) {
-					throw new RuntimeException("BinarySearch error, elements in list is not same strand");
-				}
-			} else {
-				if (lsElement.get(i-1).getEndAbs() <= lsElement.get(i).getEndAbs() ) {
-					throw new RuntimeException("BinarySearch error, elements in list is not same strand");
-				}
-			}
-		}
 		this.lsElement = lsElement;
-		this.isCis5To3 = isCis5to3;
+		this.isCis5To3 = null;
 	}
 	
 	/**
@@ -72,7 +50,7 @@ public class BinarySearch<T extends Alignment> {
 		if (coordLocationInfo.isInsideElement()) {
 			gffCod.setAlignThis( lsElement.get(coordLocationInfo.getIndexEleThis() ) );
 			gffCod.setIndexAlignThis(coordLocationInfo.getIndexEleThis() );
-			gffCod.insideLOC = true;
+			gffCod.setInsideLOC(true);
 		}
 		if (coordLocationInfo.getIndexEleLast() >= 0) {
 			gffCod.setAlignUp( lsElement.get(coordLocationInfo.getIndexEleLast()) );

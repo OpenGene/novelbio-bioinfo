@@ -36,6 +36,10 @@ public class BsearchSite<T extends Alignment> {
 	protected T alignThis = null;
 	/** 只有geneDetail用到， 为下个条目的具体信息，如果没有则为null(譬如定位在最后端) */
 	protected T alignDown = null;
+	/**
+	 * 定位情况 条目内/条目外
+	 */
+	protected boolean insideLOC = false;
 	
 	/**  构造函数赋初值 */
 	public  BsearchSite(int Coordinate) {
@@ -49,10 +53,10 @@ public class BsearchSite<T extends Alignment> {
 	public int getCoord() {
 		return coord;
 	}
-	/**
-	 * 定位情况 条目内/条目外
-	 */
-	protected boolean insideLOC = false;
+	
+	protected void setInsideLOC(boolean insideLOC) {
+		this.insideLOC = insideLOC;
+	}
 	/**
 	 * 定位情况 条目内/条目外，不考虑Tss上游和geneEnd下游之类的信息
 	 */

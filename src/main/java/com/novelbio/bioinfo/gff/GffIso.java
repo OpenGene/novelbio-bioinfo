@@ -22,6 +22,7 @@ import com.novelbio.base.SepSign;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.base.Alignment.CompM2S;
 import com.novelbio.bioinfo.base.Alignment.CompS2M;
 import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
@@ -925,11 +926,14 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	
 	/** 最常规的添加exon，不做任何判定 */
 	protected void addExonNorm(Boolean cis5to3, int locStart, int locEnd) {
-		if (cis5to3 != null && isCis5to3() != cis5to3) {
-			throw new ExceptionNbcGFF("add exon error " + cis5to3 + " " + locStart + " " + locEnd);
+//		if (cis5to3 != null && !Alignment.isEqual(isCis5to3(),cis5to3)) {
+//			throw new ExceptionNbcGFF("add exon error " + cis5to3 + " " + locStart + " " + locEnd);
+//		}
+		if (cis5to3 == null) {
+			cis5to3 = isCis5to3();
 		}
 		
-		ExonInfo exonInfo = new ExonInfo(isCis5to3(), locStart, locEnd);
+		ExonInfo exonInfo = new ExonInfo(cis5to3, locStart, locEnd);
 		add(exonInfo);
 	}
 	/**
