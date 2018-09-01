@@ -42,7 +42,7 @@ public class MirIsoUnit extends GeneExpTable {
 		for (MirMature mirMature : mirPre.getLsElement()) {
 			String mirSeq = mirMature.getSeq().toString().toUpperCase();
 			addGeneName(mirSeq);
-			addAnnotation(mirSeq, new String[]{mirMature.getNameSingle(), addDotMiRNA(mirMature.getStartAbs(), mirMature.getEndAbs(), mirSeq)});
+			addAnnotation(mirSeq, new String[]{mirMature.getName(), addDotMiRNA(mirMature.getStartAbs(), mirMature.getEndAbs(), mirSeq)});
 		}
 		
 		List<String> lsTitle = new ArrayList<>();
@@ -65,9 +65,9 @@ public class MirIsoUnit extends GeneExpTable {
 		if (!isContainGeneName(seq)) {
 			addGeneName(seq);
 			if (mirMature.getSeq().toString().equalsIgnoreCase(seq)) {
-				addAnnotation(seq, new String[]{mirMature.getNameSingle(), addDot(samRecord)});
+				addAnnotation(seq, new String[]{mirMature.getName(), addDot(samRecord)});
 			} else {
-				addAnnotation(seq, new String[]{mirMature.getNameSingle() + SepSign.SEP_ID + (i++), addDot(samRecord)});
+				addAnnotation(seq, new String[]{mirMature.getName() + SepSign.SEP_ID + (i++), addDot(samRecord)});
 			}
 		}
 		addGeneExp(seq, (double)1/samRecord.getMappedReadsWeight());
@@ -182,7 +182,7 @@ public class MirIsoUnit extends GeneExpTable {
 		List<String[]> lsFinal = new ArrayList<>();
 		Map<String, int[]> mapMirna2IsoNum = new HashMap<>();
 		for (MirMature mirMature : mirPre.getLsElement()) {
-			mapMirna2IsoNum.put(mirMature.getNameSingle(), new int[]{1});
+			mapMirna2IsoNum.put(mirMature.getName(), new int[]{1});
 		}
 		int m = 0;
 		for (String[] info : lsInfo) {

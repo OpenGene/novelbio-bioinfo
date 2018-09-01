@@ -27,23 +27,11 @@ public class GffIsoCis extends GffIso {
 	
 	public GffIsoCis(String IsoName, String geneParentName, GeneType geneType) {
 		super(IsoName, geneParentName, geneType);
+		setCis5to3(true);
 	}
 	public GffIsoCis(String IsoName, String geneParentName, GffGene gffDetailGene, GeneType geneType) {
 		super(IsoName, geneParentName, gffDetailGene, geneType);
-	}
-	
-	@Override
-	public int getStartAbs() {
-		try {
-			return get(0).getStartCis();
-		} catch (Exception e) {
-			return get(0).getStartCis();
-		}
-		
-	}
-	@Override
-	public int getEndAbs() {
-		return get(size() - 1).getEndCis();
+		setCis5to3(true);
 	}
 
 	@Override
@@ -51,12 +39,5 @@ public class GffIsoCis extends GffIso {
 		GffIsoCis result = null;
 		result = (GffIsoCis) super.clone();
 		return result;
-	
 	}
-
-	@Override
-	public boolean isCis5to3() {
-		return true;
-	}
-
 }

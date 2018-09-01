@@ -11,6 +11,7 @@ import java.util.Set;
 import com.novelbio.base.SepSign;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignExtend;
+import com.novelbio.bioinfo.base.binarysearch.ListEle;
 
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致
@@ -35,6 +36,9 @@ public class JunctionInfo extends AlignExtend {
 	public String getName() {
 		return name;
 	}
+	
+	@Deprecated
+	public void setParent(ListEle<? extends AlignExtend> parent) {}
 	
 	/**
 	 * @param considerStrand 是否考虑junction方向

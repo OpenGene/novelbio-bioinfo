@@ -42,14 +42,14 @@ public class TestGffGeneIsoInfo {
 		Assert.assertEquals(gffGeneIsoInfoExtendExpect1, gffGeneIsoInfo);
 		
 		List<ExonInfo> lsExons = gffGeneIsoInfo.searchLocationDu(1500, 7500).getCoveredElement();
-		ExonInfo exonInfo1 = new ExonInfo(true, 3000, 4000); exonInfo1.setIsoParent(gffGeneIsoInfo);
-		ExonInfo exonInfo2 = new ExonInfo(true, 5000, 6000); exonInfo2.setIsoParent(gffGeneIsoInfo);
+		ExonInfo exonInfo1 = new ExonInfo(true, 3000, 4000); exonInfo1.setParent(gffGeneIsoInfo);
+		ExonInfo exonInfo2 = new ExonInfo(true, 5000, 6000); exonInfo2.setParent(gffGeneIsoInfo);
 		List<ExonInfo> lsExonsExp = Lists.newArrayList(exonInfo1, exonInfo2);
 		Assert.assertEquals(lsExonsExp, lsExons);
 		
 		lsExons = gffGeneIsoInfo.searchLocationDu(3000, 6000).getAllElement();
-		exonInfo1 = new ExonInfo(true, 3000, 4000); exonInfo1.setIsoParent(gffGeneIsoInfo);
-		exonInfo2 = new ExonInfo(true, 5000, 6000); exonInfo2.setIsoParent(gffGeneIsoInfo);
+		exonInfo1 = new ExonInfo(true, 3000, 4000); exonInfo1.setParent(gffGeneIsoInfo);
+		exonInfo2 = new ExonInfo(true, 5000, 6000); exonInfo2.setParent(gffGeneIsoInfo);
 		lsExonsExp = Lists.newArrayList(exonInfo1, exonInfo2);
 		Assert.assertEquals(lsExonsExp, lsExons);
 	}
@@ -142,8 +142,8 @@ public class TestGffGeneIsoInfo {
 		gffGeneIsoInfoExtendExpect1.sortOnly();
 		
 		List<ExonInfo> lsExons = gffGeneIsoInfo.searchLocationDu(1500, 7500).getCoveredElement();
-		ExonInfo exonInfo1 = new ExonInfo(false, 5000, 6000); exonInfo1.setIsoParent(gffGeneIsoInfo);
-		ExonInfo exonInfo2 = new ExonInfo(false, 3000, 4000); exonInfo2.setIsoParent(gffGeneIsoInfo);
+		ExonInfo exonInfo1 = new ExonInfo(false, 5000, 6000); exonInfo1.setParent(gffGeneIsoInfo);
+		ExonInfo exonInfo2 = new ExonInfo(false, 3000, 4000); exonInfo2.setParent(gffGeneIsoInfo);
 		List<ExonInfo> lsExonsExp = Lists.newArrayList(exonInfo1, exonInfo2);
 		Assert.assertEquals(lsExonsExp, lsExons);
 		

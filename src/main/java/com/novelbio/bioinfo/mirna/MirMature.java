@@ -1,16 +1,20 @@
 package com.novelbio.bioinfo.mirna;
 
-import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
+import com.novelbio.bioinfo.base.AlignExtend;
+import com.novelbio.bioinfo.base.binarysearch.ListEle;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 
-public class MirMature extends ListDetailAbs {
+public class MirMature extends AlignExtend {
+	MirPre mirPre;
+		
 	String mirAccID;
+	
 	String evidence;
+	
 	public MirMature clone() {
 		MirMature result = (MirMature) super.clone();
 		return result;
 	}
-	
 	public void setMirAccID(String mirAccID) {
 		this.mirAccID = mirAccID;
 	}
@@ -26,25 +30,30 @@ public class MirMature extends ListDetailAbs {
 	
 	/** 获得该miRNA成熟体的序列 */
 	public SeqFasta getSeq() {
-		if (listAbs == null) {
-			return null;
-		}
 		MirPre mirPre = getParent();
 		if (mirPre == null || mirPre.getMirPreSeq() == null) {
 			return null;
 		}
 		
 		SeqFasta seqFastaMature = new SeqFasta();
-		seqFastaMature.setName(getNameSingle());
+		seqFastaMature.setName(getName());
 		seqFastaMature.setSeq(mirPre.getMirPreSeq().toString().substring(getStartAbs()-1, getEndAbs()));
 		seqFastaMature.setDNA(true);
 		return seqFastaMature;
 	}
 	
 	public MirPre getParent() {
-		if (super.getParent() == null) {
-			return null;
-		}
-		return (MirPre)super.getParent();
+		return mirPre;
+	}
+
+	@Override
+	public String getName() {
+		return mirAccID;
+	}
+
+	@Override
+	public void setParent(ListEle<? extends AlignExtend> parent) {
+		this.mirPre = (MirPre) parent;
+		
 	}
 }

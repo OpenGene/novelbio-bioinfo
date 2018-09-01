@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.novelbio.base.fileOperate.ExceptionNbcFile;
 import com.novelbio.bioinfo.base.AlignExtend;
-import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.gff.ExceptionNbcGFF;
 
 
@@ -25,8 +24,8 @@ import com.novelbio.bioinfo.gff.ExceptionNbcGFF;
  * @locHashtable hash（LOCID）--GeneInforlist
  * @LOCIDList 顺序存储每个基因号或条目号
  */
-public abstract class ListSearch <T extends AlignExtend> {
-	private static final Logger logger = LoggerFactory.getLogger(ListSearch.class);
+public abstract class ListEleSearch <T extends AlignExtend, E extends ListEle<T>> {
+	private static final Logger logger = LoggerFactory.getLogger(ListEleSearch.class);
 	/**
 	 * <b>key为小写</b><br>
 	 * 哈希表LOC--LOC细节<br>
@@ -47,7 +46,7 @@ public abstract class ListSearch <T extends AlignExtend> {
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	protected LinkedHashMap<String, List<T>> mapChrID2ListGff;
+	protected LinkedHashMap<String, E> mapChrID2ListGff;
 
 	/**
 	 * <b>为小写</b><br>
@@ -77,12 +76,13 @@ public abstract class ListSearch <T extends AlignExtend> {
 	 * 用于快速将LOC编号对应到LOC的细节
 	 * hash（LOCID）--GeneInforlist，其中LOCID代表具体的基因编号 <br/>
 	 */
+	//TODO GffGene会包含多个名称，在这里需要写进hashmap
 	public HashMap<String, T> getMapName2Detail() {
 		if (mapName2DetailAbs != null) {
 			return mapName2DetailAbs;
 		}
 		mapName2DetailAbs = new LinkedHashMap<String, T>();
-		for (List<T> listAbs : mapChrID2ListGff.values()) {
+		for (E listAbs : mapChrID2ListGff.values()) {
 			for (T ele : listAbs) {
 				mapName2DetailAbs.put(ele.getName().toLowerCase(), ele);
 				mapName2DetailAbs.put(removeDot(ele.getName().toLowerCase()), ele);
@@ -95,7 +95,7 @@ public abstract class ListSearch <T extends AlignExtend> {
 	 * @param chrID
 	 * @return
 	 */
-	public List<T> getListDetail(String chrID) {
+	public E getListDetail(String chrID) {
 		chrID = chrID.toLowerCase();
 		return mapChrID2ListGff.get(chrID);
 	}
@@ -108,7 +108,7 @@ public abstract class ListSearch <T extends AlignExtend> {
 	public ArrayList<String> getLsNameNoRedundent() {
 		if (lsNameNoRedundent == null) {
 			lsNameNoRedundent = new ArrayList<String>();
-			for (List<T> lsGff : mapChrID2ListGff.values()) {
+			for (E lsGff : mapChrID2ListGff.values()) {
 				for (T gff : lsGff) {
 					lsNameNoRedundent.add(gff.getName().toLowerCase());
 				}
@@ -125,9 +125,9 @@ public abstract class ListSearch <T extends AlignExtend> {
 	 * 代表染色体名字，因此用get来获取相应的ChrList的时候要输入小写的ChrID
 	 * chr格式，全部小写 chr1,chr2,chr11<br>
 	 */
-	public HashMap<String, List<T>> getMapChrID2LsGff() {
+	public Map<String, E> getMapChrID2LsGff() {
 		if (mapChrID2ListGff == null) {
-			mapChrID2ListGff = new LinkedHashMap<String, List<T>>();
+			mapChrID2ListGff = new LinkedHashMap<String, E>();
 		}
 		return mapChrID2ListGff;
 	}
@@ -144,12 +144,12 @@ public abstract class ListSearch <T extends AlignExtend> {
 	 */
 	public BsearchSite<T> searchLocation(String chrID, int cod1) {
 		chrID = chrID.toLowerCase();
-		List<T> Loclist =  getMapChrID2LsGff().get(chrID);// 某一条染色体的信息
+		E Loclist =  getMapChrID2LsGff().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			addChrIdCannotFind(chrID);
 			return null;
 		}
-		BinarySearch<T> binarySearch = new BinarySearch<>(Loclist);
+		BinarySearch<T> binarySearch = new BinarySearch<>(Loclist.getLsElement());
 		BsearchSite<T> gffCod1 = binarySearch.searchLocation(cod1);//(chrID, Math.min(cod1, cod2));
 		return gffCod1;
 	}
@@ -163,12 +163,12 @@ public abstract class ListSearch <T extends AlignExtend> {
 	 */
 	public BsearchSiteDu<T> searchLocation(String chrID, int cod1, int cod2) {
 		chrID = chrID.toLowerCase();
-		List<T> Loclist =  getMapChrID2LsGff().get(chrID);// 某一条染色体的信息
+		E Loclist =  getMapChrID2LsGff().get(chrID);// 某一条染色体的信息
 		if (Loclist == null) {
 			addChrIdCannotFind(chrID);
 			return null;
 		}
-		BinarySearch<T> binarySearch = new BinarySearch<>(Loclist);
+		BinarySearch<T> binarySearch = new BinarySearch<>(Loclist.getLsElement());
 		BsearchSiteDu<T> gffCodDu = binarySearch.searchLocationDu(cod1, cod2);
 		return gffCodDu;		
 	}
@@ -245,16 +245,11 @@ public abstract class ListSearch <T extends AlignExtend> {
 	}
 	
 	public void sort() {
-		for (List<T> lsGffDetail : getMapChrID2LsGff().values()) {
-			if (isCis5to3 == null) {
-				Collections.sort(lsGffDetail, new Alignment.CompS2MAbs());
-			} else if (isCis5to3) {
-				Collections.sort(lsGffDetail, new Alignment.CompS2M());
-			} else {
-				Collections.sort(lsGffDetail, new Alignment.CompM2S());
-			}
+		for (E lsGffDetail : getMapChrID2LsGff().values()) {
+			lsGffDetail.sort();
 		}
 	}
+	
 	/**
 	 * @本方法需要被覆盖
 	 * 最底层读取gff的方法<br>
@@ -273,6 +268,7 @@ public abstract class ListSearch <T extends AlignExtend> {
 	 * @throws Exception 
 	 */
 	protected abstract void ReadGffarrayExcep(String gfffilename) throws Exception;
+	
 	/**
 	 * 需要覆盖
 	 * 查找某个特定LOC的信息
@@ -329,7 +325,7 @@ public abstract class ListSearch <T extends AlignExtend> {
 	 * 同时设定每个gffDetail的itemNum
 	 */
 	protected void setItemDistance() {
-		for (List<T> lsGffDetail : getMapChrID2LsGff().values()) {
+		for (E lsGffDetail : getMapChrID2LsGff().values()) {
 			for (int i = 0; i < lsGffDetail.size(); i++) {
 				T gffDetail = lsGffDetail.get(i);
 				T gffDetailUp = null;
@@ -377,8 +373,8 @@ public abstract class ListSearch <T extends AlignExtend> {
 	 */
 	public ArrayList<T> getGffDetailAll() {
 		ArrayList<T> lsGffDetailAll = new ArrayList<T>();
-		for (List<T> lsGffDetailGenes : mapChrID2ListGff.values()) {
-			lsGffDetailAll.addAll(lsGffDetailGenes);
+		for (E lsGffDetailGenes : mapChrID2ListGff.values()) {
+			lsGffDetailAll.addAll(lsGffDetailGenes.getLsElement());
 		}
 		return lsGffDetailAll;
 	}

@@ -3,50 +3,41 @@ package com.novelbio.bioinfo.base.binarysearch;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.AlignExtend;
 import com.novelbio.bioinfo.base.Alignment;
-import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs.ListDetailAbsCompareNoStrand;
-import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs.ListDetailAbsCompareStrand;
 /**
  * 考虑将其拆分成为三个不同的list，一个cis，一个trans，一个null
  * @author zong0jie
  *
  * @param <E>
  */
-@Deprecated
-public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E> {
+public class ListEle <E extends AlignExtend> implements Cloneable, Iterable<E> {
 	private static final long serialVersionUID = -3356076601369239937L;
-	private static final Logger logger = LoggerFactory.getLogger(ListAbs.class);
-	/**保存某个坐标到所在的内含子/外显子起点的距离 */
-	@Transient
-	HashMap<Integer, Integer> hashLocExInStart;
-	/** 保存某个坐标到所在的内含子/外显子终点的距离 */
-	@Transient
-	HashMap<Integer, Integer> hashLocExInEnd;
+	private static final Logger logger = LoggerFactory.getLogger(ListEle.class);
+
 	/** 本条目的名字 */
 	@Indexed
-	protected String listName;
+	protected String name;
 	/** List的方向 */
 	Boolean cis5to3 = null;
 	
 	protected ArrayList<E> lsElement = new ArrayList<>();
 	
 	/** 本list的名字，不需要转变为小写 */
-	public void setName(String listName) {
-		this.listName = listName;
+	public void setName(String name) {
+		this.name = name;
 	}
 	/** 具体的内容 */
-	public ArrayList<E> getLsElement() {
+	public List<E> getLsElement() {
 		return lsElement;
 	}
 	public void trimToSize() {
@@ -66,15 +57,14 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		lsElement.clear();
 	}
 	public String getName() {
-		if (listName == null) {
+		if (name == null) {
 			if (size() > 0) {
-				listName = get(0).getRefID();
-			}
-			else {
-				listName = "";
+				name = get(0).getRefID();
+			} else {
+				name = "";
 			}
 		}
-		return listName;
+		return name;
 	}
 	/**
 	 * 没有方向则返回null
@@ -95,9 +85,9 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		if (num < 0 || num > size() - 1) {
 			throw new ArrayIndexOutOfBoundsException();
 		}
-		if (cis5to3 == null) {
+		if (isCis5to3() == null) {
 			return Math.abs(get(num + 1).getStartAbs() - get(num).getEndAbs());
-		} else if (cis5to3) {
+		} else if (isCis5to3()) {
 			return Math.abs(get(num + 1).getStartAbs() - get(num).getEndAbs());
 		} else {
 			return Math.abs(get(num).getStartAbs() - get(num+1).getEndAbs());
@@ -159,26 +149,28 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	}
 	/** 会将该element的parent设置为本list */
 	public boolean add(E element) {
-		element.setParentListAbs(this);
+		element.setParent(this);
 		return lsElement.add(element);
 	}
 	public void add(int index, E element) {
-		element.setParentListAbs(this);
+		element.setParent(this);
 		lsElement.add(index, element);
 	}
-
-	public boolean addAll(Collection<? extends E> colElement) {
+	
+	public boolean addAll(Collection<E> colElement) {
 		for (E element : colElement) {
-			element.setParentListAbs(this);
+			element.setParent(this);
 		}
 		return lsElement.addAll(colElement);
 	}
-	public boolean addAll(int index, Collection<? extends E> colElement) {
+	
+	public boolean addAll(int index, Collection<E> colElement) {
 		for (E element : colElement) {
-			element.setParentListAbs(this);
+			element.setParent(this);
 		}
 		return lsElement.addAll(index, colElement);
 	}
+	
 	public E set(int index, E element) {
 		return lsElement.set(index, element);
 	}
@@ -208,20 +200,28 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		}
 		return false;
 	}
-	/** 根据方向返回 */
+	
 	public int getStart() {
-		if (cis5to3 == null || cis5to3) {
+		return isCis5to3() ? getStartAbs() : getEndAbs();
+	}
+	public int getEnd() {
+		return isCis5to3() ? getEndAbs() : getStartAbs();
+	}
+	
+	/** 根据方向返回 */
+	public int getStartAbs() {
+		if (isCis5to3() == null || isCis5to3()) {
 			return get(0).getStartAbs();
 		} else {
-			return get(0).getEndAbs();
+			return get(size() - 1).getStartAbs();
 		}
 	}
 	/** 根据方向返回 */
-	public int getEnd() {
-		if (cis5to3 == null || cis5to3) {
+	public int getEndAbs() {
+		if (isCis5to3() == null || isCis5to3()) {
 			return get(size() - 1).getEndAbs();
 		}
-		return get(size() - 1).getStartAbs();
+		return get(0).getEndAbs();
 	}
 	
 	/**
@@ -234,7 +234,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	 */
 	public int getLocDistmRNA(int loc1, int loc2) {
 		int locNum1 = getNumCodInEle(loc1); int locNum2 = getNumCodInEle(loc2);
-		if (locNum1 <= 0 || locNum2 <= 0) return ListCodAbs.LOC_ORIGINAL;
+		if (locNum1 <= 0 || locNum2 <= 0) return Align.LOC_ORIGINAL;
 		
 		int locSmall = 0, locBig = 0;
 		int locSmallExInNum = 0, locBigExInNum = 0;
@@ -278,12 +278,6 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	 * @param location 坐标
 	 */
 	public int getCod2ExInStart(int location) {
-		if (hashLocExInStart == null) {
-			hashLocExInStart = new HashMap<Integer, Integer>();
-		}
-		else if (hashLocExInStart.containsKey(location)) {
-			return hashLocExInStart.get(location);
-		}
 		int loc2ExInStart = -1000000000;
 		int exIntronNum = getNumCodInEle(location);
 		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
@@ -293,7 +287,6 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		} else if(exIntronNum < 0) {   //0-0 0-1        1-0 1-1          2-0 2-1            3-0  3-1   cood     4-0      4-1               5
 			loc2ExInStart = Math.abs(element.getCod2End(location)) - 1;// 距前一个外显子 NnnnCnnnn
 		}
-		hashLocExInStart.put(location, loc2ExInStart);
 		return loc2ExInStart;
 	}
 
@@ -303,12 +296,6 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	 * @param location 坐标
 	 */
 	public int getCod2ExInEnd(int location) {
-		if (hashLocExInEnd == null) {
-			hashLocExInEnd = new HashMap<Integer, Integer>();
-		}
-		else if (hashLocExInEnd.containsKey(location)) {
-			return hashLocExInEnd.get(location);
-		}
 		int loc2ExInEnd = -1000000000;
 		int exIntronNum = getNumCodInEle(location);
 		int NumExon = Math.abs(exIntronNum) - 1; //实际数量减去1，方法内用该变量运算
@@ -321,7 +308,6 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 			E element = get(NumExon+1);
 			loc2ExInEnd = Math.abs(element.getCod2Start(location)) - 1;
 		}
-		hashLocExInEnd.put(location, loc2ExInEnd);
 		return loc2ExInEnd;
 	}
 	/**
@@ -334,25 +320,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		}
 		return isoLen;
 	}
-	/**
-	 * 返回每个ID对应的具体element的编号
-	 * key都是小写
-	 * @return
-	 */
-	public HashMap<String,Integer> getMapName2DetailAbsNum() {
-		HashMap<String, Integer> hashID2Num = new HashMap<String, Integer>();
-		for (int i = 0; i < size(); i++) {
-			E lsDetail = get(i);
-			ArrayList<String> ss = lsDetail.getName();
-			if (ss.contains("PIGY")) {
-				logger.info("stop");
-			}
-			for (String string : ss) {
-				hashID2Num.put(string.toLowerCase(), i);
-			}
-		}
-		return hashID2Num;
-	}
+
 	/**
 	 * 返回每个ID对应的具体element
 	 * 输入一个hashmap，在里面填充信息
@@ -362,11 +330,9 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	public LinkedHashMap<String, E> getMapName2DetailAbs() {
 		LinkedHashMap<String, E> mapName2DetailAbs = new LinkedHashMap<String, E>();
 		for (E ele : lsElement) {
-			ArrayList<String> ss = ele.getName();
-			for (String string : ss) {
-				mapName2DetailAbs.put(string.toLowerCase(), ele);
-				mapName2DetailAbs.put(removeDot(string.toLowerCase()), ele);
-			}
+			String name = ele.getName();
+			mapName2DetailAbs.put(name.toLowerCase(), ele);
+			mapName2DetailAbs.put(removeDot(name.toLowerCase()), ele);
 		}
 		return mapName2DetailAbs;
 	}
@@ -406,10 +372,10 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	 * 如果两个Item是重叠的，取全部ID
 	 * @return
 	 */
-	public ArrayList<String> getLsNameAll() {
+	public List<String> getLsNameAll() {
 		ArrayList<String> lsLocID = new ArrayList<String>();
 		for (E ele : lsElement) {
-			lsLocID.addAll(ele.getName());
+			lsLocID.add(ele.getName());
 		}
 		return lsLocID;
 	}
@@ -424,15 +390,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	 * 为实际数目
 	 */
 	protected CoordLocationInfo LocPosition( int Coordinate) {
-		if (cis5to3 == null) {
-			return BinarySearch.LocPositionAbs(lsElement, Coordinate);
-		}
-		else if (cis5to3) {
-			return BinarySearch.LocPositionCis(lsElement, Coordinate);
-		}
-		else {
-			return BinarySearch.LocPositionTran(lsElement, Coordinate);
-		}
+		return BinarySearch.searchCoord(lsElement, Coordinate, isCis5to3());
 	}
 	
 	/**
@@ -460,11 +418,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		}
 		if (mRNAnum < 0) {
 			if (Math.abs(mRNAnum) <= getCod2ExInStart(location)) {
-				if (isCis5to3()) {
-					return location + mRNAnum;
-				}
-				else
-					return  location + Math.abs(mRNAnum);
+				return isCis5to3() ? location + mRNAnum : location + Math.abs(mRNAnum);
 			}
 			else {
 				int exonNum = getNumCodInEle(location) - 1;
@@ -477,12 +431,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 						continue;
 					}
 					else {
-						if (isCis5to3()) {
-							return tmpExon.getEndCis() - remain + 1;
-						}
-						else {
-							return tmpExon.getEndCis() + remain - 1;
-						}
+						return isCis5to3() ? tmpExon.getEndCis() - remain + 1 : tmpExon.getEndCis() + remain - 1;
 					}
 				}
 				return -1;
@@ -490,12 +439,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 		}
 		else {
 			if (mRNAnum <= getCod2ExInEnd(location)) {
-				if (isCis5to3()) {
-					return location + mRNAnum;
-				}
-				else {
-					return location - mRNAnum;
-				}
+				return isCis5to3() ? location + mRNAnum : location - mRNAnum;
 			} 
 			else {
 				int exonNum = getNumCodInEle(location) - 1;
@@ -528,7 +472,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	 * @param lsOtherExon
 	 * @return
 	 */
-	public boolean equalsIso(ListAbs<E> lsOther) {
+	public boolean equalsIso(ListEle<E> lsOther) {
 		if (lsOther.size() != size() ) {
 			return false;
 		}
@@ -547,9 +491,9 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	 * 内部有flag，排完后就不会再排第二次了
 	 */
 	public void sort() {
-		if (cis5to3 == null) {
+		if (isCis5to3() == null) {
 			Collections.sort(lsElement, new Alignment.CompS2MAbs());
-		} else if (cis5to3) {
+		} else if (isCis5to3()) {
 			Collections.sort(lsElement, new Alignment.CompS2M());
 		} else {
 			Collections.sort(lsElement, new Alignment.CompM2S());
@@ -559,229 +503,18 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	 * 已测试，能用
 	 */
 	@SuppressWarnings("unchecked")
-	public ListAbs<E> clone() {
-		ListAbs<E> result = null;
+	public ListEle<E> clone() {
+		ListEle<E> result = null;
 		try {
-			result = (ListAbs<E>) super.clone();
+			result = (ListEle<E>) super.clone();
 		} catch (CloneNotSupportedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		result.cis5to3 = cis5to3;
-		result.hashLocExInEnd = hashLocExInEnd;
-		result.hashLocExInStart = hashLocExInStart;
-		result.listName = listName;
+		result.cis5to3 = isCis5to3();
+		result.name = name;
 		result.lsElement = new ArrayList<>(lsElement);
 		return result;
-	}
-	/**
-	 * 给定一系列ListElement，以及一个方向。
-	 * 将相同方向的ListElement提取出来，然后合并，然后找出这些element的共同边界
-	 * @param cis5to3 null,不考虑方向
-	 * @param lsIso
-	 * @param sepSingle 遇到这种情况怎么分割：<br>
-	 * 	 * ---m-m-------------a--a---------b--b------------n-n----<br>
-	 *    ---m-m---------------------------------------------n-n----<br>
-	 *    true aa 和 bb 分开
-	 *    false aa 和 bb合在一起
-	 * @return
-	 * 返回一个list，按照cis5to3排序，如果cis5to3为true，从小到大排列
-	 * 如果cis5to3为false，从大到小排列
-	 * 内部的int[] 0: startAbs 1: endAbs
-	 */
-	public static ArrayList<int[]> getCombSep(Boolean cis5to3, List<? extends ListAbs<? extends ListDetailAbs>> lsIso, boolean sepSingle) {
-		ArrayList<? extends ListDetailAbs> lsAllelement = combListAbs(cis5to3, lsIso);
-		ArrayList<int[]> lsSep = null;
-		if (sepSingle) {
-			lsSep = getLsElementSep(cis5to3, lsAllelement);
-		} else {
-			lsSep = getLsElementSepComb(cis5to3, lsAllelement);
-		}
-		return lsSep;
-	}
-	
-	/**
-	 * <b>目前仅用于差异可变剪接查找具体哪个exon发生了剪接事件</b><br>
-	 * 给定一系列ListElement，以及一个方向。
-	 * 将相同方向的ListElement提取出来，然后合并，然后找出这些element的共同边界
-	 * @param cis5to3 null,不考虑方向
-	 * @param lsIso
-	 * 	 * ---a--a---------b----b-------------<br>
-	 *    ---m----------------n----<br>
-	 *    得到：---m--a-------------b----b----------
-	 * @return
-	 * 返回一个list，按照cis5to3排序，如果cis5to3为true，从小到大排列
-	 * 如果cis5to3为false，从大到小排列
-	 * 内部的int[] 0: startAbs 1: endAbs
-	 */
-	public static ArrayList<int[]> getSep(Boolean cis5to3, List<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
-		ArrayList<? extends ListDetailAbs> lsAllelement = combListAbs(cis5to3, lsIso);
-		ArrayList<int[]> lsSep = null;
-		lsSep = getLsElementSepSingle(cis5to3, lsAllelement);
-		return lsSep;
-	}
-	/**
-	 * 
-	 * 将一个List中的Iso全部合并起来。
-	 * @param cis5to3 是否只合并指定方向的iso， null,不考虑方向
-	 * @param lsIso
-	 * @return
-	 */
-	private static ArrayList<? extends ListDetailAbs> combListAbs(Boolean cis5to3, List<? extends ListAbs<? extends ListDetailAbs>> lsIso) {
-		ArrayList<ListDetailAbs> lsAll = new ArrayList<ListDetailAbs>();
-		//将全部的exon放在一个list里面并且排序
-		for (ListAbs<? extends ListDetailAbs> listAbs : lsIso) {
-			if (cis5to3 != null && listAbs.isCis5to3() != cis5to3) {
-				continue;
-			}
-			lsAll.addAll(listAbs.lsElement);
-		}
-		if (cis5to3 == null) {
-			Collections.sort(lsAll, new ListDetailAbsCompareNoStrand());
-		} else {
-			Collections.sort(lsAll, new ListDetailAbsCompareStrand());
-		}
-		return lsAll;
-	}
-	
-	/** 将经过排序的exonlist合并，获得几个连续的exon，切分的很细
-	 * 返回的int[] 0: startAbs    1: endAbs
-	 *  */
-	public static ArrayList<int[]> getLsElementSepSingle(Boolean cis5to3, List<? extends Alignment> lsAll) {
-		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
-		int[] exonOld = new int[]{lsAll.get(0).getStartAbs(), lsAll.get(0).getEndAbs()};
-		lsExonBounder.add(exonOld);
-		for (int i = 1; i < lsAll.size(); i++) {
-			int[] exon = new int[]{lsAll.get(i).getStartAbs(), lsAll.get(i).getEndAbs()};
-			if (cis5to3 == null || cis5to3) {
-				if (exon[0] <= exonOld[1]) {
-					if (exon[1] < exonOld[1]) {
-						exonOld[1] = exon[1];
-					}
-				} else {
-					exonOld = exon.clone();
-					lsExonBounder.add(exonOld);
-				}
-			} else {
-				if (exon[1] >= exonOld[0]) {
-					if (exon[0] > exonOld[0]) {
-						exonOld[0] = exon[0];
-					}
-				} else {
-					exonOld = exon.clone();
-					lsExonBounder.add(exonOld);
-				}
-			}
-		}
-		return lsExonBounder;
-	}
-	
-	/** 将经过排序的exonlist合并，获得几个连续的exon，用于分段
-	 * 返回的int[] 0: startAbs    1: endAbs
-	 *  
-	 *  */
-	public static ArrayList<int[]> getLsElementSep(Boolean cis5to3, List<? extends Alignment> lsAll) {
-		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
-		int[] exonOld = new int[]{lsAll.get(0).getStartAbs(), lsAll.get(0).getEndAbs()};
-		lsExonBounder.add(exonOld);
-		for (int i = 1; i < lsAll.size(); i++) {
-			int[] exon = new int[]{lsAll.get(i).getStartAbs(), lsAll.get(i).getEndAbs()};
-			if (cis5to3 == null || cis5to3) {
-				if (exon[0] <= exonOld[1]) {
-					if (exon[1] > exonOld[1]) {
-						exonOld[1] = exon[1];
-					}
-				} else {
-					exonOld = exon.clone();
-					lsExonBounder.add(exonOld);
-				}
-			} else {
-				if (exon[1] >= exonOld[0]) {
-					if (exon[0] < exonOld[0]) {
-						exonOld[0] = exon[0];
-					}
-				} else {
-					exonOld = exon.clone();
-					lsExonBounder.add(exonOld);
-				}
-			}
-		}
-		return lsExonBounder;
-	}
-	
-	/** 将经过排序的exonlist合并，获得几个连续的exon，用于分段<br>
-	 * 如果有两个exon连续并且单独出现，类似<br>
-	 * ---m-m-------------a--a---------b--b------------n-n----<br>
-	 * ---m-m---------------------------------------------n-n----<br>
-	 * <br>
-	 * 那么a-a和b-b放在一起<br>
-	 *  */
-	private static ArrayList<int[]> getLsElementSepComb(Boolean cis5to3, ArrayList<? extends ListDetailAbs> lsAll) {
-		ArrayList<int[]> lsExonBounder = new ArrayList<int[]>();
-		int[] exonOld = new int[]{lsAll.get(0).getStartAbs(), lsAll.get(0).getEndAbs()};
-		lsExonBounder.add(exonOld);
-		//一堆flag标签
-		
-		// 上一个exon的父类，判断是否为同一个父类基因
-		ListAbs lastExonParent = lsAll.get(0).getParent(); 
-		
-		//上一个exon是否来自于单一父类，就是说没有跟来自另一个父类的exon混合，以下mm和kk是混合的，aa是单独的
-		//* -------m-----------m-------------a--a---------b--b------------n-n----<br>
-		 //* ---k---------k--------------------------------------n-n----<br>
-		boolean lastParentIsSingle = true; 
-		
-		for (int i = 1; i < lsAll.size(); i++) {
-			ListDetailAbs listDetailAbs = lsAll.get(i);
-			ListDetailAbs listDetailAbsNext = null;
-			if (i < lsAll.size() - 1) {
-				listDetailAbsNext = lsAll.get(i+1);
-			}
-			
-			int[] exon = new int[]{listDetailAbs.getStartAbs(), listDetailAbs.getEndAbs()};
-			if (cis5to3 == null || cis5to3) {
-				if (exon[0] <= exonOld[1]) {
-					lastParentIsSingle = false;
-					if (exon[1] > exonOld[1]) {
-						exonOld[1] = exon[1];
-					}
-				} else {
-					//如果是这种情况：
-					//* ---m-m-------------a--a---------b--b------------n-n----<br>
-					//* ---m-m---------------------------------------------n-n----<br>
-					if (lastParentIsSingle == true && lastExonParent == listDetailAbs.getParent() 
-							&&
-							(i == lsAll.size() - 1 || listDetailAbsNext.getStartAbs() >= listDetailAbs.getEndAbs())
-					) {
-						exonOld[1] = exon[1];
-					} else {
-						exonOld = exon.clone();
-						lsExonBounder.add(exonOld);
-						lastParentIsSingle = true;
-						lastExonParent = listDetailAbs.getParent();
-					}
-				}
-			} else {
-				if (exon[1] >= exonOld[0]) {
-					lastParentIsSingle = false;
-					if (exon[0] < exonOld[0]) {
-						exonOld[0] = exon[0];
-					}
-				} else {
-					if (lastParentIsSingle == true && lastExonParent == listDetailAbs.getParent() 
-							&&
-							(i == lsAll.size() - 1 || listDetailAbsNext.getStartCis() <= listDetailAbs.getEndCis())
-					) {
-						exonOld[0] = exon[0];
-					} else {
-						exonOld = exon.clone();
-						lsExonBounder.add(exonOld);
-						lastParentIsSingle = true;
-						lastExonParent = lsAll.get(i).getParent();
-					}
-				}
-			}
-		}
-		return lsExonBounder;
 	}
 
 	public boolean isEmpty() {
@@ -789,29 +522,25 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	}
 
 	public boolean contains(Object o) {
-		// TODO Auto-generated method stub
 		return lsElement.contains(o);
 	}
 
 	@Override
 	public Iterator<E> iterator() {
-		// TODO Auto-generated method stub
 		return lsElement.iterator();
 	}
 
 	public boolean remove(Object o) {
-		// TODO Auto-generated method stub
 		return lsElement.remove(o);
 	}
 	
 	public E remove(int index) {
-		// TODO Auto-generated method stub
 		return lsElement.remove(index);
 	}
 
 	public int lastIndexOf(Object o) {
-		// TODO Auto-generated method stub
 		return lsElement.lastIndexOf(o);
 	}
 }
+
 

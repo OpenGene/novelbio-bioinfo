@@ -801,7 +801,7 @@ class ExonClusterBoundInfo {
 					exonInfo.setCis5to3(lsExonInfosThis.get(0).isCis5to3());
 					exonInfo.setStartCis(lsExonInfosRef.get(0).getStartCis());
 					exonInfo.setEndCis(lsExonInfosThis.get(0).getEndCis());
-					exonInfo.setIsoParent(gffGeneIsoInfoRef);
+					exonInfo.setParent(gffGeneIsoInfoRef);
 					lsResult.add(exonInfo);
 					for (int i = 1; i < lsExonInfosThis.size(); i++) {
 						lsResult.add(lsExonInfosThis.get(i));
@@ -825,7 +825,7 @@ class ExonClusterBoundInfo {
 				exonInfo.setCis5to3(lsExonInfosThis.get(0).isCis5to3());
 				exonInfo.setStartCis(lsExonInfosThis.get(lsExonInfosThis.size() - 1).getStartCis());
 				exonInfo.setEndCis(lsExonInfosRef.get(lsExonInfosRef.size() - 1).getEndCis());
-				exonInfo.setIsoParent(gffGeneIsoInfoRef);
+				exonInfo.setParent(gffGeneIsoInfoRef);
 				lsResult.add(exonInfo);
 			}
 		}

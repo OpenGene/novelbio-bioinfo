@@ -76,11 +76,13 @@ public class CoordLocationInfo {
 		}
 	}
 	/**
-	 * 前提，第一个element的起点就是list的起点，最后一个element的终点就是list的终点<br>
 	 * 返回该点所在的元素，从1开始，<br>
+	 * <br>
 	 * 正数表示在第几个元素中，譬如在第几个exon中或第几个基因中，实际数目<br>
 	 * 负数表示在第几个intron中或第几个间隔中。<br>
-	 * 如果<b>在list最前面或最后面，则为0</b>。
+	 * 如果<b>在list最前面或最后面，则为0</b>。<br>
+	 * <br>
+	 * 注意，第一个element的起点就是list的起点，最后一个element的终点就是list的终点<br>
 	 */
 	public int getIndexSearch() {
 		return indexSearch == -listSize ? 0 : indexSearch;

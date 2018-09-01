@@ -13,20 +13,11 @@ public class GffIsoTrans extends GffIso {
 	
 	public GffIsoTrans(String IsoName, String geneParentName, GeneType geneType) {
 		super(IsoName, geneParentName, geneType);
+		setCis5to3(false);
 	}
 	public GffIsoTrans(String IsoName, String geneParentName, GffGene gffDetailGene, GeneType geneType) {
 		super(IsoName, geneParentName, gffDetailGene, geneType);
-	}
-	@Override
-	public int getStartAbs() {
-		if (size() == 0) {
-			throw new ExceptionNbcGFF(getName() + " has no exon infomation please check!");
-		}
-		return get(size() - 1).getEndCis();
-	}
-	@Override
-	public int getEndAbs() {
-		return get(0).getStartCis();
+		setCis5to3(false);
 	}
 
 	@Override
@@ -37,8 +28,4 @@ public class GffIsoTrans extends GffIso {
 	
 	}
 
-	@Override
-	public boolean isCis5to3() {
-		return false;
-	}
 }

@@ -2,6 +2,8 @@ package com.novelbio.bioinfo.base;
 
 import org.springframework.data.annotation.Transient;
 
+import com.lowagie.text.List;
+import com.novelbio.bioinfo.base.binarysearch.ListEle;
 import com.novelbio.bioinfo.base.binarysearch.ListSearch;
 
 
@@ -13,9 +15,10 @@ import com.novelbio.bioinfo.base.binarysearch.ListSearch;
  */
 public abstract class AlignExtend extends Align {	
 	
-	public static final int LOC_ORIGINAL = -1000000000;
-
 	public abstract String getName();
+	
+	public abstract void setParent(ListEle<? extends AlignExtend> parent);
+
 	
 	@Transient
 	protected int tss2UpGene = LOC_ORIGINAL;

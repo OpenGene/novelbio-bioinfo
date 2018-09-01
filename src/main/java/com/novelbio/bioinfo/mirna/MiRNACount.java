@@ -102,7 +102,7 @@ public class MiRNACount extends RunProcess implements AlignmentRecorder {
 	public List<String> getLsMirNameMature() {
 		List<String> lsMirName = new ArrayList<>();
 		for (MirMature listDetailBin : listMiRNALocation.getGffDetailAll()) {
-			lsMirName.add(listDetailBin.getNameSingle());
+			lsMirName.add(listDetailBin.getName());
 		}
 		return lsMirName;
 	}
@@ -118,7 +118,7 @@ public class MiRNACount extends RunProcess implements AlignmentRecorder {
 	public Map<String, String> getMapMature2Seq() {
 		Map<String, String> mapMature2Seq = new HashMap<>();
 		for (MirMature lsMiRNA : listMiRNALocation.getGffDetailAll()) {
-			String matureName = lsMiRNA.getNameSingle();
+			String matureName = lsMiRNA.getName();
 			String parentName = lsMiRNA.getParent().getName();
 			mapMature2Seq.put(matureName, getMiRNAmatureSeq(parentName, matureName));
 		}
@@ -140,7 +140,7 @@ public class MiRNACount extends RunProcess implements AlignmentRecorder {
 	public Map<String, String> getMapMature2Pre() {
 		Map<String, String> mapMature2Pre = new HashMap<>();
 		for (MirMature lsMiRNA : listMiRNALocation.getGffDetailAll()) {
-			String matureName = lsMiRNA.getNameSingle();
+			String matureName = lsMiRNA.getName();
 			String parentName = lsMiRNA.getParent().getName();
 			if (mapMature2Pre.containsKey(matureName)) {
 				String parentNameOld = mapMature2Pre.get(matureName);

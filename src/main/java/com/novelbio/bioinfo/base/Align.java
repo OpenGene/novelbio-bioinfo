@@ -17,6 +17,8 @@ import com.novelbio.software.tssplot.ExceptionNBCChIPAlignError;
  * 重写了hashcode和equals方法，为 chrID+start+end
  */
 public class Align implements Alignment, Cloneable {
+	public static final int LOC_ORIGINAL = -1000000000;
+
 	static PatternOperate patternOperate = new PatternOperate("(-{0,1}\\d+)-(-{0,1}\\d+)");
 	int start, end;
 	String chrID;

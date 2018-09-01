@@ -118,7 +118,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 		getMapChrID2LsGff().put(mirPre.getName().toLowerCase(), mirPre);
 		List<MirMature> lsMiRNABin = getLsMatureMirnaLocation(lsMirnaBlock);
 		for (MirMature miRNAbin : lsMiRNABin) {
-			miRNAbin.setParentListAbs(mirPre);
+			miRNAbin.setParent(mirPre);
 			mirPre.add(miRNAbin);
 		}
 	}
@@ -161,7 +161,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 				} else if (sepInfo[1].contains("product")) {
 					String accID = sepInfo[1].split("=")[1];
 					accID = accID.replace("\"", "");
-					mirMature.addItemName(accID);
+					mirMature.setMirAccID(accID);
 				} else if (sepInfo[1].contains("evidence")) {
 					String evidence = sepInfo[1].split("=")[1];
 					mirMature.setEvidence(evidence);
@@ -202,7 +202,7 @@ SQ   Sequence 50 BP; 7 A; 18 C; 17 G; 0 T; 8 other;
 
 			return null;
 		}
-		return element.getNameSingle();
+		return element.getName();
 	}
 	
 	public static boolean isContainMiRNA(String speciesName, String rnaDataFile) {
@@ -338,7 +338,7 @@ class ExtractMirSeq {
 		lsResult.add(seqFasta);
 		for (MirMature listDetailBin : lsSeqLocation) {
 			SeqFasta seqFastaMature = new SeqFasta();
-			seqFastaMature.setName(listDetailBin.getNameSingle());
+			seqFastaMature.setName(listDetailBin.getName());
 			seqFastaMature.setSeq(finalSeq.substring(listDetailBin.getStartAbs()-1, listDetailBin.getEndAbs()));
 			seqFastaMature.setDNA(true);
 			lsResult.add(seqFastaMature);

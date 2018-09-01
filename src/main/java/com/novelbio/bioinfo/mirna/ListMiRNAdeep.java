@@ -127,7 +127,7 @@ public class ListMiRNAdeep extends MiRNAList {
 					if (mapID2Blast != null && mapID2Blast.size() > 0 && mapID2Blast.containsKey(name)) {
 						name += SepSign.SEP_INFO + mapID2Blast.get(name);
 					}
-					mirMature.addItemName(name);
+					mirMature.setMirAccID(name);
 					mirMature.setCis5to3(true);
 					mirMature.setStartAbs(i+1);
 					mirPre.add(mirMature);
@@ -144,7 +144,7 @@ public class ListMiRNAdeep extends MiRNAList {
 					if (mapID2Blast != null && mapID2Blast.size() > 0 && mapID2Blast.containsKey(name)) {
 						name += SepSign.SEP_INFO + mapID2Blast.get(name);
 					}
-					mirMature.addItemName(name);
+					mirMature.setMirAccID(name);
 					mirMature.setCis5to3(true);
 					mirMature.setStartAbs(i+1);
 					mirPre.add(mirMature);
@@ -168,7 +168,7 @@ public class ListMiRNAdeep extends MiRNAList {
  			logger.error("没有比对到miRNA上：" + mirName +" " + start + " " + end);
 			return null;
 		}
-		return element.getNameSingle();
+		return element.getName();
 	}
 	
 	/**

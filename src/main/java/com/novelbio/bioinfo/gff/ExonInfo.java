@@ -1,8 +1,9 @@
 package com.novelbio.bioinfo.gff;
 
-import com.novelbio.base.StringOperate;
-import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.AlignExtend;
 import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.ListEle;
+
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致
  * 重写了hashcode 仅比较ChrID + "//" + numberstart + "//" + numberstart;
@@ -15,10 +16,24 @@ import com.novelbio.bioinfo.base.Alignment;
  * @author zong0jie
  *
  */
-public class ExonInfo extends Align implements Comparable<ExonInfo> {
+public class ExonInfo extends AlignExtend implements Comparable<ExonInfo> {
+	
 	public ExonInfo() {}
 	
 	GffIso isoParent;
+	
+	@Override
+	public String getName() {
+		return isoParent.getName() +":"+ super.toString();
+	}
+	/**
+	 * @param parent 必须是 {@link GffIso}
+	 */
+	@Override
+	public void setParent(ListEle<? extends AlignExtend> parent) {
+		isoParent = (GffIso)parent;
+		setChrID(isoParent.getRefID());
+	}
 	
 	/**
 	 * 根据正反向自动设定起点和终点
@@ -30,6 +45,7 @@ public class ExonInfo extends Align implements Comparable<ExonInfo> {
 		setStartEndLoc(start, end);
 		setCis5to3(cis);
 		this.isoParent = isoParent;
+		setChrID(isoParent.getRefID());
 	}
 	/**
 	 * 根据正反向自动设定起点和终点
@@ -41,9 +57,7 @@ public class ExonInfo extends Align implements Comparable<ExonInfo> {
 		setStartEndLoc(start, end);
 		setCis5to3(cis);
 	}
-	public void setIsoParent(GffIso isoParent) {
-		this.isoParent = isoParent;
-	}
+
 	public ExonInfo clone() {
 		ExonInfo result = null;
 		result = (ExonInfo) super.clone();
@@ -119,5 +133,6 @@ public class ExonInfo extends Align implements Comparable<ExonInfo> {
 			return result;
 		}
     }
+
 }
 

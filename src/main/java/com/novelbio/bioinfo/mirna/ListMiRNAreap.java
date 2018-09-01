@@ -46,7 +46,7 @@ public class ListMiRNAreap extends MiRNAList {
 				mirMature = new MirMature();
 				mirMature.setCis5to3(true);
 				//30..50
-				mirMature.addItemName(name);
+				mirMature.setMirAccID(name);
 				if (cis5to3) {
 					mirMature.setStartAbs(Integer.parseInt(ss[3]) - start);
 					mirMature.setEndAbs(Integer.parseInt(ss[4]) - start);
@@ -73,7 +73,7 @@ public class ListMiRNAreap extends MiRNAList {
 			logger.error("出现未知miRNA前体名字，是否需要更新miRNA.dat文件：" + mirName);
 			return null;
 		}
-		return element.getNameSingle();
+		return element.getName();
 	}
 	
 }
