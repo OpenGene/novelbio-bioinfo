@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.poi.ss.formula.ptg.OperandPtg;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +20,6 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.ExceptionResultFileError;
 import com.novelbio.GuiAnnoInfo;
 import com.novelbio.base.ExceptionNbcParamError;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.DateUtil;
@@ -31,10 +29,9 @@ import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.multithread.RunProcess;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.Alignment;
-import com.novelbio.bioinfo.base.binarysearch.ListAbs;
 import com.novelbio.bioinfo.fasta.SeqFasta;
-import com.novelbio.bioinfo.fasta.SeqHash;
 import com.novelbio.bioinfo.fasta.StrandType;
+import com.novelbio.bioinfo.gff.ExonClusterOperator;
 import com.novelbio.bioinfo.gff.ExonClusterSite;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffCodGene;
@@ -55,14 +52,10 @@ import com.novelbio.bioinfo.sam.SamFile;
 import com.novelbio.bioinfo.sam.SamFileStatistics;
 import com.novelbio.bioinfo.sam.SamMapReads;
 import com.novelbio.bioinfo.sam.StrandSpecific;
-import com.novelbio.generalconf.PathDetailNBC;
 import com.novelbio.software.rnaaltersplice.ExonSplicingTest.PvalueCalculate;
 import com.novelbio.software.rnaaltersplice.splicetype.PredictME;
 import com.novelbio.software.rnaaltersplice.splicetype.PredictRetainIntron;
-import com.novelbio.software.rnaaltersplice.splicetype.SpliceTypePredict;
 import com.novelbio.software.rnaaltersplice.splicetype.SpliceTypePredict.SplicingAlternativeType;
-
-import htsjdk.samtools.SAMException;
 
 /**
  * 得到每个gene的Junction后，开始计算其可变剪接的差异
@@ -1221,7 +1214,7 @@ public class ExonJunction extends RunProcess {
 		 * --------------10==20---------------50==60-------------------
 		 * 在本组内就存在 10==20 和 50==60 以及 10==60 三组，这时候我们需要将最长的那个挑出来
 		 */
-		List<int[]> lsSep = ListAbs.getLsElementSep(lsTestResult.get(0).getExonCluster().isCis5to3(), lsAlignMultiSE);
+		List<int[]> lsSep = ExonClusterOperator.getLsElementSepSingle(lsTestResult.get(0).getExonCluster().isCis5to3(), lsAlignMultiSE);
 		ArrayListMultimap<int[], Align> mapSite2LsAlign = ArrayListMultimap.create();
 		for (int[] is : lsSep) {
 			for (Align align : lsAlignMultiSE) {

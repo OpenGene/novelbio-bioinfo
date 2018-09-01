@@ -11,8 +11,7 @@ import junit.framework.TestCase;
 
 public class GffGeneIsoTest extends TestCase {
 	@Test
-	public void testGffGeneIsoCis()
-	{
+	public void testGffGeneIsoCis() {
 		GffGene gffDetailGene = new GffGene("chr1","sefes", true);
 		GffIso gffGeneIsoCis = GffIso.createGffGeneIso("aaa",gffDetailGene.getNameSingle(), gffDetailGene, GeneType.mRNA, true);
 		gffGeneIsoCis.add(new ExonInfo(true, 0, 3));
@@ -64,8 +63,7 @@ public class GffGeneIsoTest extends TestCase {
 		gffGeneIsoTrans.add(new ExonInfo(false, 30, 20));
 		gffGeneIsoTrans.add(new ExonInfo(false, 10, 5));
 		gffGeneIsoTrans.add(new ExonInfo(false, 3, 0));
-		int aa = 0;
-				aa = gffGeneIsoTrans.getCod2ExInEnd(37);
+		int aa = gffGeneIsoTrans.getCod2ExInEnd(37);
 		assertEquals(6, aa);
 		aa = gffGeneIsoTrans.getCod2ExInStart(37);
 		assertEquals(2, aa);

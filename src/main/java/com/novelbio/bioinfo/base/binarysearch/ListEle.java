@@ -76,23 +76,7 @@ public class ListEle <E extends AlignExtend> implements Cloneable, Iterable<E> {
 	public void setCis5to3(Boolean cis5to3) {
 		this.cis5to3 = cis5to3;
  	}
-	/**
-	 * 返回实际第num个element间区的长度
-	 * @param num 实际数目，必须小于sizeNumber
-	 * @return
-	 */
-	public int getInterGenic(int num) {
-		if (num < 0 || num > size() - 1) {
-			throw new ArrayIndexOutOfBoundsException();
-		}
-		if (isCis5to3() == null) {
-			return Math.abs(get(num + 1).getStartAbs() - get(num).getEndAbs());
-		} else if (isCis5to3()) {
-			return Math.abs(get(num + 1).getStartAbs() - get(num).getEndAbs());
-		} else {
-			return Math.abs(get(num).getStartAbs() - get(num+1).getEndAbs());
-		}
-	}
+
 	/**
 	 * 返回实际第num个element的长度
 	 * @param num 实际数目
@@ -360,7 +344,6 @@ public class ListEle <E extends AlignExtend> implements Cloneable, Iterable<E> {
 		int dotIndex = tmpGeneID.lastIndexOf(".");
 		//如果类似XM_002121.1类型
 		if (dotIndex>0 && tmpGeneID.length() - dotIndex <= 3) {
-			String subIndex = tmpGeneID.substring(dotIndex + 1, tmpGeneID.length());
 			try {
 				tmpGeneID = tmpGeneID.substring(0,dotIndex);
 			} catch (Exception e) { }

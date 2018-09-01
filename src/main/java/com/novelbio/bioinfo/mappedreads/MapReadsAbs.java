@@ -209,16 +209,6 @@ public abstract class MapReadsAbs extends RunProcess {
 	 * @param lsLoc 一个转录本的exon list
 	 * @return null表示出错
 	 */
-	public double[] getRangeInfo(String chrID, ListAbs<? extends Alignment> lsLoc) {
-		return getRangeInfo(chrID, lsLoc.getLsElement() , 0);
-	}
-	/**
-	 * 经过标准化，和equations修正，注意返回的值一直都是<b>按照坐标从小到大</b>，不会根据方向而改变方向<br><br>
-	 * 给定坐标范围，返回该区间内的信息，取点为加权平均
-	 * @param chrID
-	 * @param lsLoc 一个转录本的exon list
-	 * @return null表示出错
-	 */
 	public List<double[]> getRangeInfoLs(String chrID, List<? extends Alignment> lsLoc) {
 		return getRangeInfoLs(chrID, lsLoc, 0);
 	}

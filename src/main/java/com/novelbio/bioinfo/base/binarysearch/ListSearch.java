@@ -273,6 +273,7 @@ public abstract class ListSearch <T extends AlignExtend> {
 	 * @throws Exception 
 	 */
 	protected abstract void ReadGffarrayExcep(String gfffilename) throws Exception;
+	
 	/**
 	 * 需要覆盖
 	 * 查找某个特定LOC的信息

@@ -17,6 +17,8 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
 import com.novelbio.bioinfo.base.Alignment.CompS2MAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListEle;
+import com.novelbio.bioinfo.base.binarysearch.ListEleSearch;
 import com.novelbio.bioinfo.base.binarysearch.ListSearch;
 import com.novelbio.bioinfo.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.bioinfo.sam.AlignmentRecorder;
@@ -24,7 +26,7 @@ import com.novelbio.bioinfo.sam.SamFile;
 import com.novelbio.bioinfo.sam.SamRecord;
 import com.novelbio.bioinfo.sam.StrandSpecific;
 
-public class TophatJunction extends ListSearch<JunctionInfo> implements AlignmentRecorder {
+public class TophatJunction extends ListEleSearch<JunctionInfo, ListEle<JunctionInfo>>  implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(TophatJunction.class);
 	
 	private int intronMinLen = 15;
@@ -177,9 +179,9 @@ public class TophatJunction extends ListSearch<JunctionInfo> implements Alignmen
 		} else {
 			junThis.addJunBeforeAbs(junBefore); junThis.addJunAfterAbs(junAfter);
 			JunctionInfo juncInfo = new JunctionInfo(strandSpecific != StrandSpecific.NONE, junThis);
-			List<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getRefID().toLowerCase());
+			ListEle<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getRefID().toLowerCase());
 			if (lsJunctionInfos == null) {
-				lsJunctionInfos = new ArrayList<>();
+				lsJunctionInfos = new ListEle<>();
 				mapChrID2ListGff.put(junThis.getRefID().toLowerCase(), lsJunctionInfos);
 			}
 			lsJunctionInfos.add(juncInfo);
@@ -384,11 +386,11 @@ public class TophatJunction extends ListSearch<JunctionInfo> implements Alignmen
 	
 	/** 读取完bam文件后必须调用该方法进行总结 */
 	public void conclusion() {
-		for (Entry<String, List<JunctionInfo>> entry : mapChrID2ListGff.entrySet()) {
+		for (Entry<String, ListEle<JunctionInfo>> entry : mapChrID2ListGff.entrySet()) {
 			String chrID = entry.getKey().toLowerCase();
-			List<JunctionInfo> listGff = entry.getValue();
-			Collections.sort(listGff, new CompS2MAbs());
-			List<JunctionInfo> listGffNew = combineOverlapGene(listGff);
+			ListEle<JunctionInfo> listGff = entry.getValue();
+			listGff.sort();
+			ListEle<JunctionInfo> listGffNew = combineOverlapGene(listGff);
 			mapChrID2ListGff.put(chrID, listGffNew);
 			listGff = null;
 		}
@@ -418,8 +420,8 @@ public class TophatJunction extends ListSearch<JunctionInfo> implements Alignmen
 	 * 合并重复的GffDetailGene
 	 * @return
 	 */
-	private static List<JunctionInfo> combineOverlapGene(List<JunctionInfo> lsInput) {
-		List<JunctionInfo> listGffNew = new ArrayList<>();
+	private static ListEle<JunctionInfo> combineOverlapGene(ListEle<JunctionInfo> lsInput) {
+		ListEle<JunctionInfo> listGffNew = new ListEle<>();
 		JunctionInfo gffDetailGeneLast = null;
 		//合并两个重叠的基因
 		for (JunctionInfo gffDetailGene : lsInput) {

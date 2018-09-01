@@ -3,7 +3,6 @@ package com.novelbio.bioinfo.base.binarysearch;
 import java.io.FileNotFoundException;
 import java.nio.file.NoSuchFileException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -170,7 +169,7 @@ public abstract class ListEleSearch <T extends AlignExtend, E extends ListEle<T>
 		}
 		BinarySearch<T> binarySearch = new BinarySearch<>(Loclist.getLsElement());
 		BsearchSiteDu<T> gffCodDu = binarySearch.searchLocationDu(cod1, cod2);
-		return gffCodDu;		
+		return gffCodDu;
 	}
 	
 	private void addChrIdCannotFind(String chrId) {

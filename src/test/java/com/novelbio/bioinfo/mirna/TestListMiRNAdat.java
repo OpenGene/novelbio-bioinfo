@@ -13,6 +13,6 @@ public class TestListMiRNAdat extends TestCase {
 		listMiRNAdat.setSpecies(new Species(9606));
 		listMiRNAdat.ReadGffarray(PathDetailNBC.getMiRNADat());
 		MirMature mirMature = listMiRNAdat.searchLOC("hsa-miR-6724-5p");
-		System.out.println(mirMature.getNameSingle() + " " + mirMature.getMirAccID());
+		System.out.println(mirMature.getName() + " " + mirMature.getMirAccID());
 	}
 }

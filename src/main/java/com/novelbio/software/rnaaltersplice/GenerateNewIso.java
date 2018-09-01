@@ -15,10 +15,8 @@ import org.apache.log4j.Logger;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.SepSign;
 import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
-import com.novelbio.bioinfo.base.binarysearch.ListAbs;
-import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
-import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
 import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs.ListDetailAbsCompareStrand;
+import com.novelbio.bioinfo.gff.ExonClusterOperator;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffCodGene;
 import com.novelbio.bioinfo.gff.GffCodGeneDU;
@@ -27,8 +25,8 @@ import com.novelbio.bioinfo.gff.GffHashGene;
 import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.bioinfo.mappedreads.MapReads;
 import com.novelbio.bioinfo.rnaseq.JunctionInfo;
-import com.novelbio.bioinfo.rnaseq.TophatJunction;
 import com.novelbio.bioinfo.rnaseq.JunctionInfo.JunctionUnit;
+import com.novelbio.bioinfo.rnaseq.TophatJunction;
 import com.novelbio.bioinfo.sam.StrandSpecific;
 
 /** 根据junction reads，产生新的iso
@@ -867,7 +865,7 @@ public class GenerateNewIso {
 		//-----------------|---15===30|-----------|---55====80|-----------------------
 		List<JunctionUnit> lsJuncUnit = new ArrayList<>(mapKey2Junc.values());
 		Collections.sort(lsJuncUnit, new ListDetailAbsCompareStrand());
-		List<int[]> lsSub = ListAbs.getLsElementSep(gffDetailGene.isCis5to3(), lsJuncUnit);
+		List<int[]> lsSub = ExonClusterOperator.getLsElementSepSingle(gffDetailGene.isCis5to3(), lsJuncUnit);
 		ArrayListMultimap<String, JunctionUnit> mapLoc2LsJunUnit = ArrayListMultimap.create();
 		
 		Iterator<int[]> itInt = lsSub.iterator();
