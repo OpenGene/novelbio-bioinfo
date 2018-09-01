@@ -25,18 +25,18 @@ public abstract class ListAbsSearch <E extends ListDetailAbs, T extends ListCodA
 		}
 		T gffCod = creatGffCod(refID, Coordinate);
 		if (coordLocationInfo.isInsideElement()) {
-			gffCod.setGffDetailThis( get(coordLocationInfo.getElementNumThisElementFrom0() ) ); 
+			gffCod.setGffDetailThis( get(coordLocationInfo.getIndexEleThis() ) ); 
 			gffCod.booFindCod = true;
-			gffCod.ChrHashListNumThis = coordLocationInfo.getElementNumThisElementFrom0();
+			gffCod.ChrHashListNumThis = coordLocationInfo.getIndexEleThis();
 			gffCod.insideLOC = true;
 		}
-		if (coordLocationInfo.getElementNumLastElementFrom0() >= 0) {
-			gffCod.setGffDetailUp( get(coordLocationInfo.getElementNumLastElementFrom0()) );
-			gffCod.ChrHashListNumUp = coordLocationInfo.getElementNumLastElementFrom0();
+		if (coordLocationInfo.getIndexEleLast() >= 0) {
+			gffCod.setGffDetailUp( get(coordLocationInfo.getIndexEleLast()) );
+			gffCod.ChrHashListNumUp = coordLocationInfo.getIndexEleLast();
 		}
-		if (coordLocationInfo.getElementNumNextElementFrom0() >= 0) {
-			gffCod.setGffDetailDown(get(coordLocationInfo.getElementNumNextElementFrom0()));
-			gffCod.ChrHashListNumDown = coordLocationInfo.getElementNumNextElementFrom0();
+		if (coordLocationInfo.getIndexEleNext() >= 0) {
+			gffCod.setGffDetailDown(get(coordLocationInfo.getIndexEleNext()));
+			gffCod.ChrHashListNumDown = coordLocationInfo.getIndexEleNext();
 		}
 		return gffCod;
 	}

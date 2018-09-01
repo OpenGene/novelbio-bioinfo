@@ -1,18 +1,18 @@
 package com.novelbio.test.base.datastructure.listoperate;
 
 import java.util.ArrayList;
-
-import junit.framework.TestCase;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
 import com.novelbio.bioinfo.base.binarysearch.ListAbs;
+import com.novelbio.bioinfo.gff.ExonClusterOperator;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffIso;
-import com.novelbio.bioinfo.gff.GffIsoCis;
-import com.novelbio.bioinfo.gff.GffIsoTrans;
 import com.novelbio.database.domain.modgeneid.GeneType;
+
+import junit.framework.TestCase;
 /**
  * @author zong0jie
  *
@@ -47,7 +47,7 @@ public class TestListAbs extends TestCase {
 		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
-		ArrayList<int[]> lsSep = ListAbs.getCombSep(false, lsIso, false);
+		List<int[]> lsSep = ExonClusterOperator.getCombSep(false, lsIso, false);
 		int num = 0;
 		assertEquals(80, lsSep.get(num)[0]);
 		assertEquals(92, lsSep.get(num)[1]);
@@ -82,7 +82,7 @@ public class TestListAbs extends TestCase {
 		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
-		ArrayList<int[]> lsSep = ListAbs.getCombSep(false, lsIso, false);
+		List<int[]> lsSep = ExonClusterOperator.getCombSep(false, lsIso, false);
 		int num = 0;
 		assertEquals(80, lsSep.get(num)[0]);
 		assertEquals(92, lsSep.get(num)[1]);
@@ -121,7 +121,7 @@ public class TestListAbs extends TestCase {
 		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
-		ArrayList<int[]> lsSep = ListAbs.getCombSep(true, lsIso, false);
+		List<int[]> lsSep = ExonClusterOperator.getCombSep(true, lsIso, false);
 		int num = 0;
 		assertEquals(20, lsSep.get(num)[0]);
 		assertEquals(33, lsSep.get(num)[1]);
@@ -163,10 +163,10 @@ public class TestListAbs extends TestCase {
 		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
-		ArrayList<int[]> lsSep = ListAbs.getSep(true, lsIso);
+		List<int[]> lsSep = ExonClusterOperator.getCombSep(true, lsIso, true);
 		int num = 0;
 		assertEquals(20, lsSep.get(num)[0]);
-		assertEquals(30, lsSep.get(num)[1]);
+		assertEquals(33, lsSep.get(num)[1]);
 		num++;
 		assertEquals(35, lsSep.get(num)[0]);
 		assertEquals(36, lsSep.get(num)[1]);
@@ -178,12 +178,9 @@ public class TestListAbs extends TestCase {
 		assertEquals(54, lsSep.get(num)[1]);
 		num++;
 		assertEquals(55, lsSep.get(num)[0]);
-		assertEquals(69, lsSep.get(num)[1]);
+		assertEquals(70, lsSep.get(num)[1]);
 		num++;
 		assertEquals(71, lsSep.get(num)[0]);
-		assertEquals(82, lsSep.get(num)[1]);
-		num++;
-		assertEquals(84, lsSep.get(num)[0]);
 		assertEquals(92, lsSep.get(num)[1]);
 	}
 	
@@ -201,34 +198,28 @@ public class TestListAbs extends TestCase {
 		isoTrans1.add(new ExonInfo(false, 52, 54));
 		isoTrans1.add(new ExonInfo(false, 60, 70));
 		isoTrans1.add(new ExonInfo(false, 80, 90));
-		isoTrans1.sort();
+		isoTrans1.sortOnly();
 		
 		isoTrans2.add(new ExonInfo(false, 20, 33));
 		isoTrans2.add(new ExonInfo(false, 35, 36));
 		isoTrans2.add(new ExonInfo(false, 55, 69));
 		isoTrans2.add(new ExonInfo(false, 71, 82));
 		isoTrans2.add(new ExonInfo(false, 84, 92));
-		isoTrans2.sort();
+		isoTrans2.sortOnly();
 		
 		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
-		ArrayList<int[]> lsSep = ListAbs.getSep(false, lsIso);
+		List<int[]> lsSep = ExonClusterOperator.getCombSep(false, lsIso, false);
 		int num = 0;
-		assertEquals(84, lsSep.get(num)[0]);
+		assertEquals(71, lsSep.get(num)[0]);
 		assertEquals(92, lsSep.get(num)[1]);
 		num++;
-		assertEquals(71, lsSep.get(num)[0]);
-		assertEquals(82, lsSep.get(num)[1]);
-		num++;
-		assertEquals(60, lsSep.get(num)[0]);
+		assertEquals(55, lsSep.get(num)[0]);
 		assertEquals(70, lsSep.get(num)[1]);
 		num++;
-		assertEquals(52, lsSep.get(num)[0]);
-		assertEquals(54, lsSep.get(num)[1]);
-		num++;
 		assertEquals(40, lsSep.get(num)[0]);
-		assertEquals(50, lsSep.get(num)[1]);
+		assertEquals(54, lsSep.get(num)[1]);
 		num++;
 		assertEquals(35, lsSep.get(num)[0]);
 		assertEquals(36, lsSep.get(num)[1]);

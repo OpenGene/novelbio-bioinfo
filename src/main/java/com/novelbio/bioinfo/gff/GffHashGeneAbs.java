@@ -78,7 +78,7 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 				GffGene gffDetailGene = listGff.get(i);
 				gffDetailGene.setParentListAbs(listGff);
 				for (GffIso gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-					gffGeneIsoInfo.sort();
+					gffGeneIsoInfo.sortOnly();
 					try {
 						gffGeneIsoInfo.setATGUAGncRNA();
 					} catch (Exception e) {
@@ -161,38 +161,12 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 		return mapName2DetailAbs;
 	}
 	
-	
 	public GffCodGeneDU searchLocation(Alignment alignment) {
 		return searchLocation(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
 	}
 	
 	public GffGene searchLOC(String accID) {
 		return searchLOCWithoutDB(accID);
-	}
-	/**
-	 * 输入基因名，返回基因的坐标信息等
-	 * 可以输入accID
-	 * @param accID
-	 * @return
-	 */
-	@Deprecated
-	private GffGene searchLOC_Old(String accID) {
-		GffGene gffDetailGene = super.searchLOC(accID);
-		if (gffDetailGene == null) {
-			GeneID copedID = new GeneID(accID, taxID, false);
-			if (copedID.getIDtype() == GeneID.IDTYPE_ACCID) {
-				return null;
-			}
-			String locID = null;
-			try {
-				locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
-			} catch (Exception e) {
-				logger.error("没有该accID："+accID);
-				return null;
-			}
-			gffDetailGene = super.searchLOC(locID);
-		}
-		return gffDetailGene;
 	}
 	
 	/**
@@ -243,51 +217,6 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 		return searchISOwithoutDB(accID);
 	}
 	
-	/**
-	 * 输入基因名，返回基因的具体转录本，主要用在UCSC上
-	 * 没找到具体的转录本名字，那么就返回最长转录本
-	 * 可以输入accID
-	 * @param accID
-	 * @return
-	 */
-	@Deprecated
-	private GffIso searchISO_Old(String accID) {
-		GffIso gffGeneIsoInfo = mapName2Iso.get(accID.toLowerCase());
-		if (gffGeneIsoInfo != null) {
-			return gffGeneIsoInfo;
-		}
-		
-		GeneID copedID = new GeneID(accID, taxID, false);
-		if (copedID.getIDtype() != GeneID.IDTYPE_ACCID) {
-			String locID = null;
-			try {
-				locID = getMapGeneID2Acc(acc2GeneIDfile).get(copedID.getGeneUniID()).split("//")[0];
-				gffGeneIsoInfo = mapName2Iso.get(locID.toLowerCase());
-				if (gffGeneIsoInfo != null) {
-					return gffGeneIsoInfo;
-				} else {
-					GffGene gffdetail = searchLOC(locID);
-					if (gffdetail != null) {
-						GffIso gffGeneIsoInfoOut = gffdetail.getIsolist(locID);
-						if (gffGeneIsoInfoOut != null) {
-							return gffGeneIsoInfoOut;
-						}
-					}
-				}
-			} catch (Exception e) {
-			}
-		}
-		
-		GffGene gffdetail = searchLOC(accID);
-		if (gffdetail == null) {
-			return null;
-		}
-		GffIso gffGeneIsoInfoOut = gffdetail.getIsolist(accID);
-		if (gffGeneIsoInfoOut == null) {
-			gffGeneIsoInfoOut = gffdetail.getLongestSplitMrna();
-		}
-		return gffGeneIsoInfoOut;
-	}
 	/**
 	 * 返回全体内含子，长度从小到大排序
 	 * @return
@@ -576,48 +505,5 @@ public abstract class GffHashGeneAbs extends ListHashSearch<GffGene, GffCodGene,
 //		}
 		return geneIDinput;
 	}
-
-	@Override
-	public void writeGene2Iso(String Gene2IsoFile) {
-		TxtReadandWrite txtGtf = new TxtReadandWrite(Gene2IsoFile, true);
-		HashSet<String> setRemoveRedundentID = new HashSet<String>();
-		ArrayList<GffGene> lsGffDetailGenes = getGffDetailAll();
-		for (GffGene gffDetailGene : lsGffDetailGenes) {
-			String symbol = getGeneSymbol(gffDetailGene);
-			
-			for (GffIso gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				if (isNotRedundent(setRemoveRedundentID, symbol, gffGeneIsoInfo.getName())) {
-					txtGtf.writefileln(symbol + "\t" + gffGeneIsoInfo.getName());
-				}
-			}
-		}
-		txtGtf.close();
-	}
 	
-	private String getGeneSymbol(GffGene gffDetailGene) {
-		GeneID copedID = gffDetailGene.getLongestSplitMrna().getGeneID();
-		String symbol = null;
-		if (copedID.getIDtype() != GeneID.IDTYPE_ACCID || copedID.getSymbol() == null || copedID.getSymbol().equals("")) {
-			symbol = copedID.getSymbol();
-			if (symbol.equals("")) {
-				symbol = copedID.getAccID();
-			}
-		} else {
-			symbol = gffDetailGene.getNameSingle();
-		}
-		return symbol;
-	}
-	private boolean isNotRedundent(HashSet<String> setRemoveRedundentID, String symbol, String geneID) {
-		if (setRemoveRedundentID.contains(symbol + SepSign.SEP_ID + geneID)) {
-			return false;
-		}
-		else {
-			setRemoveRedundentID.add(symbol + SepSign.SEP_ID + geneID);
-			return true;
-		}
-	}	
-	
-	public void save() {
-		
-	}
 }

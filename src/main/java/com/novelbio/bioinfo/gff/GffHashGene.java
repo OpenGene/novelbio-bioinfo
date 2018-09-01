@@ -288,11 +288,6 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 		return gffHashGene.getLsNameNoRedundent();
 	}
 
-	@Override
-	public String[] getLOCNum(String LOCID) {
-		return gffHashGene.getLOCNum(LOCID);
-	}
-
 	public HashMap<String, GffGene> getLocHashtable() {
 		return gffHashGene.getMapName2Detail();
 	}
@@ -409,10 +404,6 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 		gffHashGene.writeToBED(lsChrID, GTFfile, GFFDBNAME);
 	}
 
-	@Override
-	public void writeGene2Iso(String Gene2IsoFile) {
-		gffHashGene.writeGene2Iso(Gene2IsoFile);
-	}	
 	/** 自动判断染色体 */
 	public void addListGff(ListGff listGff) {
 		String chrID = listGff.getName();

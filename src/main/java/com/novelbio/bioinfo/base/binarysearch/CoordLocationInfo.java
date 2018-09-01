@@ -21,7 +21,7 @@ public class CoordLocationInfo {
 	 * 负数表示在第几个intron中或第几个间隔中，实际数目。
 	 * 如果在list最前面，则为0。如果在list最后面，则为负数的list.size()
 	 */
-	int elementInsideOutSideNumAbs = 0;
+	int indexSearch = 0;
 	
 	public CoordLocationInfo(int listSize) {
 		this.listSize = listSize;
@@ -31,15 +31,12 @@ public class CoordLocationInfo {
 	 * 负数表示在第几个intron中或第几个间隔中。
 	 * 如果在list最前面，则为0。如果在list最后面，则为负数的list.size()
 	 */
-	public void setElementInsideOutSideNum(int elementInsideOutSideNumAbs) {
-		this.elementInsideOutSideNumAbs = elementInsideOutSideNumAbs;
+	public void setIndexSearch(int indexSearch) {
+		this.indexSearch = indexSearch;
 	}
 	
 	public boolean isInsideElement() {
-		if (elementInsideOutSideNumAbs > 0) {
-			return true;
-		}
-		return false;
+		return indexSearch > 0;
 	}
 	/**
 	 * 返回该点上一个元素的序号，一直返回正数。如果在list外，返回-1<br>
@@ -47,29 +44,19 @@ public class CoordLocationInfo {
 	 * <b>-1表示前面没有基因</b>
 	 * @return
 	 */
-	public int getElementNumLastElementFrom0() {
-		if (elementInsideOutSideNumAbs > 0) {
-			return elementInsideOutSideNumAbs - 2;
+	public int getIndexEleLast() {
+		if (indexSearch > 0) {
+			return indexSearch - 2;
 		}
-		else if (elementInsideOutSideNumAbs < 0) {
-			return Math.abs(elementInsideOutSideNumAbs) - 1;
-		}
-		else {
-			return -1;
-		}
+		return indexSearch < 0 ? Math.abs(indexSearch) - 1 : -1;
 	}
 	/**
 	 * 返回该点所在的Element，一直返回正数。如果在element之外，返回-1
 	 * 计数从0开始
 	 * @return
 	 */
-	public int getElementNumThisElementFrom0() {
-		if (elementInsideOutSideNumAbs > 0) {
-			return elementInsideOutSideNumAbs - 1;
-		}
-		else {
-			return -1;
-		}
+	public int getIndexEleThis() {
+		return indexSearch > 0 ? indexSearch - 1 : -1;
 	}
 	/**
 	 * 返回该点下一个元素的序号，一直返回正数。如果在list外，返回-1<br>
@@ -77,12 +64,12 @@ public class CoordLocationInfo {
 	 * <b>-1表示后面没有基因</b>
 	 * @return
 	 */
-	public int getElementNumNextElementFrom0() {
-		if (elementInsideOutSideNumAbs >= 0 && elementInsideOutSideNumAbs < listSize) {
-			return elementInsideOutSideNumAbs;
+	public int getIndexEleNext() {
+		if (indexSearch >= 0 && indexSearch < listSize) {
+			return indexSearch;
 		}
-		else if (elementInsideOutSideNumAbs < 0 && Math.abs(elementInsideOutSideNumAbs) < listSize) {
-			return Math.abs(elementInsideOutSideNumAbs);
+		else if (indexSearch < 0 && Math.abs(indexSearch) < listSize) {
+			return Math.abs(indexSearch);
 		}
 		else {
 			return -1;
@@ -95,10 +82,7 @@ public class CoordLocationInfo {
 	 * 负数表示在第几个intron中或第几个间隔中。<br>
 	 * 如果<b>在list最前面或最后面，则为0</b>。
 	 */
-	public int getElementNumThisAbs() {
-		if (elementInsideOutSideNumAbs == -listSize) {
-			return 0;
-		}
-		return elementInsideOutSideNumAbs;
+	public int getIndexSearch() {
+		return indexSearch == -listSize ? 0 : indexSearch;
 	}
 }

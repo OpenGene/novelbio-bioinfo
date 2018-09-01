@@ -7,9 +7,7 @@ import junit.framework.TestCase;
 import org.junit.Test;
 
 import com.novelbio.bioinfo.gff.GffCodGeneDU;
-import com.novelbio.bioinfo.gff.GffGene;
 import com.novelbio.bioinfo.gff.GffHashGene;
-import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.bioinfo.gffchr.GffChrAbs;
 
 public class TestGffCodGeneDU extends TestCase {

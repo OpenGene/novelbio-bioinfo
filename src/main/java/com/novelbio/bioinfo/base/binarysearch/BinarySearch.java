@@ -1,11 +1,17 @@
 package com.novelbio.bioinfo.base.binarysearch;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs.ListDetailAbsCompareNoStrand;
+import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs.ListDetailAbsCompareStrand;
+import com.novelbio.bioinfo.gff.ExonInfo;
+import com.novelbio.bioinfo.gff.GffIso;
 
 public class BinarySearch<T extends Alignment> {
 	private static final Logger logger = LoggerFactory.getLogger(BinarySearch.class);
@@ -34,7 +40,7 @@ public class BinarySearch<T extends Alignment> {
 			if (i >= lsElement.size()) {
 				break;
 			}
-			if (!isEqual(lsElement.get(i-1).isCis5to3(), isCis5to3)) {
+			if (!Alignment.isEqual(lsElement.get(i-1).isCis5to3(), isCis5to3)) {
 				throw new RuntimeException("BinarySearch error, elements in list is not same strand");
 			}
 			if (isCis5to3 == null || isCis5to3 ) {
@@ -51,16 +57,6 @@ public class BinarySearch<T extends Alignment> {
 		this.isCis5To3 = isCis5to3;
 	}
 	
-	public static boolean isEqual(Boolean bool1, Boolean bool2) {
-		if (bool1 == null && bool2 == null) {
-			return true;
-		}
-		if (bool1 == null || bool2 == null) {
-			return false;
-		}
-		return bool1.equals(bool2);
-	}
-	
 	/**
 	 * 获得的每一个信息都是实际的而没有clone
 	 * 输入PeakNum，和单条Chr的list信息 返回该PeakNum的所在LOCID，和具体位置
@@ -74,18 +70,18 @@ public class BinarySearch<T extends Alignment> {
 		}
 		BsearchSite<T> gffCod = new BsearchSite<>(Coordinate);
 		if (coordLocationInfo.isInsideElement()) {
-			gffCod.setAlignThis( lsElement.get(coordLocationInfo.getElementNumThisElementFrom0() ) ); 
+			gffCod.setAlignThis( lsElement.get(coordLocationInfo.getIndexEleThis() ) );
+			gffCod.setIndexAlignThis(coordLocationInfo.getIndexEleThis() );
 			gffCod.booFindCod = true;
-			gffCod.indexAlignThis = coordLocationInfo.getElementNumThisElementFrom0();
 			gffCod.insideLOC = true;
 		}
-		if (coordLocationInfo.getElementNumLastElementFrom0() >= 0) {
-			gffCod.setAlignUp( lsElement.get(coordLocationInfo.getElementNumLastElementFrom0()) );
-			gffCod.indexAlignUp = coordLocationInfo.getElementNumLastElementFrom0();
+		if (coordLocationInfo.getIndexEleLast() >= 0) {
+			gffCod.setAlignUp( lsElement.get(coordLocationInfo.getIndexEleLast()) );
+			gffCod.setIndexAlignUp(coordLocationInfo.getIndexEleLast() );
 		}
-		if (coordLocationInfo.getElementNumNextElementFrom0() >= 0) {
-			gffCod.setAlignDown(lsElement.get(coordLocationInfo.getElementNumNextElementFrom0()));
-			gffCod.indexAlignDown = coordLocationInfo.getElementNumNextElementFrom0();
+		if (coordLocationInfo.getIndexEleNext() >= 0) {
+			gffCod.setAlignDown(lsElement.get(coordLocationInfo.getIndexEleNext()));
+			gffCod.setIndexAlignDown(coordLocationInfo.getIndexEleNext() );
 		}
 		return gffCod;
 	}
@@ -106,8 +102,10 @@ public class BinarySearch<T extends Alignment> {
 		if (isCis5To3 != null && !isCis5To3) {
 			codStart = Math.max(cod1, cod2);
 			codEnd = Math.min(cod1, cod2);
+		} else {
+			codStart = Math.min(cod1, cod2);
+			codEnd = Math.max(cod1, cod2);
 		}
-		
 
 		BsearchSite<T> site1 = searchLocation(codStart);
 		BsearchSite<T> site2 = searchLocation(codEnd);
@@ -116,8 +114,8 @@ public class BinarySearch<T extends Alignment> {
 		}
 		BsearchSiteDu<T> lsAbsDu = new BsearchSiteDu<>(site1, site2); 
 		
-		if (lsAbsDu.getSiteLeft().getItemNumDown() >= 0) {
-			for (int i = lsAbsDu.getSiteLeft().getItemNumDown(); i <= lsAbsDu.getSiteRight().getItemNumUp(); i++) {
+		if (lsAbsDu.getSiteLeft().getIndexAlignDown() >= 0) {
+			for (int i = lsAbsDu.getSiteLeft().getIndexAlignDown(); i <= lsAbsDu.getSiteRight().getIndexAlignUp(); i++) {
 				lsAbsDu.lsAlignMid.add(lsElement.get(i));
 			}
 		}
@@ -133,7 +131,7 @@ public class BinarySearch<T extends Alignment> {
 	 * 不在为0
 	 * 为实际数目
 	 */
-	protected CoordLocationInfo LocPosition( int Coordinate) {
+	public CoordLocationInfo LocPosition( int Coordinate) {
 		if (isCis5To3 == null) {
 			return BinarySearch.LocPositionAbs(lsElement, Coordinate);
 		} else if (isCis5To3) {
@@ -141,6 +139,14 @@ public class BinarySearch<T extends Alignment> {
 		} else {
 			return BinarySearch.LocPositionTran(lsElement, Coordinate);
 		}
+	}
+	
+	public static CoordLocationInfo searchCoord(List<? extends Alignment> lsElement, int Coordinate, Boolean isCis5To3) {
+		if (isCis5To3 == null) {
+			return BinarySearch.LocPositionAbs(lsElement, Coordinate);
+		} 
+		return isCis5To3 ? BinarySearch.LocPositionCis(lsElement, Coordinate)
+				: BinarySearch.LocPositionTran(lsElement, Coordinate);
 	}
 	/**
 	 * 二分法查找location所在的位点,也是static的。已经考虑了在第一个Item之前的情况，还没考虑在最后一个Item后的情况<br>
@@ -163,16 +169,16 @@ public class BinarySearch<T extends Alignment> {
 		int number = 0;
 		// 在第一个Item之前
 		if (Coordinate < lsElement.get(beginnum).getStartAbs()){
-			coordLocationInfo.setElementInsideOutSideNum(0);
+			coordLocationInfo.setIndexSearch(0);
 			return coordLocationInfo;
 		}
 		// 在最后一个Item之后
 		else if (Coordinate >= lsElement.get(endnum).getStartAbs()) {
 			if (Coordinate > lsElement.get(endnum).getEndAbs()) {
-				coordLocationInfo.setElementInsideOutSideNum(-lsElement.size());
+				coordLocationInfo.setIndexSearch(-lsElement.size());
 			}
 			else {
-				coordLocationInfo.setElementInsideOutSideNum(lsElement.size());
+				coordLocationInfo.setIndexSearch(lsElement.size());
 			}
 			return coordLocationInfo;
 		}
@@ -192,16 +198,16 @@ public class BinarySearch<T extends Alignment> {
 		} while ((endnum - beginnum) > 1);
 		if (Coordinate <= lsElement.get(beginnum).getEndAbs())// 不知道会不会出现PeakNumber比biginnum小的情况
 		{ // location在基因内部
-			coordLocationInfo.setElementInsideOutSideNum(beginnum + 1);
+			coordLocationInfo.setIndexSearch(beginnum + 1);
 			return coordLocationInfo;
 		}
 		else if (Coordinate >= lsElement.get(endnum).getStartAbs())// 不知道会不会出现PeakNumber比biginnum小的情况
 		{ // location在基因内部
-			coordLocationInfo.setElementInsideOutSideNum(endnum + 1);
+			coordLocationInfo.setIndexSearch(endnum + 1);
 			return coordLocationInfo;
 		}
 		// location在基因外部
-		coordLocationInfo.setElementInsideOutSideNum(-beginnum - 1);
+		coordLocationInfo.setIndexSearch(-beginnum - 1);
 		return coordLocationInfo;
 	}
 
@@ -226,15 +232,15 @@ public class BinarySearch<T extends Alignment> {
 		int number = 0;
 		// 在第一个Item之前
 		if (Coordinate > lsElement.get(beginnum).getEndAbs()){
-			coordLocationInfo.setElementInsideOutSideNum(0);
+			coordLocationInfo.setIndexSearch(0);
 			return coordLocationInfo;
 		}
 		// 在最后一个Item之后
 		else if (Coordinate <= lsElement.get(endnum).getEndAbs()) {
 			if (Coordinate < lsElement.get(endnum).getStartAbs()) {
-				coordLocationInfo.setElementInsideOutSideNum(-lsElement.size());
+				coordLocationInfo.setIndexSearch(-lsElement.size());
 			} else {
-				coordLocationInfo.setElementInsideOutSideNum(lsElement.size());
+				coordLocationInfo.setIndexSearch(lsElement.size());
 			}
 			return coordLocationInfo;
 		}
@@ -252,16 +258,16 @@ public class BinarySearch<T extends Alignment> {
 			}
 		} while ((endnum - beginnum) > 1);
 		if (Coordinate >= lsElement.get(beginnum).getStartAbs()) { // location在基因内部
-			coordLocationInfo.setElementInsideOutSideNum(beginnum + 1);
+			coordLocationInfo.setIndexSearch(beginnum + 1);
 			return coordLocationInfo;
 		}
 		else if (Coordinate <= lsElement.get(endnum).getEndAbs()) 
 		{// location在基因内部
-			coordLocationInfo.setElementInsideOutSideNum(endnum + 1);
+			coordLocationInfo.setIndexSearch(endnum + 1);
 			return coordLocationInfo;
 		}
 		// location在基因外部
-		coordLocationInfo.setElementInsideOutSideNum(-beginnum - 1);
+		coordLocationInfo.setIndexSearch(-beginnum - 1);
 		return coordLocationInfo;
 	}
 	/**
@@ -274,7 +280,7 @@ public class BinarySearch<T extends Alignment> {
 	 * 不在为0
 	 * 为实际数目
 	 */
-	protected static CoordLocationInfo LocPositionAbs(List<? extends Alignment> lsElement, int Coordinate) {
+	public static CoordLocationInfo LocPositionAbs(List<? extends Alignment> lsElement, int Coordinate) {
 		if (lsElement == null) {
 			return null;
 		}
@@ -285,16 +291,16 @@ public class BinarySearch<T extends Alignment> {
 		int number = 0;
 		// 在第一个Item之前
 		if (Coordinate < lsElement.get(beginnum).getStartAbs()){
-			coordLocationInfo.setElementInsideOutSideNum(0);
+			coordLocationInfo.setIndexSearch(0);
 			return coordLocationInfo;
 		}
 		// 在最后一个Item之后
 		else if (Coordinate >= lsElement.get(endnum).getStartAbs()) {
 			if (Coordinate > lsElement.get(endnum).getEndAbs()) {
-				coordLocationInfo.setElementInsideOutSideNum(-lsElement.size());
+				coordLocationInfo.setIndexSearch(-lsElement.size());
 			}
 			else {
-				coordLocationInfo.setElementInsideOutSideNum(lsElement.size());
+				coordLocationInfo.setIndexSearch(lsElement.size());
 			}
 			return coordLocationInfo;
 		}
@@ -313,10 +319,10 @@ public class BinarySearch<T extends Alignment> {
 			}
 		} while ((endnum - beginnum) > 1);
 		if (Coordinate <= lsElement.get(beginnum).getEndAbs()) {
-			coordLocationInfo.setElementInsideOutSideNum(beginnum + 1);
+			coordLocationInfo.setIndexSearch(beginnum + 1);
 			return coordLocationInfo;
 		}
-		coordLocationInfo.setElementInsideOutSideNum(-beginnum-1);
+		coordLocationInfo.setIndexSearch(-beginnum-1);
 		return coordLocationInfo;
 	}
 	

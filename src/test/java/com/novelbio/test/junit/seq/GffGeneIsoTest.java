@@ -1,19 +1,13 @@
 package com.novelbio.test.junit.seq;
 
-import java.util.ArrayList;
-
-import junit.framework.TestCase;
-
 import org.junit.Test;
 
-import com.novelbio.bioinfo.base.binarysearch.ListAbsSearch;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffGene;
 import com.novelbio.bioinfo.gff.GffIso;
-import com.novelbio.bioinfo.gff.GffIsoCis;
-import com.novelbio.bioinfo.gff.GffIsoTrans;
-import com.novelbio.bioinfo.gff.ListGff;
 import com.novelbio.database.domain.modgeneid.GeneType;
+
+import junit.framework.TestCase;
 
 public class GffGeneIsoTest extends TestCase {
 	@Test
@@ -42,7 +36,7 @@ public class GffGeneIsoTest extends TestCase {
 		aa = gffGeneIsoCis.getLenExon(0);
 		assertEquals(32, aa);
 		
-		aa = gffGeneIsoCis.getEleLen(2);
+		aa = gffGeneIsoCis.getLenExon(2);
 		assertEquals(6, aa);
 		
 		aa = gffGeneIsoCis.getEnd();

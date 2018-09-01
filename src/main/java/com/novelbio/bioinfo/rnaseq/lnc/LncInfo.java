@@ -343,7 +343,7 @@ public class LncInfo {
 			lsResult.add("");
 			lsResult.add("");
 		} else {
-			GeneID geneID = gffLncIso.getGeneID();
+			GeneID geneID = new GeneID(gffLncIso.getName(), taxID);
 			
 			String geneType = gffLncIso.getGeneType().toString();
 			if (geneID != null && geneID.getGeneInfo() != null && geneID.getGeneInfo().getTypeOfGene() != null) {

@@ -42,7 +42,7 @@ public class TestGenerateNewIsoRI {
 		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 900, 1000));
 		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 1200, 1400));
 		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 1900, 2000));
-		gffGeneIsoInfo1.sort();
+		gffGeneIsoInfo1.sortOnly();
 		gffDetailGene1Cis.addIso(gffGeneIsoInfo1);
 		
 		GffIso gffGeneIsoInfo2 = GffIso.createGffGeneIso("test2", "test", GeneType.mRNA, isCis5To3);
@@ -51,7 +51,7 @@ public class TestGenerateNewIsoRI {
 		gffGeneIsoInfo2.add(new ExonInfo(gffGeneIsoInfo2.isCis5to3(), 900, 1000));
 		gffGeneIsoInfo2.add(new ExonInfo(gffGeneIsoInfo2.isCis5to3(), 1200, 1300));
 		gffGeneIsoInfo2.add(new ExonInfo(gffGeneIsoInfo2.isCis5to3(), 1850, 1960));
-		gffGeneIsoInfo2.sort();
+		gffGeneIsoInfo2.sortOnly();
 		gffDetailGene1Cis.addIso(gffGeneIsoInfo2);
 	
 		GffIso gffGeneIsoInfo3 = GffIso.createGffGeneIso("test3", "test", GeneType.mRNA, isCis5To3);
@@ -59,7 +59,7 @@ public class TestGenerateNewIsoRI {
 		gffGeneIsoInfo3.add(new ExonInfo(gffGeneIsoInfo3.isCis5to3(), 700, 800));
 		gffGeneIsoInfo3.add(new ExonInfo(gffGeneIsoInfo3.isCis5to3(), 900, 1250));
 		gffGeneIsoInfo3.add(new ExonInfo(gffGeneIsoInfo3.isCis5to3(), 1850, 2000));
-		gffGeneIsoInfo3.sort();
+		gffGeneIsoInfo3.sortOnly();
 		gffDetailGene1Cis.addIso(gffGeneIsoInfo3);
 		
 		GenerateNewIso generateNewIso = new GenerateNewIso(null, null, null, true);

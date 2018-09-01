@@ -26,11 +26,13 @@ public class TestBinarySearch {
 		lsAlign.add(new Align("chr1:280-300"));
 		
 		BsearchSite<Align> bsearchSite = binarySearch.searchLocation(130);
+		Assert.assertEquals(3, bsearchSite.getIndexAlignThis());
 		Assert.assertEquals(new Align("chr1:80-100"), bsearchSite.getAlignUp());
 		Assert.assertEquals(new Align("chr1:120-140"), bsearchSite.getAlignThis());
 		Assert.assertEquals(new Align("chr1:160-180"), bsearchSite.getAlignDown());
 
 		bsearchSite = binarySearch.searchLocation(10);
+		Assert.assertEquals(0, bsearchSite.getIndexAlignThis());
 		Assert.assertEquals(null, bsearchSite.getAlignUp());
 		Assert.assertEquals(new Align("chr1:10-20"), bsearchSite.getAlignThis());
 		Assert.assertEquals(new Align("chr1:40-60"), bsearchSite.getAlignDown());

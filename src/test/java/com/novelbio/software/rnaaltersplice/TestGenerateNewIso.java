@@ -99,7 +99,7 @@ public class TestGenerateNewIso  extends TestCase {
 		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 700, 800));
 		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 900, 1000));
 		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 1100, 1200));
-		gffGeneIsoInfo1.sort();
+		gffGeneIsoInfo1.sortOnly();
 		gffDetailGene1Trans.addIso(gffGeneIsoInfo1);
 		
 		gffGeneIsoInfo1 = GffIso.createGffGeneIso("test2", "test", GeneType.mRNA, false);
@@ -109,7 +109,7 @@ public class TestGenerateNewIso  extends TestCase {
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 700, 800));
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 900, 1000));
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 1100, 1200));
-		gffGeneIsoInfo1.sort();
+		gffGeneIsoInfo1.sortOnly();
 		gffDetailGene1Trans.addIso(gffGeneIsoInfo1);
 		
 		gffGeneIsoInfo1 = GffIso.createGffGeneIso("test2", "test", GeneType.mRNA, false);
@@ -119,7 +119,7 @@ public class TestGenerateNewIso  extends TestCase {
 		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 700, 800));
 		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 900, 1000));
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 1100, 1200));
-		gffGeneIsoInfo1.sort();
+		gffGeneIsoInfo1.sortOnly();
 		gffDetailGene1Trans.addIso(gffGeneIsoInfo1);
 	}
 	private void setJun1Trans() {
@@ -188,7 +188,7 @@ public class TestGenerateNewIso  extends TestCase {
 ////		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 700, 800));
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 900, 1000));
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 1100, 1200));
-//		gffGeneIsoInfo1.sort();
+//		gffGeneIsoInfo1.sortOnly();
 //		gffDetailGene2Trans.addIso(gffGeneIsoInfo1);
 		
 		gffGeneIsoInfo1 = GffIso.createGffGeneIso("test2", "test", GeneType.mRNA, false);
@@ -198,7 +198,7 @@ public class TestGenerateNewIso  extends TestCase {
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 700, 800));
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 900, 1000));
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 1100, 1200));
-		gffGeneIsoInfo1.sort();
+		gffGeneIsoInfo1.sortOnly();
 		gffDetailGene2Trans.addIso(gffGeneIsoInfo1);
 		
 		gffGeneIsoInfo1 = GffIso.createGffGeneIso("test2", "test", GeneType.mRNA, false);
@@ -208,7 +208,7 @@ public class TestGenerateNewIso  extends TestCase {
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 700, 800));
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 900, 1000));
 //		gffGeneIsoInfo1.add(new ExonInfo(gffGeneIsoInfo1.isCis5to3(), 1100, 1200));
-		gffGeneIsoInfo1.sort();
+		gffGeneIsoInfo1.sortOnly();
 		gffDetailGene2Trans.addIso(gffGeneIsoInfo1);
 	}
 	private void setJun2Trans() {

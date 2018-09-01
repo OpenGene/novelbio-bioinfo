@@ -442,7 +442,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	 * @return
 	 */
 	public int getNumCodInEle(int location) {
-		return LocPosition(location).getElementNumThisAbs();
+		return LocPosition(location).getIndexSearch();
 	}
 
 	/**

@@ -1,6 +1,8 @@
 package com.novelbio.bioinfo.gff;
 
 
+import java.util.Iterator;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,11 +27,9 @@ public class GffIsoCis extends GffIso {
 	
 	public GffIsoCis(String IsoName, String geneParentName, GeneType geneType) {
 		super(IsoName, geneParentName, geneType);
-		super.setCis5to3(true);
 	}
 	public GffIsoCis(String IsoName, String geneParentName, GffGene gffDetailGene, GeneType geneType) {
 		super(IsoName, geneParentName, gffDetailGene, geneType);
-		super.setCis5to3(true);
 	}
 	
 	@Override
@@ -52,6 +52,11 @@ public class GffIsoCis extends GffIso {
 		result = (GffIsoCis) super.clone();
 		return result;
 	
+	}
+
+	@Override
+	public boolean isCis5to3() {
+		return true;
 	}
 
 }

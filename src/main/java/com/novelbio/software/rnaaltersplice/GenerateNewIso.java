@@ -14,6 +14,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.SepSign;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 import com.novelbio.bioinfo.base.binarysearch.ListAbs;
 import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
@@ -149,13 +150,13 @@ public class GenerateNewIso {
 		String chrID = gffDetailGene.getRefID();
 		int start = gffDetailGene.getStartAbs(), end = gffDetailGene.getEndAbs();
 		//TODO 需要获得尽可能多的junction
-		ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>  lsJunDu = tophatJunctionNew.searchLocation(chrID, start-extendBp, end+extendBp);
+		BsearchSiteDu<JunctionInfo>  lsJunDu = tophatJunctionNew.searchLocation(chrID, start-extendBp, end+extendBp);
 		if (lsJunDu == null) {
 //			logger.error("could not find junctions in this region:" + chrID + " " + start + " " + end);
 			return new ArrayList<>();
 		}
 		List<JunctionUnit> lsJunUnit = new ArrayList<>();
-		for (JunctionInfo junctionInfo : lsJunDu.getAllGffDetail()) {
+		for (JunctionInfo junctionInfo : lsJunDu.getAllElement()) {
 			for (JunctionUnit junctionUnit : junctionInfo.getLsJunctionUnits()) {				
 				if (junctionUnit.getStartAbs() <= gffDetailGene.getStartAbs() && junctionUnit.getEndAbs() >= gffDetailGene.getEndAbs()
 						|| 
@@ -528,7 +529,10 @@ public class GenerateNewIso {
 		if (mapLoc2IsCovered.containsKey(keySite)) {
 			return mapLoc2IsCovered.get(keySite);
 		}
-		double[] regionFinal = mapReads.getRangeInfo(chrID, start, end, 0);
+		double[] regionFinal = null;
+		if (mapReads != null) {
+			regionFinal = mapReads.getRangeInfo(chrID, start, end, 0);
+		}
 
 		if (regionFinal == null) {
 			mapLoc2IsCovered.put(keySite, false);
@@ -689,9 +693,9 @@ public class GenerateNewIso {
 		}
 		
 		if (lsJunctionUnits.size() == 0 && tophatJunctionNew != null) {
-			ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>> lsCodDuAbs = tophatJunctionNew.searchLocation(
+			BsearchSiteDu<JunctionInfo> lsCodDuAbs = tophatJunctionNew.searchLocation(
 					junctionUnit.getRefID(), start, junctionUnit.getStartAbs());			
-			List<JunctionInfo> lsJunctionInfos = lsCodDuAbs.getAllGffDetail();
+			List<JunctionInfo> lsJunctionInfos = lsCodDuAbs.getAllElement();
 			JunctionUnit junctionUnitPrev = null;
 			int lastEnd = 0;
 			for (JunctionInfo junctionInfo : lsJunctionInfos) {
@@ -762,9 +766,9 @@ public class GenerateNewIso {
 		}
 		if (lsJunctionUnits.size() == 0 && tophatJunctionNew != null) {
 			//////////////////////////
-			ListCodAbsDu<JunctionInfo,ListCodAbs<JunctionInfo>> lsCodDuAbs = tophatJunctionNew.searchLocation(
+			BsearchSiteDu<JunctionInfo> lsCodDuAbs = tophatJunctionNew.searchLocation(
 					junctionUnit.getRefID(), junctionUnit.getEndAbs(), end);
-			List<JunctionInfo> lsJunctionInfos = lsCodDuAbs.getAllGffDetail();
+			List<JunctionInfo> lsJunctionInfos = lsCodDuAbs.getAllElement();
 			JunctionUnit junctionUnitNext = null;
 			int nextStart = Integer.MAX_VALUE;
 			for (JunctionInfo junctionInfo : lsJunctionInfos) {

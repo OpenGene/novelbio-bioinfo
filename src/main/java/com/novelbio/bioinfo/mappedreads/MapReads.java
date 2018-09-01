@@ -24,6 +24,7 @@ import com.novelbio.bioinfo.base.binarysearch.ListAbs;
 import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 import com.novelbio.bioinfo.bed.BedFile;
 import com.novelbio.bioinfo.gff.ExonInfo;
+import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.bioinfo.gff.ListDetailBin;
 import com.novelbio.bioinfo.gff.ListHashBin;
 import com.novelbio.bioinfo.mappedreads.MapReads.ChrMapReadsInfo;
@@ -260,7 +261,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	 */
 	@Deprecated
 	//TODO 还没做好
-	public  double[] getReadsDensity(ListAbs<ExonInfo> lsExonInfos, String chrID, int startLoc, int endLoc, int binNum ) {
+	public  double[] getReadsDensity(GffIso lsExonInfos, String chrID, int startLoc, int endLoc, int binNum ) {
 		//首先将reads标准化为一个400-500bp宽的大块，每一块里面应该是该区域里面tags的总数，所以求该区域里面的最大值
 		//然后再在大块上面统计，
 		//大概估算了一下，基本上宽度在一个tag的1.5倍的时候计数会比较合理

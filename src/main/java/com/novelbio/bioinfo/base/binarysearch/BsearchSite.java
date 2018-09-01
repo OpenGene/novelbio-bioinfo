@@ -226,37 +226,37 @@ public class BsearchSite<T extends Alignment> {
 	}
 
 	/** 上个条目在ChrHash-list中的编号，从0开始，<b>如果上个条目不存在，则为-1*/
-	public void setChrHashListNumUp(int chrHashListNumUp) {
+	public void setIndexAlignUp(int chrHashListNumUp) {
 		indexAlignUp = chrHashListNumUp;
 	}
 	/**
 	 * 上个条目在ChrHash-list中的编号，从0开始，<b>如果上个条目不存在，则为-1</b><br>
 	 */
-	public int getItemNumUp() {
+	public int getIndexAlignUp() {
 		return indexAlignUp;
 	}
 	/**
 	 * 为本条目在ChrHash-list中的编号，从0开始<br>
 	 * 如果本条目不存在，则为-1<br>
 	 */
-	public void setChrHashListNumThis(int chrHashListNumThis) {
+	public void setIndexAlignThis(int chrHashListNumThis) {
 		indexAlignThis = chrHashListNumThis;
 	}
 	/**
 	 * 为本条目在ChrHash-list中的编号，从0开始<br>
 	 * 如果本条目不存在，则为-1<br>
 	 */
-	public int getItemNumThis() {
+	public int getIndexAlignThis() {
 		return indexAlignThis;
 	}
 	/** 为下个条目在ChrHash-list中的编号，从0开始，<b>如果下个条目不存在，则为-1 */
-	public void setChrHashListNumDown(int chrHashListNumDown) {
+	public void setIndexAlignDown(int chrHashListNumDown) {
 		indexAlignDown = chrHashListNumDown;
 	}
 	/**
 	 * 为下个条目在ChrHash-list中的编号，从0开始，<b>如果下个条目不存在，则为-1</b>
 	 */
-	public int getItemNumDown() {
+	public int getIndexAlignDown() {
 		return indexAlignDown;
 	}
 }

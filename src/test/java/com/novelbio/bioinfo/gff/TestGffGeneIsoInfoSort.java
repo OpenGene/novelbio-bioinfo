@@ -5,14 +5,12 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.novelbio.bioinfo.gff.ExonInfo;
-import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.database.domain.modgeneid.GeneType;
 
 public class TestGffGeneIsoInfoSort {	
 	
 	@Test
-	public void testSort() {
+	public void testsortOnly() {
 		GffIso gffGeneIsoInfo = GffIso.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
 		gffGeneIsoInfo.add(new ExonInfo(true, 1000, 2000));
 		gffGeneIsoInfo.add(new ExonInfo(true, 3000, 3300));
@@ -20,7 +18,7 @@ public class TestGffGeneIsoInfoSort {
 		gffGeneIsoInfo.add(new ExonInfo(true, 5000, 6000));
 		gffGeneIsoInfo.add(new ExonInfo(true, 5200, 5800));
 		gffGeneIsoInfo.add(new ExonInfo(true, 7000, 8000));
-		gffGeneIsoInfo.sort();
+		gffGeneIsoInfo.sortAndCombine();
 		
 		GffIso gffGeneIsoInfoExp = GffIso.createGffGeneIso("iso1", "gene1", GeneType.mRNA, true);
 		gffGeneIsoInfoExp.add(new ExonInfo(true, 1000, 2000));
@@ -37,7 +35,7 @@ public class TestGffGeneIsoInfoSort {
 		gffGeneIsoInfo.add(new ExonInfo(false, 5200, 5300));
 		gffGeneIsoInfo.add(new ExonInfo(false, 3000, 4000));
 		gffGeneIsoInfo.add(new ExonInfo(false, 1000, 2000));
-		gffGeneIsoInfo.sort();
+		gffGeneIsoInfo.sortAndCombine();
 		
 		gffGeneIsoInfoExp = GffIso.createGffGeneIso("iso1", "gene1", GeneType.mRNA, false);
 		gffGeneIsoInfoExp.add(new ExonInfo(false, 7000, 8000));
@@ -55,7 +53,7 @@ public class TestGffGeneIsoInfoSort {
 		gffGeneIsoInfo.add(new ExonInfo(true, 5000, 6000));
 		gffGeneIsoInfo.add(new ExonInfo(true, 7000, 8000));
 		gffGeneIsoInfo.setATG(1200);
-		gffGeneIsoInfo.sort();
+		gffGeneIsoInfo.sortOnly();
 		
 		List<ExonInfo> lsAtg = gffGeneIsoInfo.getATGLoc();
 		Assert.assertEquals(lsAtg.size(), 1);
@@ -68,7 +66,7 @@ public class TestGffGeneIsoInfoSort {
 		gffGeneIsoInfo.add(new ExonInfo(true, 5000, 6000));
 		gffGeneIsoInfo.add(new ExonInfo(true, 7000, 8000));
 		gffGeneIsoInfo.setATG(3999);
-		gffGeneIsoInfo.sort();
+		gffGeneIsoInfo.sortOnly();
 		
 		lsAtg = gffGeneIsoInfo.getATGLoc();
 		Assert.assertEquals(lsAtg.size(), 2);
@@ -84,7 +82,7 @@ public class TestGffGeneIsoInfoSort {
 		gffGeneIsoInfo.setATG(5000);
 		gffGeneIsoInfo.setUAG(3000);
 
-		gffGeneIsoInfo.sort();
+		gffGeneIsoInfo.sortOnly();
 		
 		lsAtg = gffGeneIsoInfo.getATGLoc();
 		Assert.assertEquals(lsAtg.size(), 2);

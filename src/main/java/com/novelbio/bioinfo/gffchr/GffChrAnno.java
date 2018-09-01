@@ -396,7 +396,7 @@ public class GffChrAnno extends RunProcess {
 		lsTmpAnno.add(gffGeneIsoInfo.getName());
 		
 		if (ManageSpecies.getInstance() instanceof ManageSpeciesDB) {
-			GeneID geneID = gffGeneIsoInfo.getGeneID();
+			GeneID geneID = new GeneID(gffGeneIsoInfo.getName(), gffDetailGene.getTaxID());
 			lsTmpAnno.add(geneID.getSymbol());
 			lsTmpAnno.add(geneID.getDescription());
 		}

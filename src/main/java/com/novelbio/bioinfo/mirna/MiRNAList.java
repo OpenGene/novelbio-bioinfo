@@ -26,9 +26,6 @@ ListCodAbsDu<MirMature,ListCodAbs<MirMature>>, MirPre> {
 					lsNameNoRedundent.add(gff.getNameSingle().toLowerCase());
 				}
 			}
-			if (mapName2DetailNum != null) {
-				mapName2DetailNum.putAll(mirPre.getMapName2DetailAbsNum());
-			}
 		}
 	}
 }

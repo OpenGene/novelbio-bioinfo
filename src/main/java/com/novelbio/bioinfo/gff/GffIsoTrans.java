@@ -13,11 +13,9 @@ public class GffIsoTrans extends GffIso {
 	
 	public GffIsoTrans(String IsoName, String geneParentName, GeneType geneType) {
 		super(IsoName, geneParentName, geneType);
-		super.setCis5to3(false);
 	}
 	public GffIsoTrans(String IsoName, String geneParentName, GffGene gffDetailGene, GeneType geneType) {
 		super(IsoName, geneParentName, gffDetailGene, geneType);
-		super.setCis5to3(false);
 	}
 	@Override
 	public int getStartAbs() {
@@ -38,5 +36,9 @@ public class GffIsoTrans extends GffIso {
 		return result;
 	
 	}
-	
+
+	@Override
+	public boolean isCis5to3() {
+		return false;
+	}
 }

@@ -11,4 +11,8 @@ public class ExceptionNbcGFF extends RuntimeException {
 	public ExceptionNbcGFF(String info, Throwable t) {
 		super(info, t);
 	}
+	
+	public ExceptionNbcGFF(Throwable t) {
+		super(t);
+	}
 }

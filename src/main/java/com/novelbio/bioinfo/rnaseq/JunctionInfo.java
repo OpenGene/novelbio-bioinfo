@@ -9,7 +9,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.novelbio.base.SepSign;
-import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
+import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.AlignExtend;
+
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致
  * 重写了hashcode 仅比较ChrID + "//" + numberstart + "//" + numberstart;
@@ -22,21 +24,29 @@ import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
  * @author zong0jie
  *
  */
-public class JunctionInfo extends ListDetailAbs {
+public class JunctionInfo extends AlignExtend {
 	List<JunctionUnit> lsJunctionUnits = new ArrayList<JunctionUnit>();
 	/** key是junctionUnit.getKey() */
 	Map<String, JunctionUnit> mapJunSite2Unit = new HashMap<String, JunctionUnit>();
 	boolean considerStrand = false;
+	
+	String name;
+	
+	public String getName() {
+		return name;
+	}
 	
 	/**
 	 * @param considerStrand 是否考虑junction方向
 	 * @param junctionUnit
 	 */
 	public JunctionInfo(boolean considerStrand, JunctionUnit junctionUnit) {
-		super(junctionUnit.getRefID(), junctionUnit.key(false), true);
+		setStartAbs(junctionUnit.getStartAbs());
+		setEndAbs(junctionUnit.getEndAbs());
+		setChrID(junctionUnit.getRefID());
+		this.name = junctionUnit.key(false);
 		this.considerStrand = considerStrand;
-		numberstart = junctionUnit.getStartAbs();
-		numberend = junctionUnit.getEndAbs();
+
 		lsJunctionUnits.add(junctionUnit);
 		mapJunSite2Unit.put(junctionUnit.key(considerStrand), junctionUnit);
 	}
@@ -57,10 +67,10 @@ public class JunctionInfo extends ListDetailAbs {
 			mapJunSite2Unit.put(junctionUnit.key(considerStrand), junctionUnit);
 			lsJunctionUnits.add(junctionUnit);
 		}
-		if (numberstart > junctionUnit.getStartAbs())
-			numberstart = junctionUnit.getStartAbs();
-		if (numberend < junctionUnit.getEndAbs())
-			numberend = junctionUnit.getEndAbs();
+		if (getStartAbs() > junctionUnit.getStartAbs())
+			setStartAbs(junctionUnit.getStartAbs());
+		if (getEndAbs() < junctionUnit.getEndAbs())
+			setEndAbs(junctionUnit.getEndAbs());
 	}
 	
 	/**
@@ -76,13 +86,7 @@ public class JunctionInfo extends ListDetailAbs {
 		
 		if (getClass() != elementAbs.getClass()) return false;
 		JunctionInfo element = (JunctionInfo)elementAbs;
-		//先不比较两个exon所在转录本的名字
-		if (numberstart == element.numberstart && numberend == element.numberend && super.cis5to3 == element.cis5to3 ) {
-			if (getRefID().equalsIgnoreCase(getRefID())) {
-				return true;
-			}
-		}
-		return false;
+		return equalsRefAndLoc(element);
 	}
 	@Override
 	public int hashCode() {
@@ -90,19 +94,16 @@ public class JunctionInfo extends ListDetailAbs {
 		if (cis5to3) {
 			i = -1;
 		}
-		return numberstart * 100000 + numberend * i + getRefID().hashCode();
+		return getStartAbs() * 100000 + getEndAbs() * i + getRefID().hashCode();
 	}
 	
-	public static class JunctionUnit extends ListDetailAbs {
+	public static class JunctionUnit extends Align {
 		/** 记载与该jun相邻的前一个jun，与基因的方向无关 */
 		Set<String> setJuncKeyBefore = new HashSet<>();
 		/**  记载与该jun相邻的后一个jun，与基因的方向无关 */
 		Set<String> setJuncKeyAfter = new HashSet<>();
 		
-//		/** 记载与该jun相邻的前一个jun，与基因的方向无关 */
-//		Map<String, JunctionUnit> mapJunBefore = new HashMap<>();
-//		/**  记载与该jun相邻的后一个jun，与基因的方向无关 */
-//		Map<String, JunctionUnit> mapJunAfter = new HashMap<>();
+		String name;
 		
 		boolean considerStrand;
 		/**
@@ -120,9 +121,10 @@ public class JunctionInfo extends ListDetailAbs {
 		 * @param end 从1开始记数
 		 */
 		public JunctionUnit(String chrID, int start, int end) {
-			super(chrID, start + "_" +end, true);
-			numberstart = Math.min(start, end);
-			numberend = Math.max(start, end);
+			setChrID(chrID);
+			setStartEndLoc(start, end);
+			setCis5to3(true);
+			setName(start + "_" +end);
 		}
 		
 		/**
@@ -132,11 +134,14 @@ public class JunctionInfo extends ListDetailAbs {
 		 * @param isCis5To3
 		 */
 		public JunctionUnit(String chrID, int start, int end, boolean isCis5To3) {
-			super(chrID, start + "_" +end, isCis5To3);
-			numberstart = Math.min(start, end);
-			numberend = Math.max(start, end);
+			setChrID(chrID);
+			setStartEndLoc(start, end);
+			setCis5to3(isCis5To3);
+			setName(start + "_" +end);
 		}
-		
+		public void setName(String name) {
+			this.name = name;
+		}
 		/** 是否考虑链特异性 */
 		public void setConsiderStrand(boolean considerStrand) {
 			this.considerStrand = considerStrand;
@@ -148,12 +153,6 @@ public class JunctionInfo extends ListDetailAbs {
 			
 			String key = junBefore.key();
 			setJuncKeyBefore.add(key);
-			
-//			String key2 = junBefore.key(true);
-//			JunctionUnit junBeforeExist = mapJunBefore.get(key2);
-//			if (junBeforeExist == null) {
-//				mapJunBefore.put(key2, junBefore);
-//			}
 		}
 		/** 添加下一个Jun，如果下一个jun存在，则把readsNum的数字加到下一个Jun中*/
 		public void addJunAfterAbs(JunctionUnit junAfter) {
@@ -161,12 +160,6 @@ public class JunctionInfo extends ListDetailAbs {
 			
 			String key = junAfter.key();
 			setJuncKeyAfter.add(key);
-			
-//			String key2 = junAfter.key(true);
-//			JunctionUnit junAfterExist = mapJunAfter.get(key2);
-//			if (junAfterExist == null) {
-//				mapJunAfter.put(key2, junAfter);
-//			}
 		}
 		
 		/** 没有则返回空的list */
@@ -180,9 +173,8 @@ public class JunctionInfo extends ListDetailAbs {
 				lsJunctionUnits.add(junctionUnit);
 			}
 			return lsJunctionUnits;
-			
-//			return new ArrayList<>(mapJunAfter.values());
 		}
+		
 		/** 没有则返回空的list */
 		public List<JunctionUnit> getLsJunBeforeAbs(TophatJunction tophatJunction) {
 			List<JunctionUnit> lsJunctionUnits = new ArrayList<>();
@@ -315,12 +307,7 @@ public class JunctionInfo extends ListDetailAbs {
 			if (getClass() != elementAbs.getClass()) return false;
 			JunctionUnit element = (JunctionUnit)elementAbs;
 			//先不比较两个exon所在转录本的名字
-			if (numberstart == element.numberstart && numberend == element.numberend && super.cis5to3 == element.cis5to3 ) {
-				if (getRefID().equalsIgnoreCase(getRefID())) {
-					return true;
-				}
-			}
-			return false;
+			return equalsRefAndLoc(element);
 		}
 		@Override
 		public int hashCode() {
@@ -328,7 +315,7 @@ public class JunctionInfo extends ListDetailAbs {
 			if (cis5to3) {
 				i = -1;
 			}
-			return numberstart * 100000 + numberend * i + getRefID().hashCode();
+			return getStartAbs() * 100000 + getEndAbs() * i + getRefID().hashCode();
 		}
 		
 		/** 指定坐标，返回key */

@@ -16,6 +16,8 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.SepSign;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSite;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
 import com.novelbio.bioinfo.gff.ExonCluster;
@@ -187,7 +189,7 @@ public class PredictCassette extends SpliceTypePredict {
 			int isoNum = exonCluster.getMapIso2LsExon().get(gffGeneIsoInfo).size();
 			//没有跳过该exon
 			if (!isSkip && isoNum > 0) {
-				ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> lsCodDu = gffGeneIsoInfo.searchLocationDu(exonCluster.getStartAbs(), exonCluster.getEndAbs());
+				BsearchSiteDu<ExonInfo> lsCodDu = gffGeneIsoInfo.searchLocationDu(exonCluster.getStartAbs(), exonCluster.getEndAbs());
 				List<ExonInfo> lsExonInfos = lsCodDu.getCoveredElement();
 				Collections.sort(lsExonInfos);
 				int start = 0, end = -1;
@@ -203,12 +205,12 @@ public class PredictCassette extends SpliceTypePredict {
 					lsExonToRemoveDuplicate.add(gffGeneIsoInfo.get(end + 1));
 	            }
 			} else if(isSkip &&isoNum == 0) {
-				ListCodAbs<ExonInfo> lsInfo = gffGeneIsoInfo.searchLocation((exonCluster.getStartAbs()+exonCluster.getEndAbs())/2);
-				if (lsInfo.getGffDetailUp() != null) {
-					lsExonToRemoveDuplicate.add(lsInfo.getGffDetailUp());
+				BsearchSite<ExonInfo> lsInfo = gffGeneIsoInfo.searchLocation((exonCluster.getStartAbs()+exonCluster.getEndAbs())/2);
+				if (lsInfo.getAlignUp() != null) {
+					lsExonToRemoveDuplicate.add(lsInfo.getAlignUp());
                 }
-				if (lsInfo.getGffDetailDown() != null) {
-	                		lsExonToRemoveDuplicate.add(lsInfo.getGffDetailDown());
+				if (lsInfo.getAlignDown() != null) {
+	                		lsExonToRemoveDuplicate.add(lsInfo.getAlignDown());
                 }
 			}
 			StringBuilder keybuilder = new StringBuilder();

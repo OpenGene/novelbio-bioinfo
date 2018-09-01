@@ -106,7 +106,7 @@ public class GffHashGeneBacterium extends GffHashGeneAbs {
 		//依次装入gffdetailGene中
 		GffGene gffDetailGene = null;
 		for (GffIso gffGeneIsoInfo : lsGeneIsoInfos) {
-			gffGeneIsoInfo.sort();
+			gffGeneIsoInfo.sortOnly();
 			if (gffDetailGene == null) {
 				gffDetailGene = createGffDetailGene(lsResult, gffGeneIsoInfo);
 			}

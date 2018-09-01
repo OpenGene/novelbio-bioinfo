@@ -271,7 +271,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 		}
 		
 		SeqFasta seqFasta = new SeqFasta();
-		seqFasta.setName(chrID + "_" + lsInfo.get(0).getName() + "_");
+		seqFasta.setName(chrID + "_" + lsInfo.get(0).getStartCis() + "_" + lsInfo.get(0).getEndCis());
 
 		StringBuilder result = new StringBuilder();
 		

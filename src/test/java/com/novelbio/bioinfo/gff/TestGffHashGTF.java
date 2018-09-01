@@ -51,10 +51,10 @@ public class TestGffHashGTF {
 		mapId2ValueExp.put("transcript_id", "Traes_5DL_91B56C21D.1");
 		assertEquals(mapId2ValueExp, mapId2Value);
 		
-		mapId2Value = GffHashGTF.getMapId2ValueSS8Commo("gene_id \"Os02g0731700\"; gene_name \"B-C1) domrotein 9, \"Grait, and; hea da2\", 1 protein\"; gene_source \"ensembl\"; gene_biotype \"protein_coding\";");
+		mapId2Value = GffHashGTF.getMapId2ValueSS8Commo("gene_id \"Os02g0731700\"; gene_name \"B-C1) domrotein 9, \"Grait, and, hea da2\", 1 protein\"; gene_source \"ensembl\"; gene_biotype \"protein_coding\";");
 		mapId2ValueExp = new HashMap<>();
 		mapId2ValueExp.put("gene_id", "Os02g0731700");
-		mapId2ValueExp.put("gene_name", "B-C1) domrotein 9, \"Grait, and hea da2\", 1 protein");
+		mapId2ValueExp.put("gene_name", "B-C1) domrotein 9, \"Grait, and, hea da2\", 1 protein");
 		mapId2ValueExp.put("gene_source", "ensembl");
 		mapId2ValueExp.put("gene_biotype", "protein_coding");
 		assertEquals(mapId2ValueExp, mapId2Value);

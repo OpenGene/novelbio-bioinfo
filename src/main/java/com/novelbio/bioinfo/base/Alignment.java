@@ -75,4 +75,72 @@ public interface Alignment {
 			throw new RuntimeException("refId is differ " + align1.getRefID() + " " + align2.getRefID());
 		}
 	}
+	
+	public static boolean isEqual(Boolean bool1, Boolean bool2) {
+		if (bool1 == null && bool2 == null) {
+			return true;
+		}
+		if (bool1 == null || bool2 == null) {
+			return false;
+		}
+		return bool1.equals(bool2);
+	}
+	
+	/**
+	 * 从小到大排序
+	 * @author zong0jie
+	 */
+	public static class CompS2M implements Comparator<Alignment> {
+		@Override
+		public int compare(Alignment o1, Alignment o2) {
+			Integer o1start = o1.getStartCis();
+			Integer o2start = o2.getStartCis();
+			int comp = o1start.compareTo(o2start);
+			if (comp == 0) {
+				Integer o1end = o1.getEndCis();
+				Integer o2end = o2.getEndCis();
+				return o1end.compareTo(o2end);
+			}
+			return comp;
+		}
+	}
+
+	/**
+	 * 从小到大排序，用绝对坐标值排序
+	 * @author zong0jie
+	 */
+	public static class CompS2MAbs implements Comparator<Alignment> {
+		@Override
+		public int compare(Alignment o1, Alignment o2) {
+			Integer o1start = o1.getStartAbs();
+			Integer o2start = o2.getStartAbs();
+			int comp = o1start.compareTo(o2start);
+			if (comp == 0) {
+				Integer o1end = o1.getEndAbs();
+				Integer o2end = o2.getEndAbs();
+				return o1end.compareTo(o2end);
+			}
+			return comp;
+		}
+	}
+
+	/**
+	 * 从大到小排序
+	 * @author zong0jie
+	 */
+	public static class CompM2S implements Comparator<Alignment> {
+		@Override
+		public int compare(Alignment o1, Alignment o2) {
+			Integer o1start = o1.getStartCis();
+			Integer o2start = o2.getStartCis();
+			int comp = -o1start.compareTo(o2start);
+			if (comp == 0) {
+				Integer o1end = o1.getEndCis();
+				Integer o2end = o2.getEndCis();
+				return -o1end.compareTo(o2end);
+			}
+			return comp;
+		}
+	}
+
 }

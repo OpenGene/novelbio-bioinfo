@@ -1,6 +1,8 @@
 package com.novelbio.bioinfo.gff;
 
-import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
+import com.novelbio.base.StringOperate;
+import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
 /**
  * 本类重写了equal代码，用于比较两个loc是否一致
  * 重写了hashcode 仅比较ChrID + "//" + numberstart + "//" + numberstart;
@@ -13,19 +15,21 @@ import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
  * @author zong0jie
  *
  */
-public class ExonInfo extends ListDetailAbs implements Comparable<ExonInfo> {
+public class ExonInfo extends Align implements Comparable<ExonInfo> {
 	public ExonInfo() {}
+	
+	GffIso isoParent;
+	
 	/**
 	 * 根据正反向自动设定起点和终点
 	 * @param start 从1开始记数
 	 * @param end 从1开始记数
 	 * @param cis
 	 */
-	public ExonInfo(GffIso gffGeneIsoInfo, boolean cis, int start, int end) {
-		super("", start + "_" +end, cis);
-		super.setParentListAbs(gffGeneIsoInfo);
-		numberstart = Math.min(start, end);
-		numberend = Math.max(start, end);
+	public ExonInfo(GffIso isoParent, boolean cis, int start, int end) {
+		setStartEndLoc(start, end);
+		setCis5to3(cis);
+		this.isoParent = isoParent;
 	}
 	/**
 	 * 根据正反向自动设定起点和终点
@@ -34,23 +38,11 @@ public class ExonInfo extends ListDetailAbs implements Comparable<ExonInfo> {
 	 * @param cis
 	 */
 	public ExonInfo(boolean cis, int start, int end) {
-		super("", start + "_" +end, cis);
-		numberstart = Math.min(start, end);
-		numberend = Math.max(start, end);
+		setStartEndLoc(start, end);
+		setCis5to3(cis);
 	}
-	public void setStartCis(int startLoc) {
-		if (cis5to3) {
-			numberstart = startLoc;
-		} else {
-			numberend = startLoc;
-		}
-	}
-	public void setEndCis(int endLoc) {
-		if (cis5to3) {
-			numberend = endLoc;
-		} else {
-			numberstart = endLoc;
-		}
+	public void setIsoParent(GffIso isoParent) {
+		this.isoParent = isoParent;
 	}
 	public ExonInfo clone() {
 		ExonInfo result = null;
@@ -58,7 +50,10 @@ public class ExonInfo extends ListDetailAbs implements Comparable<ExonInfo> {
 		return result;
 	}
 	public GffIso getParent() {
-		return (GffIso) listAbs;
+		return isoParent;
+	}
+	public int getItemNum() {
+		return getParent().indexOf(this);
 	}
 	/**
 	 * 不能判断不同染色体上相同的坐标位点
@@ -77,12 +72,7 @@ public class ExonInfo extends ListDetailAbs implements Comparable<ExonInfo> {
 			return false;
 		}
 		//先不比较两个exon所在转录本的名字
-		if (numberstart == element.numberstart && numberend == element.numberend && super.cis5to3 == element.cis5to3 ) {
-			if (getRefID().equalsIgnoreCase(getRefID())) {
-				return true;
-			}
-		}
-		return false;
+		return super.equalsRefAndLoc(element);
 	}
 	
 	/**
@@ -93,7 +83,8 @@ public class ExonInfo extends ListDetailAbs implements Comparable<ExonInfo> {
 	 */
 	public boolean equalsLoc(ExonInfo element) {
 		//先不比较两个exon所在转录本的名字
-		return (numberstart == element.numberstart && numberend == element.numberend && super.cis5to3 == element.cis5to3 );
+		return (getStartAbs() == element.getStartAbs() && getEndAbs() == element.getEndAbs() 
+				&& Alignment.isEqual(super.cis5to3, element.cis5to3));
 	}
 	
 	@Override
@@ -102,12 +93,13 @@ public class ExonInfo extends ListDetailAbs implements Comparable<ExonInfo> {
 		if (cis5to3) {
 			i = -1;
 		}
-		return numberstart * 100000 + numberend * i + getParent().getRefIDlowcase().hashCode();
+		return getStartAbs() * 100000 + getEndAbs() * i + getParent().getRefIDlowcase().hashCode();
 	}
 	
 	public String toString() {
 		return getRefID() + "\t" + getStartCis() + "\t" + getEndCis();
 	}
+	
 	@Override
     public int compareTo(ExonInfo o) {
 		Integer o1startCis = getStartCis(); Integer o1endCis = getEndCis();

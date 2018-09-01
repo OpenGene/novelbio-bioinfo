@@ -22,6 +22,7 @@ import com.novelbio.database.domain.species.Species;
  * @author zong0jie
  *
  */
+@Deprecated
 public class GffHashMerge {
 	private static final Logger logger = Logger.getLogger(GffHashMerge.class);
 	

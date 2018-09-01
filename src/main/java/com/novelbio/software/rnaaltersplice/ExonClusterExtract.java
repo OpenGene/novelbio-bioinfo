@@ -17,6 +17,7 @@ import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.gff.ExonCluster;
+import com.novelbio.bioinfo.gff.ExonClusterOperator;
 import com.novelbio.bioinfo.gff.ExonClusterSite;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffGene;
@@ -152,7 +153,7 @@ public class ExonClusterExtract {
 		if (lsSameGroupIso.size() <= 1) {
 			return lsResult;
 		}
-		List<ExonCluster> lsExonClusters = GffIso.getExonCluster(cis5to3, lsSameGroupIso);
+		List<ExonCluster> lsExonClusters = ExonClusterOperator.getExonCluster(cis5to3, lsSameGroupIso);
 		for (ExonCluster exonClusters : lsExonClusters) {
 			if (align != null && 
 					(exonClusters.getEndAbs() < align.getStartAbs()

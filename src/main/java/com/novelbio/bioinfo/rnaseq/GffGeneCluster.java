@@ -9,11 +9,18 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.gff.ExonCluster;
+import com.novelbio.bioinfo.gff.ExonClusterOperator;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffGene;
 import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.bioinfo.gff.ListGff;
 
+/**
+ * 做基因修正用的，但是感觉意义不大
+ * @author zong0jie
+ *
+ */
+@Deprecated
 public class GffGeneCluster {
 	private static Logger logger = Logger.getLogger(GffGeneCluster.class);
 	/** 是否含有reference的GffDetailGene */
@@ -294,7 +301,7 @@ public class GffGeneCluster {
 		ArrayList<GffIso> lsGffGeneIsoInfos = new ArrayList<GffIso>();
 		lsGffGeneIsoInfos.add(gffGeneIsoInfoRef); lsGffGeneIsoInfos.add(gffGeneIsoInfoThis);
 		
-		ArrayList<ExonCluster> lsExonClusters = GffIso.getExonCluster(gffGeneIsoInfoRef.isCis5to3(), lsGffGeneIsoInfos);
+		ArrayList<ExonCluster> lsExonClusters = ExonClusterOperator.getExonClusterSingle(gffGeneIsoInfoRef.isCis5to3(), lsGffGeneIsoInfos);
 
 		int[] tailBoundInfo = getBothStartNumEndNum(lsExonClusters);
 		ArrayList<ExonClusterBoundInfo> lsExonBoundInfoStatistics = new ArrayList<ExonClusterBoundInfo>();//用于统计exon修正数量的
@@ -608,10 +615,10 @@ class ExonClusterBoundInfo {
 		if (lastExonClusterBoundInfo.isEndUnify()) {
 			int[] tmp = getExonBound(true, lsExonInfosRef, lsExonInfosThis);
 			if (Math.abs(tmp[0] - tmp[1]) <= boundMaxFalseGapBp) {
-				selectRefStart = true;
+				selectRefStart = false;
 			}
 			else
-				selectRefStart = false;
+				selectRefStart = true;
 		}
 		
 		//如果都是终点
@@ -794,7 +801,7 @@ class ExonClusterBoundInfo {
 					exonInfo.setCis5to3(lsExonInfosThis.get(0).isCis5to3());
 					exonInfo.setStartCis(lsExonInfosRef.get(0).getStartCis());
 					exonInfo.setEndCis(lsExonInfosThis.get(0).getEndCis());
-					exonInfo.setParentListAbs(gffGeneIsoInfoRef);
+					exonInfo.setIsoParent(gffGeneIsoInfoRef);
 					lsResult.add(exonInfo);
 					for (int i = 1; i < lsExonInfosThis.size(); i++) {
 						lsResult.add(lsExonInfosThis.get(i));
@@ -818,7 +825,7 @@ class ExonClusterBoundInfo {
 				exonInfo.setCis5to3(lsExonInfosThis.get(0).isCis5to3());
 				exonInfo.setStartCis(lsExonInfosThis.get(lsExonInfosThis.size() - 1).getStartCis());
 				exonInfo.setEndCis(lsExonInfosRef.get(lsExonInfosRef.size() - 1).getEndCis());
-				exonInfo.setParentListAbs(gffGeneIsoInfoRef);
+				exonInfo.setIsoParent(gffGeneIsoInfoRef);
 				lsResult.add(exonInfo);
 			}
 		}

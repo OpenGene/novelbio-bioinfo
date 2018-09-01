@@ -753,7 +753,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		//有些基因是很长的转录本，但是gff记录的时候记录成了两个，所以需要把他们合并为一个iso
 		for (GffGene gene : mapGenID2GffDetail.values()) {
 			for (GffIso iso : gene.getLsCodSplit()) {
-				iso.combineExon();
+				iso.sortAndCombine();
 			}
 			
 			if (!mapName2LsGene.containsKey(gene.getNameSingle())) {
@@ -796,7 +796,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 					} else {
 						isoOld.setATGUAGauto(getMin(iso.getATGsite(), isoOld.getATGsite()), getMin(iso.getUAGsite(), isoOld.getUAGsite()));
 					}
-					isoOld.sort();
+					isoOld.sortOnly();
 				}
 				gffDetailGene.resetStartEnd();
 			}

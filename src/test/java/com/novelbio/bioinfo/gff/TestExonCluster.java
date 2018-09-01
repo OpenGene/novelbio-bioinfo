@@ -9,9 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.novelbio.bioinfo.base.binarysearch.ListAbs;
-import com.novelbio.bioinfo.gff.ExonCluster;
-import com.novelbio.bioinfo.gff.ExonInfo;
-import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.database.domain.modgeneid.GeneType;
 
 public class TestExonCluster extends TestCase {
@@ -44,7 +41,7 @@ public class TestExonCluster extends TestCase {
 		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
-		ArrayList<ExonCluster> lsSep = GffIso.getExonCluster(false, lsIso);
+		ArrayList<ExonCluster> lsSep = ExonClusterOperator.getExonCluster(false, lsIso);
 		int num = 0;
 		ExonCluster exonCluster = lsSep.get(num);
 		assertEquals(new ExonInfo(isoTrans1, false, 80, 90), exonCluster.getMapIso2LsExon().get(isoTrans1).get(0));
@@ -84,7 +81,7 @@ public class TestExonCluster extends TestCase {
 		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
-		ArrayList<ExonCluster> lsSep = GffIso.getExonCluster(false, lsIso);
+		ArrayList<ExonCluster> lsSep = ExonClusterOperator.getExonCluster(false, lsIso);
 		int num = 0;
 		ExonCluster exonCluster = lsSep.get(num);
 		assertEquals(null, exonCluster.getMapIso2ExonIndexSkipTheCluster().get(isoTrans1));
@@ -136,7 +133,7 @@ public class TestExonCluster extends TestCase {
 		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
-		ArrayList<ExonCluster> lsSep = GffIso.getExonCluster(true, lsIso);
+		ArrayList<ExonCluster> lsSep = ExonClusterOperator.getExonCluster(true, lsIso);
 		int num = 0;
 		ExonCluster exonCluster = lsSep.get(num);
 		assertEquals(new ExonInfo(isoTrans1, true, 1, 3), exonCluster.getMapIso2LsExon().get(isoTrans1).get(0));
@@ -181,8 +178,8 @@ public class TestExonCluster extends TestCase {
 	public void testCisExonOnNum() {
 		GffIso isoTrans1 = GffIso.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, true);
 		GffIso isoTrans2 = GffIso.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, true);
-		//>--1-3-4-5-----------20--30-----------------40-50----52-54--------------60----70---------79-------90--->
-		//>---------------7-8---20---33----35-36----------------------------------55------69-------71---81---84--92--->
+		//>--1=3---4=5----------20==30-----------------40=50----52=54--------------60===70---------79=======90--->
+		//>---------------7=8---20==33----35=36----------------------------------55====69-------71===81---84==92--->
 		isoTrans1.add(new ExonInfo(true, 1, 3));
 		isoTrans1.add(new ExonInfo(true, 4, 5));
 		isoTrans1.add(new ExonInfo(true, 20, 30));
@@ -201,7 +198,7 @@ public class TestExonCluster extends TestCase {
 		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
-		List<int[]> lsBound = ListAbs.getSep(true, lsIso);
+		List<int[]> lsBound = ExonClusterOperator.getSep(true, lsIso);
 		int result = ExonCluster.getExonNumInfo(true, 37, 38, lsBound);
 		assertEquals(-5, result);
 
@@ -209,13 +206,13 @@ public class TestExonCluster extends TestCase {
 		assertEquals(9, result);
 		
 		result = ExonCluster.getExonNumInfo(true, 82 ,83, lsBound);
-		assertEquals(-9, result);
+		assertEquals(9, result);
 		
 		result = ExonCluster.getExonNumInfo(true, -2 ,-1, lsBound);
 		assertEquals(0, result);
 		
 		result = ExonCluster.getExonNumInfo(true, 94 ,95, lsBound);
-		assertEquals(11, result);
+		assertEquals(10, result);
 	}
 	
 	/**
@@ -225,8 +222,8 @@ public class TestExonCluster extends TestCase {
 	public void testTransExonOnNum() {
 		GffIso isoTrans1 = GffIso.createGffGeneIso("Iso1", "Iso1", GeneType.mRNA, false);
 		GffIso isoTrans2 = GffIso.createGffGeneIso("Iso2", "Iso2", GeneType.mRNA, false);
-		//>--1-3-4-5-----------20--30-----------------40-50----52-54--------------60----70---------79-------90--->
-		//>---------------7-8---20---33----35-36----------------------------------55------69-------71---81---84--92--->
+		//>--1=3---4=5----------20==30-----------------40=50----52=54--------------60===70---------79=======90--->
+		//>---------------7=8---20==33----35=36----------------------------------55====69-------71===81---84==92--->
 		isoTrans1.add(new ExonInfo(false, 1, 3));
 		isoTrans1.add(new ExonInfo(false, 4, 5));
 		isoTrans1.add(new ExonInfo(false, 20, 30));
@@ -234,7 +231,7 @@ public class TestExonCluster extends TestCase {
 		isoTrans1.add(new ExonInfo(false, 52, 54));
 		isoTrans1.add(new ExonInfo(false, 60, 70));
 		isoTrans1.add(new ExonInfo(false, 79, 90));
-		isoTrans1.sort();
+		isoTrans1.sortOnly();
 		
 		isoTrans2.add(new ExonInfo(false, 7, 8));
 		isoTrans2.add(new ExonInfo(false, 20, 33));
@@ -242,24 +239,24 @@ public class TestExonCluster extends TestCase {
 		isoTrans2.add(new ExonInfo(false, 55, 69));
 		isoTrans2.add(new ExonInfo(false, 71, 81));
 		isoTrans2.add(new ExonInfo(false, 84, 92));
-		isoTrans2.sort();
+		isoTrans2.sortOnly();
 		ArrayList<GffIso> lsIso = new ArrayList<GffIso>();
 		lsIso.add(isoTrans1); lsIso.add(isoTrans2);
 		
-		List<int[]> lsBound = ListAbs.getSep(false, lsIso);
+		List<int[]> lsBound = ExonClusterOperator.getSep(false, lsIso);
 		int result = ExonCluster.getExonNumInfo(false, 37, 38, lsBound);
-		assertEquals(-5, result);
+		assertEquals(-4, result);
 
 		result = ExonCluster.getExonNumInfo(false, 80 ,82, lsBound);
-		assertEquals(2, result);
+		assertEquals(1, result);
 		
 		result = ExonCluster.getExonNumInfo(false, 82 ,83, lsBound);
-		assertEquals(-1, result);
+		assertEquals(1, result);
 		
 		result = ExonCluster.getExonNumInfo(false, 95 ,96, lsBound);
 		assertEquals(0, result);
 		
 		result = ExonCluster.getExonNumInfo(false, -2 ,-1, lsBound);
-		assertEquals(11, result);
+		assertEquals(10, result);
 	}
 }

@@ -13,6 +13,8 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSite;
+import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 import com.novelbio.bioinfo.base.binarysearch.ListAbs;
 import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
@@ -78,15 +80,15 @@ public class ExonCluster implements Alignment {
 				) {
 				continue;
 			}
-			ListCodAbsDu<ExonInfo, ListCodAbs<ExonInfo>> lsDu = gffGeneIsoInfo.searchLocationDu(startLoc, endLoc);
+			BsearchSiteDu<ExonInfo> lsDu = gffGeneIsoInfo.searchLocationDu(startLoc, endLoc);
 			List<ExonInfo> lsExon = lsDu.getCoveredElement();
 			Collections.sort(lsExon);
 			boolean junc = false;//如果本isoform正好没有落在bounder组中的exon，那么就需要记录跳过的exon的位置，就将这个flag设置为true
 			int beforeExonNum = 0;//如果本isoform正好没有落在bounder组中的exon，那么就要记录该isoform的前后两个exon的位置，用于查找跨过和没有跨过的exon
 
 			if (lsExon.size() == 0) junc = true;
-			ListCodAbs<ExonInfo> codBefore = gffGeneIsoInfo.isCis5to3() ? lsDu.getGffCod1() : lsDu.getGffCod2();
-			beforeExonNum = codBefore.getItemNumUp();
+			BsearchSite<ExonInfo> codBefore = gffGeneIsoInfo.isCis5to3() ? lsDu.getSiteLeft() : lsDu.getSiteRight();
+			beforeExonNum = codBefore.getIndexAlignUp();
 
 			addExonCluster(gffGeneIsoInfo, lsExon);
 			if (junc && beforeExonNum < gffGeneIsoInfo.size()-1) {
@@ -289,13 +291,13 @@ public class ExonCluster implements Alignment {
 	 * <b>只能比较两组</b><br>
 	 * 几种情况<br>
 	 * 1. 两个exon都在iso的最边界，两头不同<br>
-	 * this            10---20-----<br>
-	 * ref可以是     15--20------<br>
+	 * this               10-----20-----<br>
+	 * ref可以是       15--20------<br>
 	 * ref可以是   8------20------<br><br>
 	 * 2. 一个exon在iso边界，该exon的靠边端长度小于另一个的长度
 	 * @return
 	 */
-	public boolean isEdgeSmaller(GffIso gffRef) {
+	public boolean isEdgeDifferent(GffIso gffRef) {
 		for (List<ExonInfo> lsexons : mapIso2LsExon.values()) {
 			if (lsexons.size() > 2 || lsexons.size() == 0) {
 				return false;
@@ -402,19 +404,18 @@ public class ExonCluster implements Alignment {
 			}
 		}
 
-		List<int[]> lsBound = ListAbs.getSep(isCis5To3, lsGeneIsoInfos);
+		List<int[]> lsBound = ExonClusterOperator.getSep(isCis5To3, lsGeneIsoInfos);
 		int exonNum = getExonNumInfo(isCis5To3, getStartAbs(), getEndAbs(), lsBound);
 		return decodeExonLocate(exonNum, lsBound.size(), isOnExon);
 	}
 	
 	/**
-	 * 给定一系列的转录本，和指定的起点终点，返回该坐标对所在exon的位置
+	 * 给定一系列的区段，和指定的起点终点，返回该坐标对所在exon的位置
 	 * @param isCis5To3 方向
 	 * @param startAbs 坐标对的起点
 	 * @param endAbs 坐标对的终点
-	 * @param lsGeneIsoInfos 一系列的iso
-	 * @param isOnExon 是否处于exon上
-	 * @return
+	 * @param lsBound 一系列的区段
+	 * @return 正数表示在具体某个exon上，负数表示在intron上
 	 */
 	protected static int getExonNumInfo(Boolean isCis5To3, int startAbs, int endAbs, List<int[]> lsBound ) {
 		

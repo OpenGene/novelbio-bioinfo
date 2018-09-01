@@ -25,19 +25,6 @@ public interface GffHashGeneInf  {
 	public String getGffFilename();
 	
 	/**
-	 * 给定某个LOCID，返回该LOC在某条染色体中的位置序号号，第几位<br>
-	 * 也就是Chrhash中某个chr下该LOC的位置<br>
-	 * 该位置必须大于等于0，否则就是出错<br>
-	 * 该比较是首先用单个LOCID从locHashtable获得其GffDetail类，然后用ChrID在Chrhash中获得某条染色体的gffdetail的List，然后比较他们的locString以及基因的起点和终点
-	 * 仅仅将GffDetail的equal方法重写。
-	 * @param LOCID 输入某基因编号
-	 * @return string[2]<br>
-	 * 0: 染色体编号，chr1,chr2等，都为小写<br>
-	 * 1:该染色体上该LOC的序号，如1467等
-	 */
-	public String[] getLOCNum(String LOCID);
-	
-	/**
 	 * 给定LOCID，返回所对应的转录本
 	 * 没有就返回最长转录本
 	 * @param LOCID
@@ -85,11 +72,6 @@ public interface GffHashGeneInf  {
 	/** 染色体都小写 */
 	public  HashMap<String, ListGff> getMapChrID2LsGff();
 
-	/**
-	 * 主要用于Rsem，产生一个GeneID对应IsoID的表
-	 * @param Gene2IsoFile
-	 */
-	void writeGene2Iso(String Gene2IsoFile);
 	/**
 	 * @param lsChrID 指定chrID的list，产生和其一样大小写的chrID的gff文件
 	 * @param GTFfile

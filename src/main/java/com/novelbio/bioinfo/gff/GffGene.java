@@ -294,7 +294,7 @@ public class GffGene extends ListDetailAbs {
 	/** 如果是非编码RNA，则将atg和uag设置为最后一位 */
 	protected void setATGUAGncRNA() {
 		GffIso gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
-		gffGeneIsoInfo.sort();
+		gffGeneIsoInfo.sortOnly();
 		gffGeneIsoInfo.setATGUAGncRNA();
 	}
 	/**
@@ -304,7 +304,7 @@ public class GffGene extends ListDetailAbs {
 	 */
 	protected void combineExon() {
 		GffIso gffGeneIsoInfo = lsGffGeneIsoInfos.get(lsGffGeneIsoInfos.size()-1);//include one special loc start number to end number
-		gffGeneIsoInfo.combineExon();
+		gffGeneIsoInfo.sortAndCombine();
 	}
 	/**
 	 * 直接添加转录本，根据genedetail的信息设置cis5to3。之后用addcds()方法给该转录本添加exon
@@ -558,54 +558,7 @@ public class GffGene extends ListDetailAbs {
 		tes2DownGene = ListCodAbs.LOC_ORIGINAL;
 		lsGffGeneIsoInfos.clear();
 	}
-	/**
-	 * 是否在该基因内，具体情况
-	 * @return
-	 * 返回anno[4]
-	 * 0：accID
-	 * 1：symbol
-	 * 2：description
-	 * 3：location
-	 * 没有就返回“”
-	 */
-	public String[] getInfo(int[] tss, int[] geneEnd, int coord) {
-		String[] anno = new String[4];
-		for (int i = 0; i < anno.length; i++) {
-			anno[i] = "";
-		}
-		HashSet<GeneID> hashCopedID = new HashSet<GeneID>();
-		if (isCodInGeneExtend(tss, geneEnd, coord)) {
-			for (GffIso gffGeneIsoInfo : getLsCodSplit()) {
-				if (gffGeneIsoInfo.isCodInIsoExtend(tss, geneEnd, coord)) {
-					hashCopedID.add(gffGeneIsoInfo.getGeneID());
-				}
-			}
-			for (GeneID copedID : hashCopedID) {
-				if (anno.equals("")) {
-					anno[0] = copedID.getAccID();
-					anno[1] = copedID.getSymbol();
-					anno[2] = copedID.getDescription();
-				}
-				else {
-					anno[0] = anno[0]+"//"+copedID.getAccID();
-					anno[1] = anno[1]+"//"+copedID.getSymbol();
-					anno[2] = anno[2]+"//"+copedID.getDescription();
-				}
-			}
-			if (getLongestSplitMrna().isCodInIsoExtend(tss, geneEnd, coord)) {
-				anno[4] = getLongestSplitMrna().toStringCodLocStr(tss, coord);
-			}
-			else {
-				for (GffIso gffGeneIsoInfo : getLsCodSplit()) {
-					if (gffGeneIsoInfo.isCodInIsoExtend(tss, geneEnd, coord)) {
-						anno[4] = gffGeneIsoInfo.toStringCodLocStr(tss, coord);
-						break;
-					}
-				}
-			}
-		}
-		return anno;
-	}
+	
 	/**
 	 * 用于含有多个Gene的GffDetailGene
 	 * 不同基因之间有重复的iso是不管的
@@ -634,21 +587,21 @@ public class GffGene extends ListDetailAbs {
 
 		removeDuplicateIso = true;
 		HashMap<String, GffIso> mapIso = new HashMap<String, GffIso>();
-		for (GffIso gffGeneIsoInfo : lsGffGeneIsoInfos) {
-			String key = getRefID() + gffGeneIsoInfo.isCis5to3();
-			for (ExonInfo exonInfo : gffGeneIsoInfo) {
+		for (GffIso gffIso : lsGffGeneIsoInfos) {
+			String key = getRefID() + gffIso.isCis5to3();
+			for (ExonInfo exonInfo : gffIso) {
 				key = key + SepSign.SEP_INFO + exonInfo.getStartAbs() + SepSign.SEP_ID + exonInfo.getEndAbs();
 			}
 			if (mapIso.containsKey(key)) {
 				GffIso gffGeneIsoInfoOld = mapIso.get(key);
-				if (gffGeneIsoInfoOld.getName().toLowerCase().startsWith("tcons") && !gffGeneIsoInfo.getName().toLowerCase().startsWith("tcons")) {
-					gffGeneIsoInfoOld.setName(gffGeneIsoInfo.getName());
+				if (gffGeneIsoInfoOld.getName().toLowerCase().startsWith("tcons") && !gffIso.getName().toLowerCase().startsWith("tcons")) {
+					gffGeneIsoInfoOld.setName(gffIso.getName());
 				}
-				if (gffGeneIsoInfoOld.getATGsite() < 0 && gffGeneIsoInfo.getATGsite() > 0) {
-					gffGeneIsoInfoOld.setATGUAGauto(gffGeneIsoInfo.getATGsite(), gffGeneIsoInfo.getUAGsite());
+				if (gffGeneIsoInfoOld.getATGsite() < 0 && gffIso.getATGsite() > 0) {
+					gffGeneIsoInfoOld.setATGUAGauto(gffIso.getATGsite(), gffIso.getUAGsite());
 				}
 			} else {
-				mapIso.put(key, gffGeneIsoInfo);
+				mapIso.put(key, gffIso);
 			}
 		}
 		this.lsGffGeneIsoInfos = new ArrayList<GffIso>(mapIso.values());
@@ -892,7 +845,7 @@ public class GffGene extends ListDetailAbs {
 		String bed = "";
 		int i = 0;
 		for (GffIso gffGeneIsoInfo : getLsCodSplit()) {
-			gffGeneIsoInfo.sort();
+			gffGeneIsoInfo.sortOnly();
 			if (i++ == 0) {
 				bed = gffGeneIsoInfo.getBedFormat(chrID, title);
 			} else {
@@ -911,7 +864,7 @@ public class GffGene extends ListDetailAbs {
 	public String toGTFformate(String chrID, String title) {
 		StringBuilder geneGTF = new StringBuilder();
 		for (GffIso gffGeneIsoInfo : getLsCodSplit()) {
-			gffGeneIsoInfo.sort();
+			gffGeneIsoInfo.sortOnly();
 			geneGTF.append(gffGeneIsoInfo.getGTFformat(chrID, title));
 		}
 		return geneGTF.toString();
@@ -955,7 +908,7 @@ public class GffGene extends ListDetailAbs {
 			lsmRNA.add("."); lsmRNA.add(strandmRNA); lsmRNA.add(".");
 			lsmRNA.add("ID=" + gffGeneIsoInfo.getName() + ";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ gffGeneIsoInfo.getParentGeneName());
 			lsResult.add(ArrayOperate.cmbString(lsmRNA.toArray(new String[0]), "\t"));			
-			gffGeneIsoInfo.sort();
+			gffGeneIsoInfo.sortOnly();
 			lsResult.add(gffGeneIsoInfo.getGFFformat(title));
 		}
 		return lsResult;
@@ -1026,7 +979,7 @@ public class GffGene extends ListDetailAbs {
 		result.lsGffGeneIsoInfos = new ArrayList<GffIso>();
 		for (GffIso gffGeneIsoInfo : lsGffGeneIsoInfos) {
 			GffIso gffGeneIsoInfo2 = gffGeneIsoInfo.clone();
-			gffGeneIsoInfo2.gffDetailGeneParent = result;
+			gffGeneIsoInfo2.setGffDetailGeneParent(result);
 			result.lsGffGeneIsoInfos.add(gffGeneIsoInfo2);
 		}
 		return result;

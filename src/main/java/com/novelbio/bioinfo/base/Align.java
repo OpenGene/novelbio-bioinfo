@@ -38,7 +38,10 @@ public class Align implements Alignment, Cloneable {
 		}
 		this.start = Math.min(start, end);
 		this.end = Math.max(start, end);
-
+	}
+	
+	public String getName() {
+		return toString();
 	}
 	
 	/**
@@ -185,6 +188,50 @@ public class Align implements Alignment, Cloneable {
 		return (start + end)/2;
 	}
 	
+	/**
+	 * 获得坐标到该ItemEnd的距离
+	 * 用之前先设定coord
+	 * 考虑item的正反
+	 * 坐标到条目终点的位置，考虑正反向<br/>
+	 * 将该基因按照 >--------5start>--------->3end------->方向走
+	 * 如果坐标在end的5方向，则为负数
+	 * 如果坐标在end的3方向，则为正数
+	 * 
+	 * [c]atca[g]
+	 * c到g的距离为-5
+	 * @return
+	 */
+	public Integer getCod2End(int coord) {
+		return isCis() ? coord - getEndAbs() : getStartAbs() - coord;
+	}
+	/**
+	 * 获得坐标到该ItemStart的距离,如果coord小于0说明有问题，则返回null
+	 * 用之前先设定coord
+	 * 考虑item的正反
+	 * 坐标到条目终点的位置，考虑正反向<br/>
+	 * 将该基因按照 >--------5start>--------->3end------->方向走
+	 * 如果坐标在start的5方向，则为负数
+	 * 如果坐标在start的3方向，则为正数
+	 * 
+	 * [c]atca[g]
+	 * g到c的距离为5
+	 * @return
+	 */
+	public Integer getCod2Start(int coord) {
+		return isCis() ? coord - getStartAbs() : getEndAbs() - coord;
+	}
+	
+	/**
+	 * 是否在element内，不拓展
+	 * @return
+	 */
+	public boolean isCodInSide(int coord) {
+		if (coord >= getStartAbs() && coord <= getEndAbs()) {
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public int hashCode() {
 		return (chrID + start + "_" + end).hashCode();
@@ -197,6 +244,13 @@ public class Align implements Alignment, Cloneable {
 		if (getClass() != obj.getClass()) return false;
 		Align otherAlign = (Align)obj;
 		return StringOperate.isEqual(chrID, otherAlign.chrID) && start == otherAlign.start && end == otherAlign.end && cis5to3 == otherAlign.cis5to3;
+	}
+	
+	protected boolean equalsRefAndLoc(Align alignOther) {
+		return StringOperate.isEqual(chrID, alignOther.chrID) 
+				&& start == alignOther.start 
+				&& end == alignOther.end
+				&& Alignment.isEqual(cis5to3, alignOther.cis5to3);
 	}
 	
 	/**

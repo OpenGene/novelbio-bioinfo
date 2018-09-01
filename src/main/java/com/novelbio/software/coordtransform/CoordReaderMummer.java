@@ -141,7 +141,7 @@ public class CoordReaderMummer {
 	
 	/** 插入元素 */
 	private void insertElementInResult(BsearchSiteDu<CoordPair> bSiteDu, CoordPair element) {
-		int index = bSiteDu.getSiteRight().getItemNumDown();
+		int index = bSiteDu.getSiteRight().getIndexAlignDown();
 		if (index == -1) {
 			lsPairsResult.add(element);
 		} else {

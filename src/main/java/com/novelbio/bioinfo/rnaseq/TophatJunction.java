@@ -16,18 +16,15 @@ import com.novelbio.base.SepSign;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
-import com.novelbio.bioinfo.base.binarysearch.ListBin;
-import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
-import com.novelbio.bioinfo.base.binarysearch.ListCodAbsDu;
-import com.novelbio.bioinfo.base.binarysearch.ListHashSearch;
+import com.novelbio.bioinfo.base.Alignment.CompS2MAbs;
+import com.novelbio.bioinfo.base.binarysearch.ListSearch;
 import com.novelbio.bioinfo.rnaseq.JunctionInfo.JunctionUnit;
 import com.novelbio.bioinfo.sam.AlignmentRecorder;
 import com.novelbio.bioinfo.sam.SamFile;
 import com.novelbio.bioinfo.sam.SamRecord;
 import com.novelbio.bioinfo.sam.StrandSpecific;
 
-public class TophatJunction extends ListHashSearch<JunctionInfo, ListCodAbs<JunctionInfo>, 
-ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> implements AlignmentRecorder {
+public class TophatJunction extends ListSearch<JunctionInfo> implements AlignmentRecorder {
 	private static final Logger logger = Logger.getLogger(TophatJunction.class);
 	
 	private int intronMinLen = 15;
@@ -45,22 +42,25 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	public TophatJunction() {
 		mapChrID2ListGff = new LinkedHashMap<>();
 		mapName2DetailAbs = new LinkedHashMap<>();
-		mapName2DetailNum = new LinkedHashMap<>();
-		lsNameAll = new ArrayList<>();
 		lsNameNoRedundent = new ArrayList<>();
+		setIsCis5to3(true);
 	}
+	
 	/** 设定最短的intron长度，默认为25,也就是说小于25bp（<25）的都认为是deletion，该reads不加入可变剪接考察 */
 	public void setIntronMinLen(int intronMinLen) {
 	    this.intronMinLen = intronMinLen;
     }
+	
 	/** 设定junction reads的接头最短长度，譬如reads的一头搭到了某个exon上，如果这个长度小于该指定长度,默认为5(<5)，则该reads不加入可变剪接考察 */
 	public void setJunctionMinAnchorLen(int junctionMinAnchorLen) {
 	    this.junctionMinAnchorLen = junctionMinAnchorLen;
     }
+	
 	/** 设定测序连特异性的方向 */
 	public void setStrandSpecific(StrandSpecific strandSpecific) {
 		this.strandSpecific = strandSpecific;
 	}
+	
 	public void setCondition(String condition, String subgroup) {
 		this.condition = condition;
 		this.subGroup = subgroup;
@@ -177,9 +177,9 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		} else {
 			junThis.addJunBeforeAbs(junBefore); junThis.addJunAfterAbs(junAfter);
 			JunctionInfo juncInfo = new JunctionInfo(strandSpecific != StrandSpecific.NONE, junThis);
-			ListBin<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getRefID().toLowerCase());
+			List<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getRefID().toLowerCase());
 			if (lsJunctionInfos == null) {
-				lsJunctionInfos = new ListBin<>();
+				lsJunctionInfos = new ArrayList<>();
 				mapChrID2ListGff.put(junThis.getRefID().toLowerCase(), lsJunctionInfos);
 			}
 			lsJunctionInfos.add(juncInfo);
@@ -384,11 +384,11 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	
 	/** 读取完bam文件后必须调用该方法进行总结 */
 	public void conclusion() {
-		for (Entry<String, ListBin<JunctionInfo>> entry : mapChrID2ListGff.entrySet()) {
+		for (Entry<String, List<JunctionInfo>> entry : mapChrID2ListGff.entrySet()) {
 			String chrID = entry.getKey().toLowerCase();
-			ListBin<JunctionInfo> listGff = entry.getValue();
-			listGff.sort();
-			ListBin<JunctionInfo> listGffNew = combineOverlapGene(listGff);
+			List<JunctionInfo> listGff = entry.getValue();
+			Collections.sort(listGff, new CompS2MAbs());
+			List<JunctionInfo> listGffNew = combineOverlapGene(listGff);
 			mapChrID2ListGff.put(chrID, listGffNew);
 			listGff = null;
 		}
@@ -396,28 +396,15 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 		try {
 			setItemDistance();
 			setOther();
-			fillMapName2DetailNum();
-			fillMapName2Detail();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
-	
-	private void fillMapName2DetailNum() {
-		mapName2DetailNum = new LinkedHashMap<String, Integer>();
-		for ( ListBin<JunctionInfo>  listAbs : mapChrID2ListGff.values()) {
-			mapName2DetailNum.putAll(listAbs.getMapName2DetailAbsNum());
-		}
+
+	@Deprecated
+	public JunctionInfo searchLOC(String LOCID) {
+		throw new RuntimeException("unsupported");
 	}
-	
-	private void fillMapName2Detail() {
-		mapName2DetailAbs = new LinkedHashMap<String, JunctionInfo>();
-		for (ListBin<JunctionInfo>  listAbs : mapChrID2ListGff.values()) {
-			mapName2DetailAbs.putAll(listAbs.getMapName2DetailAbs());
-		}
-	}
-	
 	/** 这里读取的是sam，bam文件 */
 	@Override
 	protected void ReadGffarrayExcep(String gfffilename) throws Exception {
@@ -431,8 +418,8 @@ ListCodAbsDu<JunctionInfo, ListCodAbs<JunctionInfo>>, ListBin<JunctionInfo>> imp
 	 * 合并重复的GffDetailGene
 	 * @return
 	 */
-	private static ListBin<JunctionInfo> combineOverlapGene(ListBin<JunctionInfo> lsInput) {
-		ListBin<JunctionInfo> listGffNew = new ListBin<>();
+	private static List<JunctionInfo> combineOverlapGene(List<JunctionInfo> lsInput) {
+		List<JunctionInfo> listGffNew = new ArrayList<>();
 		JunctionInfo gffDetailGeneLast = null;
 		//合并两个重叠的基因
 		for (JunctionInfo gffDetailGene : lsInput) {
