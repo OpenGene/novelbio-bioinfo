@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Queue;
 import java.util.Set;
 
@@ -20,13 +19,8 @@ import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
 import com.novelbio.bioinfo.base.AlignSeq;
 import com.novelbio.bioinfo.base.Alignment;
-import com.novelbio.bioinfo.base.binarysearch.ListAbs;
-import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
 import com.novelbio.bioinfo.bed.BedFile;
-import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffIso;
-import com.novelbio.bioinfo.gff.ListDetailBin;
-import com.novelbio.bioinfo.gff.ListHashBin;
 import com.novelbio.bioinfo.mappedreads.MapReads.ChrMapReadsInfo;
 import com.novelbio.bioinfo.sam.AlignmentRecorder;
 import com.novelbio.bioinfo.sam.ExceptionSequenceFileNotSorted;
@@ -172,60 +166,6 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 	protected boolean isUniqueMapping() {
 		return booUniqueMapping;
 	}
-	
-	 /**
-	  * 设定peak的bed文件，第一列为chrID，第二列为起点，第三列为终点，
-	  * 返回去除peak后，每条染色体的bg情况
-	  * @param peakBedFile
-	  * @param firstlinels1
-	  * @return ls-0：chrID 1：bg
-	  * 其中第一位是chrAll的信息
-	  */
-	 public ArrayList<String[]> getChIPBG(String peakBedFile, int firstlinels1) {
-		 ArrayList<String[]> lsResult = new ArrayList<String[]>();
-		 ListHashBin gffHashPeak = new ListHashBin(true, 1, 2, 3, firstlinels1);
-		 gffHashPeak.ReadGffarray(peakBedFile);
-		 
-		 double allReads = 0; int numAll = 0; double max = 0;
-		 ArrayList<Integer> lsMidAll = new ArrayList<Integer>();
-		 for (Entry<String, ChrMapReadsInfo> entry : mapChrID2ReadsInfo.entrySet()) {
-			String chrID = entry.getKey();
-			double allReadsChr = 0; int numChr = 0; double maxChr = 0;
-			ArrayList<Integer> lsMidChr = new ArrayList<Integer>();
-			int[] info = entry.getValue().getSumChrBpReads();
-			for (int i = 0; i < info.length; i++) {
-				if (info[i] == 0) { 
-					continue;
-				}
-				info[i] = info[i]/fold;
-				ListCodAbs<ListDetailBin> gffcodPeak = gffHashPeak.searchLocation(chrID, i*invNum);
-				if (gffcodPeak != null && gffcodPeak.isInsideLoc()) {
-					continue;
-				}
-				if (maxChr < info[i]) {
-					maxChr = info[i];
-				}
-				if (lsMidChr.size() < 50000) {
-					lsMidChr.add(info[i]);
-				}
-				allReadsChr = allReadsChr + info[i];
-				numChr ++;
-			}
-			if (numChr != 0) {
-				double med75 = MathComput.median(lsMidChr, 75);
-				lsResult.add(new String[]{chrID, (double)allReadsChr/numChr+"", maxChr+"",  med75 + ""});
-			}
-			if (max < maxChr) {
-				max = maxChr;
-			}
-			lsMidAll.addAll(lsMidChr);
-			allReads = allReads + allReadsChr;
-			numAll = numAll + numChr;
-		 }
-		 double med75All = MathComput.median(lsMidAll, 75);
-		 lsResult.add(0, new String[]{"chrAll", (double)allReads/numAll + "", max + "", med75All + ""});
-		 return lsResult;
-	 }
 
 	/**
 	 * 经过标准化，和equations修正
