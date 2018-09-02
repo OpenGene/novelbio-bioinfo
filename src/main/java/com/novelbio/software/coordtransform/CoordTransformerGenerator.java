@@ -44,8 +44,8 @@ public class CoordTransformerGenerator {
 					txtWriteAll.writefileln(ss[0] +"\t" + ss[3] + "\tNONE\tNONE");
 					continue;
 				}
-				txtWriteExist.writefileln(varInfoAlt.getRefID() + "\t" + ss[1] + "\t" + ss[2] + "\t" + varInfoAlt.getStartCis());
-				txtWriteAll.writefileln(ss[0] +"\t" + ss[3] + "\t"+ varInfoAlt.getRefID() + "\t" + varInfoAlt.getStartCis());
+				txtWriteExist.writefileln(varInfoAlt.getChrId() + "\t" + ss[1] + "\t" + ss[2] + "\t" + varInfoAlt.getStartCis());
+				txtWriteAll.writefileln(ss[0] +"\t" + ss[3] + "\t"+ varInfoAlt.getChrId() + "\t" + varInfoAlt.getStartCis());
 			}
 			txtWriteExist.close();
 			txtWriteNone.close();
@@ -115,7 +115,7 @@ public class CoordTransformerGenerator {
 			coordMummerReader.handleLsCoordPairs();
 			List<CoordPair> lsCoordResult = coordMummerReader.getLsPairsResult();
 			if (!ArrayOperate.isEmpty(lsCoordResult)) {
-				mapChrId2LsCoordPair.put(lsCoordResult.get(0).getRefID(), lsCoordResult);
+				mapChrId2LsCoordPair.put(lsCoordResult.get(0).getChrId(), lsCoordResult);
 			}
 		}
 		coordPairReader.close();

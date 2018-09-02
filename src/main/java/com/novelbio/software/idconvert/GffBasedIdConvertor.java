@@ -74,7 +74,7 @@ public class GffBasedIdConvertor {
 //			if (geneRef.getName().equals("112936652")) {
 //				logger.info("stop");
 //			}
-			GffCodGeneDU gffCodGeneDU = gffGeneAlt.searchLocation(geneRef.getRefID(), geneRef.getStartAbs(), geneRef.getEndAbs());
+			GffCodGeneDU gffCodGeneDU = gffGeneAlt.searchLocation(geneRef.getChrId(), geneRef.getStartAbs(), geneRef.getEndAbs());
 			if (gffCodGeneDU == null) {
 				continue;
 			}

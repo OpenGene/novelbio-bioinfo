@@ -212,7 +212,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			List<Align> lsSiteInfoBG = spliceTypePredict.getBGSite();
 			List<Align> lsSiteInfo = spliceTypePredict.getDifSite();
 			
-			String refId = exonCluster.getRefID();
+			String refId = exonCluster.getChrId();
 			double[] BGinfo = mapReads.getRangeInfo(refId, lsSiteInfoBG);
 			double[] info = mapReads.getRangeInfo(refId, lsSiteInfo);
 
@@ -350,7 +350,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		if (align == null) {
 			return "";
 		}
-		align.setChrID(mapChrIdLowcase2ChrId.get(align.getRefID().toLowerCase()));
+		align.setChrId(mapChrIdLowcase2ChrId.get(align.getChrId().toLowerCase()));
 		return align.toStringNoStrand();
 	}
 	
@@ -360,13 +360,13 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		}
 		
 		Align align = mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getResultSite();
-		align.setChrID(exonCluster.getRefID());
+		align.setChrId(exonCluster.getChrId());
 		return align;
 	}
 	public List<Align> getLsSpliceSitFlank() {
 		List<Align> lsAligns = mapCondition2SpliceInfo.get(condition1).getSpliceTypePredict(getSplicingType()).getLsAligns();
 		for (Align align : lsAligns) {
-			align.setChrID(exonCluster.getRefID());
+			align.setChrId(exonCluster.getChrId());
 		}
 		return lsAligns;
 	}
@@ -376,7 +376,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			return null;
 		}
 		Align align = Align.getAlignFromList(lsAligns);
-		align.setChrID(exonCluster.getRefID());
+		align.setChrId(exonCluster.getChrId());
 		return align;
 	}
 	public SpliceTypePredict getSpliceTypePredict() {
@@ -391,7 +391,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	 * @return
 	 */
 	protected Align getAlignSite() {
-		return new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		return new Align(exonCluster.getChrId(), exonCluster.getStartCis(), exonCluster.getEndCis());
 	}
 	/** 
 	 * 获得前一个exon的坐标,本exon坐标,后一个exon的坐标
@@ -408,7 +408,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		while (flag && exonClusterBefore != null) {
 			for (GffIso gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
 				if (exonClusterBefore.getMapIso2LsExon().containsKey(gffGeneIsoInfo) && exonClusterBefore.getMapIso2LsExon().get(gffGeneIsoInfo).size() > 0) {
-					beforeAlign = new Align(exonCluster.getRefID(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis());
+					beforeAlign = new Align(exonCluster.getChrId(), exonClusterBefore.getStartCis(), exonClusterBefore.getEndCis());
 					flag = false;
 					break;
 				}
@@ -416,14 +416,14 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 			exonClusterBefore = exonClusterBefore.getExonClusterBefore();
 		}
 		
-		thisAlign = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		thisAlign = new Align(exonCluster.getChrId(), exonCluster.getStartCis(), exonCluster.getEndCis());
 		
 		ExonCluster exonClusterAfter = exonCluster.getExonClusterAfter();
 		flag = true;
 		while (flag && exonClusterAfter != null) {
 			for (GffIso gffGeneIsoInfo : exonCluster.getMapIso2LsExon().keySet()) {
 				if (exonClusterAfter.getMapIso2LsExon().containsKey(gffGeneIsoInfo) && exonClusterAfter.getMapIso2LsExon().get(gffGeneIsoInfo).size() > 0) {
-					afterAlign = new Align( exonCluster.getRefID(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis());
+					afterAlign = new Align( exonCluster.getChrId(), exonClusterAfter.getStartCis(), exonClusterAfter.getEndCis());
 					flag = false;
 					break;
 				}
@@ -437,7 +437,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsGetExon.add(afterAlign);
 		for (Align align : lsGetExon) {
 			if (align != null) {
-				align.setChrID(mapChrIdLowcase2ChrId.get(align.getRefID().toLowerCase()));
+				align.setChrId(mapChrIdLowcase2ChrId.get(align.getChrId().toLowerCase()));
 			}
 		}
 		return lsGetExon;

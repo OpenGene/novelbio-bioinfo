@@ -68,7 +68,7 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 		super(null);
 	}
 	public BedRecord(AlignRecord alignRecord) {
-		setRefID(alignRecord.getRefID());
+		setRefID(alignRecord.getChrId());
 		setStartEndLoc(alignRecord.getStartAbs(), alignRecord.getEndAbs());
 		setName(alignRecord.getName());
 		setCis5to3(alignRecord.isCis5to3());
@@ -226,7 +226,7 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	public ArrayList<Align> getAlignmentBlocks() {
 		ArrayList<Align> lsStartEnd = new ArrayList<Align>();
 		if (splitLen == null || splitLen.equals("") || !splitLen.contains(",")) {
-			Align align = new Align(getRefID(), getStartCis(), getEndCis());
+			Align align = new Align(getChrId(), getStartCis(), getEndCis());
 			align.setCis5to3(isCis5to3());
 			lsStartEnd.add(align);
 			return lsStartEnd;
@@ -236,7 +236,7 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 		for (int i = 0; i < splitLenArray.length; i++) {
 			int start = getStartAbs() + Integer.parseInt(splitLocArray[i]);
 			int end = start + Integer.parseInt(splitLenArray[i]) - 1;
-			Align align = new Align(getRefID(), start, end);
+			Align align = new Align(getChrId(), start, end);
 			align.setCis5to3(isCis5to3());
 			lsStartEnd.add(align);
 		}

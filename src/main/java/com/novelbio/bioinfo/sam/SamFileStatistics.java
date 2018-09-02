@@ -314,7 +314,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 	}
 
 	private void setChrReads(int readsWeight, AlignRecord samRecord) {
-		String chrID = samRecord.getRefID();
+		String chrID = samRecord.getChrId();
 		expChrDist.addGeneExp(chrID, (double) 1 / readsWeight);
 	}
 
@@ -323,7 +323,7 @@ public class SamFileStatistics implements AlignmentRecorder {
 			SamRecord samRecordThis = (SamRecord) samRecord;
 			if (!samRecordThis.isMapped() || !samRecordThis.isFirstRead() || !samRecordThis.isUniqueMapping()
 					|| !samRecordThis.isMateMapped()
-					|| !samRecordThis.getRefID().equals(samRecordThis.getMateRefID())) {
+					|| !samRecordThis.getChrId().equals(samRecordThis.getMateRefID())) {
 				int mateStart = samRecordThis.getMateAlignmentStart();
 				int insertSizeThis = 0;
 				if (mateStart >= samRecordThis.getStartAbs()) {

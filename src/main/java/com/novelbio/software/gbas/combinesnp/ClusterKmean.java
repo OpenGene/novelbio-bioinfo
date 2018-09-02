@@ -149,7 +149,7 @@ public class ClusterKmean {
 		for (Allele alleleRaw : mapSample2LsAllele.values().iterator().next()) {
 			lsMarker.add(alleleRaw.getMarker());
 		}
-		allele.setChrID(mapSample2LsAllele.values().iterator().next().get(0).getRefID());
+		allele.setChrId(mapSample2LsAllele.values().iterator().next().get(0).getChrId());
 		allele.setMarker(ArrayOperate.cmbString(lsMarker, SepSign.SEP_INFO_SIMPLE));
 		allele.setRef(getMajor());
 		allele.setAlt(getMinor());

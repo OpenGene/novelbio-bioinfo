@@ -183,8 +183,8 @@ public class CoordPair implements Alignment {
 	}
 
 	@Override
-	public String getRefID() {
-		return alignRef.getRefID();
+	public String getChrId() {
+		return alignRef.getChrId();
 	}
 	public double getIdentity() {
 		return identity;
@@ -279,10 +279,10 @@ public class CoordPair implements Alignment {
 	}
 	
 	public String getChrRef() {
-		return alignRef.getRefID();
+		return alignRef.getChrId();
 	}
 	public String getChrAlt() {
-		return alignAlt.getRefID();
+		return alignAlt.getChrId();
 	}
 	
 	public Align getAlignRef() {
@@ -293,7 +293,7 @@ public class CoordPair implements Alignment {
 	}
 	
 	public boolean isSameChr() {
-		return alignRef.getRefID().equals(alignAlt.getRefID());
+		return alignRef.getChrId().equals(alignAlt.getChrId());
 	}
 	
 	/** 相似度 * 长度  */
@@ -309,7 +309,7 @@ public class CoordPair implements Alignment {
 		
 		VarInfo varInfo = new VarInfo();
 		varInfo.setCis5to3(this.getAlignAlt().isCis5to3());
-		varInfo.setChrID(this.getChrAlt());
+		varInfo.setChrId(this.getChrAlt());
 		
 		if (ArrayOperate.isEmpty(lsIndel)) {
 			int[] startAlt2Bias = getAltSiteStart(null, start);
@@ -456,7 +456,7 @@ public class CoordPair implements Alignment {
 		DecimalFormat df = new DecimalFormat("#.00");
 		String identityStr = df.format(identity);
 		lsResult.add(" " + identityStr + " ");
-		lsResult.add(" " + alignRef.getRefID() + "\t" + alignAlt.getRefID() + " ");
+		lsResult.add(" " + alignRef.getChrId() + "\t" + alignAlt.getChrId() + " ");
 		return ArrayOperate.cmbString(lsResult, "  |  ");
 	}
 	
@@ -466,8 +466,8 @@ public class CoordPair implements Alignment {
 	 */
 	public String getKey() {
 		List<String> lsKey = new ArrayList<>();
-		lsKey.add(alignRef.getRefID());
-		lsKey.add(alignAlt.getRefID());
+		lsKey.add(alignRef.getChrId());
+		lsKey.add(alignAlt.getChrId());
 		lsKey.add(alignRef.getStartCis() + "");
 		lsKey.add(alignRef.getEndCis() + "");
 		lsKey.add(alignAlt.getStartCis() + "");
@@ -486,14 +486,14 @@ public class CoordPair implements Alignment {
 			identity = (1-(double)length/alignRef.getLength()) * 10 * alignRef.getLength();
 		}
 		lsChain.add((long)identity+"");
-		lsChain.add(alignRef.getRefID());
+		lsChain.add(alignRef.getChrId());
 		lsChain.add(refLen+"");
 		String strandRef = alignRef.isCis() ? "+" : "-";
 		lsChain.add(strandRef);
 		lsChain.add(alignRef.getStartAbs()-1 + "");
 		lsChain.add(alignRef.getEndAbs() + "");
 
-		lsChain.add(alignAlt.getRefID());
+		lsChain.add(alignAlt.getChrId());
 		lsChain.add(altLen+"");
 		String strandAlt = alignAlt.isCis() ? "+" : "-";
 		lsChain.add(strandAlt);
@@ -583,7 +583,7 @@ public class CoordPair implements Alignment {
 	}
 	
 	private boolean isAlignSequence(Align align1, Align align2) {
-		if (!align1.getRefID().equals(align2.getRefID())
+		if (!align1.getChrId().equals(align2.getChrId())
 				|| align1.isCis5to3() != align2.isCis5to3()
 				) {
 			return false;
@@ -817,7 +817,7 @@ class IndelForRef implements Alignment {
 	}
 
 	@Override
-	public String getRefID() {
+	public String getChrId() {
 		return null;
 	}
 	

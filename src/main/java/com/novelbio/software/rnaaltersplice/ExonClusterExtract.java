@@ -205,7 +205,7 @@ public class ExonClusterExtract {
 			if (lsexoninfo.size() > 1) {
 				int exonLen = lsExonLenAll(lsexoninfo);
 				treeExonLen.add(exonLen);
-				Align alignIntron = new Align(exonCluster.getRefID(), lsexoninfo.get(0).getEndCis(), lsexoninfo.get(1).getStartCis());
+				Align alignIntron = new Align(exonCluster.getChrId(), lsexoninfo.get(0).getEndCis(), lsexoninfo.get(1).getStartCis());
 				mapExonLen2IntronLen.put(exonLen, alignIntron);
 			}
 		}

@@ -33,7 +33,7 @@ public class ListGff extends ListEle<GffGene> {
 		//合并两个重叠的基因
 		for (GffGene gffDetailGene : this) {
 			gffDetailGene.resetStartEnd();
-			if (gffDetailGeneLast != null && gffDetailGene.getRefID().equals(gffDetailGeneLast.getRefID())) {
+			if (gffDetailGeneLast != null && gffDetailGene.getChrId().equals(gffDetailGeneLast.getChrId())) {
 				double[] regionLast = new double[]{gffDetailGeneLast.getStartAbs(), gffDetailGeneLast.getEndAbs()};
 				double[] regionThis = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs() };
 				double[]  overlapInfo = ArrayOperate.cmpArray(regionLast, regionThis);

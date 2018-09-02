@@ -91,7 +91,7 @@ public class Rice3KIndel {
 				txtWrite.close();
 				throw new RuntimeException("cannot find gene " + ss[0]);
 			}
-			lsInfo.add(1, detailGene.getRefID()); lsInfo.add(2, detailGene.getStartAbs() + ""); lsInfo.add(3, detailGene.getEndAbs() + "");
+			lsInfo.add(1, detailGene.getChrId()); lsInfo.add(2, detailGene.getStartAbs() + ""); lsInfo.add(3, detailGene.getEndAbs() + "");
 			txtWrite.writefileln(lsInfo.toArray(new String[0]));
 		}
 		txtRead.close();

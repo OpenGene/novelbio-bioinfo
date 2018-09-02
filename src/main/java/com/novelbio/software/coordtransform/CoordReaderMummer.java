@@ -203,7 +203,7 @@ class CoordPairMummerReader {
 			CoordPair coordPair = new CoordPair();
 			coordPair.initialMummer(mummerLine);
 			coordPair.setRefAltLen(mapChrRef2Len.get(coordPair.getChrRef()), mapChrAlt2Len.get(coordPair.getChrAlt()));
-			if (lastPair != null && !coordPair.getRefID().equals(lastPair.getRefID())) {
+			if (lastPair != null && !coordPair.getChrId().equals(lastPair.getChrId())) {
 				lastPair = coordPair;
 				break;
 			}

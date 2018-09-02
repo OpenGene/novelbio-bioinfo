@@ -61,7 +61,7 @@ public class GffIDconvert {
 	 * @param q2s 是query 到 subject 还是 subject 到 query
 	 */
 	private void searchGffGene(GffGene gffDetailGene, GffHashGene gffHash, boolean q2s) {
-		String chrId = gffDetailGene.getRefID();
+		String chrId = gffDetailGene.getChrId();
 		int start = gffDetailGene.getStartAbs(), end = gffDetailGene.getEndAbs();
 		String keyQ = gffDetailGene.getName();
 		setGeneAlreadFind.add(keyQ);

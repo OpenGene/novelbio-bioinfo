@@ -278,7 +278,7 @@ public class ListDetailAbs implements Alignment, Cloneable {
 	/**
 	 * 所属listAbs编号，都小写
 	 */
-	public String getRefID() {
+	public String getChrId() {
 		return this.parentName;
 	}
 

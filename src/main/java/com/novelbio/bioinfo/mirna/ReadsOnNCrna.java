@@ -55,13 +55,13 @@ public class ReadsOnNCrna implements AlignmentRecorder {
 		if (!alignRecord.isMapped()) {
 			return;
 		}
-		if (mapNCrnaID2Value.containsKey(alignRecord.getRefID())) {
-			double info = mapNCrnaID2Value.get(alignRecord.getRefID());
+		if (mapNCrnaID2Value.containsKey(alignRecord.getChrId())) {
+			double info = mapNCrnaID2Value.get(alignRecord.getChrId());
 			info = (double)1/alignRecord.getMappedReadsWeight() + info;
-			mapNCrnaID2Value.put(alignRecord.getRefID(), info);
+			mapNCrnaID2Value.put(alignRecord.getChrId(), info);
 		}
 		else {
-			mapNCrnaID2Value.put(alignRecord.getRefID(), (double)1/alignRecord.getMappedReadsWeight() );
+			mapNCrnaID2Value.put(alignRecord.getChrId(), (double)1/alignRecord.getMappedReadsWeight() );
 		}
 	}
 	

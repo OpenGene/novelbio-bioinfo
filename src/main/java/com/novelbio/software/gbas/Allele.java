@@ -35,7 +35,7 @@ public class Allele extends Align {
 	 */
 	public Allele(String chrInfo) {
 		String[] ss = chrInfo.split("\t");
-		setChrID(ss[0]);
+		setChrId(ss[0]);
 		marker = ss[1];
 		other = ss[2];
 		setEndAbs(Integer.parseInt(ss[3]));
@@ -145,7 +145,7 @@ public class Allele extends Align {
 	public void setRef(Allele alleleRef) {
 		this.ref = alleleRef.getRefBase();
 		this.alt = alleleRef.getAltBase();
-		this.setChrID(alleleRef.getRefID());
+		this.setChrId(alleleRef.getChrId());
 		this.setStartAbs(alleleRef.getStartAbs());
 		this.setEndAbs(alleleRef.getEndAbs());
 		this.setCis5to3(alleleRef.isCis5to3());
@@ -161,7 +161,7 @@ public class Allele extends Align {
 	
 	public String toString() {
 		List<String> lsResult = new ArrayList<>();
-		lsResult.add(getRefID());
+		lsResult.add(getChrId());
 		lsResult.add(marker);
 		lsResult.add(other);
 		lsResult.add(getStartAbs()+"");
@@ -175,7 +175,7 @@ public class Allele extends Align {
 	}
 	public String toStringSimple() {
 		List<String> lsResult = new ArrayList<>();
-		lsResult.add(getRefID());
+		lsResult.add(getChrId());
 //		lsResult.add(marker);
 //		lsResult.add(other);
 		lsResult.add(getStartAbs()+"");
@@ -220,7 +220,7 @@ public class Allele extends Align {
 	}
 	public String toStringAlleleGwas() {
 		List<String> lsResult = new ArrayList<>();
-		lsResult.add(getRefID());
+		lsResult.add(getChrId());
 		lsResult.add(marker);
 		lsResult.add(getStartAbs()+"");
 		lsResult.add(ref);

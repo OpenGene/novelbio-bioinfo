@@ -228,7 +228,7 @@ public class SiteSeqInfo implements Alignment {
 		this.score = score;
 	}
 	
-	public String getRefID() {
+	public String getChrId() {
 		return refID;
 	}
 	public void setRefID(String refID) {

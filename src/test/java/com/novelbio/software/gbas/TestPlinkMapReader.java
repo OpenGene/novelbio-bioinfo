@@ -55,7 +55,7 @@ public class TestPlinkMapReader {
 	
 	private GffGene generateGene(String chrId, int start, int end) {
 		GffGene gffDetailGene = new GffGene();
-		gffDetailGene.setChrID(chrId);
+		gffDetailGene.setChrId(chrId);
 		gffDetailGene.setName(start + "_" + end);
 		gffDetailGene.setStartAbs(start);
 		gffDetailGene.setEndAbs(end);

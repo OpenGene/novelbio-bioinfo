@@ -207,42 +207,42 @@ public class MgmtGffDetailGene {
 		}
 		return lsGffDetailGenes;
 	}
-	/** 模糊查找 */
-	public List<GffGene> searchGene(GffFile gffFile, String geneNameRegex) {
-		List<GffGene> lsGffDetailGenes = searchGeneExact(gffFile.getId(), geneNameRegex);
-		if (lsGffDetailGenes.isEmpty()) {
-			GeneID geneID = new GeneID(geneNameRegex, gffFile.getTaxID());
-			if (geneID.getTaxID() == 0) {
-				return new ArrayList<>();
-			}
-			String geneId = geneID.getGeneUniID();
-			lsGffDetailGenes = searchGeneExact(gffFile.getId(), geneId);
-		}
-		
-		if (lsGffDetailGenes.isEmpty()) {
-			if (geneNameRegex.length() <= 1) {
-				return new ArrayList<>();
-			}	
-			lsGffDetailGenes = searchGeneRegex(gffFile.getId(), geneNameRegex);
-		}
-
-		
-		for (GffGene gffDetailGene : lsGffDetailGenes) {
-			for (GffIso gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				gffGeneIsoInfo.setGffDetailGeneParent(gffDetailGene);
-			}
-		}
-		return lsGffDetailGenes;
-	}
+//	/** 模糊查找 */
+//	public List<GffGene> searchGene(GffFile gffFile, String geneNameRegex) {
+//		List<GffGene> lsGffDetailGenes = searchGeneExact(gffFile.getId(), geneNameRegex);
+//		if (lsGffDetailGenes.isEmpty()) {
+//			GeneID geneID = new GeneID(geneNameRegex, gffFile.getTaxID());
+//			if (geneID.getTaxID() == 0) {
+//				return new ArrayList<>();
+//			}
+//			String geneId = geneID.getGeneUniID();
+//			lsGffDetailGenes = searchGeneExact(gffFile.getId(), geneId);
+//		}
+//		
+//		if (lsGffDetailGenes.isEmpty()) {
+//			if (geneNameRegex.length() <= 1) {
+//				return new ArrayList<>();
+//			}	
+//			lsGffDetailGenes = searchGeneRegex(gffFile.getId(), geneNameRegex);
+//		}
+//
+//		
+//		for (GffGene gffDetailGene : lsGffDetailGenes) {
+//			for (GffIso gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+//				gffGeneIsoInfo.setGffDetailGeneParent(gffDetailGene);
+//			}
+//		}
+//		return lsGffDetailGenes;
+//	}
 	
-	private List<GffGene> searchGeneRegex(String gffFileId, String geneNameRegex) {
-		geneNameRegex = geneNameRegex.toLowerCase();
-		return repoGffGene.findByFileId_Name_Regex(gffFileId, geneNameRegex);
-	}
-	private List<GffGene> searchGeneExact(String gffFileId, String geneNameExact) {
-		geneNameExact = geneNameExact.toLowerCase();
-		return repoGffGene.findByFileId_Name_Exact(gffFileId, geneNameExact);
-	}
+//	private List<GffGene> searchGeneRegex(String gffFileId, String geneNameRegex) {
+//		geneNameRegex = geneNameRegex.toLowerCase();
+//		return repoGffGene.findByFileId_Name_Regex(gffFileId, geneNameRegex);
+//	}
+//	private List<GffGene> searchGeneExact(String gffFileId, String geneNameExact) {
+//		geneNameExact = geneNameExact.toLowerCase();
+//		return repoGffGene.findByFileId_Name_Exact(gffFileId, geneNameExact);
+//	}
 
 	
 	static class ManageGffDetailGeneHolder {

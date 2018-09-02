@@ -48,7 +48,7 @@ public class IDconvertEnsembl2NCBI {
 				}
 				int start = iso.getStartAbs();
 				int end = iso.getEndAbs();
-				GffCodGeneDU gffCodGeneDU = gffHashNCBI.searchLocation(gffDetailGene.getRefID(), start, end);
+				GffCodGeneDU gffCodGeneDU = gffHashNCBI.searchLocation(gffDetailGene.getChrId(), start, end);
 				Set<GffGene> setGffDetailGenes = gffCodGeneDU.getCoveredOverlapGffGene();
 				for (GffGene gffDetailGene2 : setGffDetailGenes) {
 					GffIso iso2 = gffDetailGene2.getSimilarIso(iso, 0.8);

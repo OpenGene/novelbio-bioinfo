@@ -348,7 +348,7 @@ K extends ListCodAbsDu<T, E>, M extends ListAbsSearch<T, E, K>> {
 	public String[] getLOCNum(String LOCID) {
 		String[] result = new String[2];
 		T ele = getMapName2Detail().get(LOCID.toLowerCase());
-		result[0] = ele.getRefID();
+		result[0] = ele.getChrId();
 		result[1] = getMapName2DetailNum().get(LOCID.toLowerCase()) + "";
 		return result;
 	}

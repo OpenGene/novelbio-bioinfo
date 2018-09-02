@@ -261,7 +261,7 @@ public class GffChrStatistics extends RunProcess implements Cloneable, Alignment
 			return false;
 		}
 		boolean flagIntraGenic = false;//在gene内的标记
-		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(align.getRefID(), align.getMidSite());
+		GffCodGene gffCodGene = gffChrAbs.getGffHashGene().searchLocation(align.getChrId(), align.getMidSite());
 		if (gffCodGene == null) {
 			return false;
 		}

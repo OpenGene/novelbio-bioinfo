@@ -247,9 +247,9 @@ public class MiRNACount extends RunProcess implements AlignmentRecorder {
 	public void addAlignRecord(AlignRecord alignRecord) {
 		if (!alignRecord.isMapped()) return;
 		double value = (double)1/alignRecord.getMappedReadsWeight();
-		addMiRNACountPre(alignRecord.getRefID(), value);
+		addMiRNACountPre(alignRecord.getChrId(), value);
 		
-		String subName = listMiRNALocation.searchMirName(alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
+		String subName = listMiRNALocation.searchMirName(alignRecord.getChrId(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
 		//找不到名字的就不写如miRNA成熟体列表
 		if (subName != null) {
 			addMiRNACountMature(subName, value);

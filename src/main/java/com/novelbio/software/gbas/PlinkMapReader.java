@@ -106,13 +106,13 @@ public class PlinkMapReader {
 	
 	private void setGenes(GffChrAbs gffChrAbs) {
 		for (GffGene gffDetailGene : gffChrAbs.getGffHashGene().getLsGffDetailGenes()) {		
-			List<GffGene> lsGenes = mapChrId2LsGenes.get(gffDetailGene.getRefID());
+			List<GffGene> lsGenes = mapChrId2LsGenes.get(gffDetailGene.getChrId());
 			if (lsGenes == null) {
 				lsGenes = new ArrayList<>();
-				mapChrId2LsGenes.put(gffDetailGene.getRefID(), lsGenes);
+				mapChrId2LsGenes.put(gffDetailGene.getChrId(), lsGenes);
 			}
 			GffGene gffDetailGeneTss = new GffGene();
-			gffDetailGeneTss.setChrID(gffDetailGene.getRefID());
+			gffDetailGeneTss.setChrId(gffDetailGene.getChrId());
 			gffDetailGeneTss.setName(gffDetailGene.getName() + ".tss");
 			gffDetailGeneTss.setCis5to3(gffDetailGene.isCis5to3());
 			if (gffDetailGene.isCis5to3()) {
@@ -149,8 +149,8 @@ public class PlinkMapReader {
 		lsAlleleTmp.clear();
 		alleleLast = new Allele(itPlinkMap.next());
 		alleleLast.setIndex(snpIndex++);
-		chrIdTmp = alleleLast.getRefID();
-		itGenes = mapChrId2LsGenes.get(alleleLast.getRefID()).iterator();
+		chrIdTmp = alleleLast.getChrId();
+		itGenes = mapChrId2LsGenes.get(alleleLast.getChrId()).iterator();
 	}
 	
 	public GffGene getGeneCurrent() {
@@ -191,9 +191,9 @@ public class PlinkMapReader {
 			while (itPlinkMap.hasNext()) {
 				alleleLast = new Allele(itPlinkMap.next());
 				alleleLast.setIndex(snpIndex++);
-				if (!chrIdTmp.equals(alleleLast.getRefID())) {
-					chrIdTmp = alleleLast.getRefID();
-					itGenes = mapChrId2LsGenes.get(alleleLast.getRefID()).iterator();
+				if (!chrIdTmp.equals(alleleLast.getChrId())) {
+					chrIdTmp = alleleLast.getChrId();
+					itGenes = mapChrId2LsGenes.get(alleleLast.getChrId()).iterator();
 					lsAlleleTmp.clear();
 					alleleLast = null;
 					break;
@@ -220,7 +220,7 @@ public class PlinkMapReader {
 				lsAlleleTmp.clear();
 			}
 			if (alleleLast == null 
-					|| !alleleLast.getRefID().equals(geneCurrent.getRefID())
+					|| !alleleLast.getChrId().equals(geneCurrent.getChrId())
 					|| alleleLast.getPosition() <= geneCurrent.getEndAbs()
 					|| !lsAllelesResult.isEmpty()
 					) {
@@ -246,10 +246,10 @@ public class PlinkMapReader {
 			String content = itPlinkMap.next();
 			Allele allele = new Allele(content);
 			allele.setIndex(snpIndex++);
-			if (!allele.getRefID().equals(geneCurrent.getRefID())) {
+			if (!allele.getChrId().equals(geneCurrent.getChrId())) {
 				alleleLast = allele;
-				chrIdTmp = alleleLast.getRefID();
-				itGenes = mapChrId2LsGenes.get(alleleLast.getRefID()).iterator();
+				chrIdTmp = alleleLast.getChrId();
+				itGenes = mapChrId2LsGenes.get(alleleLast.getChrId()).iterator();
 				if (!lsAllelesResult.isEmpty()) {
 					lsAlleleTmp = lsAllelesResult;
 					return;
@@ -271,14 +271,14 @@ public class PlinkMapReader {
 	}
 	
 	private boolean isAlleleInGene(Allele allele, GffGene gene) {
-		if (allele == null || !allele.getRefID().equals(gene.getRefID())) {
+		if (allele == null || !allele.getChrId().equals(gene.getChrId())) {
 			return false;
 		}
 		return allele.getPosition() >= gene.getStartAbs() && allele.getPosition() <= gene.getEndAbs();
 	}
 	
 	private boolean isAlleleLargerThanGene(Allele allele, GffGene gene) {
-		if (allele == null || !allele.getRefID().equals(gene.getRefID())) {
+		if (allele == null || !allele.getChrId().equals(gene.getChrId())) {
 			return false;
 		}
 		return allele.getPosition() >= gene.getStartAbs();

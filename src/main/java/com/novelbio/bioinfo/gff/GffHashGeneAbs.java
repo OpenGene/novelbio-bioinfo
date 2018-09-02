@@ -151,7 +151,7 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 		for (GffGene gffGene : getLsGffDetailGenes()) {
 			for (String name : gffGene.getLsNameAll()) {
 				if (!mapName2DetailAbs.containsKey(name.toLowerCase()) || 
-						mapName2DetailAbs.containsKey(name.toLowerCase()) && gffGene.getRefID().toLowerCase().startsWith("chr"))
+						mapName2DetailAbs.containsKey(name.toLowerCase()) && gffGene.getChrId().toLowerCase().startsWith("chr"))
 				{
 					mapName2DetailAbs.put(name.toLowerCase(), gffGene);
 					mapName2DetailAbs.put(removeDot(name.toLowerCase()), gffGene);
@@ -191,7 +191,7 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 	}
 	
 	public GffCodGeneDU searchLocation(Alignment alignment) {
-		return searchLocation(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
+		return searchLocation(alignment.getChrId(), alignment.getStartAbs(), alignment.getEndAbs());
 	}
 	
 	public GffGene searchLOC(String accID) {
@@ -287,7 +287,7 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 	 * @param gffDetailGene
 	 */
 	public void addGffDetailGene(GffGene gffDetailGene) {
-		String chrID = gffDetailGene.getRefID().toLowerCase();
+		String chrID = gffDetailGene.getChrId().toLowerCase();
 		if (!mapChrID2ListGff.containsKey(chrID)) {
 			ListGff lsGffDetailGenes = new ListGff();
 			mapChrID2ListGff.put(chrID, lsGffDetailGenes);
@@ -302,7 +302,7 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 	 * @param gffDetailGene
 	 */
 	public void removeGffDetailGene(GffGene gffDetailGene) {
-		String chrID = gffDetailGene.getRefID().toLowerCase();
+		String chrID = gffDetailGene.getChrId().toLowerCase();
 		if (!mapChrID2ListGff.containsKey(chrID)) {
 			return;
 		}

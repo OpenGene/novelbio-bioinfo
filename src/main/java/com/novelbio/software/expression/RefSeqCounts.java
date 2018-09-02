@@ -248,7 +248,7 @@ public class RefSeqCounts implements AlignmentRecorder {
 				} else if (record1.isMapped() ^ record2.isMapped()) {
 					String geneName = record1.isMapped()? getGeneName(record1) : getGeneName(record2);
 					setGeneName.add(geneName);
-				} else if (record1.getRefID().equals(record2.getRefID())) {
+				} else if (record1.getChrId().equals(record2.getChrId())) {
 					setGeneName.add(getGeneName(record1));
 				} else {
 					setGeneName.add(getGeneName(record1));
@@ -263,10 +263,10 @@ public class RefSeqCounts implements AlignmentRecorder {
 		if (!samRecord.isMapped()) {
 			return null;
 		}
-		String geneName = mapIso2Gene.get(samRecord.getRefID().toLowerCase());
+		String geneName = mapIso2Gene.get(samRecord.getChrId().toLowerCase());
 		if (geneName == null) {
 			
-			throw new ExceptionSamError("cannot find iso in gene: " + samRecord.getRefID());
+			throw new ExceptionSamError("cannot find iso in gene: " + samRecord.getChrId());
 		}
 		return geneName;
 	}

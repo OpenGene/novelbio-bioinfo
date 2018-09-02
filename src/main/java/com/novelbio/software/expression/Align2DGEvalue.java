@@ -137,8 +137,8 @@ public class Align2DGEvalue {
 				continue;
 			}
 			//出现新基因
-			if (lastRecord != null && !lastRecord.getRefID().equals(alignRecord.getRefID())) {
-				addMapGene2Exp(mapGene2Exp, lastRecord.getRefID(), summary(lsTmpExpValue));
+			if (lastRecord != null && !lastRecord.getChrId().equals(alignRecord.getChrId())) {
+				addMapGene2Exp(mapGene2Exp, lastRecord.getChrId(), summary(lsTmpExpValue));
 				lsTmpExpValue.clear();
 				tmpCount = new double[]{0};
 				lsTmpExpValue.add(tmpCount);

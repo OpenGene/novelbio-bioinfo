@@ -49,7 +49,7 @@ public abstract class SpliceTypePredict {
 	public ArrayListMultimap<String, Double> getJunGroup2lsValue(String condition) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = getLsJuncCounts(condition);
 		if (mapGroup2LsValue == null) {
-			logger.error(condition + " " + exonCluster.getRefID() + ":" + exonCluster.getStartAbs() + "-" + exonCluster.getEndAbs() 
+			logger.error(condition + " " + exonCluster.getChrId() + ":" + exonCluster.getStartAbs() + "-" + exonCluster.getEndAbs() 
 					+" doesn't have reads info, use zero replace");
 			mapGroup2LsValue = ArrayListMultimap.create();
         }
@@ -142,15 +142,15 @@ public abstract class SpliceTypePredict {
 	protected ArrayListMultimap<String, Double> getlsJunInfoEdge(String condition, List<ExonInfo> lsExonInfos) {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
 		ExonInfo exonInfo0 = lsExonInfos.get(0);
-		Map<String, Double> mapGroup2Value0_1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo0.getStartAbs());
-		Map<String, Double> mapGroup2Value0_2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo0.getEndAbs());
+		Map<String, Double> mapGroup2Value0_1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getChrId(), exonInfo0.getStartAbs());
+		Map<String, Double> mapGroup2Value0_2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getChrId(), exonInfo0.getEndAbs());
 		Map<String, Double> map0 = addMapDouble(mapGroup2Value0_1, mapGroup2Value0_2);
 		addMapGroup2LsValue(mapGroup2LsValue, map0);
 		
 		if (lsExonInfos.size() > 1) {
 			ExonInfo exonInfo1 = lsExonInfos.get(1);
-			Map<String, Double> mapGroup2Value1_1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo1.getStartAbs());
-			Map<String, Double> mapGroup2Value1_2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo1.getEndAbs());
+			Map<String, Double> mapGroup2Value1_1 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getChrId(), exonInfo1.getStartAbs());
+			Map<String, Double> mapGroup2Value1_2 = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getChrId(), exonInfo1.getEndAbs());
 			Map<String, Double> map1 = addMapDouble(mapGroup2Value1_1, mapGroup2Value1_2);
 			addMapGroup2LsValue(mapGroup2LsValue, map1);
 		}
@@ -184,7 +184,7 @@ public abstract class SpliceTypePredict {
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			Map<String, Double> mapGroup2ValueTmp = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
+			Map<String, Double> mapGroup2ValueTmp = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getChrId(),
 					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
 			mapGroupeValue = addMapDouble(mapGroupeValue, mapGroup2ValueTmp);	
 		}
@@ -259,8 +259,8 @@ public abstract class SpliceTypePredict {
 	protected List<ExonInfo2Value> getLsExon2Value(List<ExonInfo> lsExonInfos) {
 		List<ExonInfo2Value> lsExon2Value = new ArrayList<>();
 		for (ExonInfo exonInfo : lsExonInfos) {
-			double number = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo.getStartAbs())
-					+ tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), exonInfo.getEndAbs());
+			double number = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getChrId(), exonInfo.getStartAbs())
+					+ tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getChrId(), exonInfo.getEndAbs());
 			ExonInfo2Value exonInfo2Value = new ExonInfo2Value(exonInfo, number);
 			lsExon2Value.add(exonInfo2Value);
 		}

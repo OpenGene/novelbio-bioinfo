@@ -104,7 +104,7 @@ public class ExonCluster implements Alignment {
 
 	}
 	
-	public String getRefID() {
+	public String getChrId() {
 		return chrID;
 	}
 	public int getStartAbs() {
@@ -709,12 +709,12 @@ public class ExonCluster implements Alignment {
 	
 	/** 根据坐标设定一个key */
 	public String getHashKey() {
-		return getRefID() + "_" +getStartAbs() + "_" + getEndAbs();
+		return getChrId() + "_" +getStartAbs() + "_" + getEndAbs();
 	}
 
 	/** 根据坐标设定一个key */
 	public String toString() {
-		return getRefID() + " " +getStartAbs() + " " + getEndAbs() + " " + getParentGene().getName();
+		return getChrId() + " " +getStartAbs() + " " + getEndAbs() + " " + getParentGene().getName();
 	}
 	
 	

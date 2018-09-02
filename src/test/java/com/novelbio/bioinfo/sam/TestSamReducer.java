@@ -43,7 +43,7 @@ public class TestSamReducer {
 		SamFile samFile = new SamFile(outFile);
 		SamRecord samRecord = samFile.readFirstLine();
 		
-		Assert.assertEquals("chr1", samRecord.getRefID());
+		Assert.assertEquals("chr1", samRecord.getChrId());
 		Assert.assertEquals("HWI-D00175:261:C6L59ANXX:7:1101:10429:21613", samRecord.getName());
 		Assert.assertEquals(samRecordTxt, "mchr1_@_10019193_@_HWI-D00175:261:C6L59ANXX:7:1101:10429:21613\t" + samRecord.toString());
 		samFile.close();

@@ -366,8 +366,8 @@ public class ExonClusterOperator {
 		}
 
 		@Override
-		public String getRefID() {
-			return alignment.getRefID();
+		public String getChrId() {
+			return alignment.getChrId();
 		}
 		
 	}

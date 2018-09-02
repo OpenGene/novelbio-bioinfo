@@ -48,7 +48,7 @@ public class AlignSamReading extends AlignSeqReading {
 		Collections.sort(lsAlignments, new Comparator<Alignment>() {
 			public int compare(Alignment o1, Alignment o2) {
 				int compare = 0;
-				compare = o1.getRefID().compareTo(o2.getRefID());
+				compare = o1.getChrId().compareTo(o2.getChrId());
 				if (compare == 0) {
 					Integer o1int = o1.getStartAbs();
 					Integer o2int = o2.getStartAbs();
@@ -96,7 +96,7 @@ public class AlignSamReading extends AlignSeqReading {
 				SamFile samFile = (SamFile)alignSeq;
 				try {
 					//TODO
-					for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs())) {
+					for (AlignRecord samRecord : samFile.readLinesOverlap(alignment.getChrId(), alignment.getStartAbs(), alignment.getEndAbs())) {
 						num++;
 						if (num % 5000000 == 0) {
 							logger.info("read reads num: " + num);

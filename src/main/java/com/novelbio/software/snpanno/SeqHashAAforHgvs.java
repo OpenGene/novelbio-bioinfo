@@ -150,7 +150,7 @@ public class SeqHashAAforHgvs implements SeqHashInt {
 	}
 	@Override
 	public SeqFasta getSeqCis(Alignment alignment) {
-		return getSeq(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
+		return getSeq(alignment.getChrId(), alignment.getStartAbs(), alignment.getEndAbs());
 	}
 
 }

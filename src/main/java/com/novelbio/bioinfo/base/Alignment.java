@@ -12,7 +12,7 @@ public interface Alignment {
 	int getEndCis();
 	Boolean isCis5to3();
 	int getLength();
-	String getRefID();
+	String getChrId();
 	
 	public static class ComparatorAlignment implements Comparator<Alignment> {
 		@Override
@@ -71,8 +71,8 @@ public interface Alignment {
 	
 	static void validateRef(Alignment align1, Alignment align2) {
 		//这个报错应该不会出现
-		if (!StringOperate.isEqual(align1.getRefID(), align2.getRefID())) {
-			throw new RuntimeException("refId is differ " + align1.getRefID() + " " + align2.getRefID());
+		if (!StringOperate.isEqual(align1.getChrId(), align2.getChrId())) {
+			throw new RuntimeException("refId is differ " + align1.getChrId() + " " + align2.getChrId());
 		}
 	}
 	

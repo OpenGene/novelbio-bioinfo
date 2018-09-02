@@ -128,7 +128,7 @@ public class RfamStatistic implements AlignmentRecorder {
 		if (!alignRecord.isMapped()) {
 			return;
 		}
-		String RfamID = alignRecord.getRefID().split("//")[0];
+		String RfamID = alignRecord.getChrId().split("//")[0];
 		String rfamType = mapRfamID2Info.get(RfamID)[0];
 		String rfamClass = mapRfamID2Info.get(RfamID)[3];
 		Double thisCount = (double)1/alignRecord.getMappedReadsWeight();

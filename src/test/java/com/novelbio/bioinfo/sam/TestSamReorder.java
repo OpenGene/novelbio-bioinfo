@@ -84,7 +84,7 @@ public class TestSamReorder {
 			assertEquals(samOut.getStartAbs(), samIn.getStartAbs());
 			assertEquals(samIn.getSeqFasta().toString(), samOut.getSeqFasta().toString());
 			
-			assertEquals(samIn.getRefID().replace("chr", ""), samOut.getRefID());
+			assertEquals(samIn.getChrId().replace("chr", ""), samOut.getChrId());
 		}
 
 		FileOperate.deleteFileFolder(outFileName);
@@ -162,7 +162,7 @@ public class TestSamReorder {
 			assertEquals(samIn.isMapped(), samOut.isMapped());
 
 			if (samIn.isMapped()) {
-				assertEquals(samIn.getRefID().replace("chr", ""), samOut.getRefID());
+				assertEquals(samIn.getChrId().replace("chr", ""), samOut.getChrId());
 			}
 		}
 		

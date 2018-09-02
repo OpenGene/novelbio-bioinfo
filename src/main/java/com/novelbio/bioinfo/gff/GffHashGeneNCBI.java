@@ -244,8 +244,8 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 									alignGeneRegion.getStartAbs(),
 									alignGeneRegion.getEndAbs() });
 
-					if (!alignGeneRegion.getRefID().equalsIgnoreCase(
-							alignRegion.getRefID())) {
+					if (!alignGeneRegion.getChrId().equalsIgnoreCase(
+							alignRegion.getChrId())) {
 						thisGeneIDandName = null;
 					}
 				}
@@ -808,7 +808,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		
 		ListGff LOCList = null;
 		for (GffGene gffDetailGene : mapName2LsGene.values()) {
-			String chrID = gffDetailGene.getRefID();
+			String chrID = gffDetailGene.getChrId();
 			// 新的染色体
 			if (!mapChrID2ListGff.containsKey(chrID.toLowerCase())) { // 新的染色体
 				LOCList = new ListGff();// 新建一个LOCList并放入Chrhash

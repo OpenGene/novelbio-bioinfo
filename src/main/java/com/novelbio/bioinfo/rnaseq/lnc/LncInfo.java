@@ -107,7 +107,7 @@ public class LncInfo {
 	}
 	
 	private void searchByAlign() {
-		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(align.getRefID(), align.getStartAbs(), align.getEndAbs());
+		GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(align.getChrId(), align.getStartAbs(), align.getEndAbs());
 		if (gffCodGeneDU == null) return;
 		
 		Set<GffGene> setGffDetailGenes = gffCodGeneDU.getCoveredOverlapGffGene();

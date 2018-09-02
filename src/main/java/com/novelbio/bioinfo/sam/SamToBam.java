@@ -375,7 +375,7 @@ public class SamToBam {
 			String key = index+ "_@_" + ss[2] + "_@_" + fillBy0(ss[3], maxLen) + "_@_" + ss[0];
 			record = key + "\t" + record;
 			boolean isMapped = samRecord.isMapped();
-			if (!isMapped && (!samRecord.getRefID().equals("*") || samRecord.getStartAbs() > 0)) {
+			if (!isMapped && (!samRecord.getChrId().equals("*") || samRecord.getStartAbs() > 0)) {
 				isMapped = true;
 			}
 			record = isMapped ? "m" + record : "u" + record;

@@ -52,7 +52,7 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 		ArrayListMultimap<String, Double> mapGroup2LsValue = ArrayListMultimap.create();
 		isType();
 		Set<Integer> setEdge = getSetEdge();
-		String chrID = lsSite.get(0).getRefID();
+		String chrID = lsSite.get(0).getChrId();
 		TreeMap<Double, Integer> mapValue2Edge = new TreeMap<>(new Comparator<Double>() {
 			public int compare(Double o1, Double o2) {
 				return -o1.compareTo(o2);
@@ -151,7 +151,7 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 				if (exonInfo.getStartAbs() <= alignLast.getEndAbs() && exonInfo.getEndAbs() > alignLast.getEndAbs()) {
 					alignLast.setEndAbs(exonInfo.getEndAbs());
 				} else if (exonInfo.getStartAbs() > alignLast.getEndAbs()) {
-					alignLast = new Align(exonInfo.getRefID(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
+					alignLast = new Align(exonInfo.getChrId(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
 					alignLast.setCis5to3(isCis5To3);
 					lsResult.add(alignLast);
 				}
@@ -161,7 +161,7 @@ public abstract class PredictAltStartEnd extends SpliceTypePredict {
 				if (exonInfo.getEndAbs() >= alignLast.getStartAbs() && exonInfo.getStartAbs() < alignLast.getStartAbs()) {
 					alignLast.setStartAbs(exonInfo.getStartAbs());
 				} else if (exonInfo.getEndAbs() < alignLast.getStartAbs()) {
-					alignLast = new Align(exonInfo.getRefID(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
+					alignLast = new Align(exonInfo.getChrId(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
 					alignLast.setCis5to3(isCis5To3);
 					lsResult.add(alignLast);
 				}

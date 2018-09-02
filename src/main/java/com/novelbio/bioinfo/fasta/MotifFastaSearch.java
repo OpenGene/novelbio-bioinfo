@@ -185,7 +185,7 @@ public class MotifFastaSearch implements Cloneable {
 			return motifReal;
 		}
 		public String getRefId() {
-			return align.getRefID();
+			return align.getChrId();
 		}
 		public int getStart() {
 			return align.getStartAbs();
@@ -197,7 +197,7 @@ public class MotifFastaSearch implements Cloneable {
 			return align.isCis5to3();
 		}
 		public String toString() {
-			return motif + "\t" + motifReal + "\t" + align.getRefID() + "\t" + align.getStartAbs() + "\t" + align.getEndAbs();
+			return motif + "\t" + motifReal + "\t" + align.getChrId() + "\t" + align.getStartAbs() + "\t" + align.getEndAbs();
 		}
 	}
 		

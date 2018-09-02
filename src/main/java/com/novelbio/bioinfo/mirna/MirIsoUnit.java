@@ -52,7 +52,7 @@ public class MirIsoUnit extends GeneExpTable {
 	}
 	
 	public void addMirSamRecord(MiRNAList miRNAList, SamRecord samRecord) {
-		MirMature mirMature = miRNAList.searchElement(samRecord.getRefID(), samRecord.getStartAbs(), samRecord.getEndAbs());
+		MirMature mirMature = miRNAList.searchElement(samRecord.getChrId(), samRecord.getStartAbs(), samRecord.getEndAbs());
 		if (mirMature == null) {
 			return;
 		}

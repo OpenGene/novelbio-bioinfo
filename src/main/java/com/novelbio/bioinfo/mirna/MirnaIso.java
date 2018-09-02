@@ -116,7 +116,7 @@ public class MirnaIso implements AlignmentRecorder {
 		if (!alignRecord.isMapped()) {
 			return;
 		}
-		mapMirName2IsoUnit.get(alignRecord.getRefID().toLowerCase()).addMirSamRecord(listMiRNAdat, samRecord);
+		mapMirName2IsoUnit.get(alignRecord.getChrId().toLowerCase()).addMirSamRecord(listMiRNAdat, samRecord);
 	}
 
 	@Override

@@ -68,7 +68,7 @@ public class ListAbs <E extends ListDetailAbs> implements Cloneable, Iterable<E>
 	public String getName() {
 		if (listName == null) {
 			if (size() > 0) {
-				listName = get(0).getRefID();
+				listName = get(0).getChrId();
 			}
 			else {
 				listName = "";

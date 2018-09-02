@@ -76,16 +76,16 @@ public class ShuffleReads {
 		}
 		align.setCis5to3(isCis);
 		
-		int[] readsNum = mapChrId2ReadsNum.get(align.getRefID());
+		int[] readsNum = mapChrId2ReadsNum.get(align.getChrId());
 		if (readsNum == null) {
 			readsNum = new int[1];
-			mapChrId2ReadsNum.put(align.getRefID(), readsNum);
+			mapChrId2ReadsNum.put(align.getChrId(), readsNum);
 		}
 		readsNum[0]++;
-		List<int[][]> lsBlocks = mapChrId2StartEnd.get(align.getRefID());
+		List<int[][]> lsBlocks = mapChrId2StartEnd.get(align.getChrId());
 		if (lsBlocks == null) {
 			lsBlocks = new ArrayList<>();
-			mapChrId2StartEnd.put(align.getRefID(), lsBlocks);
+			mapChrId2StartEnd.put(align.getChrId(), lsBlocks);
 		}
 		addLsBlocksNum(readsNum[0], align, lsBlocks);
 	}

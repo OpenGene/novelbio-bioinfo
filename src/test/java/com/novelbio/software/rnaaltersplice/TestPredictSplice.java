@@ -286,7 +286,7 @@ public class TestPredictSplice extends TestCase {
 		
 		Set<Align> setAlignReal = new HashSet<>();
 		for (ExonCluster exonCluster : lsExonClusters) {
-	        	setAlignReal.add(new Align(exonCluster.getRefID(), exonCluster.getStartAbs(), exonCluster.getEndAbs()));
+	        	setAlignReal.add(new Align(exonCluster.getChrId(), exonCluster.getStartAbs(), exonCluster.getEndAbs()));
         }
 		assertEquals(setAlign, setAlignReal);
 		

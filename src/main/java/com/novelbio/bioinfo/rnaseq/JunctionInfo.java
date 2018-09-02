@@ -47,7 +47,7 @@ public class JunctionInfo extends AlignExtend {
 	public JunctionInfo(boolean considerStrand, JunctionUnit junctionUnit) {
 		setStartAbs(junctionUnit.getStartAbs());
 		setEndAbs(junctionUnit.getEndAbs());
-		setChrID(junctionUnit.getRefID());
+		setChrId(junctionUnit.getChrId());
 		this.name = junctionUnit.key(false);
 		this.considerStrand = considerStrand;
 
@@ -98,7 +98,7 @@ public class JunctionInfo extends AlignExtend {
 		if (cis5to3) {
 			i = -1;
 		}
-		return getStartAbs() * 100000 + getEndAbs() * i + getRefID().hashCode();
+		return getStartAbs() * 100000 + getEndAbs() * i + getChrId().hashCode();
 	}
 	
 	public static class JunctionUnit extends Align {
@@ -125,7 +125,7 @@ public class JunctionInfo extends AlignExtend {
 		 * @param end 从1开始记数
 		 */
 		public JunctionUnit(String chrID, int start, int end) {
-			setChrID(chrID);
+			setChrId(chrID);
 			setStartEndLoc(start, end);
 			setCis5to3(true);
 			setName(start + "_" +end);
@@ -138,7 +138,7 @@ public class JunctionInfo extends AlignExtend {
 		 * @param isCis5To3
 		 */
 		public JunctionUnit(String chrID, int start, int end, boolean isCis5To3) {
-			setChrID(chrID);
+			setChrId(chrID);
 			setStartEndLoc(start, end);
 			setCis5to3(isCis5To3);
 			setName(start + "_" +end);
@@ -290,9 +290,9 @@ public class JunctionInfo extends AlignExtend {
 		public String key(boolean considerStrand) {
 			String key = "";
 			if (considerStrand) {
-				key = getKey(isCis5to3(), getRefID(), getStartAbs(), getEndAbs());
+				key = getKey(isCis5to3(), getChrId(), getStartAbs(), getEndAbs());
 			} else {
-				key = getKey(null, getRefID(), getStartAbs(), getEndAbs());
+				key = getKey(null, getChrId(), getStartAbs(), getEndAbs());
 			}
 			return key;
 		}
@@ -319,7 +319,7 @@ public class JunctionInfo extends AlignExtend {
 			if (cis5to3) {
 				i = -1;
 			}
-			return getStartAbs() * 100000 + getEndAbs() * i + getRefID().hashCode();
+			return getStartAbs() * 100000 + getEndAbs() * i + getChrId().hashCode();
 		}
 		
 		/** 指定坐标，返回key */
@@ -343,7 +343,7 @@ public class JunctionInfo extends AlignExtend {
 				}
 			}
 			mapCond2group2JunNum.values();
-			return getRefID() + "\t" + getStartAbs() + "\t" + getEndAbs() + "\t" + strand + "\t" + (int)all;
+			return getChrId() + "\t" + getStartAbs() + "\t" + getEndAbs() + "\t" + strand + "\t" + (int)all;
 		}
 	}
 	

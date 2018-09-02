@@ -31,7 +31,7 @@ public class PredictAlt5 extends PredictAlt5Or3 {
 		int startBGcis = exonCluster.getStartCis();
 		Align align = getDifSite().get(0);
 		int startSpliceCis = align.getStartCis();
-		alignBG = new Align(exonCluster.getRefID(), startBGcis, startSpliceCis);
+		alignBG = new Align(exonCluster.getChrId(), startBGcis, startSpliceCis);
 		alignBG.setCis5to3(exonCluster.isCis5to3());
 		lsAlignments.add(alignBG);
 		return lsAlignments;
@@ -70,10 +70,10 @@ public class PredictAlt5 extends PredictAlt5Or3 {
 			if (exonCluster.getExonClusterAfter().isIsoCover(gffGeneIsoInfo)) {
 				if (align == null) {
 					mapEdge2Iso.put(exonInfo.getEndCis(), gffGeneIsoInfo);
-					align = new Align(exonInfo.getRefID(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
+					align = new Align(exonInfo.getChrId(), exonInfo.getStartAbs(), exonInfo.getEndAbs());
 				} else if (isOverlap(align, exonInfo)) {
 					mapEdge2Iso.put(exonInfo.getEndCis(), gffGeneIsoInfo);
-					align = new Align(exonInfo.getRefID(), Math.min(align.getStartAbs(), exonInfo.getStartAbs()),
+					align = new Align(exonInfo.getChrId(), Math.min(align.getStartAbs(), exonInfo.getStartAbs()),
 							Math.max(align.getEndAbs(), exonInfo.getEndAbs()));
 				}
 			}

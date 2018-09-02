@@ -120,7 +120,7 @@ public class TophatJunction extends ListEleSearch<JunctionInfo, ListEle<Junction
 		if (size <= 1) {
 			return;
 		}
-		String chrID = alignRecord.getRefID();
+		String chrID = alignRecord.getChrId();
 		List<JunctionUnit> lsJun = new ArrayList<>();
 		double[] junNum = mapCondition_Group2JunNum.get(condition).get(subGroup);
 		for (int i = 0; i < size - 1; i++) {
@@ -179,15 +179,15 @@ public class TophatJunction extends ListEleSearch<JunctionInfo, ListEle<Junction
 		} else {
 			junThis.addJunBeforeAbs(junBefore); junThis.addJunAfterAbs(junAfter);
 			JunctionInfo juncInfo = new JunctionInfo(strandSpecific != StrandSpecific.NONE, junThis);
-			ListEle<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getRefID().toLowerCase());
+			ListEle<JunctionInfo> lsJunctionInfos = mapChrID2ListGff.get(junThis.getChrId().toLowerCase());
 			if (lsJunctionInfos == null) {
 				lsJunctionInfos = new ListEle<>();
-				mapChrID2ListGff.put(junThis.getRefID().toLowerCase(), lsJunctionInfos);
+				mapChrID2ListGff.put(junThis.getChrId().toLowerCase(), lsJunctionInfos);
 			}
 			lsJunctionInfos.add(juncInfo);
 			mapJunUnitKey2Unit.put(juncUnitKey, junThis);
-			mapJunSite2JunUnit.put(junThis.getRefID().toLowerCase() + SepSign.SEP_ID + junThis.getStartAbs(), junThis);
-			mapJunSite2JunUnit.put(junThis.getRefID().toLowerCase() + SepSign.SEP_ID + junThis.getEndAbs(), junThis);
+			mapJunSite2JunUnit.put(junThis.getChrId().toLowerCase() + SepSign.SEP_ID + junThis.getStartAbs(), junThis);
+			mapJunSite2JunUnit.put(junThis.getChrId().toLowerCase() + SepSign.SEP_ID + junThis.getEndAbs(), junThis);
 		}
 	}
 	
@@ -307,7 +307,7 @@ public class TophatJunction extends ListEleSearch<JunctionInfo, ListEle<Junction
 	public List<JunctionUnit> getLsJunctionUnitAll(String condition) {
 		List<JunctionUnit> lsJuncUnit = new ArrayList<>(mapJunUnitKey2Unit.values());
 		Collections.sort(lsJuncUnit, (juncUnit1, juncUnit2) -> {
-			int compare = juncUnit1.getRefID().compareTo(juncUnit2.getRefID());
+			int compare = juncUnit1.getChrId().compareTo(juncUnit2.getChrId());
 			if (compare == 0) {
 				compare = juncUnit1.getStartAbs() - juncUnit2.getStartAbs();
 			}
@@ -425,7 +425,7 @@ public class TophatJunction extends ListEleSearch<JunctionInfo, ListEle<Junction
 		JunctionInfo gffDetailGeneLast = null;
 		//合并两个重叠的基因
 		for (JunctionInfo gffDetailGene : lsInput) {
-			if (gffDetailGeneLast != null && gffDetailGene.getRefID().equals(gffDetailGeneLast.getRefID())) {
+			if (gffDetailGeneLast != null && gffDetailGene.getChrId().equals(gffDetailGeneLast.getChrId())) {
 				double[] regionLast = new double[]{gffDetailGeneLast.getStartAbs(), gffDetailGeneLast.getEndAbs()};
 				double[] regionThis = new double[]{gffDetailGene.getStartAbs(), gffDetailGene.getEndAbs() };
 				double[]  overlapInfo = ArrayOperate.cmpArray(regionLast, regionThis);

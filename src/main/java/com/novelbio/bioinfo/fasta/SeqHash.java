@@ -187,7 +187,7 @@ public class SeqHash implements SeqHashInt {
 			return null;
 		}
 		
-		SeqFasta seqFasta = seqHashAbs.getSeq(align.getRefID(), align.getStartAbs(), align.getEndAbs());
+		SeqFasta seqFasta = seqHashAbs.getSeq(align.getChrId(), align.getStartAbs(), align.getEndAbs());
 		if (seqFasta != null) {
 			seqFasta.setTOLOWCASE(TOLOWCASE);
 		}

@@ -36,7 +36,7 @@ public class SamPileupReading extends RunProcess {
 	@Override
 	protected void running() {
 		if (readRegion != null) {
-			for (SamRecord samRecord : samReader.readLinesOverlap(readRegion.getRefID(), readRegion.getStartAbs(), readRegion.getEndAbs())) {
+			for (SamRecord samRecord : samReader.readLinesOverlap(readRegion.getChrId(), readRegion.getStartAbs(), readRegion.getEndAbs())) {
 				suspendCheck();
 				if (flagStop) break;
 				
@@ -54,10 +54,10 @@ public class SamPileupReading extends RunProcess {
 	
 	/** 如果读取record超过了范围，则等待处理 */
 	private void waitForReading(SamRecord samRecord) {
-		if (!samRecord.getRefID().equals(snpRegion.getRefID())) {
+		if (!samRecord.getChrId().equals(snpRegion.getChrId())) {
 			changeChrome = true;
-			chrThis = samRecord.getRefID();
-			while (!samRecord.getRefID().equals(snpRegion.getRefID())) {
+			chrThis = samRecord.getChrId();
+			while (!samRecord.getChrId().equals(snpRegion.getChrId())) {
 				try { Thread.sleep(10); } catch (InterruptedException e) { }
 				if (flagStop) break;
 			}
@@ -75,7 +75,7 @@ public class SamPileupReading extends RunProcess {
 	/** 步进，向后读取一部分reads */
 	public void extendRegionRead(int numExtend) {
 		if (changeChrome) {
-			snpRegion.setChrID(chrThis);
+			snpRegion.setChrId(chrThis);
 			snpRegion.setStartAbs(0);
 			snpRegion.setEndAbs(numExtend);
 		} else {

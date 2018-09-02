@@ -101,7 +101,7 @@ public class MapReadsBSP extends MapReadsAbs {
 		TxtReadandWrite txtCpGReader = new TxtReadandWrite(bedFileBSP, false);
 		for (String cpGLines : txtCpGReader.readlines()) {
 			CpGInfo cpGInfo = new CpGInfo(cpGLines);
-			String tmpChrID = cpGInfo.getRefID().toLowerCase();
+			String tmpChrID = cpGInfo.getChrId().toLowerCase();
 			if (!tmpChrID.equals(lastChr)) {
 				if (chrMapReadsInfo != null) {
 					chrMapReadsInfo.sumChrBp(chrBpReads, 1);
@@ -530,7 +530,7 @@ class CpGInfo implements Alignment {
 	}
 
 	@Override
-	public String getRefID() {
+	public String getChrId() {
 		return chrId;
 	}
 	public EnumCpGmethyType getEnumCpGmethyType() {

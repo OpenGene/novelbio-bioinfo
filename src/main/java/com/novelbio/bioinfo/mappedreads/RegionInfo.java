@@ -75,7 +75,7 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 	 * @param name 本条目的名字，譬如基因名等
 	 */
 	public RegionInfo(String chrID) {
-		setChrID(chrID);
+		setChrId(chrID);
 	}
 
 	/**
@@ -84,7 +84,7 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 	 * @param title 该区间的名字
 	 */
 	public RegionInfo(String chrID,double score, String title) {
-		setChrID(chrID);
+		setChrId(chrID);
 		this.score = score;
 		this.name = title;
 	}
@@ -191,7 +191,7 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 		RegionInfo otherObj = (RegionInfo)obj;
 		if (
 				cis5to3 == otherObj.cis5to3
-				&& getRefID().equals(otherObj.getRefID())
+				&& getChrId().equals(otherObj.getChrId())
 				&& getStartCis() == otherObj.getStartCis()
 				&& getEndCis() == otherObj.getEndCis()
 				&& score == otherObj.score
@@ -362,18 +362,18 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 		Map<String, RegionInfo> hashMapInfo = new HashMap<String, RegionInfo>();
 		for (RegionInfo mapInfo : lsmapinfo) {
 			List<double[]> lsTmp = null;
-			if (!mapChrId2LsMapInfo.containsKey(mapInfo.getRefID())) {
+			if (!mapChrId2LsMapInfo.containsKey(mapInfo.getChrId())) {
 				lsTmp = new ArrayList<double[]>();
-				mapChrId2LsMapInfo.put(mapInfo.getRefID(), lsTmp);
+				mapChrId2LsMapInfo.put(mapInfo.getChrId(), lsTmp);
 			}
 			else {
-				lsTmp = mapChrId2LsMapInfo.get(mapInfo.getRefID());
+				lsTmp = mapChrId2LsMapInfo.get(mapInfo.getChrId());
 			}
 			double[] info = new double[2];
 			info[0] = mapInfo.getMidSite();
 			info[1] = mapInfo.getScore();
 			lsTmp.add(info);
-			hashMapInfo.put(mapInfo.getRefID() + mapInfo.getMidSite(), mapInfo);
+			hashMapInfo.put(mapInfo.getChrId() + mapInfo.getMidSite(), mapInfo);
 		}
 		
 		List<RegionInfo> lsResult = new ArrayList<>();
@@ -427,7 +427,7 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 			name = ss[0];
 		}
 		if (ss[1] != null && !"null".equalsIgnoreCase(ss[1])) {
-			setChrID(ss[1]);
+			setChrId(ss[1]);
 		}
 		
 		setStartAbs(Integer.parseInt(ss[2]));
@@ -451,7 +451,7 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 		stringBuilder.append(name);
 		
 		stringBuilder.append("\t");
-		stringBuilder.append(getRefID());
+		stringBuilder.append(getChrId());
 		
 		stringBuilder.append("\t");
 		stringBuilder.append(getStartAbs());
@@ -500,7 +500,7 @@ public class RegionInfo extends Align implements HeatChartDataInt, Cloneable,  A
 		}
 		@Override
 		public int compare(RegionInfo o1, RegionInfo o2) {
-			int i = o1.getRefID().compareTo(o2.getRefID());
+			int i = o1.getChrId().compareTo(o2.getChrId());
 			if (i != 0) return i;
 			
 			double o1Num = 0, o2Num = 0;

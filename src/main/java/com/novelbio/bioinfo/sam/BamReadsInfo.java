@@ -118,7 +118,7 @@ public class BamReadsInfo {
 			}
 			if (samRecord.isHavePairEnd()) {
 				isPairend = true;
-				if (samRecord.getRefID().equals(samRecord.getMateRefID())) {
+				if (samRecord.getChrId().equals(samRecord.getMateRefID())) {
 					lsInsertLen.add(Math.abs(samRecord.getMateAlignmentStart() - samRecord.getStartAbs()));
 				}
 			}
@@ -153,7 +153,7 @@ public class BamReadsInfo {
 				continue;
 			}
 			Align align = samRecord.getAlignmentBlocks().iterator().next();
-			GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(align.getRefID(), align.getStartAbs(), align.getEndAbs());
+			GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(align.getChrId(), align.getStartAbs(), align.getEndAbs());
 			if (gffCodGeneDu == null) {
 				continue;
 			}

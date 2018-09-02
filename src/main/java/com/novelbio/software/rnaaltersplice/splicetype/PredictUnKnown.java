@@ -56,7 +56,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 		
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			Map<String, Double> mapTmp = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getRefID(),
+			Map<String, Double> mapTmp = tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), gffDetailGene.getChrId(),
 					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
 			mapResult = addMapDouble(mapResult, mapTmp);	
 		}
@@ -71,7 +71,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 		int numAll = 0;
 		for (String string : setLocation) {
 			String[] ss = string.split(SepSign.SEP_ID);
-			numAll += tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), gffDetailGene.getRefID(),
+			numAll += tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), gffDetailGene.getChrId(),
 					Integer.parseInt(ss[0]), Integer.parseInt(ss[1]));
 		}
 		return numAll;
@@ -135,7 +135,7 @@ public class PredictUnKnown extends SpliceTypePredict {
 
 	@Override
 	public List<Align> getDifSite() {
-		Align align = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		Align align = new Align(exonCluster.getChrId(), exonCluster.getStartCis(), exonCluster.getEndCis());
 		List<Align> lsAligns = new ArrayList<>();
 		lsAligns.add(align);
 		return lsAligns;

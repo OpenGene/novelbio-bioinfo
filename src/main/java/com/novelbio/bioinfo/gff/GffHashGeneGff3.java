@@ -651,7 +651,7 @@ public class GffHashGeneGff3 extends GffHashGeneAbs {
 	   ListGff LOCList = null;
 	   for (String geneIdkey : mapGenID2GffDetail.keySet()) {
 		   GffGene gffDetailGene = mapGenID2GffDetail.get(geneIdkey);
-		   String chrID = gffDetailGene.getRefID();
+		   String chrID = gffDetailGene.getChrId();
 			 //新的染色体
 		   if (!mapChrID2ListGff.containsKey(chrID.toLowerCase())) { //新的染色体 
 			   LOCList = new ListGff();//新建一个LOCList并放入Chrhash

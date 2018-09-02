@@ -63,7 +63,7 @@ public class ExonSplicingResultUnit {
 		PvalueCalculate pvalueCalculate = exonSplicingTest.getSpliceTypePvalue();
 		accId = gffDetailGene.getName();
 		alignLoc = exonSplicingTest.getDifSite();
-		alignLoc.setChrID(mapChrIdLowcase2ChrId.get(alignLoc.getRefID().toLowerCase()));
+		alignLoc.setChrId(mapChrIdLowcase2ChrId.get(alignLoc.getChrId().toLowerCase()));
 		lsAlignFlank = exonSplicingTest.getLsSpliceSitFlank();
 		
 		try {

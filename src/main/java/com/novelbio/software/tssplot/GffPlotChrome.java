@@ -130,7 +130,7 @@ public class GffPlotChrome {
 		ArrayList<RegionInfo> lsResult = new ArrayList<RegionInfo>();
 		
 		if (geneStructure == GeneStructure.TSS) {
-			RegionInfo siteInfo = new RegionInfo(gffDetailGene.getRefID());
+			RegionInfo siteInfo = new RegionInfo(gffDetailGene.getChrId());
 			if (gffGeneIsoInfo.isCis5to3()) {
 				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTSSsite() + tssTesRegion[0], gffGeneIsoInfo.getTSSsite() + tssTesRegion[1]);
 			} else {
@@ -140,7 +140,7 @@ public class GffPlotChrome {
 		}
 		
 		else if (geneStructure == GeneStructure.TES) {
-			RegionInfo siteInfo = new RegionInfo(gffDetailGene.getRefID());
+			RegionInfo siteInfo = new RegionInfo(gffDetailGene.getChrId());
 			if (gffGeneIsoInfo.isCis5to3()) {
 				siteInfo.setStartEndLoc(gffGeneIsoInfo.getTESsite() + tssTesRegion[0], gffGeneIsoInfo.getTESsite() + tssTesRegion[1]);
 			} else {
@@ -152,13 +152,13 @@ public class GffPlotChrome {
 		else if (geneStructure == GeneStructure.EXON) {
 			if (num <= 0) {
 				for (ExonInfo exonInfo : gffGeneIsoInfo) {
-					RegionInfo siteInfo = new RegionInfo(gffDetailGene.getRefID());
+					RegionInfo siteInfo = new RegionInfo(gffDetailGene.getChrId());
 					siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
 					lsResult.add(siteInfo);
 				}
 			} else {
 				if (gffGeneIsoInfo.size() > num) {
-					RegionInfo siteInfo = new RegionInfo(gffDetailGene.getRefID());
+					RegionInfo siteInfo = new RegionInfo(gffDetailGene.getChrId());
 					siteInfo.setStartEndLoc(gffGeneIsoInfo.get(num - 1).getStartAbs(), gffGeneIsoInfo.get(num - 1).getEndAbs());
 					lsResult.add(siteInfo);
 				}
@@ -168,14 +168,14 @@ public class GffPlotChrome {
 		else if (geneStructure == GeneStructure.INTRON) {
 			if (num <= 0) {
 				for (ExonInfo exonInfo : gffGeneIsoInfo.getLsIntron()) {
-					RegionInfo siteInfo = new RegionInfo(gffDetailGene.getRefID());
+					RegionInfo siteInfo = new RegionInfo(gffDetailGene.getChrId());
 					siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
 					lsResult.add(siteInfo);
 				}
 			} else {
 				ArrayList<ExonInfo> lsIntron = gffGeneIsoInfo.getLsIntron();
 				if (lsIntron.size() >= num) {
-					RegionInfo siteInfo = new RegionInfo(gffDetailGene.getRefID());
+					RegionInfo siteInfo = new RegionInfo(gffDetailGene.getChrId());
 					siteInfo.setStartEndLoc(lsIntron.get(num - 1).getStartAbs(), lsIntron.get(num - 1).getEndAbs());
 					lsResult.add(siteInfo);
 				}
@@ -183,13 +183,13 @@ public class GffPlotChrome {
 			
 		} else if (geneStructure == GeneStructure.UTR5) {
 			for (ExonInfo exonInfo : gffGeneIsoInfo.getUTR5seq()) {
-				RegionInfo siteInfo = new RegionInfo(gffDetailGene.getRefID());
+				RegionInfo siteInfo = new RegionInfo(gffDetailGene.getChrId());
 				siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
 				lsResult.add(siteInfo);
 			}
 		} else if (geneStructure == GeneStructure.UTR3) {
 			for (ExonInfo exonInfo : gffGeneIsoInfo.getUTR3seq()) {
-				RegionInfo siteInfo = new RegionInfo(gffDetailGene.getRefID());
+				RegionInfo siteInfo = new RegionInfo(gffDetailGene.getChrId());
 				siteInfo.setStartEndLoc(exonInfo.getStartAbs(), exonInfo.getEndAbs());
 				lsResult.add(siteInfo);
 			}

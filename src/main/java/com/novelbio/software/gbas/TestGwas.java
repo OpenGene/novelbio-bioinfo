@@ -357,7 +357,7 @@ public class TestGwas {
 			Permutation permutation = new Permutation();
 			permutation.setMaxSnpNum(permutationNum);
 			permutation.setLsAlle(mapSample2LsAllele.values().iterator().next());
-			permutation.setGeneInfo(plinkMapReader.getGeneCurrent().getRefID(), geneName);
+			permutation.setGeneInfo(plinkMapReader.getGeneCurrent().getChrId(), geneName);
 			permutation.setIndex(index);
 			permutation.generatePermutation();
 			

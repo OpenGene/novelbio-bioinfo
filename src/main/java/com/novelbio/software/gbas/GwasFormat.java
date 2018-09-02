@@ -63,7 +63,7 @@ public class GwasFormat {
 		for (String content : txtReadMap.readlines()) {
 			Allele allele = new Allele(content);
 			allele.setIndex(index++);
-			txtWriteSnpData.writefile(allele.getRefID() + "," + allele.getPosition());
+			txtWriteSnpData.writefile(allele.getChrId() + "," + allele.getPosition());
 			for (String sampleName : lsSamples) {
 				Allele alleleSample = null;
 				try {

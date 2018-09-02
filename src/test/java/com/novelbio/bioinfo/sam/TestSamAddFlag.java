@@ -69,7 +69,7 @@ public static void main(String[] args) {
 	for (SamRecord bowtie2SamRecord : samBowtie2FileIn.readLines()) {		
 		String bowtieReadName = bowtie2SamRecord.getName();
 		Integer mappedNum = bowtie2SamRecord.getMappingNum();	
-		String ref = bowtie2SamRecord.getRefID();
+		String ref = bowtie2SamRecord.getChrId();
 		if (!(lsSamRead.contains(bowtieReadName)) && (mappedNum>0) ) { 
 			txtReadandWrite.writefileln(bowtie2SamRecord.toString());
 		} else {

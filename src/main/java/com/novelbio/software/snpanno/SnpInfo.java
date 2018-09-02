@@ -172,7 +172,7 @@ public class SnpInfo {
 	 * @param gffHashGene
 	 */
 	public void setGffHashGene(GffHashGene gffHashGene) {
-		GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(alignRefRaw.getRefID(), alignRefRaw.getStartAbs(), alignRefRaw.getEndAbs());
+		GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(alignRefRaw.getChrId(), alignRefRaw.getStartAbs(), alignRefRaw.getEndAbs());
 		if (gffCodGeneDu == null) {
 			return;
 		}
@@ -330,7 +330,7 @@ public class SnpInfo {
 	}
 	
 	public String getRefId() {
-		return alignChange.getRefID();
+		return alignChange.getChrId();
 	}
 	/**
 	 * 根据{@link #setIsDupMoveLast(boolean)}
@@ -416,7 +416,7 @@ public class SnpInfo {
 	/** 修正过的位点信息 */
 	public String toStringModify() {
 		StringBuilder sBuilder = new StringBuilder();
-		sBuilder.append(alignChange.getRefID() + "\t");
+		sBuilder.append(alignChange.getChrId() + "\t");
 		int startLen = varType == EnumHgvsVarType.Deletions ? 1 : 0;
 		sBuilder.append(getAlignRefRight().getStartAbs() - startLen);
 		sBuilder.append("\t");
@@ -429,7 +429,7 @@ public class SnpInfo {
 	}
 	
 	public String toString() {
-		return alignRefRaw.getRefID() + "\t" + alignRefRaw.getStartAbs() + "\t" + seqRefRaw + "\t" + seqAltRaw;
+		return alignRefRaw.getChrId() + "\t" + alignRefRaw.getStartAbs() + "\t" + seqRefRaw + "\t" + seqAltRaw;
 	}
 	
 	/**

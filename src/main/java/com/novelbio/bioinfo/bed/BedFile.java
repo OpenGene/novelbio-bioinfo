@@ -447,13 +447,13 @@ public class BedFile implements AlignSeq, IntCmdSoft {
 		for (BedRecord bedRecord : readLines(readLines)) {
 			if (bedRecordLast == null) {
 				bedRecordLast = new BedRecord();
-				bedRecordLast.setRefID(bedRecord.getRefID());
+				bedRecordLast.setRefID(bedRecord.getChrId());
 				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 			}
-			if	(!bedRecord.getRefID().equals(bedRecordLast.getRefID()) || bedRecord.getStartAbs() >= bedRecordLast.getEndAbs()) {
+			if	(!bedRecord.getChrId().equals(bedRecordLast.getChrId()) || bedRecord.getStartAbs() >= bedRecordLast.getEndAbs()) {
 				bedSeqResult.writeBedRecord(bedRecordLast);
 				bedRecordLast = new BedRecord();
-				bedRecordLast.setRefID(bedRecord.getRefID());
+				bedRecordLast.setRefID(bedRecord.getChrId());
 				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 				//因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
 				if (bedRecordLast.getReadsNum() == 1) {
@@ -488,16 +488,16 @@ public class BedFile implements AlignSeq, IntCmdSoft {
 		for (BedRecord bedRecord : readLines(readLines)) {
 			if (bedRecordLast == null) {
 				bedRecordLast = new BedRecord();
-				bedRecordLast.setRefID(bedRecord.getRefID());
+				bedRecordLast.setRefID(bedRecord.getChrId());
 				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 				bedRecordLast.setCis5to3(bedRecord.isCis5to3());
 			}
-			if (!bedRecord.getRefID().equals(bedRecordLast.getRefID())
+			if (!bedRecord.getChrId().equals(bedRecordLast.getChrId())
 					|| bedRecord.getStartAbs() >= bedRecordLast.getEndAbs()
 					|| bedRecord.isCis5to3() != bedRecordLast.isCis5to3()) {
 				bedSeqResult.writeBedRecord(bedRecordLast);
 				bedRecordLast = new BedRecord();
-				bedRecordLast.setRefID(bedRecord.getRefID());
+				bedRecordLast.setRefID(bedRecord.getChrId());
 				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 				bedRecordLast.setCis5to3(bedRecord.isCis5to3());
 				// 因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
@@ -538,7 +538,7 @@ public class BedFile implements AlignSeq, IntCmdSoft {
 				bedRecordLast = bedRecord.clone();
 				continue;
 			}
-			if (!bedRecord.getRefID().equals(bedRecordLast.getRefID())
+			if (!bedRecord.getChrId().equals(bedRecordLast.getChrId())
 					|| bedRecord.getStartAbs() != bedRecordLast.getStartAbs()
 					|| bedRecord.getEndAbs() == bedRecordLast.getEndAbs()
 					|| bedRecord.isCis5to3() == bedRecordLast.isCis5to3()) {

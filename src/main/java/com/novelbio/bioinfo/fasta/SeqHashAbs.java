@@ -236,7 +236,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	}
 	/** 总是返回正向序列 */
 	public SeqFasta getSeqCis(Alignment alignment) {
-		return getSeq(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
+		return getSeq(alignment.getChrId(), alignment.getStartAbs(), alignment.getEndAbs());
 	}
 	/**
 	 * 给出peak位点，查找指定范围的sequence，根据CaseChange改变大小写
@@ -328,7 +328,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	 */
 	//TODO 待测试
 	private SeqFasta getSeq(StrandType strandType, List<Alignment> lsInfo, String sep, boolean getIntron) {
-		String chrID = lsInfo.get(0).getRefID();
+		String chrID = lsInfo.get(0).getChrId();
 		String myChrID = chrID.toLowerCase();
 		if (!mapChrID2Length.containsKey(myChrID)) {
 			logger.error("no such chromosome: "+myChrID);
@@ -481,7 +481,7 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 	}
 	@Override
 	public void getSeq(SiteSeqInfo siteInfo) {
-		SeqFasta seqFasta = getSeq(siteInfo.getRefID(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
+		SeqFasta seqFasta = getSeq(siteInfo.getChrId(), siteInfo.getStartAbs(), siteInfo.getEndAbs());
 		siteInfo.setSeq(seqFasta, true);
 	}
 	

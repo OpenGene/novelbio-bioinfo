@@ -316,8 +316,8 @@ public class ExonJunction extends RunProcess {
 		for (String regionUnit : region.split(",")) {
 			if (regionUnit.contains(":")) {
 				Align align = new Align(regionUnit);
-				if (!mapChrId2Len.containsKey(align.getRefID())) {
-					throw new ExceptionNbcParamError("cannot find chrId " + align.getRefID());
+				if (!mapChrId2Len.containsKey(align.getChrId())) {
+					throw new ExceptionNbcParamError("cannot find chrId " + align.getChrId());
 				}
 				lsReadReagion.add(align);
 			} else {
@@ -495,7 +495,7 @@ public class ExonJunction extends RunProcess {
 		for (Align align : lsReadReagion) {
 			if (runGetInfo != null) {
 				GuiAnnoInfo guiAnnoInfo = new GuiAnnoInfo();
-				guiAnnoInfo.setInfo2(outPrefix + " calculate chromesome: " + align.getRefID());
+				guiAnnoInfo.setInfo2(outPrefix + " calculate chromesome: " + align.getChrId());
 				List<Double> lsRegion = new ArrayList<>();
 				lsRegion.add((double) i);
 				lsRegion.add(0.0);
@@ -723,7 +723,7 @@ public class ExonJunction extends RunProcess {
 	private boolean isGeneInRegion(Alignment gene, Align region) {
 		return region == null 
 				||
-				(gene.getRefID().equals(region.getRefID()) && gene.getStartAbs() <= region.getEndAbs() && gene.getEndAbs() >= region.getStartAbs());
+				(gene.getChrId().equals(region.getChrId()) && gene.getStartAbs() <= region.getEndAbs() && gene.getEndAbs() >= region.getStartAbs());
 	}
 	
 	private void reconstructIso(GenerateNewIso generateNewIso, GffGene gffDetailGene) {
@@ -1069,7 +1069,7 @@ public class ExonJunction extends RunProcess {
 				PvalueCalculate pvalueCalculate = exonSplicingTest.getSpliceTypePvalue();
 				String[] treat = pvalueCalculate.getStrInfo(false, false).split("::");
 				String[] ctrl = pvalueCalculate.getStrInfo(false, true).split("::");
-				String combine = exonSplicingTest.getExonCluster().getRefID() + treat[1] + "::" + treat[0] + SepSign.SEP_ID + ctrl[1] + "::" + ctrl[0];
+				String combine = exonSplicingTest.getExonCluster().getChrId() + treat[1] + "::" + treat[0] + SepSign.SEP_ID + ctrl[1] + "::" + ctrl[0];
 				mapJuncInfo2ExonTest.put(combine, exonSplicingTest);
 			} else {
 				lsFinal.add(exonSplicingTest);
@@ -1089,7 +1089,7 @@ public class ExonJunction extends RunProcess {
 			String[] treat = pvalueCalculate.getStrInfo(false, false).split("::");
 			String[] ctrl = pvalueCalculate.getStrInfo(false, true).split("::");
 			//注意跟上面方向相反
-			String combine = exonSplicingTest.getExonCluster().getRefID() + treat[0] + "::" + treat[1] + SepSign.SEP_ID + ctrl[0] + "::" + ctrl[1];
+			String combine = exonSplicingTest.getExonCluster().getChrId() + treat[0] + "::" + treat[1] + SepSign.SEP_ID + ctrl[0] + "::" + ctrl[1];
 			
 			List<ExonSplicingTest> lsExonSplicingTests = mapJuncInfo2ExonTest.get(combine);
 			if (lsExonSplicingTests == null) {
@@ -1128,7 +1128,7 @@ public class ExonJunction extends RunProcess {
 				} else {
 					int start = Math.min(a.getStartAbs(), b.getStartAbs());
 					int end = Math.max(a.getEndAbs(), b.getEndAbs());
-					Align alignDisplay = new Align(keyTest.getExonCluster().getRefID(), start, end);
+					Align alignDisplay = new Align(keyTest.getExonCluster().getChrId(), start, end);
 					alignDisplay.setCis5to3(a.isCis5to3());
 					if (keyTest.getAndCalculatePvalue() < value.getAndCalculatePvalue()) {
 						keyTest.setAlignDisplay(alignDisplay);

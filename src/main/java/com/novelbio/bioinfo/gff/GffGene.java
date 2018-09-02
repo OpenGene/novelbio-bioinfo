@@ -57,7 +57,7 @@ import com.novelbio.generalconf.TitleFormatNBC;
  * 本基因转录方向<br>
  * 本类中的几个方法都和Gff基因有关<br>
  */
-@Document(collection="gff_gene")
+@Document(collection="gffgene")
 @CompoundIndexes({
 	@CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1, 'chrId': 1, 'start': 1, 'end': 1}"),
     @CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1 , 'chrId': 1, 'start': 1, 'end': 1}")
@@ -83,6 +83,7 @@ public class GffGene extends AlignExtend {
 	
 	String name;
 	
+	@Indexed
 	String geneId;
 	
 	ListGff listGff;
@@ -94,7 +95,7 @@ public class GffGene extends AlignExtend {
 	 */
 	public GffGene(ListGff listGff, String locString, boolean cis5to3) {
 		setParent(listGff);
-		this.setChrID(listGff.getName());
+		this.setChrId(listGff.getName());
 		this.name = locString;
 		this.cis5to3 = cis5to3;
 	}
@@ -104,7 +105,7 @@ public class GffGene extends AlignExtend {
 	 * @param cis5to3
 	 */
 	public GffGene(String chrID, String locString, boolean cis5to3) {
-		this.setChrID(chrID);
+		this.setChrId(chrID);
 		this.name = locString;
 		this.cis5to3 = cis5to3;
 	}
@@ -657,7 +658,7 @@ public class GffGene extends AlignExtend {
 		removeDuplicateIso = true;
 		HashMap<String, GffIso> mapIso = new HashMap<String, GffIso>();
 		for (GffIso gffIso : lsGffGeneIsoInfos) {
-			String key = getRefID() + gffIso.isCis5to3();
+			String key = getChrId() + gffIso.isCis5to3();
 			for (ExonInfo exonInfo : gffIso) {
 				key = key + SepSign.SEP_INFO + exonInfo.getStartAbs() + SepSign.SEP_ID + exonInfo.getEndAbs();
 			}
@@ -928,7 +929,7 @@ public class GffGene extends AlignExtend {
 	 * @return
 	 */
 	public List<String> toGFFformate(String chrId, String title) {
-		if (chrId == null) chrId = getRefID();
+		if (chrId == null) chrId = getChrId();
 		
 		List<String> lsResult = new ArrayList<>();
 		if (title == null || title.trim().equals("")) {

@@ -83,14 +83,14 @@ public class SamRecord implements AlignRecord {
 			List<AlignmentBlock> lsAlignmentBlocks = samRecord.getAlignmentBlocks();
 			ArrayList<Align> lsAligns = new ArrayList<Align>();
 			for (AlignmentBlock alignmentBlock : lsAlignmentBlocks) {
-				Align align = new Align(getRefID(), alignmentBlock.getReferenceStart(), alignmentBlock.getLength() + alignmentBlock.getReferenceStart() - 1);
+				Align align = new Align(getChrId(), alignmentBlock.getReferenceStart(), alignmentBlock.getLength() + alignmentBlock.getReferenceStart() - 1);
 				align.setCis5to3(isCis5to3());
 				lsAligns.add(align);
 			}
 			return lsAligns;
 		}
 		ArrayList<Align> lsAligns = new ArrayList<Align>();
-		Align align = new Align(getRefID(), getStartAbs(), getEndAbs());
+		Align align = new Align(getChrId(), getStartAbs(), getEndAbs());
 		align.setCis5to3(isCis5to3());
 		lsAligns.add(align);
 		return lsAligns;
@@ -287,7 +287,7 @@ public class SamRecord implements AlignRecord {
 		if (!isHavePairEnd()) {
 			return false;
 		}
-		if (samRecord.getRefID().equals(getRefID())
+		if (samRecord.getChrId().equals(getChrId())
 				&& samRecord.getName().equals(getName())) {
 			if (isMateMapped() && isMateCis5to3() == samRecord.isCis5to3()
 					&& getMateAlignmentStart() == samRecord.getStartAbs()) {
@@ -317,7 +317,7 @@ public class SamRecord implements AlignRecord {
 			return null;
 		}
 		BedRecord bedRecord = new BedRecord();
-		bedRecord.setRefID(getRefID());
+		bedRecord.setRefID(getChrId());
 		bedRecord.setStartEndLoc(getStartAbs(), getEndAbs());
 		bedRecord.setCIGAR(samRecord.getCigarString());
 		bedRecord.setCis5to3(isCis5to3());
@@ -591,7 +591,7 @@ public class SamRecord implements AlignRecord {
 	}
 	
 	@Override
-	public String getRefID() {
+	public String getChrId() {
 		return samRecord.getReferenceName();
 	}
 

@@ -313,7 +313,7 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 	
 	@Override
 	public GffCodGeneDU searchLocation(Alignment alignment) {
-		return gffHashGene.searchLocation(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
+		return gffHashGene.searchLocation(alignment.getChrId(), alignment.getStartAbs(), alignment.getEndAbs());
 	}
 	
 	/**
@@ -609,15 +609,15 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 		Map<String, Long> mapChrId2Len = SamIndexRefsequence.generateIndexAndGetMapChrId2Len(chrFile);
 		GffHashGene gffHashGene = new GffHashGene(gffFile);
 		for (GffGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
-			Long chrLen = mapChrId2Len.get(gffDetailGene.getRefID().toLowerCase());
+			Long chrLen = mapChrId2Len.get(gffDetailGene.getChrId().toLowerCase());
 			if (chrLen == null) {
 //				throw new ExceptionGFF("chromosome file error: " + gffDetailGene.getRefID() + " chrFile doesn't contain this chrId");
 				continue;
 			}
 			if (gffDetailGene.getStartAbs() <= 0 || gffDetailGene.getEndAbs() > chrLen) {
 				throw new ExceptionNbcGFF("gff or chromosome file error: " 
-						+ gffDetailGene.getRefID() + " " + gffDetailGene.getName() + " " + gffDetailGene.getStartAbs() + " " + gffDetailGene.getEndAbs() 
-						+ " out of chr Range: " + gffDetailGene.getRefID() + " " + chrLen);
+						+ gffDetailGene.getChrId() + " " + gffDetailGene.getName() + " " + gffDetailGene.getStartAbs() + " " + gffDetailGene.getEndAbs() 
+						+ " out of chr Range: " + gffDetailGene.getChrId() + " " + chrLen);
 			}
 		}
 	

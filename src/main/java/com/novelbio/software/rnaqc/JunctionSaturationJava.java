@@ -134,7 +134,7 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 		List<Align> lsAlign = alignRecord.getAlignmentBlocks();
 		if(lsAlign.size() < 2) return;
 		for (int i = 1; i < lsAlign.size(); i++) {
-			Align align = new Align(alignRecord.getRefID(), lsAlign.get(i-1).getEndAbs(), lsAlign.get(i).getStartAbs());
+			Align align = new Align(alignRecord.getChrId(), lsAlign.get(i-1).getEndAbs(), lsAlign.get(i).getStartAbs());
 			if (align.getLength() < minIntronLen || (maxIntronLen > 0 && align.getLength() > maxIntronLen)) {
 				continue;
 			}
@@ -199,7 +199,7 @@ public class JunctionSaturationJava implements AlignmentRecorder {
 	}
 	
 	private String getJunInfo(Align align, boolean considerStrand) {
-		String junInfo = align.getRefID() + SepSign.SEP_ID + align.getStartAbs() + SepSign.SEP_INFO + align.getEndAbs();
+		String junInfo = align.getChrId() + SepSign.SEP_ID + align.getStartAbs() + SepSign.SEP_INFO + align.getEndAbs();
 		if (considerStrand) {
 			junInfo += SepSign.SEP_INFO + align.isCis5to3();
 		}

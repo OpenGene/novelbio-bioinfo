@@ -58,7 +58,7 @@ public class MapReadsChangFang extends MapReads {
 			if (cGmethyType != EnumCpGmethyType.ALL && cGmethyType != gtfHongXingMethy.cgGmethyType) {
 				continue;
 			}
-			String tmpChrID = gtfHongXingMethy.getRefID();
+			String tmpChrID = gtfHongXingMethy.getChrId();
 			if (!tmpChrID.equals(lastChr)) {
 				if (!lastChr.equals("") && flag) { // 前面已经有了一个chrBpReads，那么开始总结这个chrBpReads
 					chrMapReadsInfo.sumChrBp(chrBpReads, fold);
@@ -228,7 +228,7 @@ class GtfHongXingMethy implements Alignment{
 	
 	/** 默认返回小写 */
 	@Override
-	public String getRefID() {
+	public String getChrId() {
 		return chrID.toLowerCase();
 	}
 	

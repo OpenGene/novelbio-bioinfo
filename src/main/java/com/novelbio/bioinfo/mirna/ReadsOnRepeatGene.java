@@ -84,13 +84,13 @@ public class ReadsOnRepeatGene implements AlignmentRecorder {
 		for (AlignRecord alignRecord : alignSeq.readLines()) {
 			String repeatInfo = null;
 			if (gffHashRepeat != null) {//如果没有读取repeat文件，则返回
-				repeatInfo = searchReadsRepeat(alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
+				repeatInfo = searchReadsRepeat(alignRecord.getChrId(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
 				if (repeatInfo != null) {
 					addHashRepeat(repeatInfo, alignRecord.getMappedReadsWeight());
 				}
 			}
 			if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-				int[] geneLocInfo = searchGene(alignRecord.isCis5to3(), alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
+				int[] geneLocInfo = searchGene(alignRecord.isCis5to3(), alignRecord.getChrId(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
 				if (geneLocInfo != null) {
 					addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,alignRecord.getMappedReadsWeight());
 				}
@@ -110,13 +110,13 @@ public class ReadsOnRepeatGene implements AlignmentRecorder {
 		}
 		String repeatInfo = null;
 		if (gffHashRepeat != null) {//如果没有读取repeat文件，则返回
-			repeatInfo = searchReadsRepeat(alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
+			repeatInfo = searchReadsRepeat(alignRecord.getChrId(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
 			if (repeatInfo != null) {
 				addHashRepeat(repeatInfo, alignRecord.getMappedReadsWeight());
 			}
 		}
 		if (gffChrAbs != null && gffChrAbs.getGffHashGene() != null) {
-			int[] geneLocInfo = searchGene(alignRecord.isCis5to3(), alignRecord.getRefID(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
+			int[] geneLocInfo = searchGene(alignRecord.isCis5to3(), alignRecord.getChrId(), alignRecord.getStartAbs(), alignRecord.getEndAbs());
 			if (geneLocInfo != null) {
 				addHashGene(geneLocInfo[0], geneLocInfo[1]==1 ,alignRecord.getMappedReadsWeight());
 			}

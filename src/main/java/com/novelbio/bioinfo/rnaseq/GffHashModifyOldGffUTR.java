@@ -38,9 +38,9 @@ public class GffHashModifyOldGffUTR {
 			//因为gff文件可能有错，gffgene的长度可能会大于mRNA的总长度，这时候就要遍历每个iso
 			for (GffIso gffGeneIsoInfo : gffDetailGeneRef.getLsCodSplit()) {
 				int median = (gffGeneIsoInfo.getStart() + gffGeneIsoInfo.getEnd())/2;
-				GffCodGene gffCodGene = gffHashGeneRaw.searchLocation(gffDetailGeneRef.getRefID(), median);
+				GffCodGene gffCodGene = gffHashGeneRaw.searchLocation(gffDetailGeneRef.getChrId(), median);
 				if (gffCodGene == null || !gffCodGene.isInsideLoc()) {
-					logger.warn("cannot find gene on:" + gffDetailGeneRef.getRefID() + " " + median );
+					logger.warn("cannot find gene on:" + gffDetailGeneRef.getChrId() + " " + median );
 					continue;
 				}
 				GffGene gffDetailGeneThis = gffCodGene.getAlignThis();

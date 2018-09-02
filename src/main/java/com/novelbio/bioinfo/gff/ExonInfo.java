@@ -32,7 +32,7 @@ public class ExonInfo extends AlignExtend implements Comparable<ExonInfo> {
 	@Override
 	public void setParent(ListEle<? extends AlignExtend> parent) {
 		isoParent = (GffIso)parent;
-		setChrID(isoParent.getRefID());
+		setChrId(isoParent.getRefID());
 	}
 	
 	/**
@@ -45,7 +45,7 @@ public class ExonInfo extends AlignExtend implements Comparable<ExonInfo> {
 		setStartEndLoc(start, end);
 		setCis5to3(cis);
 		this.isoParent = isoParent;
-		setChrID(isoParent.getRefID());
+		setChrId(isoParent.getRefID());
 	}
 	/**
 	 * 根据正反向自动设定起点和终点
@@ -111,7 +111,7 @@ public class ExonInfo extends AlignExtend implements Comparable<ExonInfo> {
 	}
 	
 	public String toString() {
-		return getRefID() + "\t" + getStartCis() + "\t" + getEndCis();
+		return getChrId() + "\t" + getStartCis() + "\t" + getEndCis();
 	}
 	
 	@Override

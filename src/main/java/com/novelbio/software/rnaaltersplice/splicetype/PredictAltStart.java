@@ -72,7 +72,7 @@ public class PredictAltStart extends PredictAltStartEnd {
 		for (List<ExonInfo> lsExonInfo : lslsExonInfosTmp) {
 			int start = lsExonInfo.get(0).getStartCis();
 			int end = lsExonInfo.get(lsExonInfo.size() - 1).getEndCis();
-			Align align = new Align(exonCluster.getRefID(), start, end);
+			Align align = new Align(exonCluster.getChrId(), start, end);
 
 			//去除2B的情况
 //			if ((exonCluster.isCis5to3() && start < edge5Max) || (!exonCluster.isCis5to3() && start > edge5Max) || !setEdge3.contains(end)) {
@@ -97,14 +97,14 @@ public class PredictAltStart extends PredictAltStartEnd {
 		});
 		
 		for (List<ExonInfo> lsExonInfos : lslsExonInfos) {
-			double juncReads = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
+			double juncReads = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getChrId(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
 			mapJuncNum2Exon.put(juncReads, lsExonInfos);
 		}
 		//获得第一个
 		Align align = null;
 		for (Double juncNum : mapJuncNum2Exon.keySet()) {
 			List<ExonInfo> lsExonInfos = mapJuncNum2Exon.get(juncNum);
-			align = new Align(exonCluster.getRefID(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
+			align = new Align(exonCluster.getChrId(), lsExonInfos.get(0).getStartCis(), lsExonInfos.get(lsExonInfos.size() - 1).getEndCis());
 			align.setCis5to3(exonCluster.isCis5to3());
 			break;
 		}

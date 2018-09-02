@@ -59,7 +59,7 @@ public class ListEle <E extends AlignExtend> implements Cloneable, Iterable<E> {
 	public String getName() {
 		if (name == null) {
 			if (size() > 0) {
-				name = get(0).getRefID();
+				name = get(0).getChrId();
 			} else {
 				name = "";
 			}

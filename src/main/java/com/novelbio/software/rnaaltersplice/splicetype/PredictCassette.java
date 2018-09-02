@@ -63,7 +63,7 @@ public class PredictCassette extends SpliceTypePredict {
 		}
 		Map<String, Double> mapGroup2JunReads = new HashMap<>();
 		for (Integer align : setAlignExist) {
-			mapGroup2JunReads = addMapDouble(mapGroup2JunReads, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align));
+			mapGroup2JunReads = addMapDouble(mapGroup2JunReads, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getChrId(), align));
 		}
 		
 		// 像这种 ------exon------------，应该将junction reads的数量减半，这样可以获得更准确的值
@@ -86,7 +86,7 @@ public class PredictCassette extends SpliceTypePredict {
 			int afterIndex = beforeIndex + 1;
 			ExonInfo exonBefore = gffGeneIsoInfo.get(beforeIndex);
 			ExonInfo exonAfter = gffGeneIsoInfo.get(afterIndex);
-			Align align = new Align(exonCluster.getRefID(), exonBefore.getEndCis(), exonAfter.getStartCis());
+			Align align = new Align(exonCluster.getChrId(), exonBefore.getEndCis(), exonAfter.getStartCis());
 			setAlignSkip.add(align);
 		}
 		
@@ -97,8 +97,8 @@ public class PredictCassette extends SpliceTypePredict {
 			}
 			int beforeIndex = lsExon.get(0).getItemNum() - 1;
 			int afterIndex = lsExon.get(lsExon.size() - 1).getItemNum() + 1;
-			Align alignBefore = new Align(exonCluster.getRefID(), gffGeneIsoInfo.get(beforeIndex).getEndCis(), lsExon.get(0).getStartCis());
-			Align alignAfter = new Align(exonCluster.getRefID(), lsExon.get(lsExon.size() - 1).getEndCis(), 
+			Align alignBefore = new Align(exonCluster.getChrId(), gffGeneIsoInfo.get(beforeIndex).getEndCis(), lsExon.get(0).getStartCis());
+			Align alignAfter = new Align(exonCluster.getChrId(), lsExon.get(lsExon.size() - 1).getEndCis(), 
 					gffGeneIsoInfo.get(afterIndex).getStartCis());
 			
 			setAlignExist.add(alignBefore);
@@ -108,11 +108,11 @@ public class PredictCassette extends SpliceTypePredict {
 		Map<String, Double> mapSkip = null;
 		Map<String, Double> mapExist = null;
 		for (Align align : setAlignSkip) {
-			mapSkip = addMapDouble(mapSkip, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
+			mapSkip = addMapDouble(mapSkip, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getChrId(), align.getStartAbs(), align.getEndAbs()));
 		}
 		
 		for (Align align : setAlignExist) {
-			mapExist = addMapDouble(mapExist, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getRefID(), align.getStartAbs(), align.getEndAbs()));
+			mapExist = addMapDouble(mapExist, tophatJunction.getJunctionSite(condition, exonCluster.isCis5to3(), exonCluster.getChrId(), align.getStartAbs(), align.getEndAbs()));
 		}
 		
 		// 像这种 ------exon------------，应该将junction reads的数量减半，这样可以获得更准确的值
@@ -424,14 +424,14 @@ public class PredictCassette extends SpliceTypePredict {
 			if (lsExons.size() > 1) {
 				for (ExonInfo exonInfo : lsExons) {
 					Align align = new Align(exonInfo);
-					align.setChrID(exonCluster.getRefID());
+					align.setChrId(exonCluster.getChrId());
 					mapKey2Align.put(align.getStartAbs() + SepSign.SEP_ID + align.getEndAbs(), align);
 				}
 			}
 		}
 				
 		if (mapKey2Align.isEmpty()) {
-			Align align = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+			Align align = new Align(exonCluster.getChrId(), exonCluster.getStartCis(), exonCluster.getEndCis());
 			lsAligns.add(align);
 			return lsAligns;
 		}

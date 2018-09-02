@@ -260,13 +260,13 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 		if (gffGene == null) {
 			return "";
 		}
-		return gffGene.getRefID().toLowerCase();
+		return gffGene.getChrId().toLowerCase();
 	}
 	public String getRefID() {
 		if (gffGene == null) {
 			return "";
 		}
-		return gffGene.getRefID();
+		return gffGene.getChrId();
 	}
 	/**
 	 * 是否是mRNA有atg和uag，

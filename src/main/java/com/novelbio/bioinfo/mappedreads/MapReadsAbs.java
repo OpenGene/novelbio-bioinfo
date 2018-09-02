@@ -152,7 +152,7 @@ public abstract class MapReadsAbs extends RunProcess {
 	 */
 	@Deprecated
 	public void getRange(RegionInfo mapInfo, int thisInvNum, int type) {
-		double[] Info = getRangeInfo(thisInvNum, mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
+		double[] Info = getRangeInfo(thisInvNum, mapInfo.getChrId(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), type);
 		mapInfo.setDouble(Info);
 	}
 	/**
@@ -165,9 +165,9 @@ public abstract class MapReadsAbs extends RunProcess {
 	 */
 	@Deprecated
 	public void getRange(int binNum, RegionInfo mapInfo, int type) {
-		double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
+		double[] Info = getRangeInfo(mapInfo.getChrId(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 		if (Info == null) {
-			logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
+			logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getChrId() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
 		}
 		mapInfo.setDouble(Info);
 	}
@@ -183,10 +183,10 @@ public abstract class MapReadsAbs extends RunProcess {
 	public void getRangeLs(int binNum, List<RegionInfo> lsmapInfo, int type) {
 		for (int i = 0; i < lsmapInfo.size(); i++) {
 			RegionInfo mapInfo = lsmapInfo.get(i);
-			double[] Info = getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
+			double[] Info = getRangeInfo(mapInfo.getChrId(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), binNum, type);
 			if (Info == null) {
 				lsmapInfo.remove(i); i--;
-				logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getRefID() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
+				logger.error("出现未知ID："+mapInfo.getName() + " "+mapInfo.getChrId() + " " + mapInfo.getStartAbs() + " "+ mapInfo.getEndAbs());
 				continue;
 			}
 			mapInfo.setDouble(Info);
@@ -323,7 +323,7 @@ public abstract class MapReadsAbs extends RunProcess {
 	 * @return 如果没有找到该染色体位点，则返回null
 	 */
 	public double[] getRangeInfo(Align align, int type) {
-		double[] values = getRangeInfo(0, align.getRefID(), align.getStartAbs(), align.getEndAbs(), type);
+		double[] values = getRangeInfo(0, align.getChrId(), align.getStartAbs(), align.getEndAbs(), type);
 		if (!align.isCis5to3()) {
 			ArrayOperate.convertArray(values);
 		}
@@ -429,8 +429,8 @@ public abstract class MapReadsAbs extends RunProcess {
 	 * @param mapInfo
 	 */
 	public static void CmpMapReg(MapReads mapReads, MapReads mapReads2, RegionInfo mapInfo) {
-		double[] info1 = mapReads.getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), 0);
-		double[] info2 = mapReads.getRangeInfo(mapInfo.getRefID(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), 0);
+		double[] info1 = mapReads.getRangeInfo(mapInfo.getChrId(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), 0);
+		double[] info2 = mapReads.getRangeInfo(mapInfo.getChrId(), mapInfo.getStartAbs(), mapInfo.getEndAbs(), 0);
 		
 		double value1 = getMean(info1);
 		double value2 = getMean(info2);

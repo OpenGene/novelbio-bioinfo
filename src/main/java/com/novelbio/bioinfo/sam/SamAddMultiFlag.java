@@ -176,8 +176,8 @@ public class SamAddMultiFlag {
 			return record2_2;
 		}
 		//两个都比上了
-		if (record1.getRefID().equals(record2_1.getRefID()) ) {
-			if (record1.getRefID().equals(record2_2.getRefID())) {
+		if (record1.getChrId().equals(record2_1.getChrId()) ) {
+			if (record1.getChrId().equals(record2_2.getChrId())) {
 				int start1 = record1.getStartAbs(), end1 = record1.getEndAbs();
 				int start2 = record2_1.getStartAbs(), end2 = record2_1.getEndAbs();
 				int start3 = record2_2.getStartAbs(), end3 = record2_2.getEndAbs();
@@ -188,7 +188,7 @@ public class SamAddMultiFlag {
 				return record2_1;
 			}
 		} else {
-			if (record1.getRefID().equals(record2_2.getRefID())) {
+			if (record1.getChrId().equals(record2_2.getChrId())) {
 				return record2_2;
 			} else {
 				return null;
@@ -211,9 +211,9 @@ public class SamAddMultiFlag {
 	 */
 	private String getFirstNameAndSite(SamRecord samRecord) {
 		if (!isPairend) {
-			return samRecord.getName() + samRecord.getRefID() + samRecord.getStartAbs();
+			return samRecord.getName() + samRecord.getChrId() + samRecord.getStartAbs();
 		} else {
-			String cis = samRecord.getName() + samRecord.getRefID() + samRecord.getStartAbs();
+			String cis = samRecord.getName() + samRecord.getChrId() + samRecord.getStartAbs();
 			String trans = samRecord.getName() + samRecord.getMateRefID() + samRecord.getMateAlignmentStart();
 			if (samRecord.isMapped() && samRecord.isMateMapped()) {
 				return samRecord.isFirstRead()? cis : trans;

@@ -263,9 +263,9 @@ public class PredictME extends SpliceTypePredict {
 		Map<String, Double> mapValue = null;
 		for (Align[] aligns : lsAligns) {
 			if (before) {
-				mapValue = tophatJunction.getJunctionSite(condition, aligns[0].isCis5to3(), aligns[0].getRefID(), aligns[0].getStartAbs(), aligns[0].getEndAbs());
+				mapValue = tophatJunction.getJunctionSite(condition, aligns[0].isCis5to3(), aligns[0].getChrId(), aligns[0].getStartAbs(), aligns[0].getEndAbs());
 			} else {
-				mapValue = tophatJunction.getJunctionSite(condition, aligns[1].isCis5to3(), aligns[1].getRefID(), aligns[1].getStartAbs(), aligns[1].getEndAbs());
+				mapValue = tophatJunction.getJunctionSite(condition, aligns[1].isCis5to3(), aligns[1].getChrId(), aligns[1].getStartAbs(), aligns[1].getEndAbs());
 			}
 		}
 		return mapValue;
@@ -273,7 +273,7 @@ public class PredictME extends SpliceTypePredict {
 
 	@Override
 	public List<Align> getDifSite() {
-		Align align = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		Align align = new Align(exonCluster.getChrId(), exonCluster.getStartCis(), exonCluster.getEndCis());
 		align.setCis5to3(exonCluster.isCis5to3());
 		List<Align> lsAligns = new ArrayList<>();
 		lsAligns.add(align);

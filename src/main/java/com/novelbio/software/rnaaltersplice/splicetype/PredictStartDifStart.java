@@ -76,7 +76,7 @@ public class PredictStartDifStart extends SpliceTypePredict {
 	/** 待修正 */
 	@Override
 	public List<Align> getDifSite() {
-		Align align = new Align(exonCluster.getRefID(), exonCluster.getStartCis(), exonCluster.getEndCis());
+		Align align = new Align(exonCluster.getChrId(), exonCluster.getStartCis(), exonCluster.getEndCis());
 		List<Align> lsAligns = new ArrayList<>();
 		lsAligns.add(align);
 		return lsAligns;

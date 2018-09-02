@@ -214,7 +214,7 @@ public class AlignSeqReading extends RunProcess {
 				setRecorderRun.add(alignmentRecorder);
 			} else {
 				Queue<AlignmentRecorder> queueRecorder = null;
-				String chrID = alignmentRecorder.getReadingRegion().getRefID().toLowerCase();
+				String chrID = alignmentRecorder.getReadingRegion().getChrId().toLowerCase();
 				if (mapChrID2RecorderTodo.containsKey(chrID)) {
 					queueRecorder = mapChrID2RecorderTodo.get(chrID);
 				} else {
@@ -231,7 +231,7 @@ public class AlignSeqReading extends RunProcess {
 		List<AlignmentRecorder> lsRecorderTobeRemove = new ArrayList<>();
 		for (AlignmentRecorder alignmentRecorder : setRecorderRun) {
 			if (alignmentRecorder.getReadingRegion() == null) continue;
-			if (!alignmentRecorder.getReadingRegion().getRefID().toLowerCase().equals(alignRecord.getRefID().toLowerCase()) ||
+			if (!alignmentRecorder.getReadingRegion().getChrId().toLowerCase().equals(alignRecord.getChrId().toLowerCase()) ||
 					alignmentRecorder.getReadingRegion().getEndAbs() < alignRecord.getStartAbs()) {
 				lsRecorderTobeRemove.add(alignmentRecorder);
 			}
@@ -246,7 +246,7 @@ public class AlignSeqReading extends RunProcess {
 	/** 把todo队列中的record放到执行队列中 */
 	private void addTodoRecord_2_RunList(AlignRecord alignRecord) {
 		while (true) {
-			Queue<AlignmentRecorder> queueRecord = mapChrID2RecorderTodo.get(alignRecord.getRefID().toLowerCase());
+			Queue<AlignmentRecorder> queueRecord = mapChrID2RecorderTodo.get(alignRecord.getChrId().toLowerCase());
 			if (queueRecord == null || queueRecord.isEmpty()) {
 				break;
 			}

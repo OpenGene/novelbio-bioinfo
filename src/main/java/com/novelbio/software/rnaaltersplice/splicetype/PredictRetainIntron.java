@@ -103,13 +103,13 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 		}
 		
 		mapGroup2LsValue.put(group, junCountsTmp);
-		mapGroup2LsValue.put(group, tophatJunction.getJunctionSite(condition, group, exonCluster.isCis5to3(), exonCluster.getRefID(), alignRetain.getStartCis(), alignRetain.getEndCis()));
+		mapGroup2LsValue.put(group, tophatJunction.getJunctionSite(condition, group, exonCluster.isCis5to3(), exonCluster.getChrId(), alignRetain.getStartCis(), alignRetain.getEndCis()));
 	}
 
 	@Override
 	public Align getReadingRegion() {
 		getJunctionSite();
-		Align align = new Align(exonCluster.getRefID(), alignRetain.getStartAbs(), alignRetain.getEndAbs());
+		Align align = new Align(exonCluster.getChrId(), alignRetain.getStartAbs(), alignRetain.getEndAbs());
 		return align;
 	}
 	
@@ -122,10 +122,10 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 				for (int i = 0; i < lsExonInfo.size() - 1; i++) {
 					int startLoc =  lsExonInfo.get(i).getEndCis();
 					int endLoc = lsExonInfo.get(i+1).getStartCis();
-					double readsNum = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getRefID(), startLoc, endLoc);
+					double readsNum = tophatJunction.getJunctionSiteAll(exonCluster.isCis5to3(), exonCluster.getChrId(), startLoc, endLoc);
 					if (readsNum > maxReadsNum) {
 						maxReadsNum = readsNum;
-						alignRetain = new Align(exonCluster.getRefID(), startLoc, endLoc);
+						alignRetain = new Align(exonCluster.getChrId(), startLoc, endLoc);
 					}
 				}
 			}
@@ -148,9 +148,9 @@ public class PredictRetainIntron extends SpliceTypePredict implements AlignmentR
 		Align align = getDifSite().get(0);
 		int startSplitAbs = align.getStartAbs();
 		int endSplitAbs = align.getEndAbs();
-		Align alignLeft = new Align(exonCluster.getRefID(), startBGAbs, startSplitAbs);
+		Align alignLeft = new Align(exonCluster.getChrId(), startBGAbs, startSplitAbs);
 		alignLeft.setCis5to3(exonCluster.isCis5to3());
-		Align alignRight = new Align(exonCluster.getRefID(), endSplitAbs, endBGAbs);
+		Align alignRight = new Align(exonCluster.getChrId(), endSplitAbs, endBGAbs);
 		alignRight.setCis5to3(exonCluster.isCis5to3());
 		
 		if (exonCluster.isCis5to3()) {

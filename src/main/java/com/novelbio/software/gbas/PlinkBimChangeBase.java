@@ -183,11 +183,11 @@ class AnnoFromRef implements Closeable {
 		 * 则重新定位染色体
 		 */
 		if (lastAllel == null
-				|| !StringOperate.isEqualIgnoreCase(lastAllel.getRefID(), allele.getRefID())
+				|| !StringOperate.isEqualIgnoreCase(lastAllel.getChrId(), allele.getChrId())
 				|| allele.getStartAbs() < lastAllel.getStartAbs()
 				|| allele.getStartAbs() - lastAllel.getStartAbs() > gapLen
 				) {
-			itBase = chrBaseIter.readBase(allele.getRefID(), allele.getStartAbs()).iterator();
+			itBase = chrBaseIter.readBase(allele.getChrId(), allele.getStartAbs()).iterator();
 		}
 		Base base = itBase.next();
 		while (base != null && base.getPosition() < allele.getStartAbs()) {
@@ -206,7 +206,7 @@ class AnnoFromRef implements Closeable {
 			
 		} else {
 			chrBaseIter.close();
-			throw new ExceptionNBCChromosome("cannot get reference on position " + allele.getRefID() + " " +allele.getPosition());
+			throw new ExceptionNBCChromosome("cannot get reference on position " + allele.getChrId() + " " +allele.getPosition());
 		}
 		return allele;
 	}

@@ -462,7 +462,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 			if (!alignRecord.isMapped()) continue;
 			
 			//判定是否按照染色体顺序进行排序
-			if (!alignRecord.getRefID().toLowerCase().equals(chrIdLast)) {
+			if (!alignRecord.getChrId().toLowerCase().equals(chrIdLast)) {
 				if (lastAlignRecord != null) {
 					if (setChrId.contains(chrIdLast)) {
 						throw new ExceptionSequenceFileNotSorted("file isn't being sorted: "+ alignSeqReader.getFileName());
@@ -474,7 +474,7 @@ public class MapReads extends MapReadsAbs implements AlignmentRecorder {
 				}
 			}
 			lastAlignRecord = alignRecord;
-			chrIdLast = lastAlignRecord.getRefID().toLowerCase();
+			chrIdLast = lastAlignRecord.getChrId().toLowerCase();
 			
 			if (booUniqueMapping && !alignRecord.isUniqueMapping()) {
 				continue;
@@ -682,7 +682,7 @@ class MapReadsAddAlignRecord {
 	}
 	
 	public void addAlignRecord(AlignRecord alignRecord) {
-		String tmpChrID = alignRecord.getRefID().toLowerCase();
+		String tmpChrID = alignRecord.getChrId().toLowerCase();
 		if (!tmpChrID.equals(lastChr)) {
 			tmpOld = new int[2];//更新 tmpOld
 			summary();
@@ -782,17 +782,17 @@ class MapReadsAddAlignRecord {
 				Alignment alignment = lsStartEnd.get(i);
 				if (extendReadsLen - lsStartEnd.get(i).getLength() > 0) {
 					if (i == lsStartEnd.size() - 1) {
-						Align lastAlign = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getStartAbs() + extendReadsLen - 1);
+						Align lastAlign = new Align(alignment.getChrId(), alignment.getStartAbs(), alignment.getStartAbs() + extendReadsLen - 1);
 						lsResult.add(lastAlign);
 					} else {
-						Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
+						Align align = new Align(alignment.getChrId(), alignment.getStartAbs(), alignment.getEndAbs());
 						align.setCis5to3(alignment.isCis5to3());
 						lsResult.add(align);
 						extendReadsLen = extendReadsLen - alignment.getLength();
 					}
 				}
 				else {
-					Align lastAlign = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getStartAbs() + extendReadsLen - 1);
+					Align lastAlign = new Align(alignment.getChrId(), alignment.getStartAbs(), alignment.getStartAbs() + extendReadsLen - 1);
 					lsResult.add(lastAlign);
 					break;
 				}
@@ -803,18 +803,18 @@ class MapReadsAddAlignRecord {
 				Alignment alignment = lsStartEnd.get(i);
 				if (extendReadsLen - alignment.getLength() > 0) {
 					if (i == 0) {
-						Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - extendReadsLen + 1, alignment.getEndAbs());
+						Align align = new Align(alignment.getChrId(), alignment.getEndAbs() - extendReadsLen + 1, alignment.getEndAbs());
 						align.setCis5to3(alignment.isCis5to3());
 						lsResult.add(0,align);
 					} else {						
-						Align align = new Align(alignment.getRefID(), alignment.getStartAbs(), alignment.getEndAbs());
+						Align align = new Align(alignment.getChrId(), alignment.getStartAbs(), alignment.getEndAbs());
 						align.setCis5to3(alignment.isCis5to3());
 						lsResult.add(0,align);
 						extendReadsLen = extendReadsLen - alignment.getLength();
 					}
 				}
 				else {
-					Align align = new Align(alignment.getRefID(), alignment.getEndAbs() - extendReadsLen + 1, alignment.getEndAbs());
+					Align align = new Align(alignment.getChrId(), alignment.getEndAbs() - extendReadsLen + 1, alignment.getEndAbs());
 					align.setCis5to3(alignment.isCis5to3());
 					lsResult.add(0,align);
 					break;

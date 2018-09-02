@@ -224,7 +224,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		}
 		//两个reads是否挨着
 		if (!samRecord.isHavePairEnd() || !samRecord.isMateMapped() 
-				|| !samRecord.getRefID().equals(samRecord.getMateRefID())
+				|| !samRecord.getChrId().equals(samRecord.getMateRefID())
 				|| Math.abs(samRecord.getStartAbs() - samRecord.getMateAlignmentStart()) > 5000000
 				) {
 			lsResult.add(samRecord);
@@ -245,8 +245,8 @@ public class RPKMcomput implements AlignmentRecorder {
 			return lsResult;
 		}
 		//判断两条reads是否在同一个基因内，或者说离的比较近
-		GffCodGene gffCodGeneStart = gffHashGene.searchLocation(samRecord.getRefID(), samRecord.getStartAbs());
-		GffCodGene gffCodGeneEnd = gffHashGene.searchLocation(samRecord.getRefID(), samRecord.getMateAlignmentStart());
+		GffCodGene gffCodGeneStart = gffHashGene.searchLocation(samRecord.getChrId(), samRecord.getStartAbs());
+		GffCodGene gffCodGeneEnd = gffHashGene.searchLocation(samRecord.getChrId(), samRecord.getMateAlignmentStart());
 		if (gffCodGeneStart == null || gffCodGeneEnd == null) {
 			return new ArrayList<SamRecord>();
 		}
@@ -318,7 +318,7 @@ public class RPKMcomput implements AlignmentRecorder {
 		if (gffDetailGene == null) {
 			return null;
 		}
-		return gffDetailGene.getRefID() + "_" +gffDetailGene.getStartAbs() + "_" + gffDetailGene.getEndAbs();
+		return gffDetailGene.getChrId() + "_" +gffDetailGene.getStartAbs() + "_" + gffDetailGene.getEndAbs();
 	}
 	
 	/**
@@ -372,13 +372,13 @@ public class RPKMcomput implements AlignmentRecorder {
 	private Set<String> getSetGeneNameSingleReads(List<Align> lsAligns, boolean readsCis5to3) {
 		Set<GffIso> setIso = new HashSet<>();
 		for (Align align : lsAligns) {
-			if (!gffHashGene.isContainChrID(align.getRefID())) continue;
+			if (!gffHashGene.isContainChrID(align.getChrId())) continue;
 			
-			GffCodGene gffCodGene = gffHashGene.searchLocation(align.getRefID(), align.getMidSite());
+			GffCodGene gffCodGene = gffHashGene.searchLocation(align.getChrId(), align.getMidSite());
 			if (gffCodGene == null) continue;
 			Set<GffIso> setIsoCod = getSetGeneIso(readsCis5to3, gffCodGene);
 			if (setIsoCod.size() == 0) {
-				GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(align.getRefID(), align.getStartAbs(), align.getEndAbs());
+				GffCodGeneDU gffCodGeneDu = gffHashGene.searchLocation(align.getChrId(), align.getStartAbs(), align.getEndAbs());
 				setIsoCod = getSetGeneIso(readsCis5to3, gffCodGeneDu);
 			}
 			setIso.addAll(setIsoCod);

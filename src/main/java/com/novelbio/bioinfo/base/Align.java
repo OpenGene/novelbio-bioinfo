@@ -53,7 +53,7 @@ public class Align implements Alignment, Cloneable {
 	 * @param end
 	 */
 	public Align(Alignment alignment) {
-		this.chrId = alignment.getRefID();
+		this.chrId = alignment.getChrId();
 		this.start = alignment.getStartAbs();
 		this.end = alignment.getEndAbs();
 		this.cis5to3 = alignment.isCis5to3();
@@ -106,8 +106,8 @@ public class Align implements Alignment, Cloneable {
 	public void setCis5to3(Boolean cis5to3) {
 		this.cis5to3 = cis5to3;
 	}
-	public void setChrID(String chrID) {
-		this.chrId = chrID;
+	public void setChrId(String chrId) {
+		this.chrId = chrId;
 	}
 	public void setStartAbs(int start) {
 		this.start = start;
@@ -182,7 +182,7 @@ public class Align implements Alignment, Cloneable {
 		return Math.min(start, end);
 	}
 	@Override
-	public String getRefID() {
+	public String getChrId() {
 		return chrId;
 	}
 	/** 获得中间位点 */
@@ -292,7 +292,7 @@ public class Align implements Alignment, Cloneable {
 		List<double[]> lsMerge = MathComput.combInterval(lsDouble, 0);
 		List<Align> lsResult = new ArrayList<Align>();
 		for (double[] ds : lsMerge) {
-			Align align = new Align(lsAlign.get(0).getRefID(), (int)ds[0], (int)ds[1]);
+			Align align = new Align(lsAlign.get(0).getChrId(), (int)ds[0], (int)ds[1]);
 			align.setCis5to3(isCis);
 			lsResult.add(align);
 		}

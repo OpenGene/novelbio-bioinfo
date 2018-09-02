@@ -233,7 +233,7 @@ public class SnpIndelRealignHandle {
 		int lenStep = (int)Math.ceil((double)seqLen/seqIndel.length()) * seqIndel.length()-1;
 		int startBefore = startLocModify - seqIndel.length();
 		int start = startBefore <= 0? 1 : startBefore;
-		SeqFasta seqFasta = seqHash.getSeq(alignRef.getRefID(), start, startLocModify + lenStep);
+		SeqFasta seqFasta = seqHash.getSeq(alignRef.getChrId(), start, startLocModify + lenStep);
 		String seq = seqFasta.toString();
 		
 		int beforeSpace = startBefore < 0 ? Math.abs(startBefore)+1 : 0;
@@ -269,7 +269,7 @@ public class SnpIndelRealignHandle {
 				seq = seqRemain;
 				isFirst = false;
 			} else {
-				seq = seqHash.getSeq(alignRef.getRefID(), startLoc, startLoc + lenStep).toString();
+				seq = seqHash.getSeq(alignRef.getChrId(), startLoc, startLoc + lenStep).toString();
 				if (seq.length() < lenStep+1) {
 					seq = fillSeq(seq, lenStep+1, false);
 					isGetNextSeq = false;
@@ -283,7 +283,7 @@ public class SnpIndelRealignHandle {
 		boolean isGetBeforeSeq = true;
 		int loopNum = 0;//最多循环三次，三次都找不到头部就可以不找了
 		while (isGetBeforeSeq ) {
-			seq = seqHash.getSeq(alignRef.getRefID(), startLoc-lenStep-1, startLoc-1).toString();
+			seq = seqHash.getSeq(alignRef.getChrId(), startLoc-lenStep-1, startLoc-1).toString();
 			if (seq.length() < lenStep+1) {
 				seq = fillSeq(seq, lenStep+1, true);
 			}

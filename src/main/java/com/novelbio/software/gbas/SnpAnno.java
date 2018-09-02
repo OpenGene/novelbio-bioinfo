@@ -29,7 +29,7 @@ public class SnpAnno {
 		if (!isAlleleInGene(allele, gene)) {
 			return new HashSet<>();
 		}
-		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo(allele.getRefID(), allele.getPosition(), allele.getRefBase(), allele.getAltBase(), gene);
+		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo(allele.getChrId(), allele.getPosition(), allele.getRefBase(), allele.getAltBase(), gene);
 		return getSetIsoName(snpInfo);
 	}
 	/**
@@ -39,7 +39,7 @@ public class SnpAnno {
 	 * @return
 	 */
 	public Set<String> getSetIsoName(Allele allele) {
-		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo(allele.getRefID(), allele.getPosition(), allele.getRefBase(), allele.getAltBase());
+		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo(allele.getChrId(), allele.getPosition(), allele.getRefBase(), allele.getAltBase());
 		return getSetIsoName(snpInfo);
 	}
 	/**
@@ -74,7 +74,7 @@ public class SnpAnno {
 	}
 	
 	private boolean isAlleleInGene(Allele allele, GffGene gene) {
-		if (allele == null || !allele.getRefID().equals(gene.getRefID())) {
+		if (allele == null || !allele.getChrId().equals(gene.getChrId())) {
 			return false;
 		}
 		return allele.getPosition() >= gene.getStartAbs() && allele.getPosition() <= gene.getEndAbs();
