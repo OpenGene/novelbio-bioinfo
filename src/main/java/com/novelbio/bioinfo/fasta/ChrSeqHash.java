@@ -99,7 +99,7 @@ public class ChrSeqHash extends SeqHashAbs {
 	}
 	/**
 	 * 给定chrID,chrID会自动转换为小写，和读取的起点以及终点，返回读取的序列
-	 * @param chrID
+	 * @param chrId
 	 * @param startlocation 从第几个碱基开始读取，从1开始记数，注意234的话，实际为从234开始读取，类似substring方法 long
 	 * 小于0表示从头开始读取
 	 * @param endlocation 读到第几个碱基，从1开始记数，实际读到第endNum个碱基。 快速提取序列

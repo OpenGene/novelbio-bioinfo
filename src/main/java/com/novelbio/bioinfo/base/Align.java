@@ -21,7 +21,7 @@ public class Align implements Alignment, Cloneable {
 
 	static PatternOperate patternOperate = new PatternOperate("(-{0,1}\\d+)-(-{0,1}\\d+)");
 	int start, end;
-	String chrID;
+	String chrId;
 	protected Boolean cis5to3;
 	
 	protected Align() {}
@@ -32,7 +32,7 @@ public class Align implements Alignment, Cloneable {
 	 * @param end
 	 */
 	public Align(String chrID, int start, int end) {
-		this.chrID = chrID;
+		this.chrId = chrID;
 		if (start < end) {
 			cis5to3 = true;
 		} else if (start > end) {
@@ -48,12 +48,12 @@ public class Align implements Alignment, Cloneable {
 	
 	/**
 	 * 根据输入的start和end自动正反向cis5to3
-	 * @param chrID
+	 * @param chrId
 	 * @param start
 	 * @param end
 	 */
 	public Align(Alignment alignment) {
-		this.chrID = alignment.getRefID();
+		this.chrId = alignment.getRefID();
 		this.start = alignment.getStartAbs();
 		this.end = alignment.getEndAbs();
 		this.cis5to3 = alignment.isCis5to3();
@@ -65,7 +65,7 @@ public class Align implements Alignment, Cloneable {
 	 */
 	public Align(String chrInfo) {
 		String[] ss = chrInfo.split(":");
-		this.chrID = ss[0];
+		this.chrId = ss[0];
 		try {
 			int start = Integer.parseInt(patternOperate.getPatFirst(ss[1], 1));
 			int end = Integer.parseInt(patternOperate.getPatFirst(ss[1], 2));
@@ -107,7 +107,7 @@ public class Align implements Alignment, Cloneable {
 		this.cis5to3 = cis5to3;
 	}
 	public void setChrID(String chrID) {
-		this.chrID = chrID;
+		this.chrId = chrID;
 	}
 	public void setStartAbs(int start) {
 		this.start = start;
@@ -183,7 +183,7 @@ public class Align implements Alignment, Cloneable {
 	}
 	@Override
 	public String getRefID() {
-		return chrID;
+		return chrId;
 	}
 	/** 获得中间位点 */
 	public int getMidSite() {
@@ -236,7 +236,7 @@ public class Align implements Alignment, Cloneable {
 	
 	@Override
 	public int hashCode() {
-		return (chrID + start + "_" + end).hashCode();
+		return (chrId + start + "_" + end).hashCode();
 	}
 	
 	public boolean equals(Object obj) {
@@ -245,11 +245,11 @@ public class Align implements Alignment, Cloneable {
 		
 		if (getClass() != obj.getClass()) return false;
 		Align otherAlign = (Align)obj;
-		return StringOperate.isEqual(chrID, otherAlign.chrID) && start == otherAlign.start && end == otherAlign.end && cis5to3 == otherAlign.cis5to3;
+		return StringOperate.isEqual(chrId, otherAlign.chrId) && start == otherAlign.start && end == otherAlign.end && cis5to3 == otherAlign.cis5to3;
 	}
 	
 	protected boolean equalsRefAndLoc(Align alignOther) {
-		return StringOperate.isEqual(chrID, alignOther.chrID) 
+		return StringOperate.isEqual(chrId, alignOther.chrId) 
 				&& start == alignOther.start 
 				&& end == alignOther.end
 				&& Alignment.isEqual(cis5to3, alignOther.cis5to3);
@@ -259,7 +259,7 @@ public class Align implements Alignment, Cloneable {
 	 * 不带方向的返回结果string
 	 */
 	public String toStringNoStrand() {
-		return chrID + ":" + getStartAbs() + "-" + getEndAbs();
+		return chrId + ":" + getStartAbs() + "-" + getEndAbs();
 	}
 	
 	private void validateCis() {
@@ -272,7 +272,7 @@ public class Align implements Alignment, Cloneable {
 	 * 带方向的返回结果string
 	 */
 	public String toString() {
-		return chrID + ":" + getStartCis() + "-" + getEndCis();
+		return chrId + ":" + getStartCis() + "-" + getEndCis();
 	}
 	
 	/** 考虑方向的合并，将overlap的align合并为一个align */

@@ -25,9 +25,7 @@ import com.novelbio.bioinfo.base.binarysearch.ListEleSearch;
 import com.novelbio.bioinfo.base.binarysearch.ListHashSearch;
 import com.novelbio.database.domain.modgeneid.GeneID;
 
-public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> implements GffHashGeneInf 
-
-{
+public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> implements GffHashGeneInf {
 	private static final Logger logger = LoggerFactory.getLogger(GffHashGeneAbs.class);
 
 
@@ -36,11 +34,9 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 	String gfffile = "";
 	String version;
 	String dbinfo;
-	private HashMap<String, String> mapGeneID2AccID = null;
 	private HashMap<String, GffIso> mapName2Iso = new HashMap<String, GffIso>();
 	public GffHashGeneAbs() {
 		mapChrID2ListGff = new LinkedHashMap<String, ListGff>();
-		mapGeneID2AccID = new HashMap<String, String>();
 	}
 	/**
 	 * 在读取文件后如果有什么需要设置的，可以写在setOther();方法里面
@@ -287,7 +283,7 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 	}
 	/**
 	 * 将基因装入GffHash中
-	 * @param chrID
+	 * @param chrId
 	 * @param gffDetailGene
 	 */
 	public void addGffDetailGene(GffGene gffDetailGene) {
@@ -302,7 +298,7 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 	
 	/**
 	 * 删除基因
-	 * @param chrID
+	 * @param chrId
 	 * @param gffDetailGene
 	 */
 	public void removeGffDetailGene(GffGene gffDetailGene) {

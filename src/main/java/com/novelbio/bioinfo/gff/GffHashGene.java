@@ -356,7 +356,7 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 	}
 	/**
 	 * 将基因装入GffHash中
-	 * @param chrID
+	 * @param chrId
 	 * @param gffDetailGene
 	 */
 	public void addGffDetailGene(GffGene gffDetailGene) {

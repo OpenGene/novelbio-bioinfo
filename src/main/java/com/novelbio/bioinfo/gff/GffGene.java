@@ -57,10 +57,10 @@ import com.novelbio.generalconf.TitleFormatNBC;
  * 本基因转录方向<br>
  * 本类中的几个方法都和Gff基因有关<br>
  */
-@Document(collection="gffgene")
+@Document(collection="gff_gene")
 @CompoundIndexes({
-	@CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1, 'parentName': 1, 'numberstart': 1, 'numberend': 1}"),
-    @CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1 , 'parentName': 1, 'numberstart': 1, 'numberend': 1}")
+	@CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1, 'chrId': 1, 'start': 1, 'end': 1}"),
+    @CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1 , 'chrId': 1, 'start': 1, 'end': 1}")
 })
 public class GffGene extends AlignExtend {
 	private final static Logger logger = LoggerFactory.getLogger(GffGene.class);

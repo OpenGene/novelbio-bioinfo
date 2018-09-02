@@ -234,7 +234,7 @@ public class TophatJunction extends ListEleSearch<JunctionInfo, ListEle<Junction
 	/**
 	 * 给定坐标和位点，找出全体条件下locsite,以及总共有多少reads支持
 	 * 0表示没有junction
-	 * @param chrID
+	 * @param chrId
 	 * @param locSite
 	 * @return
 	 */
