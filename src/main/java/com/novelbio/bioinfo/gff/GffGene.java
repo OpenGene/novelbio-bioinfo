@@ -155,6 +155,50 @@ public class GffGene extends AlignExtend {
 		lsGffGeneIsoInfos.remove(id);
 	}
 	/**
+	 * 
+	 * 坐标是否在基因的内部，包括Tss和GeneEnd的拓展区域
+	 * @param tss
+	 * @param geneEnd
+	 * @param coord
+	 * @return
+	 */
+	public boolean isCodInGeneExtend(int[] tss, int geneEnd[], int coord) {
+		return isCodInSide(coord) || isCodInPromoter(tss, coord) || isCodInGenEnd(geneEnd, coord);
+	}
+	
+	/**
+	 * 是否在所谓的Tss内,既可以在内也可以在
+	 * 所以如果需要只在基因外的tss，需要同时加上isCodInside==false判断
+	 * @return
+	 */
+	public boolean isCodInPromoter(int[] tss, int coord) {
+		if (getCod2Start(coord) == null) {
+			return false;
+		}
+		int cod2start = getCod2Start(coord);
+		if (cod2start >= tss[0] && cod2start <= tss[1]) {
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 是否在所谓的GeneEnd内,既可以在内也可以在外
+	 * 所以如果需要只在基因外的geneEnd，需要同时加上isCodInside==false判断
+	 * 也就是尾部点，左右扩展geneEnd3UTR长度的bp
+	 * @return
+	 */
+	public boolean isCodInGenEnd(int[] geneEnd, int coord) {
+		if (getCod2End(coord) == null) {
+			return false;
+		}
+		int cod2end = getCod2End(coord);
+		if (cod2end >= geneEnd[0] && cod2end <= geneEnd[1] ) {
+			return true;
+		}
+		return false;
+	}
+	/**
 	 * 给定转录本的名字，删除转录本
 	 */
 	public void removeIso(String isoName) {
