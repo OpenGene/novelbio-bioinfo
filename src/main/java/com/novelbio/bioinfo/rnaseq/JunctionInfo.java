@@ -50,7 +50,7 @@ public class JunctionInfo extends AlignExtend {
 		setChrId(junctionUnit.getChrId());
 		this.name = junctionUnit.key(false);
 		this.considerStrand = considerStrand;
-
+		setCis5to3(true);
 		lsJunctionUnits.add(junctionUnit);
 		mapJunSite2Unit.put(junctionUnit.key(considerStrand), junctionUnit);
 	}

@@ -57,11 +57,6 @@ import com.novelbio.generalconf.TitleFormatNBC;
  * 本基因转录方向<br>
  * 本类中的几个方法都和Gff基因有关<br>
  */
-@Document(collection="gffgene")
-@CompoundIndexes({
-	@CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1, 'chrId': 1, 'start': 1, 'end': 1}"),
-    @CompoundIndex(unique = false, name = "fileid_chr_start_end_idx", def = "{'gffFileId': 1 , 'chrId': 1, 'start': 1, 'end': 1}")
-})
 public class GffGene extends AlignExtend {
 	private final static Logger logger = LoggerFactory.getLogger(GffGene.class);
 	/** 两个转录本的overlap 覆盖 必须大于0.6才算是一个基因 */
