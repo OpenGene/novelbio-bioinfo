@@ -109,6 +109,14 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 			String chrID = entry.getKey();
 			ListGff listGff = entry.getValue();
 			listGff.sort();
+			
+			//装入hash表
+			for (GffGene gffDetailGene : listGff) {
+				for (GffIso gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
+					gffGeneIsoInfo.sortAndCombine();
+				}
+			}
+			
 			ListGff listGffNew = listGff.combineOverlapGene();
 			//装入hash表
 			for (GffGene gffDetailGene : listGff) {

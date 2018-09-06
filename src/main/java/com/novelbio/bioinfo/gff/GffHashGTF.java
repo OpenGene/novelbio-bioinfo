@@ -106,7 +106,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 		String tmpTranscriptNameLast = "";
 		int line = 0;
 		for (String content : txtgff.readlines() ) {
-			if (content.contains("BID-207")) {
+			if (content.contains("NM_003996.3")) {
 				logger.info("stop");
 			}
 			
@@ -154,7 +154,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 						!tmpTranscriptName.equals(tmpTranscriptNameLast)
 					)
 				{
-					gffGeneIsoInfo = getGffIsoSimple(tmpGeneName, tmpTranscriptName, exonStart, exonEnd);
+					gffGeneIsoInfo = getGffIsoSimple(tmpChrID, tmpGeneName, tmpTranscriptName, exonStart, exonEnd);
 					if (gffGeneIsoInfo != null) {
 						getBeforeIso = true;
 					}
@@ -179,10 +179,10 @@ public class GffHashGTF extends GffHashGeneAbs{
 						
 					boolean cis = getLocCis(ss[6], tmpChrID, exonStart, exonEnd);
 					gffGeneIsoInfo = GffIso.createGffGeneIso(tmpTranscriptName, tmpGeneName, geneType, cis);
-					addGffIso(tmpGeneName, gffGeneIsoInfo);
+					addGffIso(tmpChrID, tmpGeneName, gffGeneIsoInfo);
 					mapChrID2LsIso.put(tmpChrID, gffGeneIsoInfo);
 					tmpTranscriptNameLast = tmpTranscriptName;
-					mapIso2IsHaveExon.put(tmpTranscriptName, false);
+					mapIso2IsHaveExon.put(tmpChrID + SepSign.SEP_INFO_SIMPLE + tmpTranscriptName, false);
 					if (GeneType.getMapMRNA2GeneType().containsKey(ss[2].toLowerCase())) {
 						continue;
 					}
@@ -190,7 +190,7 @@ public class GffHashGTF extends GffHashGeneAbs{
 				if (gffGeneIsoInfo == null || !gffGeneIsoInfo.getName().equalsIgnoreCase(tmpTranscriptName)
 						|| !gffGeneIsoInfo.getParentGeneName().equalsIgnoreCase(tmpGeneName)
 						) {
-					gffGeneIsoInfo = getGffIso(tmpGeneName, tmpTranscriptName, exonStart, exonEnd);
+					gffGeneIsoInfo = getGffIso(tmpChrID, tmpGeneName, tmpTranscriptName, exonStart, exonEnd);
 				}
 
 				if (gffGeneIsoInfo == null && !ss[2].toLowerCase().contains("utr")) {
@@ -199,9 +199,9 @@ public class GffHashGTF extends GffHashGeneAbs{
 				}
 				
 				if (ss[2].equals("exon")) {
-					if (mapIso2IsHaveExon.get(tmpTranscriptName) == false) {
+					if (mapIso2IsHaveExon.get(tmpChrID + SepSign.SEP_INFO_SIMPLE + tmpTranscriptName) == false) {
 						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
-						mapIso2IsHaveExon.put(tmpTranscriptName, true);
+						mapIso2IsHaveExon.put(tmpChrID + SepSign.SEP_INFO_SIMPLE + tmpTranscriptName, true);
 					} else {
 						gffGeneIsoInfo.addExon(cisExon, exonStart, exonEnd);
 					}	
@@ -210,10 +210,10 @@ public class GffHashGTF extends GffHashGeneAbs{
 					//ucsc上的GTF，cds的末尾不是uag，而是uag的前一位。
 					//所以该方法在这里不适用，不过后面有个专门设定uag的方法，所以倒也无所谓了。
 					gffGeneIsoInfo.setATGUAGauto(exonStart, exonEnd);
-					if (mapIso2IsHaveExon.get(tmpTranscriptName) == null) {
+					if (mapIso2IsHaveExon.get(tmpChrID + SepSign.SEP_INFO_SIMPLE + tmpTranscriptName) == null) {
 						logger.error("gtf cannot find corresponding gene : " + tmpTranscriptName);
 					}
-					if (!mapIso2IsHaveExon.get(tmpTranscriptName)) {
+					if (!mapIso2IsHaveExon.get(tmpChrID + SepSign.SEP_INFO_SIMPLE + tmpTranscriptName)) {
 						gffGeneIsoInfo.addCDS(cisExon, exonStart, exonEnd);
 					}
 				} else if (ss[2].toLowerCase().equals(startCodeFlag)) {
@@ -503,8 +503,8 @@ public class GffHashGTF extends GffHashGeneAbs{
 		return key.contains(value.toLowerCase());
 	}
 	
-	private void addGffIso(String geneName, GffIso gffGeneIsoInfo) {
-		mapID2Iso.put(geneName, gffGeneIsoInfo);
+	private void addGffIso(String chrId, String geneName, GffIso gffGeneIsoInfo) {
+		mapID2Iso.put(chrId + SepSign.SEP_INFO_SIMPLE + geneName, gffGeneIsoInfo);
 	}
 	
 	
@@ -553,9 +553,9 @@ public class GffHashGTF extends GffHashGeneAbs{
 	    * @param geneType 如果没有找到iso，则新建的iso是什么类型
 	    * @return
 	    */  
-	private GffIso getGffIso(String geneName, String isoName, int startExon, int endExon) {
+	private GffIso getGffIso(String chrId, String geneName, String isoName, int startExon, int endExon) {
 		int start = Math.min(startExon, endExon), end = Math.max(startExon, startExon);
-		List<GffIso> lsIsos = mapID2Iso.get(geneName);
+		List<GffIso> lsIsos = mapID2Iso.get(chrId + SepSign.SEP_INFO_SIMPLE + geneName);
 		if (lsIsos == null || lsIsos.size() == 0) {
 			return null;
 		}
@@ -595,9 +595,9 @@ public class GffHashGTF extends GffHashGeneAbs{
 	    * 从hashRnaID2RnaName中获得该RNA的GffGeneIsoInfo
 	    * @return
 	    */  
-	private GffIso getGffIsoSimple(String geneName, String isoName, int startExon, int endExon) {
+	private GffIso getGffIsoSimple(String chrId, String geneName, String isoName, int startExon, int endExon) {
 		int start = Math.min(startExon, endExon), end = Math.max(startExon, startExon);
-		List<GffIso> lsIsos = mapID2Iso.get(geneName);
+		List<GffIso> lsIsos = mapID2Iso.get(chrId + SepSign.SEP_INFO_SIMPLE + geneName);
 		if (lsIsos == null || lsIsos.size() == 0) {
 			return null;
 		}
