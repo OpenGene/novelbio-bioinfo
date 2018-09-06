@@ -12,16 +12,9 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.persistence.Id;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.mongodb.core.index.CompoundIndex;
-import org.springframework.data.mongodb.core.index.CompoundIndexes;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
-import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.SepSign;
@@ -30,11 +23,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignExtend;
-import com.novelbio.bioinfo.base.Alignment;
-import com.novelbio.bioinfo.base.binarysearch.ListCodAbs;
-import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs;
 import com.novelbio.bioinfo.base.binarysearch.ListEle;
-import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.domain.modgeneid.GeneType;
 import com.novelbio.generalconf.TitleFormatNBC;
 /**
@@ -62,24 +51,15 @@ public class GffGene extends AlignExtend {
 	/** 两个转录本的overlap 覆盖 必须大于0.6才算是一个基因 */
 	public final static double OVERLAP_RATIO = 0.6;
 	
-	@Id
-	String id;
-	
-	/** 顺序存储每个转录本的的坐标情况 */
-	@DBRef
 	ArrayList<GffIso> lsGffGeneIsoInfos = new ArrayList<GffIso>();//存储可变剪接的mRNA
 	
-	@Indexed(unique = false)
 	int taxID = 0;
-	@Indexed(unique = false)
+	
 	String gffFileId;
-	@Transient
+	
 	boolean removeDuplicateIso = false;
 	
 	String name;
-	
-	@Indexed
-	String geneId;
 	
 	ListGff listGff;
 	public GffGene() {}
@@ -128,14 +108,6 @@ public class GffGene extends AlignExtend {
 	/** 仅供数据库使用 */
 	public String getGffFileId() {
 		return gffFileId;
-	}
-	/** 仅供数据库使用 */
-	public void setId(String id) {
-		this.id = id;
-	}
-	/** 仅供数据库使用 */
-	public String getId() {
-		return id;
 	}
 	
 	protected void setTaxID(int taxID) {

@@ -15,14 +15,10 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import com.novelbio.base.SepSign;
 import com.novelbio.database.service.servgff.MgmtGffDetailGene;
 
-@CompoundIndexes({
-	@CompoundIndex(unique = true, name = "fileid_chr_trunknum_idx", def = "{'gffFileId': 1, 'chrId': 1, 'trunkNum': 1}"),
-    @CompoundIndex(unique = true, name = "taxVsDb_chr_trunknum_idx", def = "{'taxVsDb': 1, 'chrId': 1, 'trunkNum': 1}")
-})
+/** 给jbrowser用的，但是现在使用igv，感觉这个就用不起来了 */
+@Deprecated
 public class GffFileUnit {
-	@Id
 	String id;
-	@Indexed
 	String gffFileId;
 
 	/** TaxId Version DbInfo */

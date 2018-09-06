@@ -43,10 +43,6 @@ import com.novelbio.database.domain.modgeneid.GeneType;
  * 如果反向则从大到小排列，且int0&gt;int1
  * @return
  */
-@Document(collection="gffiso")
-@CompoundIndexes({
-    @CompoundIndex(unique = false, name = "fileId_name", def = "{'gffFileId': 1, 'listName': 1}")
-})
 public abstract class GffIso extends ListEle<ExonInfo> {
 	private static final Logger logger = LoggerFactory.getLogger(GffIso.class);
 	private static final long serialVersionUID = -6015332335255457620L;
@@ -83,9 +79,7 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 
 	/** 所有坐标的起始信息  */
 	public static final int LOC_ORIGINAL = -1000000000;
-	
-	@Id
-	String id;
+
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	public GeneType flagTypeGene = GeneType.ncRNA;
 	
@@ -96,10 +90,8 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	/** 该转录本的长度 */
 	protected int lengthIso = LOC_ORIGINAL;
 	
-	@Transient
 	GffGene gffGene;
-	@Indexed(unique = false)
-	String gffFileId;
+
 	/**
 	 * 该名字为实际上的iso所在的基因名字，不一定为其 gffDetailGeneParent 的gene name
 	 * 因为可能会有多个gffDetailGene合并为一个gffDetailGene，这时候直接用gffDetailGeneParent的名字就无法进行区分
@@ -110,7 +102,6 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	 * 是否为错乱的exon
 	 * 目前只看到叶绿体的基因是错乱的exon
 	 */
-	@Transient
 	private boolean isUnorderedExon = false;	
 	
 	/** 给mongodb使用 */
@@ -131,22 +122,6 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	public void setParentGeneName(String geneName) {
 		this.geneName = geneName;
 	}
-	/** 仅供数据库使用 */
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	/** 仅用于数据库 */
-	public String getGffFileId() {
-		return gffFileId;
-	}
-	/** 仅用于数据库 */
-	public void setGffFileId(String gffFileId) {
-		this.gffFileId = gffFileId;
-	}
-
 	/**
 	 * 返回该基因的类型
 	 * @return

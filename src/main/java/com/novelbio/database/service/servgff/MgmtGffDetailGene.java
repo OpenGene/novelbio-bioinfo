@@ -28,6 +28,7 @@ import com.novelbio.database.dao.geneanno.RepoGffIso;
 import com.novelbio.database.domain.modgeneid.GeneID;
 import com.novelbio.database.service.SpringFactoryBioinfo;
 
+@Deprecated
 public class MgmtGffDetailGene {
 	private static final Logger logger = Logger.getLogger(MgmtGffDetailGene.class);
 	static double[] lock = new double[0];
@@ -119,7 +120,7 @@ public class MgmtGffDetailGene {
 		
 		for (GffGene gffDetailGene : gffHashGene.getLsGffDetailGenes()) {
 			for (GffIso gffGeneIsoInfo : gffDetailGene.getLsCodSplit()) {
-				gffGeneIsoInfo.setGffFileId(gffFile.getId());
+//				gffGeneIsoInfo.setGffFileId(gffFile.getId());
 				repoGffIso.save(gffGeneIsoInfo);
 			}
 			gffDetailGene.setGffFileId(gffFile.getId());
