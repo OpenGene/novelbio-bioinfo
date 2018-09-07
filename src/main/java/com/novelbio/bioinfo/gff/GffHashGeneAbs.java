@@ -184,7 +184,7 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 			addChrIdCannotFind(chrID);
 			return null;
 		}
-		BinarySearch<GffGene> binarySearch = new BinarySearch<>(Loclist.getLsElement());
+		BinarySearch<GffGene> binarySearch = new BinarySearch<>(Loclist.getLsElementRaw());
 		return new GffCodGene(binarySearch.searchLocation(cod1));//(chrID, Math.min(cod1, cod2));
 	}
 	public GffCodGeneDU searchLocation(String chrID, int cod1, int cod2) {
@@ -193,7 +193,7 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 			addChrIdCannotFind(chrID);
 			return null;
 		}
-		BinarySearch<GffGene> binarySearch = new BinarySearch<>(Loclist.getLsElement());
+		BinarySearch<GffGene> binarySearch = new BinarySearch<>(Loclist.getLsElementRaw());
 		BsearchSiteDu<GffGene> gffCodDu = binarySearch.searchLocationDu(cod1, cod2);
 		return new GffCodGeneDU(gffCodDu);
 	}

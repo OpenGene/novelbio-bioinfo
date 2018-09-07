@@ -7,19 +7,26 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.bioinfo.base.binarysearch.ListAbsSearch;
 import com.novelbio.bioinfo.base.binarysearch.ListEle;
 
 public class ListGff extends ListEle<GffGene> {
 	private static Logger logger = LoggerFactory.getLogger(ListGff.class);
 	private static final long serialVersionUID = -1121905415019539320L;
 
-	/** 会将gffDetailGene进行拆分，把独立的gene文件拿出来 */
-	public ArrayList<GffGene> getLsElement() {
-		ArrayList<GffGene> lsGenes = new ArrayList<>();
+	/**
+	 * 会将gffDetailGene进行拆分，把独立的gene文件拿出来
+	 * 注意本步骤效率低
+	 */
+	public List<GffGene> getLsElement() {
+		List<GffGene> lsGenes = new ArrayList<>();
 		lsElement.forEach((gene)->{
 			lsGenes.addAll(gene.getlsGffDetailGenes());});
 		return lsGenes;
+	}
+	
+	/** 会将gffDetailGene进行拆分，把独立的gene文件拿出来 */
+	public List<GffGene> getLsElementRaw() {
+		return super.getLsElement();
 	}
 	/**
 	 * 合并重复的GffDetailGene

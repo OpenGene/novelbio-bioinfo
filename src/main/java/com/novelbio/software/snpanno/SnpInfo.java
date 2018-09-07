@@ -297,10 +297,8 @@ public class SnpInfo {
 	 */
 	protected void setVarHgvsType(String seqRef, String seqAlt) {
 		if (seqRef.length() == 0 && seqAlt.length() == 0) {
-			//不可能出现的错误
-			throw new ExceptionNBCSnpHgvs("error ref and alt cannot both be empty!");
-		}
-		if (seqRef.length() == 1 && seqAlt.length() == 1) {
+			varType = EnumHgvsVarType.NOVAR;
+		} else if (seqRef.length() == 1 && seqAlt.length() == 1) {
 			varType = EnumHgvsVarType.Substitutions;
 		} else if (seqRef.length() == 0) {
 			varType = EnumHgvsVarType.Insertions;
@@ -462,6 +460,8 @@ public class SnpInfo {
 	 * http://www.hgvs.org/mutnomen/recs-DNA.html#inv
 	 */
 	public static enum EnumHgvsVarType {
+		/** 没有发生突变 */
+		NOVAR,
 		Substitutions,
 		Deletions,
 		Duplications,
