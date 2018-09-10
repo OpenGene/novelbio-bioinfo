@@ -344,6 +344,7 @@ public class Scr2Target {
 		lsScr2Target.add(0, title);
 		TxtReadandWrite txtReadandWrite = new TxtReadandWrite(ResultFIleScr2Target, true);
 		txtReadandWrite.ExcelWrite(lsScr2Target);
+		txtReadandWrite.close();
 		
 		
 		Enumeration<String> keys=hashEntryInfoResult.keys();

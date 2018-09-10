@@ -59,7 +59,7 @@ public class AgilentID {
 		}
 		
 		txtAgilent.ExcelWrite(result);
-		
+		txtAgilent.close();
 	}
 	
 
