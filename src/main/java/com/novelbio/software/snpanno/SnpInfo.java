@@ -16,6 +16,7 @@ import com.novelbio.bioinfo.gff.GffCodGeneDU;
 import com.novelbio.bioinfo.gff.GffGene;
 import com.novelbio.bioinfo.gff.GffHashGene;
 import com.novelbio.bioinfo.gff.GffIso;
+import com.novelbio.software.snpanno.SnpInfo.EnumHgvsVarType;
 
 
 /**
@@ -425,9 +426,47 @@ public class SnpInfo {
 	public static enum SnpIndelType {
 		INSERT, DELETION, MISMATCH, CORRECT
 	}
-	
+	public String getAltInfo() {
+		return generateAltInfo(getSeqRef(), getSeqAlt());
+	}
+	public String getAltInfoRight() {
+		return generateAltInfo(getSeqRefRight(), getSeqAltRight());
+	}
 	public String toString() {
 		return alignRefRaw.getChrId() + "\t" + alignRefRaw.getStartAbs() + "\t" + seqRefRaw + "\t" + seqAltRaw;
+	}
+	
+	/**
+	 * 要求输入大写，假设输入的refseq和altseq都已经掐头去尾
+	 * “” CT --> +CT
+	 * CT “” --> -2
+	 * @return
+	 */
+	public static String generateAltInfo(String refSeq, String altSeq) {
+		if (StringOperate.isRealNull(refSeq) && StringOperate.isRealNull(altSeq)) {
+			throw new RuntimeException("cannot generateRefInfo");
+		}
+		String altInfo = null;
+		//插入
+		if (refSeq.equals("")) {
+			altInfo="+"+altSeq.toUpperCase();
+		}
+		//缺失
+		else if (altSeq.equals("")) {
+			altInfo = "-"+refSeq.length();
+		}
+		//snp
+		else if (refSeq.length() ==1 && altSeq.length() == 1) {
+			altInfo = altSeq.toUpperCase();
+		}
+		//indel
+		else if (refSeq.length() >= 1 && altSeq.length() >= 1) {
+			altInfo = "-" + refSeq.length() + "+"+altSeq.toUpperCase();
+		}
+		else {
+			throw new RuntimeException("unknown condition:"+"\t"+ refSeq + "\t" + altSeq);
+		}
+		return altInfo;
 	}
 	
 	/**

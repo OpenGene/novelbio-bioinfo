@@ -16,6 +16,7 @@ import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.fasta.SeqFasta.SeqCharacter;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.bioinfo.mappedreads.SiteSeqInfo;
@@ -348,11 +349,6 @@ public class SeqHash implements SeqHashInt {
 		seqHashAbs.setMaxExtractSeqLength(maxSeqLen);
 	}
 	
-	@Override
-	public Iterable<Character> readBase(String refID) {
-		return seqHashAbs.readBase(refID);
-	}
-	
 	public void close() {
 		if (seqHashAbs != null) {
 			seqHashAbs.close();
@@ -440,6 +436,5 @@ public class SeqHash implements SeqHashInt {
 		txtRead.close();
 		return lsName;
 	}
-
 	
 }

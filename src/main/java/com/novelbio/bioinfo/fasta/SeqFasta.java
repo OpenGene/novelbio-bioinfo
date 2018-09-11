@@ -617,4 +617,68 @@ public class SeqFasta implements Cloneable {
 			}
 		};
 	}
+	
+	/** 依次读取碱基 */
+	public Iterable<SeqCharacter> readBaseSeq() {
+		final char[] seq = toString().toCharArray();
+		return new Iterable<SeqCharacter>() {
+			public Iterator<SeqCharacter> iterator() {
+				return new Iterator<SeqCharacter>() {
+					int index = 0;
+					SeqCharacter base = getBase();
+					public boolean hasNext() {
+						return base != null;
+					}
+					public SeqCharacter next() {
+						SeqCharacter retval = base;
+						base = getBase();
+						return retval;
+					}
+					public void remove() {
+						throw new UnsupportedOperationException();
+					}
+					SeqCharacter getBase() {
+						if (index >= seq.length) {
+							return null;
+						}
+						SeqCharacter seqCharacter = new SeqCharacter(getSeqName(), index+1, seq[index]);						
+						index++;
+						return seqCharacter;
+					}
+				};
+			}
+		};
+	}
+	
+	public static class SeqCharacter {
+		char base;
+		int position;
+		String chrId;
+		
+		public SeqCharacter(String chrId, int position, char base) {
+			this.chrId = chrId;
+			this.position = position;
+			this.base = base;
+		}
+		
+		public void setChrId(String chrId) {
+			this.chrId = chrId;
+		}
+		public void setPosition(int position) {
+			this.position = position;
+		}
+		public void setBase(char base) {
+			this.base = base;
+		}
+		/** 从1开始 */
+		public int getPosition() {
+			return position;
+		}
+		public String getChrId() {
+			return chrId;
+		}
+		public char getBase() {
+			return base;
+		}
+	}
 }

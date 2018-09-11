@@ -7,6 +7,7 @@ import java.util.List;
 
 import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.fasta.SeqFasta;
+import com.novelbio.bioinfo.fasta.SeqFasta.SeqCharacter;
 import com.novelbio.bioinfo.fasta.SeqHashInt;
 import com.novelbio.bioinfo.fasta.StrandType;
 import com.novelbio.bioinfo.gff.ExonInfo;
@@ -132,12 +133,6 @@ public class SeqHashStub implements SeqHashInt {
 	}
 
 	@Override
-	public Iterable<Character> readBase(String refID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void setMaxExtractSeqLength(int maxSeqLen) {
 		
 	}
@@ -147,6 +142,5 @@ public class SeqHashStub implements SeqHashInt {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 }

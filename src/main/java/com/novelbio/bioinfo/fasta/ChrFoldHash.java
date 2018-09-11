@@ -8,12 +8,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Random;
 import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.base.fileOperate.RandomFileInt;
+import com.novelbio.bioinfo.fasta.SeqFasta.SeqCharacter;
 
 /**
  *  用 {@link ChrSeqHash}代替
@@ -26,7 +29,7 @@ public class ChrFoldHash extends SeqHashAbs {
 	
 	/** 以下哈希表的键是染色体名称，都是小写，格式如：chr1，chr2，chr10 */
 	HashMap<String, String> mapChrID2FileName;
-	HashMap<String, RandomAccessFile> mapChrID2RandomFile;
+	HashMap<String, RandomFileInt> mapChrID2RandomFile;
 	HashMap<String, Integer> mapChrID2EnterType;
 
 	/** 每个文本所对应的单行长度
@@ -85,7 +88,7 @@ public class ChrFoldHash extends SeqHashAbs {
 			mapChrFile2LengthRow.put(chrID, seqRow.length());
 			mapChrID2FileName.put(chrID, fileName);
 			if (lsChrFile.size() <= maxSeqNum) {
-				RandomAccessFile randomAccessFile = new RandomAccessFile(fileName, "r");
+				RandomFileInt randomAccessFile = RandomFileInt.RandomFileFactory.createInstance(fileName);
 				mapChrID2RandomFile.put(chrID, randomAccessFile);
 			}
 			
@@ -176,7 +179,7 @@ public class ChrFoldHash extends SeqHashAbs {
 		}
 		startlocation--;
 		
-		RandomAccessFile chrRASeqFile = getRandomAccessFile(chrID);
+		RandomFileInt chrRASeqFile = getRandomAccessFile(chrID);
 		if (chrRASeqFile == null) {
 			logger.error( "无该染色体: "+ chrID);
 			return null;
@@ -242,38 +245,24 @@ public class ChrFoldHash extends SeqHashAbs {
 	
 	/** 输入小写的ChrID 
 	 * @throws FileNotFoundException */
-	private RandomAccessFile getRandomAccessFile(String chrID) throws FileNotFoundException {
-		RandomAccessFile chrRASeqFile = null;
+	private RandomFileInt getRandomAccessFile(String chrID) throws FileNotFoundException {
+		RandomFileInt chrRASeqFile = null;
 		if (mapChrID2FileName.size() > 1000) {
 			String fileName = mapChrID2FileName.get(chrID);
 			if (fileName == null) {
 				logger.error( "无该染色体: "+ chrID);
 				return null;
 			}
-			chrRASeqFile = new RandomAccessFile(fileName, "r");
+			chrRASeqFile = RandomFileInt.RandomFileFactory.createInstance(fileName);
 		} else {
 			chrRASeqFile = mapChrID2RandomFile.get(chrID);
 		}
 		return chrRASeqFile;
 	}
 	
-	@Override
-	public Iterable<Character> readBase(String refID) {
-		final String myRefID = refID.toLowerCase();
-		return new Iterable<Character>() {
-			@Override
-			public Iterator<Character> iterator() {
-				IteratorBase iteratorBase = new IteratorBase();
-				TxtReadandWrite txtRead = new TxtReadandWrite(mapChrID2FileName.get(myRefID));
-				iteratorBase.setReader(txtRead);
-				return iteratorBase;
-			}
-		};
-	}
-	
 	public void close() {
 		if (mapChrID2RandomFile.size() > 0) {
-			for (RandomAccessFile randomAccessFile : mapChrID2RandomFile.values()) {
+			for (RandomFileInt randomAccessFile : mapChrID2RandomFile.values()) {
 				try {
 					randomAccessFile.close();
 				} catch (IOException e) {
@@ -283,77 +272,7 @@ public class ChrFoldHash extends SeqHashAbs {
 			}
 		}
 	}
+
 	
 }
 
-
-class IteratorBase implements Iterator<Character> {
-	TxtReadandWrite txtReader;
-	BufferedReader reader;
-	
-	char[] tmpSeq;
-	int index = 0;
-	
-	Character base;
-	
-	public void setReader(TxtReadandWrite txtRead) {
-		this.txtReader = txtRead;
-		try { reader = txtReader.readfile(); } catch (Exception e) { e.printStackTrace(); }
-		base = getBase();
-	}
-	@Override
-	public boolean hasNext() {
-		return base != null;
-	}
-
-	@Override
-	public Character next() {
-		Character retval = base;
-		base = getBase();
-		return retval;
-	}
-
-	@Override
-	public void remove() {
-		throw new UnsupportedOperationException();
-	}
-	
-	private Character getBase() {
-		try {
-			return getBaseWithExp();
-		} catch (IOException e) {
-			return null;
-		}
-	}
-	
-	private Character getBaseWithExp() throws IOException {
-		Character base = null;
-		if (tmpSeq == null || index >= tmpSeq.length) {
-			String lineTmp = reader.readLine();
-			if (lineTmp == null) {
-				return null;
-			}
-			lineTmp = lineTmp.trim();
-			/////skip blank lines
-			while (lineTmp.startsWith(">") || lineTmp.length() == 0) {
-				lineTmp = reader.readLine();
-				if (lineTmp == null) {
-					return null;
-				}
-				lineTmp = lineTmp.trim();
-			}
-			/////////////////
-			tmpSeq = lineTmp.toCharArray();
-			index = 0;
-		}
-
-		base = tmpSeq[index];
-		while (base==' ' || base == '\t' || base == '\r' || base == '\n') {
-			index ++;
-			base = tmpSeq[index];
-		}
-		index++;
-		return base;
-	}
-
-}

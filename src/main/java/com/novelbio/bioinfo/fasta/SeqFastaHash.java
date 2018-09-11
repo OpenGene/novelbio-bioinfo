@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.fasta.SeqFasta.SeqCharacter;
 
 /**
  * 本类用来将读取fasta文本，返回Hash表。key-序列名-小写，value-序列信息
@@ -362,12 +363,7 @@ public class SeqFastaHash extends SeqHashAbs {
 		}
 		txtOut.close();
 	}
-	@Override
-	public Iterable<Character> readBase(String refID) {
-		refID = refID.toLowerCase();
-		SeqFasta seqFasta = hashSeq.get(refID);
-		return seqFasta.readBase();
-	}
+	
 	@Override
 	public void close() {}
 	

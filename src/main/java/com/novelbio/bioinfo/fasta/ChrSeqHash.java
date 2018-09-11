@@ -16,6 +16,7 @@ import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.fileOperate.RandomFileInt;
 import com.novelbio.base.fileOperate.RandomFileInt.RandomFileFactory;
+import com.novelbio.bioinfo.fasta.SeqFasta.SeqCharacter;
 import com.novelbio.bioinfo.sam.SamIndexRefsequence;
 
 /**
@@ -202,23 +203,7 @@ public class ChrSeqHash extends SeqHashAbs {
 			throw new RuntimeException("extract seq error: " + chrFile + "\t" + chrIDLowcase + " " + start + " " + end, e);
 		}
 	}
-	
-	//TODO 没写完
-	@Override
-	public Iterable<Character> readBase(String refID) {
-		final String myRefID = refID.toLowerCase();
-		return new Iterable<Character>() {
-			@Override
-			public Iterator<Character> iterator() {
-				IteratorBase iteratorBase = new IteratorBase();
-				TxtReadandWrite txtRead = new TxtReadandWrite("");
-				//TODO 
-				iteratorBase.setReader(txtRead);
-				return iteratorBase;
-			}
-		};
-	}
-	
+
 	/**
 	 * @param chrStart 该染色体起点在文本中的位置
 	 * @param site 想转换的某个染色体坐标
@@ -436,4 +421,5 @@ public class ChrSeqHash extends SeqHashAbs {
 		}
 		
 	}
+
 }

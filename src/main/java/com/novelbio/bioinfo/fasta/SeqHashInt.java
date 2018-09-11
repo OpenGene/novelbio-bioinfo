@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.fasta.SeqFasta.SeqCharacter;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.bioinfo.mappedreads.SiteSeqInfo;
@@ -127,9 +128,7 @@ public interface SeqHashInt extends Closeable {
 	 * @param mapInfo
 	 */
 	void getSeq(SiteSeqInfo mapInfo);
-	/** 从头到尾遍历某条序列上的碱基 */
-	Iterable<Character> readBase(String refID);
-	
+
 	/** 设定最长可以读取的序列长度 */
 	void setMaxExtractSeqLength(int maxSeqLen);
 	
