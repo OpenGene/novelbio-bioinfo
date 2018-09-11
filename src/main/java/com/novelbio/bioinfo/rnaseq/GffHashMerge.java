@@ -49,6 +49,7 @@ public class GffHashMerge {
 		TxtReadandWrite txtOut = new TxtReadandWrite(gffFinalStatistics, true);
 
 		txtOut.ExcelWrite(transcriptomStatistics.getStatisticsResult());
+		txtOut.close();
 	}
 
 	ArrayList<GffHashGene> lsGffHashGenes = new ArrayList<GffHashGene>();
