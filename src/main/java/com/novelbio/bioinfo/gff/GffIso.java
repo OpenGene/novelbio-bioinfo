@@ -87,8 +87,6 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	protected int ATGsite = LOC_ORIGINAL;
 	/** 该转录本的UAG的最后一个字符坐标，从1开始计数 */
 	protected int UAGsite = LOC_ORIGINAL;
-	/** 该转录本的长度 */
-	protected int lengthIso = LOC_ORIGINAL;
 	
 	GffGene gffGene;
 
@@ -262,7 +260,6 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 			return false;
 		}
 		return Math.abs(ATGsite - UAGsite) > 10;
-
 	}
 	/**
 	 * 根据输入的gffIso延长两端
@@ -336,6 +333,8 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	}
 	/** 如果是GTF文件指定了atg位点，就用这个设定，是ATG的第一个位点 */
 	public void setATG(int atg) {
+		if (atg < 0) return;
+		
 		if (ATGsite <= 0) {
 			ATGsite = atg;
 		} else {
@@ -348,6 +347,8 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	}
 	/** 如果是GTF文件指定了uag位点，就用这个设定，是UAG的最后一个位点 */
 	public void setUAG(int uag) {
+		if (uag < 0) return;
+		
 		if (UAGsite <= 0) {
 			UAGsite = uag;
 		} else {
@@ -1527,7 +1528,6 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 		result.gffGene = gffGene;
 		result.geneName = geneName;
 		result.flagTypeGene = flagTypeGene;
-		result.lengthIso = lengthIso;
 		result.UAGsite = UAGsite;
 		return result;
 	}

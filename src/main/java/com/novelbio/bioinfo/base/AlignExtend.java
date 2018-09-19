@@ -1,8 +1,5 @@
 package com.novelbio.bioinfo.base;
 
-import org.springframework.data.annotation.Transient;
-
-import com.lowagie.text.List;
 import com.novelbio.bioinfo.base.binarysearch.ListEle;
 import com.novelbio.bioinfo.base.binarysearch.ListSearch;
 
@@ -20,10 +17,8 @@ public abstract class AlignExtend extends Align {
 	public abstract void setParent(ListEle<? extends AlignExtend> parent);
 
 	
-	@Transient
 	protected int tss2UpGene = LOC_ORIGINAL;
 	/** 本基因终点到下一个基因边界的距离 */
-	@Transient
 	protected int tes2DownGene = LOC_ORIGINAL;
 	
 	/** 本基因起点到上一个基因边界的距离  */

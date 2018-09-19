@@ -55,8 +55,6 @@ public class GffGene extends AlignExtend {
 	
 	int taxID = 0;
 	
-	String gffFileId;
-	
 	boolean removeDuplicateIso = false;
 	
 	String name;
@@ -100,14 +98,6 @@ public class GffGene extends AlignExtend {
 	 * 该条目在List-GffDetail中的具体位置 */
 	public int getItemNum() {
 		return listGff.indexOf(this);
-	}
-	/** 仅供数据库使用 */
-	public void setGffFileId(String gffFileId) {
-		this.gffFileId = gffFileId;
-	}
-	/** 仅供数据库使用 */
-	public String getGffFileId() {
-		return gffFileId;
 	}
 	
 	protected void setTaxID(int taxID) {

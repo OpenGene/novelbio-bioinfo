@@ -257,11 +257,11 @@ public class SnpInfo {
 		char[] refChr = seqRefRaw.toCharArray();
 		char[] altChr = seqAltRaw.toCharArray();
 		int seqLenMax = Math.max(refChr.length, altChr.length);
+		int seqLenMin = Math.min(refChr.length, altChr.length);
 
 		int[] startEndSameIndex = SnpInfo.getStartEndSameIndex(refChr, altChr);
 		int startSameIndex = startEndSameIndex[0], endSameIndex = startEndSameIndex[1];
 		
-	
 		if (startSameIndex == 0 && endSameIndex == 0) {
 			alignChange = new Align(alignRefRaw.toString());
 			seqRef = seqRefRaw;
@@ -269,6 +269,11 @@ public class SnpInfo {
 			setVarHgvsType(seqRef, seqAlt);
 			return;
 		}
+		
+		if (startSameIndex + endSameIndex > seqLenMin) {
+			endSameIndex = seqLenMin-startSameIndex;
+		}
+		
 		seqRef = seqRefRaw.substring(startSameIndex, seqRefRaw.length() - endSameIndex);
 		seqAlt = seqAltRaw.substring(startSameIndex, seqAltRaw.length() - endSameIndex);
 		setVarHgvsType(seqRef, seqAlt);
@@ -500,6 +505,7 @@ public class SnpInfo {
 	 */
 	public static enum EnumHgvsVarType {
 		/** 没有发生突变 */
+		UnKnown,
 		NOVAR,
 		Substitutions,
 		Deletions,
