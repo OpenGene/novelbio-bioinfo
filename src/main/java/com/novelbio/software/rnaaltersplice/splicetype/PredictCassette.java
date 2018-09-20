@@ -348,16 +348,46 @@ public class PredictCassette extends SpliceTypePredict {
 		if (lsBG.isEmpty()) {
 			return;
 		}
-		List<ExonInfo> lsBGnew = new ArrayList<>();//去除冗余的BG
-		Set<String> setSite = new HashSet<>();
-		for (ExonInfo exonInfo : lsBG) {
-			if (setSite.contains(exonInfo.getStartAbs() + SepSign.SEP_ID + exonInfo.getEndAbs())) {
-				continue;
+		if (lsBG.size() <= 2) {
+			return;
+		}
+		ExonInfo exonBefore = null;
+		ExonInfo exonAfter = null;
+		Collections.sort(lsBG);
+		if (this.exonCluster.isCis5to3()) {
+			for (ExonInfo exonInfo : lsBG) {
+				if (exonInfo.getEndCis() < exonCluster.getStartCis() 
+						&& (exonBefore == null || exonInfo.getStartCis() > exonBefore.getStartCis())
+				) {
+					exonBefore = exonInfo;
+				}
+				if (exonInfo.getStartCis() > exonCluster.getStartCis() 
+						&& (exonAfter == null || exonInfo.getEndCis() < exonAfter.getEndCis())
+				) {
+					exonAfter = exonInfo;
+				}
 			}
-			setSite.add(exonInfo.getStartAbs() + SepSign.SEP_ID + exonInfo.getEndAbs());
-			lsBGnew.add(exonInfo);
-		}		
-		lsBG = lsBGnew;
+		} else {
+			for (ExonInfo exonInfo : lsBG) {
+				if (exonInfo.getEndCis() > exonCluster.getStartCis() 
+						&& (exonBefore == null || exonInfo.getStartCis() < exonBefore.getStartCis())
+				) {
+					exonBefore = exonInfo;
+				}
+				if (exonInfo.getStartCis() < exonCluster.getStartCis() 
+						&& (exonAfter == null || exonInfo.getEndCis() > exonAfter.getEndCis())
+				) {
+					exonAfter = exonInfo;
+				}
+			}
+		}
+		
+		if (exonBefore != null) {
+			lsBG.add(exonBefore);
+		}
+		if (exonAfter != null) {
+			lsBG.add(exonAfter);
+		}
 	}
 	
 	/** 

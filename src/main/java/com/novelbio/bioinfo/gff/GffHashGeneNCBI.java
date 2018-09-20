@@ -46,7 +46,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 	public static final double overlapFactor = 0.5;
 	private static final Logger logger = LoggerFactory.getLogger(GffHashGeneNCBI.class);
 	
-	private static String geneIdRegx = "([\\w\\-%\\:\\.\\{\\}\\(\\)]+)";
+	private static String geneIdRegx = "([\\w\\-%\\:\\. \\{\\}\\(\\)]+)";
 	
 	/** ID的正则 */
 	protected static String regID = "(?<=ID\\=)[\\w\\.\\-%\\:\\{\\}]+";
@@ -466,7 +466,7 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 			if (name == null) {
 				logger.error("GffHashNCBI: 文件  " + getGffFilename() + "  在本行可能没有指定的基因ID  " + lineInfo);
 			} 
-		   return name;
+		   return name.trim();
 	   }
 	   
 	private boolean addExon(String[] lastGeneID2Name, String[] lastRnaID2Name,
