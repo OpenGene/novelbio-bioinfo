@@ -1,6 +1,7 @@
 package com.novelbio.software.rnaaltersplice.splicetype;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,29 @@ public abstract class PredictAlt5Or3 extends SpliceTypePredict {
 	public PredictAlt5Or3(ExonCluster exonCluster) {
 		super(exonCluster);
 	}
+	
+	/** 包含左右两测的bg */
+	public List<Align> getLsBGSiteBeforeAfter() {
+		List<Align> lsBG = new ArrayList<>();
+		ExonCluster exonBefore = exonCluster.getExonClusterBefore();
+		if (exonBefore != null) {
+			Align alignBefore = new Align(exonBefore.getChrId(), exonBefore.getStartAbs(), exonBefore.getEndAbs());
+			alignBefore.setCis5to3(exonCluster.isCis5to3());
+			lsBG.add(alignBefore);
+		}
+		
+		lsBG.addAll(getBGsiteAlt53());
+		
+		ExonCluster exonAfter = exonCluster.getExonClusterAfter();
+		if (exonAfter != null) {
+			Align alignAfter = new Align(exonAfter.getChrId(), exonAfter.getStartAbs(), exonAfter.getEndAbs());
+			alignAfter.setCis5to3(exonCluster.isCis5to3());
+			lsBG.add(alignAfter);
+		}
+		Collections.sort(lsBG, new Alignment.CompS2MWithStrand());
+		return lsBG;
+	}
+	protected abstract List<Align> getBGsiteAlt53();
 	
 	@Override
 	protected ArrayListMultimap<String, Double> getLsJuncCounts(String condition) {

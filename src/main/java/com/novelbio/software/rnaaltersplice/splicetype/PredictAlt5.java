@@ -26,7 +26,11 @@ public class PredictAlt5 extends PredictAlt5Or3 {
 	}
 	
 	public List<? extends Alignment> getBGSiteSplice() {
-		List<Alignment> lsAlignments = new ArrayList<Alignment>();
+		return getBGsiteAlt53();
+	}
+	
+	protected List<Align> getBGsiteAlt53() {
+		List<Align> lsAlignments = new ArrayList<Align>();
 		Align alignBG = null;
 		int startBGcis = exonCluster.getStartCis();
 		Align align = getDifSite().get(0);

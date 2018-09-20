@@ -27,7 +27,11 @@ public class PredictAlt3 extends PredictAlt5Or3 {
 	}
 	
 	public List<? extends Alignment> getBGSiteSplice() {
-		List<Alignment> lsAlignments = new ArrayList<Alignment>();
+		return getBGsiteAlt53();
+	}
+	
+	protected List<Align> getBGsiteAlt53() {
+		List<Align> lsAlignments = new ArrayList<Align>();
 		Align alignBG = null;
 		int endBGcis = exonCluster.getEndCis();
 		Align align = getDifSite().get(0);
@@ -37,7 +41,7 @@ public class PredictAlt3 extends PredictAlt5Or3 {
 		lsAlignments.add(alignBG);
 		return lsAlignments;
 	}
-	
+
 	/**
 	 * 仅判断本位点的可变剪接情况
 	 * 也就是仅判断alt5，alt3

@@ -143,4 +143,40 @@ public interface Alignment {
 		}
 	}
 
+	/**
+	 * 从小到大排序
+	 * @author zong0jie
+	 */
+	public static class CompS2MWithStrand implements Comparator<Alignment> {
+		@Override
+		public int compare(Alignment o1, Alignment o2) {
+			if (!isBooleanEquals(o1.isCis5to3(), o2.isCis5to3())) {
+				throw new RuntimeException();
+			}
+			Integer o1start = o1.getStartCis();
+			Integer o2start = o2.getStartCis();
+			int comp = o1start.compareTo(o2start);
+			if (comp == 0) {
+				Integer o1end = o1.getEndCis();
+				Integer o2end = o2.getEndCis();
+				comp = o1end.compareTo(o2end);
+			}
+			if (o1.isCis5to3() != null && !o1.isCis5to3()) {
+				comp = -comp;
+			}
+			return comp;
+		}
+		
+		private boolean isBooleanEquals(Boolean boolean1, Boolean boolean2) {
+			if (boolean1 == null && boolean2 == null) {
+				return true;
+			}
+			if (boolean1 == null || boolean2 == null) {
+				return false;
+			}
+			return boolean1.equals(boolean2);
+		}
+		
+	}
+	
 }

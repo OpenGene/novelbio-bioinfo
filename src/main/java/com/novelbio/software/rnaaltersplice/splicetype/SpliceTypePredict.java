@@ -93,10 +93,10 @@ public abstract class SpliceTypePredict {
 	/** 获得差异可变剪接的区段，用于IGV查看位点 */
 	public abstract Align getResultSite();
 	
-	/** 获得差异可变剪接的区段，用于IGV查看位点 */
+	/** 获得差异可变剪接的区段，仅用于IGV查看位点 */
 	public List<Align> getLsAligns() {
 		List<Align> lsDifSite = getDifSite();
-		List<Align> lsBG = getBGSite();
+		List<Align> lsBG = getBGSiteIGV();
 		List<Align> lsResult = new ArrayList<>(lsBG);
 		for (Align align : lsDifSite) {
 			align.setCis5to3(exonCluster.isCis5to3());
@@ -111,6 +111,30 @@ public abstract class SpliceTypePredict {
 		//TODO 还需要把difsite单独列出来
 		return lsResult;
 	}
+	/**
+	 * 获得比较的位点
+	 * 如果是cassette则返回全基因长度
+	 * 如果是retain intron和alt5 alt3，返回该exon的长度<br>
+	 * <b>list中的单个Alignment不考虑方向</b><br>
+	 * 可以直接返回{@link GffIso}
+	 */
+	private List<Align> getBGSiteIGV() {
+		List<? extends Alignment> lsBG = null;
+		if (this instanceof PredictAlt5Or3) {
+			lsBG = ((PredictAlt5Or3)this).getBGsiteAlt53();
+		} else {
+			lsBG = getBGSiteSplice();
+		}
+		List<Align> lsResult = new ArrayList<>();
+		for (Alignment alignment : lsBG) {
+			Align align = new Align(alignment);
+			align.setCis5to3(exonCluster.isCis5to3());
+			lsResult.add(align);
+		}
+		lsResult = Align.mergeLsAlign(lsResult);
+		return lsResult;
+	}
+	
 	/**
 	 * 获得比较的位点
 	 * 如果是cassette则返回全基因长度
