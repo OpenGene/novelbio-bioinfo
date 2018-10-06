@@ -9,11 +9,15 @@ import java.util.List;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.Alignment;
-import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
-import com.novelbio.bioinfo.base.binarysearch.BsearchSite;
-import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 
-/** mummer的一对比较，或者是liftover的一个chain */
+/** mummer的一对比较，或者是liftover的一个chain
+ * 
+ * 其中 ref 是 query的基因组
+ * alt 是 subject的基因组
+ * 需要将 ref的坐标转化为 alt的坐标
+ * @author novelbio
+ *
+ */
 public class CoordPair implements Alignment {
 	long refLen;
 	long altLen;
@@ -300,128 +304,6 @@ public class CoordPair implements Alignment {
 	public Double getScore() {
 		double coeff = isSameChr()? 1 : 0.8;
 		return identity/100*getLength()*coeff;
-	}
-
-	
-	public VarInfo searchVarInfo(int start, int end) {
-		validateSiteInCoord(start);
-		validateSiteInCoord(end);
-		
-		VarInfo varInfo = new VarInfo();
-		varInfo.setCis5to3(this.getAlignAlt().isCis5to3());
-		varInfo.setChrId(this.getChrAlt());
-		
-		if (ArrayOperate.isEmpty(lsIndel)) {
-			int[] startAlt2Bias = getAltSiteStart(null, start);
-			int[] endAlt2Bias = getAltSiteStart(null, end);
-			varInfo.setStartCis(startAlt2Bias[0]);
-			varInfo.setEndCis(endAlt2Bias[0]);
-			varInfo.setStartBias(startAlt2Bias[1]);
-			varInfo.setEndBias(endAlt2Bias[1]);
-			return varInfo;
-		}
-		
-		
-		BinarySearch<IndelForRef> binarySearch = new BinarySearch<>(lsIndel, true);
-
-		//单个位点
-		if (start == end) {
-			BsearchSite<IndelForRef> bsite = binarySearch.searchLocation(start);
-			int[] startAlt2Bias = getAltSiteStart(bsite, start);
-			if (startAlt2Bias[1] > 0) {
-				return null;
-			}
-			varInfo.setStartCis(startAlt2Bias[0]);
-			varInfo.setEndCis(startAlt2Bias[0]);
-			return varInfo;
-		}
-		
-		BsearchSiteDu<IndelForRef> bsiteDu = binarySearch.searchLocationDu(start, end);
-		int[] startAlt2Bias = getAltSiteStart(bsiteDu.getSiteLeft(), start);
-		int[] endAlt2Bias = getAltSiteEnd(bsiteDu.getSiteRight(), end);
-		//区段位于ref相对于alt多的区段
-		if (this.getAlignAlt().isCis() && endAlt2Bias[0] < startAlt2Bias[0]
-				|| !this.getAlignAlt().isCis() && startAlt2Bias[0] < endAlt2Bias[0]
-				) {
-			return null;
-		}
-		varInfo.setStartCis(startAlt2Bias[0]);
-		varInfo.setEndCis(endAlt2Bias[0]);
-		varInfo.setStartBias(startAlt2Bias[1]);
-		varInfo.setEndBias(endAlt2Bias[1]);
-		
-		List<IndelForRef> lsIndels =bsiteDu.getCoveredElement();
-		if (!lsIndels.isEmpty()) {
-			varInfo.setLsIndelForRefs(lsIndels);
-		}
-		return varInfo;
-	}
-	
-	private void validateSiteInCoord(int site) {
-		if (!Alignment.isSiteInAlign(this, site)) {
-			throw new ExceptionNBCCoordTransformer("refsite " + site + " is not in " + this.toString());
-		}
-	}
-	/**
-	 * 获取refsite起点所对应的位置
-	 * @param refSite
-	 * @return 0：向右偏移之后的起点，1：偏移的bp 
-	 */
-	public int[] getAltSiteStart(BsearchSite<IndelForRef> bsite, int refSite) {
-		return getAltSite(bsite, refSite, true);
-	}
-	/**
-	 * 获取refsite终点所对应的位置
-	 * @param refSite
-	 * @return 0：向左偏移之后的起点，1：偏移的bp 
-	 */
-	public int[] getAltSiteEnd(BsearchSite<IndelForRef> bsite, int refSite) {
-		return getAltSite(bsite, refSite, false);
-	}
-	/**
-	 * 获取refsite起点所对应的位置
-	 * @param refSite
-	 * @param isStart 是起点还是终点
-	 * @return 0：偏移之后的起点，1：偏移的bp
-	 * 注意如果是 isStart 则向右偏移， isEnd向左偏移 
-	 */
-	private int[] getAltSite(BsearchSite<IndelForRef> bsite, int refSite, boolean isStart) {
-		int altSite = 0, bias = 0;
-		if (bsite == null) {
-			int length = refSite - alignRef.getStartAbs();
-			altSite = alignAlt.isCis() ? alignAlt.getStartAbs()+length : alignAlt.getEndAbs() - length;
-			return new int[] {altSite, bias};
-		}
-		
-		if (!bsite.isInsideLoc()) {
-			IndelForRef IndelBefore = bsite.getAlignUp();
-			if (IndelBefore == null) {
-				int length = refSite - alignRef.getStartAbs();
-				altSite = alignAlt.isCis() ? alignAlt.getStartAbs()+length : alignAlt.getEndAbs() - length;
-			} else {
-				int length = refSite - IndelBefore.getEndAbs();
-				altSite = IndelBefore.getEndExtendAlt(length);
-			}
-		} else {
-			IndelForRef indelThis = bsite.getAlignThis();
-			if (refSite == indelThis.getStartAbs()) {
-				altSite = indelThis.getStartCisAlt();
-				bias = 0;
-			} else if (refSite == indelThis.getEndAbs()) {
-				altSite = indelThis.getEndCisAlt();
-				bias = 0;
-			} else {
-				//在indel里面
-				if (isStart) {
-					altSite = indelThis.getEndCisAlt();
-					bias = indelThis.getEndAbs()-refSite;
-				} else {
-					altSite = indelThis.getStartCisAlt();
-					bias = refSite-indelThis.getStartAbs();
-				}
-			}
-		}
-		return new int[] {altSite, bias};
 	}
 	
 	@Override

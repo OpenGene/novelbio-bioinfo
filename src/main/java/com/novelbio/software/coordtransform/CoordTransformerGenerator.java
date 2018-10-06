@@ -23,10 +23,15 @@ public class CoordTransformerGenerator {
 		String refFai = "/media/winE/mywork/hongjun-gwas/chromosome/IRGSP-4.0/IRGSP-4.0.chrAll.fa.fai";
 		String altFai = "/media/winE/mywork/hongjun-gwas/chromosome/IRGSP-1.0.chrAll.fasta.fai";
 
+		Map<String, List<CoordPair>> mapChrId2LsCoordPair = readMummerFile(mummerPath+"irgsp-4vs1.coords",
+				mummerPath+"irgsp-4vs1.delta", refFai, altFai, 0.99);
+
 		CoordTransformer coordTransformer = CoordTransformerGenerator.generateTransformerMummer(mummerPath+"irgsp-4vs1.coords",
 				mummerPath+"irgsp-4vs1.delta", chrAlt, refFai, altFai, 0.99);
-		coordTransformer.writeToChain(mummerPath+"irgsp-4vs1.chain");
-		coordTransformer.writeToMummer(mummerPath+"irgsp-4vs1.mummer.coord");
+		
+		
+		CoordTransformer.writeToChain(mapChrId2LsCoordPair, mummerPath+"irgsp-4vs1.chain");
+		CoordTransformer.writeToMummer(mapChrId2LsCoordPair, mummerPath+"irgsp-4vs1.mummer.coord");
 		
 		TxtReadandWrite txtWriteAll = new TxtReadandWrite(mummerPath + "allsite.txt", true);
 		
@@ -57,7 +62,10 @@ public class CoordTransformerGenerator {
 	public static CoordTransformer generateTransformerChain(String chainFile, String chrAlt) {
 		Map<String, List<CoordPair>> mapChrId2LsCoordPair = readChainFile(chainFile);
 		CoordTransformer coordTransformer = new CoordTransformer();
-		coordTransformer.setMapChrId2LsCoorPairs(mapChrId2LsCoordPair);
+		
+		CoordPairSearch coordPairSearch = new CoordPairSearch(mapChrId2LsCoordPair);
+		coordTransformer.setCoordPairSearch(coordPairSearch);
+
 		if (StringOperate.isRealNull(chrAlt)) {
 			SeqHashInt seqHashAlt = new SeqHash(chrAlt);
 			coordTransformer.setSeqHashAlt(seqHashAlt);
@@ -68,9 +76,14 @@ public class CoordTransformerGenerator {
 	public static CoordTransformer generateTransformerMummer(String mummerFile, String mummerDelta, String chrAlt, String refFai, String altFai, double cutoff) {
 		Map<String, List<CoordPair>> mapChrId2LsCoordPair = readMummerFile(mummerFile, mummerDelta, refFai, altFai, cutoff);
 		CoordTransformer coordTransformer = new CoordTransformer();
-		coordTransformer.setMapChrId2LsCoorPairs(mapChrId2LsCoordPair);
-		SeqHashInt seqHashAlt = new SeqHash(chrAlt);
-		coordTransformer.setSeqHashAlt(seqHashAlt);
+		
+		CoordPairSearch coordPairSearch = new CoordPairSearch(mapChrId2LsCoordPair);
+		coordTransformer.setCoordPairSearch(coordPairSearch);
+		
+		if (StringOperate.isRealNull(chrAlt)) {
+			SeqHashInt seqHashAlt = new SeqHash(chrAlt);
+			coordTransformer.setSeqHashAlt(seqHashAlt);
+		}
 		return coordTransformer;
 	}
 	

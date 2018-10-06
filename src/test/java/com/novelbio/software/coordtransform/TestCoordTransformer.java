@@ -50,7 +50,7 @@ public class TestCoordTransformer {
 		Map<String, List<CoordPair>> mapChrId2LsCoord = new HashMap<>();
 		mapChrId2LsCoord.put("1", lsCoordPairs);
 		CoordTransformer coordTransformer = new CoordTransformer();
-		coordTransformer.setMapChrId2LsCoorPairs(mapChrId2LsCoord);
+		coordTransformer.setCoordPairSearch(new CoordPairSearch(mapChrId2LsCoord));
 		coordTransformer.setSeqHashAlt(seqHashStub);
 		
 		SnpInfo snpInfo = new SnpInfo("1", 14, "a", "g");
@@ -118,7 +118,7 @@ public class TestCoordTransformer {
 		Map<String, List<CoordPair>> mapChrId2LsCoord = new HashMap<>();
 		mapChrId2LsCoord.put("1", lsCoordPairs);
 		CoordTransformer coordTransformer = new CoordTransformer();
-		coordTransformer.setMapChrId2LsCoorPairs(mapChrId2LsCoord);
+		coordTransformer.setCoordPairSearch(new CoordPairSearch(mapChrId2LsCoord));
 		coordTransformer.setSeqHashAlt(seqHashStub);
 		
 		SnpInfo snpInfo = new SnpInfo("1", 14, "a", "g");
@@ -145,33 +145,35 @@ public class TestCoordTransformer {
 		assertEquals("1	431	gtatttcagtgaaactgtat	ctg", snpInfoAlt.toString());
 	}
 	
-	
-	
 	@Test
 	public void testSearchCis() {
 		CoordPair coord = getCoordPairCis();
 		List<CoordPair> lsCoordPairs = Lists.newArrayList(coord);
+		Map<String, List<CoordPair>> mapChrId2LsCoord = new HashMap<>();
+		mapChrId2LsCoord.put("1", lsCoordPairs);
+		CoordPairSearch coordPairSearch = new CoordPairSearch(mapChrId2LsCoord);
+
 		Align alignRef = new Align("1:9283-9296");
-		VarInfo varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		VarInfo varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		VarInfo varInfoExp = generateVarInfo("1:45024948-45024959", 2, 0, null, true);
 		assertEqualsVar(varInfoExp, varInfo);
 		
 		alignRef = new Align("1:9283-9297");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		varInfoExp = generateVarInfo("1:45024948-45024961", 2, 0, coord.getLsIndel().subList(0, 1), true);
 		assertEqualsVar(varInfoExp, varInfo);
 		
 		alignRef = new Align("1:9333-9338");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		assertNull(varInfo);
 		
 		alignRef = new Align("1:9333-9339");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		varInfoExp = generateVarInfo("1:45024997-45024997", 6, 0, null, true);
 		assertEqualsVar(varInfoExp, varInfo);
 		
 		alignRef = new Align("1:9333-9341");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		varInfoExp = generateVarInfo("1:45024997-45024997", 6, 2, null, true);
 		assertEqualsVar(varInfoExp, varInfo);
 		/**
@@ -190,7 +192,7 @@ public class TestCoordTransformer {
 	  	 *                                                                  ^^^^^^^^^^                     
 		 */
 		alignRef = new Align("1:9347-9392");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		varInfoExp = generateVarInfo("1:45024998-45025037", 4, 2, null, true);
 		assertEqualsVar(varInfoExp, varInfo);
 		
@@ -198,7 +200,7 @@ public class TestCoordTransformer {
 		coord.lsIndel = new ArrayList<>();
 		lsCoordPairs = Lists.newArrayList(coord);
 		alignRef = new Align("1:9283-9296");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		varInfoExp = generateVarInfo("1:45024948-45024959", 2, 0, null, true);
 		assertEqualsVar(varInfoExp, varInfo);
 	}
@@ -221,32 +223,36 @@ public class TestCoordTransformer {
 		 */
 		CoordPair coord = getCoordPairTrans();
 		List<CoordPair> lsCoordPairs = Lists.newArrayList(coord);
+		Map<String, List<CoordPair>> mapChrId2LsCoord = new HashMap<>();
+		mapChrId2LsCoord.put("1", lsCoordPairs);
+		CoordPairSearch coordPairSearch = new CoordPairSearch(mapChrId2LsCoord);
+		
 		Align alignRef = new Align("1:9283-9296");
-		VarInfo varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		VarInfo varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		VarInfo varInfoExp = generateVarInfo("1:45025486-45025475", 2, 0, null, false);
 		assertEqualsVar(varInfoExp, varInfo);
 		
 		alignRef = new Align("1:9283-9297");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		varInfoExp = generateVarInfo("1:45025486-45025473", 2, 0, coord.getLsIndel().subList(0, 1), false);
 		assertEqualsVar(varInfoExp, varInfo);
 		
 		alignRef = new Align("1:9333-9338");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		assertNull(varInfo);
 		
 		alignRef = new Align("1:9333-9339");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		varInfoExp = generateVarInfo("1:45025437-45025437", 6, 0, null, false);
 		assertEqualsVar(varInfoExp, varInfo);
 		
 		alignRef = new Align("1:9333-9341");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		varInfoExp = generateVarInfo("1:45025437-45025437", 6, 2, null, false);
 		assertEqualsVar(varInfoExp, varInfo);
 		
 		alignRef = new Align("1:9347-9392");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		varInfoExp = generateVarInfo("1:45025436-45025397", 4, 2, null, false);
 		assertEqualsVar(varInfoExp, varInfo);
 		
@@ -254,7 +260,7 @@ public class TestCoordTransformer {
 		coord.lsIndel = new ArrayList<>();
 		lsCoordPairs = Lists.newArrayList(coord);
 		alignRef = new Align("1:9283-9296");
-		varInfo = CoordTransformer.coordTransform(lsCoordPairs, alignRef);
+		varInfo = CoordTransformer.coordTransform(coordPairSearch, alignRef);
 		varInfoExp = generateVarInfo("1:45025486-45025475", 2, 0, null, false);
 		assertEqualsVar(varInfoExp, varInfo);
 	}

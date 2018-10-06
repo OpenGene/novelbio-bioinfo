@@ -123,7 +123,6 @@ public class MgmtGffDetailGene {
 //				gffGeneIsoInfo.setGffFileId(gffFile.getId());
 				repoGffIso.save(gffGeneIsoInfo);
 			}
-			gffDetailGene.setGffFileId(gffFile.getId());
 			repoGffGene.save(gffDetailGene);
 		}
 	}

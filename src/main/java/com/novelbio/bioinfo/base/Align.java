@@ -31,8 +31,8 @@ public class Align implements Alignment, Cloneable {
 	 * @param start
 	 * @param end
 	 */
-	public Align(String chrID, int start, int end) {
-		this.chrId = chrID;
+	public Align(String chrId, int start, int end) {
+		this.chrId = chrId;
 		if (start < end) {
 			cis5to3 = true;
 		} else if (start > end) {

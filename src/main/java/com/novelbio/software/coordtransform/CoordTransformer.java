@@ -5,31 +5,31 @@ import java.util.Map;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
-import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
-import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
+//import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
+//import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 import com.novelbio.bioinfo.fasta.SeqHashInt;
 import com.novelbio.software.snpanno.SnpInfo;
 import com.novelbio.software.snpanno.SnpInfo.EnumHgvsVarType;
 
 public class CoordTransformer {
-	
-	Map<String, List<CoordPair>> mapChrId2LsCoorPairs;
-	
+		
 	SeqHashInt seqHashAlt;
+	
+	CoordPairSearchAbs coordPairSearch;
 	
 	public static void main(String[] args) {
 		SnpInfo snpInfo = new SnpInfo("chr1", 1234, "A", "AAT");
 		System.out.println(snpInfo.getAlign());
 	}
-	
-	void setMapChrId2LsCoorPairs(Map<String, List<CoordPair>> mapChrId2LsCoorPairs) {
-		this.mapChrId2LsCoorPairs = mapChrId2LsCoorPairs;
-	}
+
 	void setSeqHashAlt(SeqHashInt seqHashAlt) {
 		this.seqHashAlt = seqHashAlt;
+	}
+	
+	public void setCoordPairSearch(CoordPairSearchAbs coordPairSearch) {
+		this.coordPairSearch = coordPairSearch;
 	}
 	
 	public SnpInfo coordTransform(SnpInfo snpInfo) {
@@ -43,11 +43,7 @@ public class CoordTransformer {
 	
 	/** 坐标转换 */
 	public VarInfo coordTransform(Align alignRef) {
-		List<CoordPair> lsCoordPairs = mapChrId2LsCoorPairs.get(alignRef.getChrId());
-		if (ArrayOperate.isEmpty(lsCoordPairs)) {
-			return null;
-		}
-		return coordTransform(lsCoordPairs, alignRef);
+		return coordTransform(coordPairSearch, alignRef);
 	}
 	
 	@VisibleForTesting
@@ -85,10 +81,8 @@ public class CoordTransformer {
 	}
 	
 	@VisibleForTesting
-	protected static VarInfo coordTransform(List<CoordPair> lsCoordPairs, Align alignRef) {
-		BinarySearch<CoordPair> binarySearch = new BinarySearch<>(lsCoordPairs);
-		BsearchSiteDu<CoordPair> bsearchSiteDu = binarySearch.searchLocationDu(alignRef.getStartAbs(), alignRef.getEndAbs());
-		List<CoordPair> lsCoordPairsOverlap = bsearchSiteDu.getAllElement();
+	protected static VarInfo coordTransform(CoordPairSearchAbs coordPairSearch, Align alignRef) {
+		List<CoordPair> lsCoordPairsOverlap = coordPairSearch.findCoordPairsOverlap(alignRef);
 		if (lsCoordPairsOverlap.isEmpty()) {
 			return null;
 		}
@@ -110,7 +104,9 @@ public class CoordTransformer {
 		}
 		
 		int start = alignRef.getStartAbs(), end = alignRef.getEndAbs();
-		VarInfo varInfo = coordPair.searchVarInfo(start, end);
+		
+		
+		VarInfo varInfo = coordPairSearch.findVarInfo(coordPair, start, end);
 		if (varInfo == null) {
 			return varInfo;
 		}
@@ -119,13 +115,8 @@ public class CoordTransformer {
 		return varInfo;
 	}
 	
-	/** 输出为liftover的chain格式 */
-	public void writeToChain(String chainFile) {
-		writeToChain(mapChrId2LsCoorPairs, chainFile);
-	}
-	
 	/** 输出为mummer的coord格式 */
-	public void writeToMummer(String mummerCoord) {
+	public static void writeToMummer(Map<String, List<CoordPair>> mapChrId2LsCoorPairs, String mummerCoord) {
 		TxtReadandWrite txtWrite = new TxtReadandWrite(mummerCoord, true);
 		for (List<CoordPair> lsCoordPair : mapChrId2LsCoorPairs.values()) {
 			for (CoordPair coordPair : lsCoordPair) {
