@@ -65,6 +65,14 @@ public class TestCoordTransformer {
 		snpInfoAlt = coordTransformer.coordTransform(snpInfo);
 		assertEquals("1	49	gta	g", snpInfoAlt.toString());
 		
+		snpInfo = new SnpInfo("1", 48, "gaacagttacacaagaagaa", "t");
+		snpInfoAlt = coordTransformer.coordTransform(snpInfo);
+		assertEquals("1	49	gta	t", snpInfoAlt.toString());
+		
+		snpInfo = new SnpInfo("1", 49, "aacagttacacaagaaga", "t");
+		snpInfoAlt = coordTransformer.coordTransform(snpInfo);
+		assertEquals("1	50	t	t", snpInfoAlt.toString());
+		
 		snpInfo = new SnpInfo("1", 106, "a", "aac");
 		snpInfoAlt = coordTransformer.coordTransform(snpInfo);
 		assertEquals("1	90	a	aac", snpInfoAlt.toString());

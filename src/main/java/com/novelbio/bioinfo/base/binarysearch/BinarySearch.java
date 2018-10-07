@@ -7,6 +7,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs.ListDetailAbsCompareNoStrand;
 import com.novelbio.bioinfo.base.binarysearch.ListDetailAbs.ListDetailAbsCompareStrand;
@@ -90,10 +91,14 @@ public class BinarySearch<T extends Alignment> {
 			logger.error("error");
 		}
 		BsearchSiteDu<T> lsAbsDu = new BsearchSiteDu<>(site1, site2); 
-		
+		Align alignCod = new Align(null, codStart, codEnd);
 		if (lsAbsDu.getSiteLeft().getIndexAlignDown() >= 0) {
 			for (int i = lsAbsDu.getSiteLeft().getIndexAlignDown(); i <= lsAbsDu.getSiteRight().getIndexAlignUp(); i++) {
-				lsAbsDu.lsAlignMid.add(lsElement.get(i));
+				T element =  lsElement.get(i);
+				alignCod.setChrId(element.getChrId());
+				if (Alignment.isAlignCoverAnother(alignCod, element)) {
+					lsAbsDu.lsAlignMid.add(lsElement.get(i));
+				}
 			}
 		}
 		return lsAbsDu;

@@ -39,7 +39,12 @@ public interface Alignment {
 		}
 	}
 	
-	/** 判断Align1是否cover Align2 */
+	/** 判断Align1是否cover Align2
+	 * 注意不考虑染色体号
+	 * @param align1
+	 * @param align2
+	 * @return
+	 */
 	public static boolean isAlignCoverAnother(Alignment align1, Alignment align2) {
 		return align1.getStartAbs() <= align2.getStartAbs() && align1.getEndAbs() >= align2.getEndAbs();
 	}

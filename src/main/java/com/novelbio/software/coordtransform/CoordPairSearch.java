@@ -52,7 +52,14 @@ public class CoordPairSearch extends CoordPairSearchAbs {
 		IndelForRef right = getIndelForRef(bsiteDu.getSiteRight());
 		indelRefPair.setLeft(left);
 		indelRefPair.setRight(right);
-		indelRefPair.setLsCovered(bsiteDu.getCoveredElement());
+		// 在这里，bsiteDu.getCoveredElement() 必须是完全覆盖，也就是说start < IndelForRef.getStartAbs()，不会为等于
+		//end > IndelForRef.getEndAbs()，不会为等于
+		//如果位点为
+		// ACA[T]ACGT[C]ACG
+		// ACA -  - C - -  -  ACG
+		//这种，则不包括 [T]A 和 GT[C] 这两个
+		List<IndelForRef> lsIndelInside = bsiteDu.getCoveredElement();
+		indelRefPair.setLsCovered(lsIndelInside);
 		return indelRefPair;
 	}
 	
