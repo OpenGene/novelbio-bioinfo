@@ -91,7 +91,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	
 	int minLen;
 	
-	private static final String debug = "OSMR";
+	private static final String debug = "Ccdc136";
 	
 	public ExonSplicingTest(ExonCluster exonCluster, int minLen) {
 		this.exonCluster = exonCluster;
@@ -209,8 +209,11 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 	public void addMapCondition2MapReads(String condition, String group, MapReadsAbs mapReads) {
 		SpliceType2Value spliceType2Value = getAndCreatSpliceType2Value(condition);
 		for (SpliceTypePredict spliceTypePredict : exonCluster.getSplicingTypeLs()) {
-			List<Align> lsSiteInfoBG = spliceTypePredict.getBGSite();
+			if (exonCluster.getParentGene().getName().equals(debug)) {
+				logger.debug("stop");
+			}
 			List<Align> lsSiteInfo = spliceTypePredict.getDifSite();
+			List<Align> lsSiteInfoBG = spliceTypePredict.getBGSite();
 			
 			String refId = exonCluster.getChrId();
 			double[] BGinfo = mapReads.getRangeInfo(refId, lsSiteInfoBG);
@@ -243,7 +246,7 @@ public class ExonSplicingTest implements Comparable<ExonSplicingTest> {
 		lsPvalueInfo = new ArrayList<>();
 		if (exonCluster.getParentGene().getName().contains(debug)) {
 			logger.debug("stop");
-			if (exonCluster.getStartAbs() == 38932974) {
+			if (exonCluster.getStartAbs() == 29421991) {
 				logger.debug("stop");
 			}
 		}

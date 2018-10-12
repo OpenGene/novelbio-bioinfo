@@ -19,10 +19,13 @@ import com.novelbio.bioinfo.base.Alignment;
  *
  */
 public class CoordPair implements Alignment {
+	/** 给数据库用的,一般用不到 */
+	String id;
+	
 	long refLen;
 	long altLen;
 	int chainId;
-	
+
 	Align alignRef;
 	Align alignAlt;
 	/** 0-100 */
@@ -45,11 +48,19 @@ public class CoordPair implements Alignment {
 		alignAlt = new Align(chrId[1], Integer.parseInt(altloc[0]), Integer.parseInt(altloc[1]));
 		identity = Double.parseDouble(ss[3].trim());
 	}
+	/** 给数据库用的,一般用不到 */
+	public void setId(String id) {
+		this.id = id;
+	}
+	/** 给数据库用的,一般用不到 */
+	public String getId() {
+		return id;
+	}
 	/**
 	 * liftover 的 chain 文件需要
 	 * 如果是读取的liftover文件，则不需要设置这个
-	 * @param refLen
-	 * @param altLen
+	 * @param refLen ref染色体的长度
+	 * @param altLen alt染色体的长度
 	 */
 	public void setRefAltLen(long refLen, long altLen) {
 		this.refLen = refLen;
@@ -61,6 +72,9 @@ public class CoordPair implements Alignment {
 	 */
 	public void setChainId(int chainId) {
 		this.chainId = chainId;
+	}
+	public int getChainId() {
+		return chainId;
 	}
 	/**
 	 * 将liftoverChain的一行转换成对象<br>
@@ -190,6 +204,9 @@ public class CoordPair implements Alignment {
 	public String getChrId() {
 		return alignRef.getChrId();
 	}
+	public void setIdentity(double identity) {
+		this.identity = identity;
+	}
 	public double getIdentity() {
 		return identity;
 	}
@@ -234,7 +251,14 @@ public class CoordPair implements Alignment {
 		}
 		lsIndel = lsIndelForRefsNew;
 	}
-	
+	/** 仅用于数据库查询 */
+	public void setAlignRef(Align alignRef) {
+		this.alignRef = alignRef;
+	}
+	/** 仅用于数据库查询 */
+	public void setAlignAlt(Align alignAlt) {
+		this.alignAlt = alignAlt;
+	}
 	public void setEnd(int end) {
 		if (!Alignment.isSiteInAlign(alignRef, end)) {
 			throw new RuntimeException();

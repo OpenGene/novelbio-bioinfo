@@ -381,7 +381,7 @@ public class PredictCassette extends SpliceTypePredict {
 				}
 			}
 		}
-		
+		lsBG.clear();
 		if (exonBefore != null) {
 			lsBG.add(exonBefore);
 		}
