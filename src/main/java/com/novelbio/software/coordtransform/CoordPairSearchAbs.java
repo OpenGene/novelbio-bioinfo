@@ -8,7 +8,7 @@ import com.novelbio.bioinfo.base.Alignment;
 
 public abstract class CoordPairSearchAbs {
 	
-	public abstract List<CoordPair> findCoordPairsOverlap(Align alignRef);
+	public abstract List<CoordPair> findCoordPairsOverlap(Alignment alignRef);
 	
 	public VarInfo findVarInfo(CoordPair coordPair, int start, int end) {
 		validateSiteInCoord(coordPair, start);

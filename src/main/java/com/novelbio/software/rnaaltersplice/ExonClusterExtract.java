@@ -28,7 +28,8 @@ import com.novelbio.software.rnaaltersplice.splicetype.SpliceTypePredict.Splicin
 /** 专门用来提取exoncluster的类 */
 public class ExonClusterExtract {
 	private static final Logger logger = LoggerFactory.getLogger(ExonClusterExtract.class);
-	
+	private static String stopGeneName = "Ccdc136";
+
 	GffGene gene;
 	
 	/**
@@ -101,6 +102,9 @@ public class ExonClusterExtract {
 		List<ExonCluster> lsExonClusterLong = new ArrayList<>();
 		for (ExonClusterSite exonClusterSite : lsResult) {
 			ExonCluster exonCluster = exonClusterSite.getCurrentExonCluster();
+			if (exonCluster.getParentGene().getName().equals(stopGeneName)) {
+				logger.debug("stop");
+			}
 			//含有特别长exon的iso，要把他们除去再做分析
 			Set<SplicingAlternativeType> setSpliceType = exonCluster.getSplicingTypeSet();
 			if (setSpliceType.contains(SplicingAlternativeType.unknown) || setSpliceType.contains(SplicingAlternativeType.retain_intron) || 

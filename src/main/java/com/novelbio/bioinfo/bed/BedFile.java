@@ -447,13 +447,13 @@ public class BedFile implements AlignSeq, IntCmdSoft {
 		for (BedRecord bedRecord : readLines(readLines)) {
 			if (bedRecordLast == null) {
 				bedRecordLast = new BedRecord();
-				bedRecordLast.setRefID(bedRecord.getChrId());
+				bedRecordLast.setChrId(bedRecord.getChrId());
 				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 			}
 			if	(!bedRecord.getChrId().equals(bedRecordLast.getChrId()) || bedRecord.getStartAbs() >= bedRecordLast.getEndAbs()) {
 				bedSeqResult.writeBedRecord(bedRecordLast);
 				bedRecordLast = new BedRecord();
-				bedRecordLast.setRefID(bedRecord.getChrId());
+				bedRecordLast.setChrId(bedRecord.getChrId());
 				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 				//因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下
 				if (bedRecordLast.getReadsNum() == 1) {
@@ -488,7 +488,7 @@ public class BedFile implements AlignSeq, IntCmdSoft {
 		for (BedRecord bedRecord : readLines(readLines)) {
 			if (bedRecordLast == null) {
 				bedRecordLast = new BedRecord();
-				bedRecordLast.setRefID(bedRecord.getChrId());
+				bedRecordLast.setChrId(bedRecord.getChrId());
 				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 				bedRecordLast.setCis5to3(bedRecord.isCis5to3());
 			}
@@ -497,7 +497,7 @@ public class BedFile implements AlignSeq, IntCmdSoft {
 					|| bedRecord.isCis5to3() != bedRecordLast.isCis5to3()) {
 				bedSeqResult.writeBedRecord(bedRecordLast);
 				bedRecordLast = new BedRecord();
-				bedRecordLast.setRefID(bedRecord.getChrId());
+				bedRecordLast.setChrId(bedRecord.getChrId());
 				bedRecordLast.setStartEndLoc(bedRecord.getStartAbs(), bedRecord.getEndAbs());
 				bedRecordLast.setCis5to3(bedRecord.isCis5to3());
 				// 因为bedRecord内部默认ReadsNum为null，而如果为null，提取时显示为1，所以所有为1的都要手工设定一下

@@ -6,6 +6,8 @@ import java.util.Map;
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
+import com.novelbio.bioinfo.bed.BedRecord;
 //import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
 //import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 import com.novelbio.bioinfo.fasta.SeqFasta;
@@ -46,6 +48,15 @@ public class CoordTransformer {
 		return coordTransform(coordPairSearch, alignRef);
 	}
 	
+	/** 坐标转换 */
+	public BedRecord coordTransform(BedRecord bedRecord) {
+		VarInfo varInfo = coordTransform(coordPairSearch, bedRecord);
+		BedRecord bedRecordTrans = bedRecord.clone();
+		bedRecordTrans.setChrId(varInfo.getChrId());
+		bedRecordTrans.setStartEndLoc(varInfo.getStartCis(), varInfo.getEndCis());
+		bedRecordTrans.setCis5to3(varInfo.isCis5to3());
+		return bedRecordTrans;
+	}
 	@VisibleForTesting
 	protected static SnpInfo transformSnpInfo(SnpInfo snpInfo, VarInfo varInfo, SeqHashInt seqHashAlt) {
 		String ref = snpInfo.getSeqRef();
@@ -81,7 +92,7 @@ public class CoordTransformer {
 	}
 	
 	@VisibleForTesting
-	protected static VarInfo coordTransform(CoordPairSearchAbs coordPairSearch, Align alignRef) {
+	protected static VarInfo coordTransform(CoordPairSearchAbs coordPairSearch, Alignment alignRef) {
 		List<CoordPair> lsCoordPairsOverlap = coordPairSearch.findCoordPairsOverlap(alignRef);
 		if (lsCoordPairsOverlap.isEmpty()) {
 			return null;
@@ -92,19 +103,18 @@ public class CoordTransformer {
 		}
 		
 		CoordPair coordPair = lsCoordPairsOverlap.get(0);
+		int start = alignRef.getStartAbs(), end = alignRef.getEndAbs();
+
 		//暂时不支持
 		int biasStart = 0, biasEnd = 0;
 		if (alignRef.getStartAbs() < coordPair.getStartAbs()) {
 			biasStart = coordPair.getStartAbs() - alignRef.getStartAbs();
-			alignRef.setStartAbs(coordPair.getStartAbs());
+			start = coordPair.getStartAbs();
 		}
 		if (alignRef.getEndAbs() > coordPair.getEndAbs()) {
 			biasEnd = alignRef.getEndAbs() - coordPair.getEndAbs();
-			alignRef.setEndAbs(coordPair.getEndAbs());
+			end = coordPair.getEndAbs();
 		}
-		
-		int start = alignRef.getStartAbs(), end = alignRef.getEndAbs();
-		
 		
 		VarInfo varInfo = coordPairSearch.findVarInfo(coordPair, start, end);
 		if (varInfo == null) {
@@ -112,6 +122,9 @@ public class CoordTransformer {
 		}
 		varInfo.setStartBias(varInfo.getStartBias()+biasStart);
 		varInfo.setEndBias(varInfo.getEndBias()+biasEnd);
+		if (alignRef.isCis5to3() != null && !alignRef.isCis5to3()) {
+			varInfo.setCis5to3(!varInfo.isCis5to3());
+		}
 		return varInfo;
 	}
 	

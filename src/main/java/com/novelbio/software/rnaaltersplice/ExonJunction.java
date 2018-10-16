@@ -101,7 +101,7 @@ public class ExonJunction extends RunProcess {
 		
 	
 	private static Logger logger = LoggerFactory.getLogger(ExonJunction.class);
-	private static String stopGeneName = "EMG1";
+	private static String stopGeneName = "Ccdc136";
 		
 	GffHashGene gffHashGene = null;
 	
@@ -192,7 +192,7 @@ public class ExonJunction extends RunProcess {
 	
 	public ExonJunction() {
 		lsReadReagion = new ArrayList<>();
-//		lsReadReagion.add(new Align("chr8:11828001-11898118"));
+//		lsReadReagion.add(new Align("chr6:29321991-29522097"));
 	}
 	
 	/** 至少有多少条reads支持的junction才会用于重建转录本 */

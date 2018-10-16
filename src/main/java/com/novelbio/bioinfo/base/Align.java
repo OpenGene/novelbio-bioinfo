@@ -24,7 +24,7 @@ public class Align implements Alignment, Cloneable {
 	String chrId;
 	protected Boolean cis5to3;
 	
-	protected Align() {}
+	public Align() {}
 	/**
 	 * 根据输入的start和end自动正反向cis5to3
 	 * @param chrID
@@ -221,6 +221,17 @@ public class Align implements Alignment, Cloneable {
 	 */
 	public Integer getCod2Start(int coord) {
 		return isCis() ? coord - getStartAbs() : getEndAbs() - coord;
+	}
+	
+	public void extendTo(int length) {
+		if (length <= 0) {
+			return;
+		}
+		if (isCis()) {
+			end = start + length;
+		} else {
+			start = end - length;
+		}
 	}
 	
 	/**

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
@@ -11,15 +12,16 @@ import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 import com.novelbio.bioinfo.fastq.FastQRecord;
 import com.novelbio.bioinfo.mappedreads.SiteSeqInfo;
+
+import cern.colt.matrix.linalg.SeqBlas;
  /**
   * BedSeq每一行的信息<br>
   * 兼容 bamToBed的 12行信息格式
   * @author zong0jie
   *
   */
-public class BedRecord extends SiteSeqInfo implements AlignRecord {
+public class BedRecord implements AlignRecord {
 	static private Logger logger = Logger.getLogger(BedRecord.class);
-	
 	static final int COL_CHRID = 0;
 	static final int COL_START = 1;
 	static final int COL_END = 2;
@@ -42,11 +44,14 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	 */
 	static final int ALL_COLNUM = 14;
 	
+	Align align = new Align();
+	String seqName;
+	SeqFasta seqFasta;
 	/** mapping到了几个上去 */
 	Integer mappingNum = null;
 	/** 该reads的权重，意思就是本reads在本文件中出现了几次，出现一次就是1 */
 	Integer mappingWeight = null;
-	
+	double score;
 	/**
 	 * 本位点的包含了几条overlap的序列
 	 */
@@ -65,31 +70,34 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	String splitStart;
 	
 	public BedRecord() {
-		super(null);
 	}
 	public BedRecord(AlignRecord alignRecord) {
-		setRefID(alignRecord.getChrId());
-		setStartEndLoc(alignRecord.getStartAbs(), alignRecord.getEndAbs());
-		setName(alignRecord.getName());
-		setCis5to3(alignRecord.isCis5to3());
-		setSeq(alignRecord.getSeqFasta());
+		align = new Align(alignRecord);
+		seqName = alignRecord.getName();
+		seqFasta = alignRecord.getSeqFasta();
 		CIGAR = alignRecord.getCIGAR();
 		mappingNum = alignRecord.getMappingNum();
 		mappingWeight = alignRecord.getMappedReadsWeight();
 		mapQuality = alignRecord.getMapQuality();
 		setAlignmentBlocks(alignRecord.getAlignmentBlocks());
-		setScore(alignRecord.getMapQuality());		
+		score = alignRecord.getMapQuality();
 	}
 	
 	public BedRecord(String bedline) {
 		super();
 		readLineInfo = bedline;
 		String[] ss = bedline.split("\t");
-		setRefID(ss[COL_CHRID]);
+		align.setChrId(ss[COL_CHRID]);
 		//Bed的起点一般要加上1
-		setStartEndLoc(Integer.parseInt(ss[COL_START]) + 1, Integer.parseInt(ss[COL_END]));
+		if (ss.length < COL_END+1) {
+			align.setStartAbs(Integer.parseInt(ss[COL_START]) + 1);
+			align.setEndAbs(-100000);
+			align.setCis5to3(true);
+		} else {
+			align.setStartEndLoc(Integer.parseInt(ss[COL_START]) + 1, Integer.parseInt(ss[COL_END]));
+		}
 		if (ss.length > COL_NAME && ss[COL_NAME] != null && !ss[COL_NAME].equals("")) {
-			setName(ss[COL_NAME]);
+			seqName = ss[COL_NAME];
 		}
 		if (ss.length > COL_SCORE && ss[COL_SCORE] != null && !ss[COL_SCORE].equals("")) {
 			try { score = Double.parseDouble(ss[COL_SCORE]); } catch (Exception e) {}
@@ -99,7 +107,7 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 		}
 		//将序列装入bedrecord，并且不进行反向
 		if (ss.length > COL_SEQ && ss[COL_SEQ] != null && !ss[COL_SEQ].equals("")) {
-			try { setSeq(new SeqFasta("", ss[COL_SEQ]), false); } catch (Exception e) {  }
+			try { seqFasta =new SeqFasta("", ss[COL_SEQ]); } catch (Exception e) {  }
 		}
 		if (ss.length > COL_MAPNUM && ss[COL_MAPNUM] != null && !ss[COL_MAPNUM].equals("")) {
 			try { 	mappingNum = Integer.parseInt(ss[COL_MAPNUM]); } catch (Exception e) { 	}
@@ -141,6 +149,12 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 		}
 		return true;
 	}
+	public void setChrId(String chrId) {
+		align.setChrId(chrId);
+	}
+	public void setStartEndLoc(int startLoc, int endLoc) {
+		align.setStartEndLoc(startLoc, endLoc);
+	}
 	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去 */
 	public void setMappingNum(int mappingNum) {
 		this.mappingNum = mappingNum;
@@ -161,15 +175,7 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	 * @param length
 	 */
 	public void extendTo(int length) {
-		if (length <= 0) {
-			return;
-		}
-		if (cis5to3 == null || cis5to3) {
-			endLoc = startLoc + length;
-		}
-		else {
-			startLoc = endLoc - length;
-		}
+		align.extendTo(length);
 	}
 	
 	/** 是否为unique mapping，不是的话mapping到了几个不同的位点上去 */
@@ -253,22 +259,22 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 		}
 		return readsNum;
 	}
+	public void setCis5to3(Boolean strand) {
+		align.setCis5to3(strand);
+	}
 	/**
 	 * "+"或"-"
 	 * @param strand
 	 */
 	public void setCis5to3(String strand) {
 		if (strand == null || strand.equals("") ) {
-			this.cis5to3 = null;
-		}
-		else if ( strand.equals("+") ) {
-			this.cis5to3 = true;
-		}
-		else if (strand.equals("-")) {
-			this.cis5to3 = false;
-		}
-		else {
-			logger.equals("出现未知strand");
+			align.setCis5to3(null);
+		} else if ( strand.equals("+") ) {
+			align.setCis5to3(true);
+		} else if (strand.equals("-")) {
+			align.setCis5to3(false);
+		} else {
+			throw new RuntimeException("unknown strand " + strand);
 		}
 	}
 	/**
@@ -278,14 +284,21 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	 */
 	public void setCis5to3(char strand) {
 		if ( strand == '+') {
-			this.cis5to3 = true;
+			align.setCis5to3(true);
+		} if (strand == '-') {
+			align.setCis5to3(false);
+		} else {
+			throw new RuntimeException("unknown strand " + strand);
 		}
-		if (strand == '-') {
-			this.cis5to3 = false;
-		}
-		else {
-			logger.equals("出现未知strand");
-		}
+	}
+	public void setSeqFasta(SeqFasta seqFasta) {
+		this.seqFasta = seqFasta;
+	}
+	public void setScore(double score) {
+		this.score = score;
+	}
+	public void setSeqName(String seqName) {
+		this.seqName = seqName;
 	}
 	public void setCIGAR(String cIGAR) {
 		CIGAR = cIGAR;
@@ -316,21 +329,25 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	 */
 	private String toString(boolean isSimple) {
 		String[] strings = new String[ALL_COLNUM];
-		strings[COL_CHRID] = refID;
+		strings[COL_CHRID] = getChrId();
 		//Bed的起点是从0开始计算的，所以实际位点要减去1
-		strings[COL_START] = (startLoc - 1) + "";
-		strings[COL_END] = endLoc +"";
+		strings[COL_START] = (align.getStartAbs() - 1) + "";
+		if (align.getEndCis() < 0) {
+			strings[COL_END] = "";
+		} else {
+			strings[COL_END] = align.getEndAbs() +"";
+		}
 		strings[COL_CIGAR] = CIGAR;
 		strings[COL_MAPNUM] = mappingNum + "";
 		
 		if (isSimple || getSeqFasta() == null || getSeqFasta().toString() == null || getSeqFasta().toString().equals("")) {
-			strings[COL_SEQ] = null;
+			strings[COL_SEQ] = "";
 		} else {
 			strings[COL_SEQ] = getSeqFasta().toString();
 		}
 		
 		if (!isSimple) {
-			strings[COL_NAME] = name;
+			strings[COL_NAME] = seqName;
 			strings[COL_MAPWEIGHT] = mappingWeight + "";
 			strings[COL_MAPQ] = mapQuality + "";
 		}
@@ -340,11 +357,10 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 		strings[COL_SPLIT_READS_LEN] = splitLen + "";
 		strings[COL_SPLIT_READS_START] = splitStart + "";
 		
-		if (cis5to3 != null) {
-			if (cis5to3) {
+		if (align.isCis5to3() != null) {
+			if (align.isCis5to3() && !StringOperate.isRealNull(strings[3]) || !StringOperate.isRealNull(strings[4])) {
 				strings[COL_STRAND] = "+";
-			}
-			else {
+			} else {
 				strings[COL_STRAND] = "-";
 			}
 		}
@@ -352,18 +368,18 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 		//获得本列最长的非null列数
 		int resultColNum = 0;
 		for (int i = strings.length - 1; i >= 0; i--) {
-			if (strings[i] != null && !strings[i].equals("null")) {
+			if (!StringOperate.isRealNull(strings[i])) {
 				resultColNum = i + 1;
 				break;
 			}
 		}
 		//出错，就是本行没东西
-		if (resultColNum < 3) {
+		if (resultColNum < 2) {
 			return "";
 		}
 		
 		for (int i = 1; i < strings.length; i++) {
-			if (strings[i] == null || strings[i].equals("null")) {
+			if (StringOperate.isRealNull(strings[i])) {
 				strings[i] = "";
 			}
 		}
@@ -373,16 +389,21 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	}
 	@Override
 	public BedRecord clone() {
-		BedRecord bedRecord = (BedRecord) super.clone();
-		bedRecord.CIGAR = CIGAR;
-		bedRecord.mappingNum = mappingNum;
-		bedRecord.mapQuality = mapQuality;
-		bedRecord.readsNum = readsNum;
-		bedRecord.mappingWeight = mappingWeight;
-		bedRecord.splitLen = splitLen;
-		bedRecord.splitStart = splitStart;
-		bedRecord.readLineInfo = readLineInfo;
-		return bedRecord;
+		try {
+			BedRecord bedRecord = (BedRecord) super.clone();
+			bedRecord.CIGAR = CIGAR;
+			bedRecord.mappingNum = mappingNum;
+			bedRecord.mapQuality = mapQuality;
+			bedRecord.readsNum = readsNum;
+			bedRecord.mappingWeight = mappingWeight;
+			bedRecord.splitLen = splitLen;
+			bedRecord.splitStart = splitStart;
+			bedRecord.readLineInfo = readLineInfo;
+			return bedRecord;
+		} catch (CloneNotSupportedException e) {
+			throw new RuntimeException(e);
+		}
+		
 	}
 	/**
 	 * 返回第一个记载的bedrecord 没有mapping上就返回null
@@ -399,7 +420,7 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 	 */
 	@Override
 	public SeqFasta getSeqFasta() {
-		return super.getSeqFasta();
+		return seqFasta;
 	}
 
 	@Override
@@ -420,6 +441,38 @@ public class BedRecord extends SiteSeqInfo implements AlignRecord {
 			return seqFasta.Length();
 		}
 		return 0;
+	}
+	@Override
+	public int getStartAbs() {
+		return align.getStartAbs();
+	}
+	@Override
+	public int getEndAbs() {
+		return align.getEndAbs();
+	}
+	@Override
+	public int getStartCis() {
+		return align.getStartCis();
+	}
+	@Override
+	public int getEndCis() {
+		return align.getEndCis();
+	}
+	@Override
+	public Boolean isCis5to3() {
+		return align.isCis5to3();
+	}
+	@Override
+	public int getLength() {
+		return align.getLength();
+	}
+	@Override
+	public String getChrId() {
+		return align.getChrId();
+	}
+	@Override
+	public String getName() {
+		return align.getName();
 	}
 	
 }

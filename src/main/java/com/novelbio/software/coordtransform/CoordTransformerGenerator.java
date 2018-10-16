@@ -73,6 +73,13 @@ public class CoordTransformerGenerator {
 		return coordTransformer;
 	}
 	
+	/** 给数据库使用 */
+	public static CoordTransformer generateTransformer(CoordPairSearchAbs coordPairSearchAbs) {
+		CoordTransformer coordTransformer = new CoordTransformer();		
+		coordTransformer.setCoordPairSearch(coordPairSearchAbs);
+		return coordTransformer;
+	}
+	
 	public static CoordTransformer generateTransformerMummer(String mummerFile, String mummerDelta, String chrAlt, String refFai, String altFai, double cutoff) {
 		Map<String, List<CoordPair>> mapChrId2LsCoordPair = readMummerFile(mummerFile, mummerDelta, refFai, altFai, cutoff);
 		CoordTransformer coordTransformer = new CoordTransformer();

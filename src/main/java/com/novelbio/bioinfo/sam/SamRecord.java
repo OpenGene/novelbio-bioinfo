@@ -317,17 +317,17 @@ public class SamRecord implements AlignRecord {
 			return null;
 		}
 		BedRecord bedRecord = new BedRecord();
-		bedRecord.setRefID(getChrId());
+		bedRecord.setChrId(getChrId());
 		bedRecord.setStartEndLoc(getStartAbs(), getEndAbs());
 		bedRecord.setCIGAR(samRecord.getCigarString());
 		bedRecord.setCis5to3(isCis5to3());
 		bedRecord.setMapQuality(getMapQuality());
-		bedRecord.setSeq(getSeqFasta());
+		bedRecord.setSeqFasta(getSeqFasta());
 		bedRecord.setScore(getMapQuality());
 		bedRecord.setMappingWeight(getMappedReadsWeight());
 		// 计数，mapping到了几次
 		bedRecord.setMappingNum(getMappingNum());
-		bedRecord.setName(samRecord.getReadName());
+		bedRecord.setSeqName(samRecord.getReadName());
 		bedRecord.setAlignmentBlocks(getAlignmentBlocks());
 		return bedRecord;
 	}
@@ -430,7 +430,7 @@ public class SamRecord implements AlignRecord {
 		for (String string : tmpInfo) {
 			BedRecord bedRecord = new BedRecord();
 			String[] info = string.split(",");
-			bedRecord.setRefID(info[0]);
+			bedRecord.setChrId(info[0]);
 			int start1 = Integer.parseInt(info[1].substring(1));
 			int end1 = start1 + getLength() - 1;
 			bedRecord.setStartEndLoc(start1, end1);
@@ -440,8 +440,8 @@ public class SamRecord implements AlignRecord {
 			bedRecord.setMappingWeight(tmpInfo.length + 1);
 			bedRecord.setMapQuality(getMapQuality());
 			bedRecord.setScore(samRecord.getMappingQuality());
-			bedRecord.setSeq(new SeqFasta(samRecord.getReadString()), false);
-			bedRecord.setName(samRecord.getReadName());
+			bedRecord.setSeqFasta(new SeqFasta(samRecord.getReadString()));
+			bedRecord.setSeqName(samRecord.getReadName());
 			lsBedRecords.add(bedRecord);
 		}
 		return lsBedRecords;

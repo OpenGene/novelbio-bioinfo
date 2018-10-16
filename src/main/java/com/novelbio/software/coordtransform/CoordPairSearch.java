@@ -6,6 +6,7 @@ import java.util.Map;
 
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
 import com.novelbio.bioinfo.base.binarysearch.BsearchSite;
 import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
@@ -19,7 +20,7 @@ public class CoordPairSearch extends CoordPairSearchAbs {
 	}
 	
 	@Override
-	public List<CoordPair> findCoordPairsOverlap(Align alignRef) {
+	public List<CoordPair> findCoordPairsOverlap(Alignment alignRef) {
 		List<CoordPair> lsCoordPairs = mapChrId2LsCoorPairs.get(alignRef.getChrId());
 		if (lsCoordPairs == null) {
 			return new ArrayList<>();
