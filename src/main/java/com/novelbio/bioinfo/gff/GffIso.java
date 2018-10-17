@@ -95,7 +95,7 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	 * 因为可能会有多个gffDetailGene合并为一个gffDetailGene，这时候直接用gffDetailGeneParent的名字就无法进行区分
 	 */
 	String geneName;
-	
+	String chrId;
 	/**
 	 * 是否为错乱的exon
 	 * 目前只看到叶绿体的基因是错乱的exon
@@ -235,7 +235,13 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 		}
 		return gffGene.getChrId().toLowerCase();
 	}
+	public void setChrId(String chrId) {
+		this.chrId = chrId;
+	}
 	public String getRefID() {
+		if (!StringOperate.isRealNull(chrId)) {
+			return chrId;
+		}
 		if (gffGene == null) {
 			return "";
 		}
