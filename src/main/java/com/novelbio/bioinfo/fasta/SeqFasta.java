@@ -1,5 +1,6 @@
 package com.novelbio.bioinfo.fasta;
 
+import java.io.Serializable;
 import java.util.Iterator;
 
 import org.slf4j.Logger;
@@ -11,7 +12,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
  * 本类专门用来装fasta文件的具体信息，的超类
  * 本类与Seq没有关系
  */
-public class SeqFasta implements Cloneable {
+public class SeqFasta implements Cloneable,Serializable {
 	private static Logger logger = LoggerFactory.getLogger(SeqFasta.class);
 
 	public static final int SEQ_UNKNOWN = 128;

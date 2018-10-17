@@ -52,9 +52,11 @@ public class CoordTransformer {
 	public BedRecord coordTransform(BedRecord bedRecord) {
 		VarInfo varInfo = coordTransform(coordPairSearch, bedRecord);
 		BedRecord bedRecordTrans = bedRecord.clone();
-		bedRecordTrans.setChrId(varInfo.getChrId());
-		bedRecordTrans.setStartEndLoc(varInfo.getStartCis(), varInfo.getEndCis());
-		bedRecordTrans.setCis5to3(varInfo.isCis5to3());
+		if (varInfo != null) {
+			bedRecordTrans.setChrId(varInfo.getChrId());
+			bedRecordTrans.setStartEndLoc(varInfo.getStartCis(), varInfo.getEndCis());
+			bedRecordTrans.setCis5to3(varInfo.isCis5to3());
+		}
 		return bedRecordTrans;
 	}
 	@VisibleForTesting

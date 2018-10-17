@@ -1,5 +1,6 @@
 package com.novelbio.bioinfo.base;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +17,7 @@ import com.novelbio.software.tssplot.ExceptionNBCChIPAlignError;
  * @author zong0jie
  * 重写了hashcode和equals方法，为 chrID+start+end
  */
-public class Align implements Alignment, Cloneable {
+public class Align implements Alignment, Cloneable, Serializable {
 	public static final int LOC_ORIGINAL = -1000000000;
 
 	static PatternOperate patternOperate = new PatternOperate("(-{0,1}\\d+)-(-{0,1}\\d+)");
@@ -346,4 +347,17 @@ public class Align implements Alignment, Cloneable {
 			throw new ExceptionNbcBean(e);
 		}
 	}
+	public int getStart() {
+		return start;
+	}
+	public void setStart(int start) {
+		this.start = start;
+	}
+	public int getEnd() {
+		return end;
+	}
+	public void setEnd(int end) {
+		this.end = end;
+	}
+	
 }
