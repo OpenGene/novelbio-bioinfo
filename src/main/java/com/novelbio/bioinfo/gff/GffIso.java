@@ -230,6 +230,10 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 		return true;
 	}
 	public String getRefIDlowcase() {
+		if (!StringOperate.isRealNull(chrId)) {
+			return chrId.toLowerCase();
+		}
+		
 		if (gffGene == null) {
 			return "";
 		}
