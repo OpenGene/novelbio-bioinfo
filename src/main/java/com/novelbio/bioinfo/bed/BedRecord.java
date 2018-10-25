@@ -1,26 +1,25 @@
 package com.novelbio.bioinfo.bed;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import org.apache.log4j.Logger;
 
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.util.ObjectUtil;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
 import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 import com.novelbio.bioinfo.fastq.FastQRecord;
-import com.novelbio.bioinfo.mappedreads.SiteSeqInfo;
-
-import cern.colt.matrix.linalg.SeqBlas;
  /**
   * BedSeq每一行的信息<br>
   * 兼容 bamToBed的 12行信息格式
   * @author zong0jie
   *
   */
-public class BedRecord implements AlignRecord {
+public class BedRecord implements AlignRecord,Serializable {
 	static private Logger logger = Logger.getLogger(BedRecord.class);
 	static final int COL_CHRID = 0;
 	static final int COL_START = 1;
@@ -148,6 +147,13 @@ public class BedRecord implements AlignRecord {
 			return false;
 		}
 		return true;
+	}
+	
+	public Align getAlign() {
+		return align;
+	}
+	public void setAlign(Align align) {
+		this.align = align;
 	}
 	public void setChrId(String chrId) {
 		align.setChrId(chrId);
@@ -390,7 +396,7 @@ public class BedRecord implements AlignRecord {
 	@Override
 	public BedRecord clone() {
 		try {
-			BedRecord bedRecord = (BedRecord) super.clone();
+			BedRecord bedRecord = ObjectUtil.deepClone(this);
 			bedRecord.CIGAR = CIGAR;
 			bedRecord.mappingNum = mappingNum;
 			bedRecord.mapQuality = mapQuality;
@@ -400,7 +406,7 @@ public class BedRecord implements AlignRecord {
 			bedRecord.splitStart = splitStart;
 			bedRecord.readLineInfo = readLineInfo;
 			return bedRecord;
-		} catch (CloneNotSupportedException e) {
+		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 		
