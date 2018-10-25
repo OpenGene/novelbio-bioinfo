@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
+import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Alignment;
@@ -167,11 +168,6 @@ class CoordPairMummerReader {
 	
 	Map<String, Long> mapChrRef2Len;
 	Map<String, Long> mapChrAlt2Len;
-
-	
-	public static void main(String[] args) {
-		
-	}
 	
 	public CoordPairMummerReader(String mummerCoord, String refFai, String altFai) {
 		txtRead = new TxtReadandWrite(mummerCoord);
@@ -181,8 +177,14 @@ class CoordPairMummerReader {
 			throw new RuntimeException(mummerCoord + " may not the correct mummer coord file.\n"
 					+ "coord file line 5 should be: ==============");
 		}
-		mapChrRef2Len = SeqHash.getMapChrId2Len(refFai);
-		mapChrAlt2Len = SeqHash.getMapChrId2Len(altFai);
+		if (!StringOperate.isRealNull(refFai) && !StringOperate.isRealNull(altFai)) {
+			mapChrRef2Len = SeqHash.getMapChrId2Len(refFai);
+			mapChrAlt2Len = SeqHash.getMapChrId2Len(altFai);
+		}
+	}
+	
+	public CoordPairMummerReader(String mummerCoord) {
+		this(mummerCoord, null, null);
 	}
 	
 	/** 相似度的cutoff，如果是不同版本之间的染色体比较，那么cutoff应该会很高 */
@@ -202,7 +204,10 @@ class CoordPairMummerReader {
 			String mummerLine = itMummer.next();
 			CoordPair coordPair = new CoordPair();
 			coordPair.initialMummer(mummerLine);
-			coordPair.setRefAltLen(mapChrRef2Len.get(coordPair.getChrRef()), mapChrAlt2Len.get(coordPair.getChrAlt()));
+			if (mapChrRef2Len != null && mapChrAlt2Len != null) {
+				coordPair.setRefAltLen(mapChrRef2Len.get(coordPair.getChrRef()), mapChrAlt2Len.get(coordPair.getChrAlt()));
+			}
+		
 			if (lastPair != null && !coordPair.getChrId().equals(lastPair.getChrId())) {
 				lastPair = coordPair;
 				break;

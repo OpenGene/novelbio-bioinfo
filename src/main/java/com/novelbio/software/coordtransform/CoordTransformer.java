@@ -8,8 +8,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.bed.BedRecord;
-//import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
-//import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 import com.novelbio.bioinfo.fasta.SeqHashInt;
 import com.novelbio.software.snpanno.SnpInfo;
@@ -51,6 +49,9 @@ public class CoordTransformer {
 	/** 坐标转换 */
 	public BedRecord coordTransform(BedRecord bedRecord) {
 		VarInfo varInfo = coordTransform(coordPairSearch, bedRecord);
+		if (varInfo == null) {
+			return null;
+		}
 		BedRecord bedRecordTrans = bedRecord.clone();
 		bedRecordTrans.setChrId(varInfo.getChrId());
 		bedRecordTrans.setStartEndLoc(varInfo.getStartCis(), varInfo.getEndCis());
