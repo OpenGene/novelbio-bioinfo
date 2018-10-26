@@ -314,6 +314,9 @@ public class CoordTransformerGenerator {
 		TxtReadandWrite txtRead = new TxtReadandWrite(chainFile);
 		CoordPair coordPair = null;
 		for (String content : txtRead.readlines()) {
+			if (StringOperate.isRealNull(content)) {
+				continue;
+			}
 			if (content.startsWith("chain")) {
 				coordPair = new CoordPair();
 				coordPair.initialChainLiftover(content);
@@ -326,6 +329,7 @@ public class CoordTransformerGenerator {
 				lsCoordPairs.add(coordPair);
 				continue;
 			}
+			
 			coordPair.addChainLiftover(content);
 		}
 		txtRead.close();

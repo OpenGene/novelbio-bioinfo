@@ -151,6 +151,7 @@ public class CoordTransformer {
 				for (String indel : coordPair.readPerIndel()) {
 					txtWrite.writefileln(indel);
 				}
+				txtWrite.writefileln();
 			}
 		}
 		txtWrite.close();

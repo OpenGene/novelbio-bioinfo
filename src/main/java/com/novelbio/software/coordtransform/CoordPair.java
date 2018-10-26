@@ -421,6 +421,7 @@ public class CoordPair implements Alignment {
 		Iterator<IndelForRef> itIndels = lsIndel.iterator();
 		return new Iterable<String>() {
 			IndelForRef indel;
+			boolean isStart = false;
 			public Iterator<String> iterator() {
 				return new Iterator<String>() {
 					public boolean hasNext() {
@@ -436,13 +437,16 @@ public class CoordPair implements Alignment {
 					}
 					String getLine() {
 						if (!itIndels.hasNext()) {
-							if (indel == null) {
+							if (isStart && indel == null) {
 								return null;
 							}
-							int length = alignRef.getEndAbs()-indel.getEndExtend(-1);
+							isStart = true;
+							int start = indel == null ? alignRef.getStartAbs()-1 : indel.getEndExtend(-1);
+							int length = alignRef.getEndAbs() - start;
 							indel = null;
 							return length+"";
 						}
+						isStart = true;
 						if (indel == null) {
 							indel = itIndels.next();
 							return indel.getStartAbs() - alignRef.getStartAbs()+1 + "\t" + indel.getRefLen() + "\t" + indel.getAltLen();
