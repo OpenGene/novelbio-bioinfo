@@ -53,7 +53,6 @@ public class ChrFileFormat {
 			}
 			String[] ss = content.split("\t");
 			if (ss.length > 4 ) {
-				gffGetChrId.getChrID(ss);
 				ss[2] = ss[2].toLowerCase();
 				if (ss[2].equals("gene") || ss[2].equals("exon") || ss[2].equals("cds")) {
 					setChrIdInclude.add(gffGetChrId.getChrID(ss).toLowerCase());

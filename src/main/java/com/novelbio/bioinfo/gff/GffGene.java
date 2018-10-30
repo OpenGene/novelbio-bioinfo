@@ -73,7 +73,7 @@ public class GffGene extends AlignExtend {
 		this.cis5to3 = cis5to3;
 	}
 	/**
-	 * @param chrID 内部小写
+	 * @param chrID 不改变大小写
 	 * @param locString 没名字就写null
 	 * @param cis5to3
 	 */
@@ -841,6 +841,14 @@ public class GffGene extends AlignExtend {
 		return mapCompInfo2GeneIso.get(lsCompInfo.get(0));
 	}
 	
+	public List<String> toUcscRefGene(int num) {
+		List<String> lsUcscRefGene = new ArrayList<>();
+		for (GffIso gffIso : getLsCodSplit()) {
+			lsUcscRefGene.add(gffIso.toUcscRefGene(num));
+		}
+		return lsUcscRefGene;
+	}
+	
 	/**
 	 * 将本基因输出为bed格式
 	 * @param chrID 染色体名，主要是为了大小写问题，null表示走默认
@@ -853,9 +861,9 @@ public class GffGene extends AlignExtend {
 		for (GffIso gffGeneIsoInfo : getLsCodSplit()) {
 			gffGeneIsoInfo.sortOnly();
 			if (i++ == 0) {
-				bed = gffGeneIsoInfo.getBedFormat(chrID, title);
+				bed = gffGeneIsoInfo.toBedFormat(chrID, title);
 			} else {
-				bed = bed + TxtReadandWrite.ENTER_LINUX + gffGeneIsoInfo.getBedFormat(chrID, title);
+				bed = bed + TxtReadandWrite.ENTER_LINUX + gffGeneIsoInfo.toBedFormat(chrID, title);
 			}			
 		}
 		return bed;
@@ -871,7 +879,7 @@ public class GffGene extends AlignExtend {
 		StringBuilder geneGTF = new StringBuilder();
 		for (GffIso gffGeneIsoInfo : getLsCodSplit()) {
 			gffGeneIsoInfo.sortOnly();
-			geneGTF.append(gffGeneIsoInfo.getGTFformat(chrID, title));
+			geneGTF.append(gffGeneIsoInfo.toGTFformat(chrID, title));
 		}
 		return geneGTF.toString();
 	}
@@ -915,7 +923,7 @@ public class GffGene extends AlignExtend {
 			lsmRNA.add("ID=" + gffGeneIsoInfo.getName() + ";Name="+gffGeneIsoInfo.getName()+ ";Parent="+ gffGeneIsoInfo.getParentGeneName());
 			lsResult.add(ArrayOperate.cmbString(lsmRNA.toArray(new String[0]), "\t"));			
 			gffGeneIsoInfo.sortOnly();
-			lsResult.add(gffGeneIsoInfo.getGFFformat(title));
+			lsResult.add(gffGeneIsoInfo.toGFFformat(title));
 		}
 		return lsResult;
 	}

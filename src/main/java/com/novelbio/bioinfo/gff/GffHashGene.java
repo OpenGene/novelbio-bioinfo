@@ -399,7 +399,11 @@ public class GffHashGene extends RunProcess implements GffHashGeneInf {
 	public void writeToBED(List<String> lsChrID, String GTFfile) {
 		gffHashGene.writeToBED(lsChrID, GTFfile, GFFDBNAME);
 	}
-
+	
+	public void writeToUcscRefGene(String ucscFile) {
+		gffHashGene.writeToUcscRefGene(ucscFile);
+	}
+	
 	/** 自动判断染色体 */
 	public void addListGff(ListGff listGff) {
 		String chrID = listGff.getName();

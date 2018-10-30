@@ -378,6 +378,17 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 	}
 
 	/**
+	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
+	 * 将文件写入BED中
+	 * @param lsChrIDinput 输入的chrID，主要是会有不同的大小写方式，需要和chrSeq保持一致，null表示走默认
+	 * @param GTFfile 输出文件名
+	 * @param title 给该GTF起个名字
+	 */
+	public void writeToUcscRefGene(String ucscRefGene) {
+		writeToFile(null, GffType.UCSC, ucscRefGene, "");
+	}
+	
+	/**
 	 * 
 	 * <b>可能会出现重复ID，如同一名字的miRNA</b><br>
 	 * 将文件写入GTF中
@@ -405,6 +416,7 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 		//所以如果发现一样的基因名，就在其后面加上.1，.2等
 		HashSet<String> setGeneName = new HashSet<String>();
 		HashSet<String> setTranscriptName = new HashSet<String>();
+		int num = 0;
 		for (String chrID : treeSet) {
 			ListGff lsGffDetailGenes = mapChrID2ListGff.get(chrID.toLowerCase());
 			if (lsGffDetailGenes == null) continue;
@@ -437,6 +449,13 @@ public abstract class GffHashGeneAbs extends ListEleSearch<GffGene, ListGff> imp
 					outUnit = gffDetailGene.toBedFormate(chrID, title);
 				} else if (gffType == GffType.GFF3) {
 					List<String> lsTmp = gffDetailGene.toGFFformate(chrID, title);
+					StringBuilder stringBuilder = new StringBuilder();
+					for (String string : lsTmp) {
+						stringBuilder.append(string + TxtReadandWrite.ENTER_LINUX);
+                    }
+					outUnit = stringBuilder.toString();
+				} else if (gffType == GffType.UCSC) {
+					List<String> lsTmp = gffDetailGene.toUcscRefGene(++num);
 					StringBuilder stringBuilder = new StringBuilder();
 					for (String string : lsTmp) {
 						stringBuilder.append(string + TxtReadandWrite.ENTER_LINUX);

@@ -88,6 +88,6 @@ public class TestGffGeneIsoInfoSort {
 		Assert.assertEquals(lsAtg.size(), 2);
 		Assert.assertEquals(new ExonInfo(gffGeneIsoInfo, false, 5000, 5000), lsAtg.get(0));
 		Assert.assertEquals(new ExonInfo(gffGeneIsoInfo, false, 4000, 3999), lsAtg.get(1));
-		System.out.println(gffGeneIsoInfo.getGTFformat(null, ""));
+		System.out.println(gffGeneIsoInfo.toGTFformat(null, ""));
 	}
 }

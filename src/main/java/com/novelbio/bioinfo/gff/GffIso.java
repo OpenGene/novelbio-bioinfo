@@ -31,6 +31,7 @@ import com.novelbio.bioinfo.base.binarysearch.BsearchSiteDu;
 import com.novelbio.bioinfo.base.binarysearch.ListEle;
 import com.novelbio.bioinfo.gff.GffGene.GeneStructure;
 import com.novelbio.database.domain.modgeneid.GeneType;
+import com.sun.org.apache.xalan.internal.xsltc.compiler.util.ResultTreeType;
 
 /**
  * 	重写hash，不包含基因名信息，包含基因taxID，chrID，atg，uag，tss，长度，以及每一个exon的信息<br>
@@ -1062,7 +1063,7 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	
 
 	
-	protected String getBedFormat(String chrID, String title) {
+	protected String toBedFormat(String chrID, String title) {
 		StringBuilder bed = new StringBuilder();
 		bed.append(chrID).append("\t")
 		.append(getStartAbs() - 1).append("\t")
@@ -1116,6 +1117,91 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 		return bed.toString();
 	}
 	
+	protected String toUcscRefGene(int num) {
+		if (getName().contains("NM_002645")) {
+			logger.info("stop");
+		}
+		List<String> lsResult = new ArrayList<>();
+		lsResult.add(num+"");
+		lsResult.add(getName());
+		lsResult.add(getRefID());
+		lsResult.add(isCis5to3() ? "+" : "-");
+		lsResult.add((getStartAbs()-1)+"");
+		lsResult.add(getEndAbs()+"");
+		int before = Math.min(getATGsite(), getUAGsite());
+		int after = Math.max(getATGsite(), getUAGsite());
+		if (ismRNAFromCds()) {
+			lsResult.add((before-1) + "");
+			lsResult.add(after + "");
+		} else {
+			lsResult.add(getEndAbs()+"");
+			lsResult.add(getEndAbs()+"");
+		}
+		lsResult.add(getExonNum() + "");
+		
+		StringBuilder startExon = new StringBuilder();
+		if (isCis5to3()) {
+			for (ExonInfo exonInfo : lsElement) {
+				startExon.append((exonInfo.getStartAbs()-1)+"").append(",");
+			}
+		} else {
+			for (int i = lsElement.size() - 1; i >= 0; i--) {
+				ExonInfo exonInfo = lsElement.get(i);
+				startExon.append((exonInfo.getStartAbs()-1)+"").append(",");
+			}
+		}
+
+		lsResult.add(startExon.toString());
+		
+		StringBuilder endExon = new StringBuilder();
+		if (isCis5to3()) {
+			for (ExonInfo exonInfo : lsElement) {
+				endExon.append(exonInfo.getEndAbs()+"").append(",");
+			}
+		} else {
+			for (int i = lsElement.size() - 1; i >= 0; i--) {
+				ExonInfo exonInfo = lsElement.get(i);
+				endExon.append(exonInfo.getEndAbs()+"").append(",");
+			}
+		}
+	
+
+		
+		lsResult.add(endExon.toString());
+		lsResult.add("0");
+		lsResult.add(geneName);
+		if (ismRNAFromCds()) {
+			lsResult.add(getATGsite() == getStartAbs() ? "incmpl" : "cmpl");
+			lsResult.add(getUAGsite() == getEndAbs() ? "incmpl" : "cmpl");
+		} else {
+			lsResult.add("unk");
+			lsResult.add("unk");
+		}
+		
+		List<String> lsExonFrame = new ArrayList<>();
+		if (isCis5to3()) {
+			for (ExonInfo exonInfo : lsElement) {
+				if (Alignment.isSiteInAlign(exonInfo, ATGsite)) {
+					lsExonFrame.add("0");
+				} else {
+					lsExonFrame.add(getCdsCodeNumUcsc(exonInfo.getStartCis())+"");
+				}
+			}
+		} else {
+			for (int i = lsElement.size() - 1; i >= 0; i--) {
+				ExonInfo exonInfo = lsElement.get(i);
+				if (Alignment.isSiteInAlign(exonInfo, ATGsite)) {
+					lsExonFrame.add("0");
+				} else {
+					lsExonFrame.add(getCdsCodeNumUcsc(exonInfo.getStartCis())+"");
+				}
+			}
+		}
+		
+		lsResult.add(ArrayOperate.cmbString(lsExonFrame, ","));
+		return ArrayOperate.cmbString(lsResult, "\t");
+	}
+	
 	/**
 	 * 返回该基因的GTF格式文件，末尾有换行符
 	 * @param chrID 染色体名，主要是为了大小写问题，null表示走默认
@@ -1123,12 +1209,12 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	 * @param title 该GTF文件的名称
 	 * @return
 	 */
-	public String getGTFformat(String chrID, String title) {
+	public String toGTFformat(String chrID, String title) {
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";
 		}
-		String genetitle = getGTFformatExon(chrID, title,strand);
+		String genetitle = toGTFformatExon(chrID, title,strand);
 		return genetitle;
 	}
 	/**
@@ -1136,16 +1222,38 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	 * @param title 该GTF文件的名称
 	 * @return
 	 */
-	public String getGFFformat(String title) {
+	public String toGFFformat(String title) {
 		String strand = "+";
 		if (!isCis5to3()) {
 			strand = "-";
 		}
-		String genetitle = getGFFformatExonMISO(title,strand);
+		String genetitle = toGFFformatExonMISO(title,strand);
 		return genetitle;
 	}
-
-	protected String getGTFformatExon(String chrID, String title, String strand) {
+	
+	protected String toGFFformatExonMISO(String title, String strand) {
+		String geneExon = "";
+		List<String> lsResult = new ArrayList<>();
+		
+		for (int i = 0; i < size(); i++) {
+			ExonInfo exons = get(i);
+			lsResult.add(getRefID());
+			lsResult.add(title);
+			lsResult.add("exon");
+			lsResult.add(exons.getStartAbs()+"");
+			lsResult.add(exons.getEndAbs() + "");
+			lsResult.add(".");
+			lsResult.add(strand);
+			lsResult.add(".");
+			lsResult.add("ID=exon:" + getName()  + ":" + (i+1) +";Parent=" + getName());
+			geneExon = geneExon + ArrayOperate.cmbString(lsResult, "\t") + TxtReadandWrite.ENTER_LINUX;
+//			geneExon = geneExon + getRefID() + "\t" +title + "\texon\t" + exons.getStartAbs() + "\t" + exons.getEndAbs()
+//		     + "\t.\t" +strand+"\t.\t"+ "ID=exon:" + getName()  + ":" + (i+1) +";Parent=" + getName() + " "+TxtReadandWrite.ENTER_LINUX;
+		}
+		return geneExon;
+	}
+	
+	protected String toGTFformatExon(String chrID, String title, String strand) {
 		if (chrID == null) chrID = getRefID();
 
 		List<String> lsResult = new ArrayList<>();
@@ -1222,7 +1330,7 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 	}
 	
 	private int getCdsCodeNum(int cdsStart) {
-		int codNum = getCod2ATGmRNA(cdsStart)%3;
+		int codNum = getCdsCodeNumUcsc(cdsStart);
 		if (codNum == 1) {
 			codNum = 2;
 		} else if (codNum == 2) {
@@ -1230,7 +1338,15 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 		}
 		return codNum;
 	}
-	
+	private int getCdsCodeNumUcsc(int cdsStart) {
+		if (cdsStart < Math.min(getATGsite(), getUAGsite())
+				|| cdsStart > Math.max(getATGsite(), getUAGsite())
+				) {
+			return -1;
+		}
+		
+		return getCod2ATGmRNA(cdsStart)%3;
+	}
 	/** 
 	 * 根据输入的exon，判断是否存在cds，并返回<br>
 	 * null表示没有cds
@@ -1257,16 +1373,6 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 			cdsInfo.setEndCis(uagBeforeSite);
 		}
 		return cdsInfo;
-	}
-	
-	protected String getGFFformatExonMISO(String title, String strand) {
-		String geneExon = "";
-		for (int i = 0; i < size(); i++) {
-			ExonInfo exons = get(i);
-			geneExon = geneExon + getRefID() + "\t" +title + "\texon\t" + exons.getStartAbs() + "\t" + exons.getEndAbs()
-		     + "\t.\t" +strand+"\t.\t"+ "ID=exon:" + getName()  + ":" + (i+1) +";Parent=" + getName() + " "+TxtReadandWrite.ENTER_LINUX;
-		}
-		return geneExon;
 	}
 
 	/**

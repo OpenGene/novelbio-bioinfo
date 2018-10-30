@@ -75,9 +75,9 @@ public class GffGetChrId {
 		String chrID = mapId2ChrId.get(ss[0].toLowerCase());
 		if (chrID != null) return chrID;
 		if (ss[0].toLowerCase().startsWith("chr")) {
-			mapId2ChrId.put(ss[0].toLowerCase(), ss[0].toLowerCase());
+			mapId2ChrId.put(ss[0].toLowerCase(), ss[0]);
 			setChrIdAll.add(ss[0].toLowerCase());
-			return ss[0].toLowerCase();
+			return ss[0];
 		}
 
 		try {
