@@ -14,6 +14,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.base.fileOperate.FileOperate;
+import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.bed.BedRecord;
 import com.novelbio.bioinfo.fasta.SeqHash;
 import com.novelbio.bioinfo.fasta.SeqHashInt;
@@ -21,6 +23,41 @@ import com.novelbio.bioinfo.fasta.SeqHashInt;
 public class CoordTransformerGenerator {
 	
 	public static void main(String[] args) {
+		String chain = "/media/winE/mywork/nongkeyuan/coordtransform/IRGSPv4_vs_IRGSP1/irgspv4_vs_irgsp1.new.chain";
+		String infile = "/media/winE/mywork/nongkeyuan/coordtransform/IRGSPv4_vs_IRGSP1/plink/all.map";
+		TxtReadandWrite txtRead = new TxtReadandWrite(infile);
+		TxtReadandWrite txtWrite = new TxtReadandWrite(FileOperate.changeFileSuffix(infile, ".transform", null), true);
+		Map<String, List<CoordPair>> mapChrId2LsCoordPair = readChainFile(chain);
+		
+		CoordTransformer coordTransformer = CoordTransformerGenerator.generateTransformer(mapChrId2LsCoordPair, null);
+		for (String content : txtRead.readlines()) {
+			String[] ss = content.split("\t");
+			Align align = new Align(ss[0] + ":" + ss[3]+"-"+ss[3]);
+			VarInfo varInfo = coordTransformer.coordTransform(align);
+			if (varInfo != null && !varInfo.getChrId().equals(align.getChrId())) {
+				varInfo = null;
+			}
+			List<String> lsResult = ArrayOperate.converArray2List(ss);
+			if (varInfo == null) {
+				lsResult.add("unknown");
+				lsResult.add("unknown");
+			} else {
+				lsResult.add(varInfo.getChrId());
+				lsResult.add(varInfo.getStartAbs()+"");
+			}
+			txtWrite.writefileln(ArrayOperate.cmbString(lsResult, "\t"));
+		}
+		txtRead.close();
+		txtWrite.close();
+	}
+	
+	public static void main2(String[] args) {
+//		String ss = "Convert --mummerCoord /media/winE/mywork/nongkeyuan/coordtransform/IRGSPv4_vs_IRGSP1/IRGSPv4_VS_IRGSP1.0.coords"
+//				+ " --mummerDelta /media/winE/mywork/nongkeyuan/coordtransform/IRGSPv4_vs_IRGSP1/IRGSPv4_VS_IRGSP1.0.delta"
+//				+ " --queryfai /media/winE/mywork/nongkeyuan/coordtransform/IRGSPv4_vs_IRGSP1/IRGSP_v4.genome.fa.fai"
+//				+ " --subjectfai /media/winE/mywork/nongkeyuan/coordtransform/IRGSPv4_vs_IRGSP1/oryza_sativa.IRGSP-1.0.dna.fa.fai"
+//				+ " -cutoff 0.99 -output /media/winE/mywork/nongkeyuan/coordtransform/IRGSPv4_vs_IRGSP1/irgspvs_vs_irgsp1.chain";
+//		args = ss.split(" ");
 		if (args.length > 0) {
 			if (args[0].equals("Convert")) {
 				runFormatConvert(args);
@@ -48,6 +85,7 @@ public class CoordTransformerGenerator {
 		try {
 			cliParser = new GnuParser().parse(opts, args);
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println(getHelp());
 			System.exit(1); 
 		}
@@ -87,6 +125,7 @@ public class CoordTransformerGenerator {
 		try {
 			cliParser = new GnuParser().parse(opts, args);
 		} catch (Exception e) {
+			e.printStackTrace();
 			System.out.println(getHelp()); 
 			System.exit(1); 
 		}
@@ -345,15 +384,28 @@ public class CoordTransformerGenerator {
 		coordPairReader.setIdentityCutoff(cutoff);
 		while (coordPairReader.hasNext()) {
 			List<CoordPair> lsCoordPairs = coordPairReader.readNext();
+			
+			if (!ArrayOperate.isEmpty(lsCoordPairs)) {
+				String chrId = lsCoordPairs.get(0).getChrId();
+				List<CoordPair> lsCoord = mapChrId2LsCoordPair.get(chrId);
+				if (lsCoord == null) {
+					mapChrId2LsCoordPair.put(chrId, lsCoordPairs);
+				} else {
+					lsCoord.addAll(lsCoordPairs);
+				}
+			}
+		}
+		coordPairReader.close();
+
+		for (String chrId : mapChrId2LsCoordPair.keySet()) {
+			List<CoordPair> lsCoordPairs = mapChrId2LsCoordPair.get(chrId);
 			CoordReaderMummer coordMummerReader = new CoordReaderMummer();
 			coordMummerReader.setLsPairs(new LinkedList<>(lsCoordPairs));
 			coordMummerReader.handleLsCoordPairs();
 			List<CoordPair> lsCoordResult = coordMummerReader.getLsPairsResult();
-			if (!ArrayOperate.isEmpty(lsCoordResult)) {
-				mapChrId2LsCoordPair.put(lsCoordResult.get(0).getChrId(), lsCoordResult);
-			}
+			lsCoordPairs.clear();
+			lsCoordPairs.addAll(lsCoordResult);
 		}
-		coordPairReader.close();
 		
 		MummerDeltaReader mummerDeltaReader = new MummerDeltaReader();
 		mummerDeltaReader.setMapChrId2CoordPair(mapChrId2LsCoordPair);

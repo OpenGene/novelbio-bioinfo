@@ -41,7 +41,11 @@ public class CoordTransformer {
 		return transformSnpInfo(snpInfo, varInfo, seqHashAlt);
 	}
 	
-	/** 坐标转换 */
+	/** 坐标转换
+	 * 没有转出来则为null
+	 * @param alignRef
+	 * @return
+	 */
 	public VarInfo coordTransform(Align alignRef) {
 		return coordTransform(coordPairSearch, alignRef);
 	}
