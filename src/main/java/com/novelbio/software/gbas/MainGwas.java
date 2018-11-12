@@ -34,8 +34,8 @@ import com.novelbio.software.snpanno.SnpInfo;
 
 import smile.clustering.KMeans;
 
-public class TestGwas {
-	private static final Logger logger = LoggerFactory.getLogger(TestGwas.class);
+public class MainGwas {
+	private static final Logger logger = LoggerFactory.getLogger(MainGwas.class);
 			
 	public static void main2(String[] args) {
 		String out = "/home/novelbio/zongjiework/result-gene-8-NoChange/";
@@ -152,7 +152,7 @@ public class TestGwas {
 		}
 		
 		System.out.println("finish anno");
-		TestGwas testGwas = new TestGwas();
+		MainGwas testGwas = new MainGwas();
 		testGwas.setGffChrAbs(gffChrAbs);
 		testGwas.setPlinkPed(plinkPed);
 		testGwas.setPlinkBimCorrect(plinkBimCorrect);

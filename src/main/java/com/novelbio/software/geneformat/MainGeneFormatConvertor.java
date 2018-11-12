@@ -11,7 +11,7 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.gff.GffHashGene;
 import com.novelbio.bioinfo.gff.GffType;
 
-public class GeneFormatConvertor {
+public class MainGeneFormatConvertor {
 	
 	public static void main(String[] args) {
 		Options opts = new Options();
