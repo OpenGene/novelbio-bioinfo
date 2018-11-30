@@ -1,8 +1,5 @@
 package com.novelbio.bioinfo.sam;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,22 +12,6 @@ import java.util.Set;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.CategoryLabelPositions;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarPainter;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.StandardBarPainter;
-import org.jfree.chart.title.LegendTitle;
-import org.jfree.data.category.CategoryDataset;
-import org.jfree.data.general.DatasetUtilities;
-import org.jfree.ui.RectangleEdge;
-import org.jfree.ui.RectangleInsets;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,7 +19,6 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.base.plot.ImageUtils;
-import com.novelbio.base.plot.PlotBar;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
 import com.novelbio.bioinfo.base.GeneExpTable;
@@ -133,10 +113,6 @@ public class SamFileStatistics implements AlignmentRecorder {
 		}
 		samFileStatistics.summary();
 		SamFileStatistics.saveExcel(outpath + prefix, samFileStatistics);
-		if (CreatePic.equals("true")) {
-			SamFileStatistics.savePic(outpath + prefix, samFileStatistics);
-		}
-
 	}
 
 	public SamFileStatistics(String prefix) {
@@ -587,17 +563,6 @@ public class SamFileStatistics implements AlignmentRecorder {
 	}
 
 	/**
-	 * 取得最终的图片流
-	 * 
-	 * @return
-	 */
-	public BufferedImage getBufferedImages() {
-		List<SamFileStatistics> lsSamFileStatistics = new ArrayList<SamFileStatistics>();
-		lsSamFileStatistics.add(this);
-		return drawMappingImage(lsSamFileStatistics);
-	}
-
-	/**
 	 * 画mapping的结果图
 	 * 
 	 * @param picName
@@ -606,79 +571,6 @@ public class SamFileStatistics implements AlignmentRecorder {
 	 *            作图的数据
 	 * @return 是否成功
 	 */
-	public static BufferedImage drawMappingImage(List<SamFileStatistics> lsSamFileStatistics) {
-		Color barColor1 = new Color(23, 200, 200);
-		Color barColor2 = new Color(100, 100, 100);
-		Set<String> setChrIdUsed = getSetChrId(lsSamFileStatistics.get(0));
-
-		double[][] allData = getResultProp(setChrIdUsed, lsSamFileStatistics);
-		List<String> lsRowkeys = new ArrayList<String>();
-		for (SamFileStatistics samFileStatistics : lsSamFileStatistics) {
-			lsRowkeys.add(samFileStatistics.prefix);
-		}
-		lsRowkeys.add("Genome");
-		String[] rowkeys = lsRowkeys.toArray(new String[lsRowkeys.size()]);
-		String[] columnKeys = getColumnKey(setChrIdUsed);
-		// int width = 50 * (lsSamFileStatistics.get(0).getMapChrID2PropAndLen().size()
-		// * (lsSamFileStatistics.size() + 1));
-		// float rate = width/1500-1;
-		CategoryDataset dataset = DatasetUtilities.createCategoryDataset(rowkeys, columnKeys, allData);
-		JFreeChart chart = ChartFactory.createBarChart("Mapping Result", null, null, dataset, PlotOrientation.VERTICAL,
-				true, false, false);
-		// chart.getRenderingHints().put(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-		// 设置图例的位置
-		LegendTitle legend = chart.getLegend();
-		legend.setItemFont(new Font("宋体", Font.PLAIN, 20));
-		legend.setPadding(20, 20, 20, 20);
-		legend.setPosition(RectangleEdge.RIGHT);
-		legend.setMargin(0, 0, 0, 50);
-
-		// 设置图标题的字体
-		Font font = new Font("黑体", Font.BOLD, 30);
-		chart.getTitle().setFont(font);
-		RectangleInsets titlePosition = chart.getTitle().getPadding();
-		chart.getTitle().setPadding(titlePosition.getTop() + 30, titlePosition.getLeft(), titlePosition.getBottom(),
-				titlePosition.getRight());
-		chart.getTitle().setText("Reads Distribution On Chromosomes");
-		chart.setBorderVisible(true);
-		CategoryPlot plot = (CategoryPlot) chart.getPlot();
-		plot.setBackgroundPaint(Color.white);
-		CategoryAxis cateaxis = plot.getDomainAxis();
-
-		BarRenderer renderer = new BarRenderer();// 设置柱子的相关属性
-		// 分类柱子之间的宽度
-		renderer.setItemMargin(0.02);
-		// 设置柱子宽度
-		renderer.setMaximumBarWidth(0.03);
-		renderer.setMinimumBarLength(0.1); // 最短的BAR长度
-		// 设置柱子类型
-		BarPainter barPainter = new StandardBarPainter();
-		renderer.setBarPainter(barPainter);
-		renderer.setSeriesPaint(0, barColor1);
-		renderer.setSeriesPaint(1, barColor2);
-		// 是否显示阴影
-		renderer.setShadowVisible(false);
-
-		plot.setRenderer(renderer);
-		// 设置横轴的标题
-		cateaxis.setTickLabelFont(new Font("粗体", Font.BOLD, 16));
-		// 让标尺以30度倾斜
-		cateaxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 4.0));
-		cateaxis.setLabel("Chromosome Distribution");
-		cateaxis.setLabelFont(new Font("粗体", Font.BOLD, 20));
-		// 在lable和坐标轴之间插一个矩形，所以如果是下标签，设定该矩形的高度即可
-		cateaxis.setLabelInsets(new RectangleInsets(10, 0, 10, 0));
-		// 纵轴
-		NumberAxis numaxis = (NumberAxis) plot.getRangeAxis();
-		numaxis.setTickLabelFont(new Font("宋体", Font.BOLD, 10));
-		// 纵轴标尺的间距
-		numaxis.setTickUnit(new NumberTickUnit(PlotBar.getSpace(numaxis.getRange().getUpperBound(), 5)));
-		numaxis.setLabelFont(new Font("粗体", Font.BOLD, 20));
-		numaxis.setLabel("Proportion");
-		// 20表示左边marge，10表示lable与y轴的距离
-		numaxis.setLabelInsets(new RectangleInsets(0, 10, 10, 10));
-		return chart.createBufferedImage(1500, 700);
-	}
 
 	/** 获得最后需要输出的染色体id */
 	private static Set<String> getSetChrId(SamFileStatistics statistics) {
@@ -780,19 +672,6 @@ public class SamFileStatistics implements AlignmentRecorder {
 		excelOperate.close();
 
 		return excelName;
-	}
-
-	// bll
-	// public static String getAllStatisticFile() {
-	// String allStatisticsFile = null;
-	//
-	// return allStatisticsFile;
-	// }
-
-	public static String savePic(String pathAndName, SamFileStatistics samFileStatistics) {
-		String pathChrPic = getSavePic(pathAndName);
-		pathChrPic = ImageUtils.saveBufferedImage(samFileStatistics.getBufferedImages(), pathChrPic);
-		return pathChrPic;
 	}
 
 	/** 预判会出现的文件名 */

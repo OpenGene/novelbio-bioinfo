@@ -1,7 +1,5 @@
 package com.novelbio.software.tssplot;
 
-import java.awt.Color;
-import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -11,22 +9,18 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.dataStructure.MathComput;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.plot.DotStyle;
-import com.novelbio.base.plot.PlotScatter;
 import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffGene;
+import com.novelbio.bioinfo.gff.GffGene.GeneStructure;
 import com.novelbio.bioinfo.gff.GffHashGene;
 import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.bioinfo.gff.ListGff;
-import com.novelbio.bioinfo.gff.GffGene.GeneStructure;
 import com.novelbio.bioinfo.gffchr.GffChrAbs;
 import com.novelbio.bioinfo.mappedreads.EnumMapNormalizeType;
 import com.novelbio.bioinfo.mappedreads.MapReads;
 import com.novelbio.bioinfo.mappedreads.RegionInfo;
 import com.novelbio.bioinfo.mappedreads.RegionInfo.RegionInfoComparator;
-
-import de.erichseifert.gral.util.GraphicsUtils;
 /**
  * 绘制染色体分布的图
  * @author zong0jie
@@ -249,40 +243,7 @@ public class GffPlotChrome {
 		if (chrReads == null) {
 			return;
 		}
-		
-		PlotScatter plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_SCATTERPLOT);
-		plotScatter.setAxisX(0, maxresolution);
-		plotScatter.setAxisY(0, axisY);
-		plotScatter.setMapNum2ChangeX(0, 0, resolution.length, chrLength, interval);
-
-		DotStyle dotStyle = new DotStyle();
-		Paint colorGradient = DotStyle.getGridentColor(GraphicsUtils.deriveDarker(Color.blue), Color.blue);
-		dotStyle.setColor(colorGradient);
-		dotStyle.setStyle(DotStyle.STYLE_AREA);
-		plotScatter.addXY(resolutionDoub, chrReads, dotStyle);
-		
-		//////////////////添加边框///////////////////////////////
-		DotStyle dotStyleBroad = new DotStyle();
-		dotStyleBroad.setStyle(DotStyle.STYLE_LINE);
-		dotStyleBroad.setColor(Color.RED);
-		dotStyleBroad.setSize(DotStyle.SIZE_B);
-		double[] xstart = new double[]{0,0}; double[] xend= new double[]{resolutionDoub[resolutionDoub.length-1], resolutionDoub[resolutionDoub.length-1]};
-		double[] y = new double[]{0, axisY};
-		plotScatter.addXY(xend, y, dotStyleBroad);
-		plotScatter.addXY(xstart, y, dotStyleBroad.clone());
-		//////////////////////////////////////////////////////////////
-		
-		plotScatter.setBg(Color.WHITE);
-		plotScatter.setAlpha(false);
-		//坐标轴mapping
-//		plotScatter.setMapNum2ChangeY(0, 0, axisY, 500, 100);
-		plotScatter.setTitle(chrID + " Reads Density", null);
-		plotScatter.setTitleX("Chromosome Length", null, 0);
-		plotScatter.setTitleY("Normalized Reads Counts", null, (int)axisY/5);
-		
-		plotScatter.setInsets(PlotScatter.INSETS_SIZE_ML);
-		
-		plotScatter.saveToFile(outFileName, 10000, 1000);
+		//TODO 这里可以用R画图
 	}
 
 	/**

@@ -146,31 +146,7 @@ public class CogFunTest extends FunctionTest {
 		}
 		return lsGeneID2LsCogs;
 	}
-	
-	public BufferedImage getImagePvalue() {
-		List<StatisticTestResult> lsTestResults = getTestResult();
-		if (lsTestResults == null || lsTestResults.size() == 0) {
-			return null;
-		}
-		try {
-			BufferedImage bfImageLog2Pic = GoPathBarPlot.drawLog2PvaluePicture(lsTestResults, 30, getTitle());
-			return bfImageLog2Pic;
-		} catch (Exception e) { e.printStackTrace(); }
-		return null;
-	}
-	
-	public BufferedImage getImageEnrichment() {
-		List<StatisticTestResult> lsTestResults = getTestResult();
-		if (lsTestResults == null || lsTestResults.size() == 0) {
-			return null;
-		}
-		try {
-			BufferedImage bfImageLog2Pic = GoPathBarPlot.drawEnrichmentPicture(lsTestResults, 30, getTitle());
-			return bfImageLog2Pic;
-		} catch (Exception e) { e.printStackTrace(); }
-		return null;
-	}
-	
+
 	@Override
 	protected StatisticTestGene2Item creatStatisticTestGene2Item() {
 		return new StatisticTestGene2Cog();

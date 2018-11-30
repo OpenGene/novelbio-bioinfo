@@ -3,16 +3,13 @@ package com.novelbio.bioinfo.mappedreads;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.hadoop.fs.shell.PathData;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.bioinfo.base.Align;
-import com.novelbio.bioinfo.mappedreads.MapReadsBSP;
 import com.novelbio.bioinfo.mappedreads.MapReadsBSP.CpGCalculator;
 import com.novelbio.bioinfo.mappedreads.MapReadsBSP.EnumCpGmethyType;
 

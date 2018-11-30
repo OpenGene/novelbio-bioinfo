@@ -11,18 +11,15 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
-import org.aspectj.util.LangUtil.ProcessController.Thrown;
 
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.SepSign;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.dataOperate.HttpFetch;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.database.domain.modgeneid.GeneType;
-import com.sun.tools.javac.util.Name;
 
 public class GffHashGTF extends GffHashGeneAbs{
 	private final static Logger logger = Logger.getLogger(GffHashGTF.class);

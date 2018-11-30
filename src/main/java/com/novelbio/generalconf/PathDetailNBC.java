@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
-import org.assertj.core.util.VisibleForTesting;
 
 import com.novelbio.base.PathDetail;
 import com.novelbio.base.fileOperate.FileOperate;
@@ -24,7 +23,6 @@ public class PathDetailNBC {
 	}
 	
 	/** 仅用于测试 */
-	@VisibleForTesting
 	public static void setProperties(String pathOfPropertiesFile) throws Exception {
 		File f = new File(pathOfPropertiesFile);
 		InputStream in = new FileInputStream(f);

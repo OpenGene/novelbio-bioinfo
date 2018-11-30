@@ -15,7 +15,6 @@ import com.novelbio.base.PathDetail;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.bioinfo.IntCmdSoft;
 import com.novelbio.database.model.geneanno.GOtype;
@@ -123,14 +122,14 @@ public class TopGO implements IntCmdSoft {
 		mapData.put("useInfo",  useInfo + "");
 
 		
-		mapData.put("GoResultFile",  FileHadoop.convertToLocalPath(rawGoResultFile.replace("\\", "/")));
-		mapData.put("GoMapPdfPrefix",  FileHadoop.convertToLocalPath(goMapPdfPrefix.replace("\\", "/")));
+		mapData.put("GoResultFile",  rawGoResultFile.replace("\\", "/"));
+		mapData.put("GoMapPdfPrefix",  goMapPdfPrefix.replace("\\", "/"));
 
-		mapData.put("GOInfoFile",  FileHadoop.convertToLocalPath(GOInfoFile.replace("\\", "/")));
+		mapData.put("GOInfoFile",  GOInfoFile.replace("\\", "/"));
 		
-		mapData.put("CalGeneIDFile", FileHadoop.convertToLocalPath(CalGeneIDFile.replace("\\", "/")));
+		mapData.put("CalGeneIDFile", CalGeneIDFile.replace("\\", "/"));
 		
-		mapData.put("BGGeneFile", FileHadoop.convertToLocalPath(BGGeneFile.replace("\\", "/")));
+		mapData.put("BGGeneFile", BGGeneFile.replace("\\", "/"));
 		mapData.put("GOAlgorithm", getAlgorithm());
 		
 		try {

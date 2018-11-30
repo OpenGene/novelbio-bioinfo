@@ -1,6 +1,5 @@
 package com.novelbio.bioinfo.sam;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -10,10 +9,7 @@ import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
-import com.novelbio.base.fileOperate.FileHadoop;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.database.model.information.SoftWareInfo;
-import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
 
 public class SamIndexRefsequence {
 	

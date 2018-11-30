@@ -11,13 +11,9 @@ import org.junit.Test;
 import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Lists;
 import com.novelbio.base.StringOperate;
-import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.PatternOperate;
-import com.novelbio.software.rnaaltersplice.ISpliceTestModule;
-import com.novelbio.software.rnaaltersplice.SpliceTestRepeat;
 import com.novelbio.software.rnaaltersplice.ISpliceTestModule.SpliceTestFactory;
-import com.sun.tools.javac.util.Convert;
 
 public class TestISpliceTestModule {
 	
