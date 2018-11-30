@@ -44,16 +44,10 @@ public class SpeciesIndexMappingMaker {
 	
 	/** 保存index的文件夹路径，默认从配置文件走 */
 	private String genomePath = PathDetailNBC.getGenomePath();
-	/** 是否需要分布式锁 */
-	private boolean isLock = true;
 	
 	public SpeciesIndexMappingMaker(SpeciesFile speciesFile) {
 		this.speciesFile = speciesFile;
 	}
-	/** 是否需要分布式锁 */
-	public void setLock(boolean isLock) {
-	    this.isLock = isLock;
-    }
 	
 	/** 仅用于测试，保存index的文件夹路径，默认从配置文件走 */
 	protected void setGenomePath(String genomePath) {
@@ -152,7 +146,6 @@ public class SpeciesIndexMappingMaker {
 		if (StringOperate.isEqual(softWare, SoftWare.mapsplice.toString())) {
 			SpeciesFileSepChr sepChr = new SpeciesFileSepChr();
 			sepChr.setSpeciesFile(speciesFile);
-			sepChr.setLock(isLock);
 			sepChr.setGenomePath(genomePath);
 			sepChr.generateChrSepFiles();
 			chrFile = sepChr.getChrSepFileOne();
@@ -200,7 +193,6 @@ public class SpeciesIndexMappingMaker {
 	private void makeIndexNormal(String softWare, String chrFile) {
 		IndexMappingMaker indexMappingMaker = IndexMappingMaker.createIndexMaker(softWare);
 		indexMappingMaker.setChrIndex(chrFile);
-		indexMappingMaker.setLock(isLock);
 		indexMappingMaker.IndexMake();
 	}
 	
@@ -215,7 +207,6 @@ public class SpeciesIndexMappingMaker {
 		indexMappingMaker.setChrIndex(chrFile);
 		indexMappingMaker.setBowtieVersion(bowtieVersion);
 		indexMappingMaker.setGtfFile(gtfFile, true);
-		indexMappingMaker.setLock(isLock);
 		indexMappingMaker.IndexMake();
     }
 	
@@ -231,7 +222,6 @@ public class SpeciesIndexMappingMaker {
 		indexMappingMaker.setChrIndex(chrFile);
 		indexMappingMaker.setChrSepFolder(chrFolder);
 		indexMappingMaker.setSetChrInclude(setChrId);
-		indexMappingMaker.setLock(isLock);
 		indexMappingMaker.IndexMake();
     }
 	
@@ -239,7 +229,6 @@ public class SpeciesIndexMappingMaker {
 		IndexRsem indexMappingMaker = (IndexRsem)IndexMappingMaker.createIndexMaker(SoftWare.rsem);
 		indexMappingMaker.setChrIndex(chrFile);
 		indexMappingMaker.setGene2IsoFile(gene2IsoFile);
-		indexMappingMaker.setLock(isLock);
 		indexMappingMaker.IndexMake();
     }
 	

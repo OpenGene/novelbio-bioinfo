@@ -52,7 +52,6 @@ public class TestSpeciesIndexMappingMaker {
 	public void testIndexChrMake() {
 		SpeciesIndexMappingMaker speciesIndexMappingMaker = new SpeciesIndexMappingMaker(speciesFile);
 		speciesIndexMappingMaker.setGenomePath(parentPath);
-		speciesIndexMappingMaker.setLock(false);
 		testIndexChrMake(speciesIndexMappingMaker, SoftWare.bowtie);
 		testIndexChrMake(speciesIndexMappingMaker, SoftWare.bowtie2);
 		testIndexChrMake(speciesIndexMappingMaker, SoftWare.bwa_aln);

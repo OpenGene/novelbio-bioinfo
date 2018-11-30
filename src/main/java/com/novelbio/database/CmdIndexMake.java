@@ -1,8 +1,5 @@
 package com.novelbio.database;
 
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.GnuParser;
-import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +61,6 @@ public class CmdIndexMake {
 		String taxId = "10116";
 		String version = "rnor6_NCBI";
 		String softwareStr = "tophat";
-		boolean isLock = false;
 
 		Species species = new Species(Integer.parseInt(taxId));
 		species.setVersion(version);
@@ -74,10 +70,10 @@ public class CmdIndexMake {
 		if (StringOperate.isRealNull(softwareStr)) {
 			extractMirna(species);
 			extractRfam(species);
-			sepChr(species, isLock);
+			sepChr(species);
 			extractRefseq(species);
 
-			index(species, softwareStr, isLock);
+			index(species, softwareStr);
 			extractMirna(species);
 			return;
 		}
@@ -87,11 +83,11 @@ public class CmdIndexMake {
 		} else if (softwareStr.equals("rfam")) {
 			extractRfam(species);
 		} else if (softwareStr.equals("sepchr")) {
-			sepChr(species, isLock);
+			sepChr(species);
 		} else if (softwareStr.equals("refseq")) {
 			extractRefseq(species);
 		} else {
-			index(species, softwareStr, isLock);
+			index(species, softwareStr);
 		}
 	}
 	
@@ -102,17 +98,15 @@ public class CmdIndexMake {
 	}
 	
 	/** 把染色体切分成一条染色体一个文本，放在一个文件夹中 */
-	private static void sepChr(Species species, boolean isLock) {
+	private static void sepChr(Species species) {
 		SpeciesFileSepChr sepChr = new SpeciesFileSepChr();
 		sepChr.setSpeciesFile(species.getSelectSpeciesFile());
-		sepChr.setLock(isLock);
 		sepChr.generateChrSepFiles();
 	}
 	
-	private static void index(Species species, String softwareStr, boolean isLock) {
+	private static void index(Species species, String softwareStr) {
 		SpeciesFile speciesFile = species.getSelectSpeciesFile();
 		SpeciesIndexMappingMaker speciesIndexMappingMaker = new SpeciesIndexMappingMaker(speciesFile);
-		speciesIndexMappingMaker.setLock(isLock);
 		
 		if (softwareStr == null) {
 			speciesIndexMappingMaker.makeIndex();

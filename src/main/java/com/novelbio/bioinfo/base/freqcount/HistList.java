@@ -1,33 +1,11 @@
 package com.novelbio.bioinfo.base.freqcount;
 
-import java.awt.Color;
-import java.awt.Font;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.math3.analysis.function.Add;
 import org.apache.log4j.Logger;
-import org.jfree.chart.ChartFactory;
-import org.jfree.chart.JFreeChart;
-import org.jfree.chart.axis.CategoryAxis;
-import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.NumberTickUnit;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.category.BarPainter;
-import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.category.StandardBarPainter;
-import org.jfree.data.category.DefaultCategoryDataset;
-import org.jfree.ui.RectangleInsets;
 
-import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.plot.BarStyle;
-import com.novelbio.base.plot.DotStyle;
-import com.novelbio.base.plot.PlotBar;
-import com.novelbio.base.plot.PlotScatter;
-import com.novelbio.base.plot.PlotBox.BoxInfo;
 import com.novelbio.bioinfo.base.binarysearch.BinarySearch;
 import com.novelbio.bioinfo.base.binarysearch.BsearchSite;
 
@@ -40,7 +18,6 @@ public abstract class HistList implements Iterable<HistBin> {
 	long allNum = 0;
 	HistBinType histBinType = HistBinType.LopenRclose;
 	
-	PlotScatter plotScatter;
 	
 	protected abstract boolean isCis5To3();
 	
@@ -60,10 +37,7 @@ public abstract class HistList implements Iterable<HistBin> {
 	public void remove(int index) {
 		lsHistBins.remove(index);
 	}
-	
-	public void setPlotScatter(PlotScatter plotScatter) {
-		this.plotScatter = plotScatter;
-	}
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -197,18 +171,6 @@ public abstract class HistList implements Iterable<HistBin> {
 		allNum = allNum + addNumber;
 	}
 	
-	/**
-	 * 返回BoxInfo<br>
-	 * @return
-	 */
-	public BoxInfo getBoxInfo() {
-		BoxInfo boxInfo = new BoxInfo(name);
-		boxInfo.setInfo25And75(getPercentInfo(25).getThisNumber(), getPercentInfo(75).getThisNumber());
-		boxInfo.setInfoMedian(getPercentInfo(50).getThisNumber());
-		boxInfo.setInfoMinAndMax(getPercentInfo(1).getThisNumber(), getPercentInfo(99).getThisNumber());
-		boxInfo.setInfo5And95(getPercentInfo(5).getThisNumber(), getPercentInfo(95).getThisNumber());
-		return boxInfo;
-	}
 	/** 指定percentage乘以100
 	 * 返回该比例所对应的值
 	 */
@@ -225,184 +187,7 @@ public abstract class HistList implements Iterable<HistBin> {
 		//全找了一遍没找到么说明数字太大了那就返回最后一位的HistBin吧
 		return lsHistBins.get(lsHistBins.size() - 1);		
 	}
-	
-	/**
-	 * 根据统计画直方图
-	 * @param dotStyle
-	 * @param fontSize 字体大小
-	 * @return
-	 */
-	public PlotScatter getPlotHistBar(BarStyle dotStyle) {
-		double[] Ycount = getYnumber(0);
-		double[] Xrange = getX();
-		String[] xName = getRangeX();
-		HashMap<Double, String> mapX2Name = new HashMap<Double, String>();
-		for (int i = 0; i < xName.length; i++) {
-			HistBin histBin = lsHistBins.get(i);
-			if (histBin.getName() == null || histBin.getName().trim().equals("")) {
-				mapX2Name.put(Xrange[i], xName[i]);
-			} else {
-				mapX2Name.put(Xrange[i], histBin.getName());
-			}
-		}
-		if (plotScatter == null) {
-			plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_BARPLOT);
-		}
-		double minY = MathComput.min(Ycount)/3;
-		double maxY = MathComput.max(Ycount);
 
-		if (dotStyle.getBarWidth() == 0 && Xrange.length > 1) {
-			dotStyle.setBarAndStrokeWidth(Xrange[1] - Xrange[0]);
-		}
-		
-		plotScatter.setAxisX(Xrange[0] - 1, Xrange[Xrange.length - 1] + 1);
-		plotScatter.setAxisY(minY, maxY * 1.2);
-		plotScatter.addXY(Xrange, Ycount, dotStyle);
-		plotScatter.setAxisTicksXMap(mapX2Name);
-//		plotScatter.setAxisTicksXMap(mapX2Name);
-		return plotScatter;
-	}
-	
-	
-	public JFreeChart getPlotHistBar(String title,String xTitle,String yTitle){
-		double[] Ycount = getYnumber(0);
-		String[] xName = getRangeX();
-		DefaultCategoryDataset dataset = new DefaultCategoryDataset();
-		try {
-			for (int i = 0; i < Ycount.length; i++) {
-				dataset.addValue(Ycount[i], null,xName[i]);
-			}
-		} catch (Exception e) {
-		}
-		JFreeChart chart = ChartFactory.createBarChart(title, xTitle, yTitle, dataset, PlotOrientation.HORIZONTAL, false, false, false);
-		// chart.getRenderingHints().put(RenderingHints.KEY_TEXT_ANTIALIASING,RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-		// 设置图标题的字体
-		chart.getTitle().setFont(new Font("黑体", Font.BOLD, 30));
-		/** title永远是居中的，但是我们想要让title靠上或者靠边怎么办呢，
-		 * 就要将title包装成一个矩形，然后jfreechart会将这个矩形居中
-		 * 所以第一个就是矩形的上边，这样上边设置越大，title与上边框的距离就越大
-		 * 第二个是左边，左边设置越大，title与左边界的距离也就越大
-		 * 第三个是下边，下边越大，title与下边图片的距离也越大
-		 */
-		chart.getTitle().setPadding(20,0,20,0);
-		// TextTitle title = new TextTitle("直方图测试");
-		// 设置图例中的字体
-		// LegendTitle legend = chart.getLegend();
-		// legend.setItemFont(new Font("宋体", Font.BOLD, 16));
-		// chart.setBorderPaint(Color.white);
-		chart.setBorderVisible(true);
-		// chart.setBackgroundPaint(Color.WHITE);
-		CategoryPlot plot = (CategoryPlot) chart.getPlot();
-		plot.setBackgroundPaint(Color.white);
-		plot.setOutlinePaint(Color.WHITE); // 设置绘图面板外边的填充颜色
-		// CategoryPlot plot = (CategoryPlot) chart.getCategoryPlot();
-		// plot.setRenderer(render);//使用我们设计的效果
-		BarRenderer renderer = new BarRenderer();
-		renderer.setBaseFillPaint(Color.pink);
-		plot.setRenderer(renderer);
-		
-		// 设置柱子宽度
-		renderer.setMaximumBarWidth(0.03);
-		renderer.setMinimumBarLength(0.01000000000000001D); // 宽度
-		// 设置柱子高度
-		renderer.setMinimumBarLength(0.1);
-		// 设置柱子类型
-		BarPainter barPainter = new StandardBarPainter();
-		renderer.setBarPainter(barPainter);
-//		renderer.setSeriesPaint(0, new Color(51, 102, 153));
-		// 是否显示阴影
-		renderer.setShadowVisible(false);
-		// 阴影颜色
-		// renderer1.setShadowPaint(Color.white);
-		// 设置柱子边框的渐变色
-		// renderer1.setBarPainter(new GradientBarPainter(1,1,1));
-		// 设置柱子边框颜色
-		// renderer1.setBaseOutlinePaint(Color.BLACK);
-		// 设置柱子边框可见
-		// renderer1.setDrawBarOutline(true);
-		// 设置每个地区所包含的平行柱的之间距离，数值越大则间隔越大，图片大小一定的情况下会影响柱子的宽度，可以为负数
-		renderer.setItemMargin(0.4);
-
-		plot.setRenderer(renderer);
-
-		// 设置横轴的标题
-		// cateaxis.setLabelFont(new Font("粗体", Font.BOLD, 16));
-		// 设置横轴的标尺
-		CategoryAxis cateaxis = (CategoryAxis) plot.getDomainAxis();
-		cateaxis.setTickLabelFont(new Font(Font.SERIF, Font.BOLD, 22));
-		cateaxis.setMaximumCategoryLabelWidthRatio(0.45f);
-		// 让标尺以30度倾斜
-//		cateaxis.setCategoryLabelPositions(CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 3.0));
-		// 纵轴
-		NumberAxis numaxis = (NumberAxis) plot.getRangeAxis();
-		numaxis.setTickUnit(new NumberTickUnit(PlotBar.getSpace(numaxis.getRange().getUpperBound(), 10)));
-		numaxis.setLabelFont(new Font("宋体", Font.BOLD, 25));
-		numaxis.setLabelInsets(new RectangleInsets(0, 500, 10, 0));
-		return chart;
-	}
-	/**
-	 * 返回x的数值，从0开始
-	 * @return
-	 */
-	private double[] getX() {
-		double[] lengthX = new double[size()];
-		for (int j = 0; j < lengthX.length; j++) {
-			lengthX[j] = j;
-		}
-		return lengthX;
-	}
-	/**
-	 * 返回y的数值，注意初始的HistBin必须为等分，否则会出错
-	 * @binNum 分割的份数，小于等于0表示分割为histlist的份数
-	 * @return
-	 */
-	private double[] getYnumber(int binNum) {
-		if (binNum <= 0) {
-			binNum = size();
-		}
-		
-		double[] numberY = new double[size()];
-		int i = 0;
-		for (HistBin histBin : lsHistBins) {
-			numberY[i] = histBin.getCountNumber();;
-			i++;
-		}
-		
-		if (binNum != size()) {
-			numberY = MathComput.mySpline(numberY, binNum, 0, 0, 0);
-		}
-		
-		return numberY;
-	}
-	/**
-	 * 返回x的区间的名字
-	 * @return
-	 */
-	private String[] getRangeX() {
-		String[] rangeX = new String[size()];
-		int i = 0;
-		for (HistBin histBin : lsHistBins) {
-			rangeX[i] = histBin.getStartCis() + "_" + histBin.getEndCis();
-			i++;
-		}
-		return rangeX;
-	}
-	
-	public PlotScatter getIntegralPlot(boolean cis, DotStyle dotStyle) {
-		ArrayList<double[]> lsXY = getIntegral(cis);
-		PlotScatter plotScatter = null;
-		if (dotStyle.getStyle() == DotStyle.STYLE_BAR || dotStyle.getStyle() == DotStyle.STYLE_BOX) {
-			plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_BARPLOT);
-		} else {
-			plotScatter = new PlotScatter(PlotScatter.PLOT_TYPE_SCATTERPLOT);
-		}
-		
-		plotScatter.addXY(lsXY, dotStyle);
-		plotScatter.setAxisX(get(0).getStartAbs(), get(size() - 1).getStartAbs());
-		plotScatter.setAxisY(0, 1);
-		return plotScatter;
-	}
-	
 	/**
 	 * 积分图
 	 * @param cis true：从前往后，就是最前面是10%，越往后越高

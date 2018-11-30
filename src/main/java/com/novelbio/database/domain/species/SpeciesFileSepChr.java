@@ -3,18 +3,14 @@ package com.novelbio.database.domain.species;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.novelbio.base.PathDetail;
 import com.novelbio.base.StringOperate;
-import com.novelbio.base.curator.CuratorNBC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.util.ServiceEnvUtil;
 import com.novelbio.bioinfo.fasta.format.ChrFileFormat;
 import com.novelbio.bioinfo.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.bioinfo.gff.GffHashGene;
@@ -54,8 +50,6 @@ public class SpeciesFileSepChr {
 	
 	/** 保存index的文件夹路径，默认从配置文件走 */
 	private String genomePath = PathDetailNBC.getGenomePath();
-	/** 是否需要分布式锁 */
-	private boolean isLock = false;
 	
 	/** 仅用于测试 */
 	@VisibleForTesting
@@ -98,11 +92,7 @@ public class SpeciesFileSepChr {
 	public static void setMinLen(int minLen) {
 		SpeciesFileSepChr.minLen = minLen;
 	}
-	/** 是否需要分布式锁 */
-	public void setLock(boolean isLock) {
-	    this.isLock = isLock;
-    }
-	
+
 	/** 仅用于测试，保存index的文件夹路径，默认从配置文件走 */
 	protected void setGenomePath(String genomePath) {
 	    this.genomePath = FileOperate.addSep(genomePath);
@@ -121,15 +111,6 @@ public class SpeciesFileSepChr {
 	}
 	
 	public void generateChrSepFiles() {
-		InterProcessMutex lock = null;
-		try {
-			if (isLock && ServiceEnvUtil.isHadoopEnvRun() ) {
-				lock = CuratorNBC.getInterProcessMutex(getLockPath(chrSeq));
-				lock.acquire();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		try {
 			logger.info("start splite " + chrSeq);
 
@@ -143,14 +124,6 @@ public class SpeciesFileSepChr {
 			txtWrite.close();
 		} catch (Exception e) {
 			throw e;
-		} finally {
-			try {
-				if (isLock && ServiceEnvUtil.isHadoopEnvRun() ) {
-					lock.release();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 	}
 	

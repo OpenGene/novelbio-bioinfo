@@ -1,6 +1,5 @@
 package com.novelbio.bioinfo.fasta;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -9,30 +8,20 @@ import java.util.List;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.MathComput;
-import com.novelbio.base.plot.BarStyle;
-import com.novelbio.base.plot.ImageUtils;
 import com.novelbio.bioinfo.base.freqcount.HistList;
 
 /** 计算序列的N50和其他统计长度信息，最后画出柱状图 */
 public class N50AndSeqLen {
+	
 	public static void main(String[] args) {
 		N50AndSeqLen n50AndSeqLen = new N50AndSeqLen("/media/hdfs/nbCloud/public/Testforzong/ToxoDB-10.0_TgondiiME49_Genome.fasta");
 		n50AndSeqLen.setLengthStep(500);
 		n50AndSeqLen.setMaxContigLen(10000);
 		n50AndSeqLen.doStatistics();
-		HistList histList = n50AndSeqLen.gethListLength();
-		histList.getPlotHistBar(new BarStyle()).saveToFile("/media/hdfs/nbCloud/public/Testforzong/reads Len distribution2.png", 1000, 1000);
-
-		BufferedImage img = histList.getPlotHistBar("SeqStatistics", "Reads Length", "Reads Num").createBufferedImage(1200, 1000);
-		ImageUtils.saveBufferedImage(img, "/media/hdfs/nbCloud/public/Testforzong/reads Len distribution.png");
-		
 		List<String[]> lsInfo = n50AndSeqLen.getLsNinfo();
-		TxtReadandWrite txtWrite = new TxtReadandWrite("/media/hdfs/nbCloud/public/Testforzong/N50.txt", true);
-		for (String[] strings : lsInfo) {
-			txtWrite.writefileln(strings);
-		}
-		txtWrite.close();
+		HistList histList = n50AndSeqLen.gethListLength();
 	}
+	
 	/** 记录N25，N50等信息 */
 	List<String[]> lsNinfo = new ArrayList<String[]>();
 	ArrayListMultimap<String, Integer> mapContigName2Length = ArrayListMultimap.create();

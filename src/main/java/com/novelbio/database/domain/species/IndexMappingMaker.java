@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.curator.framework.recipes.locks.InterProcessMutex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,11 +15,9 @@ import com.novelbio.base.ExceptionNbcParamError;
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.cmd.CmdOperate;
 import com.novelbio.base.cmd.ExceptionCmd;
-import com.novelbio.base.curator.CuratorNBC;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.util.ServiceEnvUtil;
 import com.novelbio.bioinfo.fasta.format.ChrFileFormat;
 import com.novelbio.bioinfo.fasta.format.NCBIchromFaChangeFormat;
 import com.novelbio.bioinfo.gff.GffHashGene;
@@ -75,9 +72,7 @@ public abstract class IndexMappingMaker {
 	String softWare;
 	
 	private String version;
-	
-	boolean isLock = true;
-	
+		
 	public IndexMappingMaker(SoftWare softWare) {
 		SoftWareInfo softWareInfo = new SoftWareInfo(softWare);
 		this.exePath = softWareInfo.getExePathRun();
@@ -97,10 +92,6 @@ public abstract class IndexMappingMaker {
 	public String getExePath() {
 		return exePath;
 	}
-	/** 是否加入全局锁 */
-	public void setLock(boolean isLock) {
-		this.isLock = isLock;
-	}
 	
 	public void setChrIndex(String chrFile) {
 		this.chrFile = chrFile;
@@ -110,35 +101,12 @@ public abstract class IndexMappingMaker {
 			return;
 		}
 		
-		InterProcessMutex lock = null;
-		try {
-			if (isLock && ServiceEnvUtil.isHadoopEnvRun() ) {
-				lock = CuratorNBC.getInterProcessMutex(getLockPath());
-				lock.acquire();
-			}
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 		try {
 			tryMakeIndex();
 		} catch (Exception e) {
 			throw e;
-		} finally {
-			try {
-				if (isLock && ServiceEnvUtil.isHadoopEnvRun() ) {
-					lock.release();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 
-	}
-	
-	protected String getLockPath() {
-		String lockPath = chrFile.replace(PathDetailNBC.getGenomePath(), "") + softWare.toString();
-		lockPath = FileOperate.removeSplashHead(lockPath, false).replace("/", "_").replace("\\", "_").replace(".", "_");
-		return lockPath;
 	}
 	
 	protected void tryMakeIndex() {
@@ -506,7 +474,6 @@ public static class IndexTophat extends IndexMappingMaker {
 		if (FileOperate.isFileExistAndNotDir(indexBowtie.getIndexFinishedFlag())) {
 			return;
 		}
-		indexBowtie.setLock(isLock);
 		indexBowtie.makeIndex();
 	}
 	

@@ -1,106 +1,72 @@
 package com.novelbio.test;
 
 
-import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.file.Files;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
+import java.sql.Date;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.Set;
 
-import org.apache.commons.math3.stat.inference.TestUtils;
+import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.novelbio.base.StringOperate;
-import com.novelbio.base.cmd.CmdMoveFileAli;
-import com.novelbio.base.cmd.CmdOperate;
-import com.novelbio.base.cmd.CmdPathCluster;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.dataStructure.PatternOperate;
 import com.novelbio.base.fileOperate.FileOperate;
-import com.novelbio.base.fileOperate.SeekablePathInputStream;
-import com.novelbio.base.util.ServiceEnvUtil;
-import com.novelbio.bioinfo.base.Align;
-import com.novelbio.bioinfo.fasta.ChrDensity;
-import com.novelbio.bioinfo.fasta.ChrSeqHash;
 import com.novelbio.bioinfo.fasta.SeqHash;
-import com.novelbio.bioinfo.fastq.FastQ;
-import com.novelbio.bioinfo.fastq.FastQRecord;
 import com.novelbio.bioinfo.gff.GffCodGeneDU;
-import com.novelbio.bioinfo.gff.GffDetailCG;
 import com.novelbio.bioinfo.gff.GffGene;
 import com.novelbio.bioinfo.gff.GffHashGene;
-import com.novelbio.bioinfo.gff.GffIso;
-import com.novelbio.bioinfo.gffchr.GffChrAbs;
-import com.novelbio.bioinfo.mappedreads.MapReads;
-import com.novelbio.bioinfo.mappedreads.MapReads.ChrMapReadsInfo;
-import com.novelbio.bioinfo.sam.AlignSamReading;
-import com.novelbio.bioinfo.sam.SamFile;
-import com.novelbio.bioinfo.sam.SamRecord;
-import com.novelbio.database.domain.modgeneid.GeneID;
-import com.novelbio.database.domain.species.IndexMappingMaker;
-import com.novelbio.database.domain.species.Species;
-import com.novelbio.database.domain.species.IndexMappingMaker.IndexMapSplice;
-import com.novelbio.database.model.information.SoftWareInfo.SoftWare;
-import com.novelbio.database.model.kegg.KGIDgen2Keg;
-import com.novelbio.database.model.kegg.KGentry;
-import com.novelbio.database.model.kegg.KGpathway;
-import com.novelbio.database.service.servkegg.ServKEntry;
-import com.novelbio.database.service.servkegg.ServKIDgen2Keg;
-import com.novelbio.database.service.servkegg.ServKPathway;
-import com.novelbio.listoperate.HistBin;
-import com.novelbio.listoperate.HistList;
-import com.novelbio.software.gbas.Allele;
-import com.novelbio.software.tssplot.RegionBed;
-import com.novelbio.software.tssplot.RegionBed.EnumTssPileUpType;
-import com.sun.corba.se.spi.orb.StringPair;
+import com.novelbio.software.snpanno.SnpInfo;
+import com.sun.jndi.toolkit.url.Uri;
 
-import smile.math.special.Beta;
-import smile.stat.hypothesis.ChiSqTest;
+import htsjdk.variant.variantcontext.VariantContext;
+import htsjdk.variant.vcf.VCFFileReader;
 
 
 public class mytest {
 	private static final Logger logger = LoggerFactory.getLogger(mytest.class);
 	static boolean is;
 	static int taxId;
-	public static void main(String[] args) {
+	
+	public static void main(String[] args) throws IOException, URISyntaxException {
+		Boolean b = new Boolean("true");
+		Boolean c = new Boolean("true");
+		System.out.println(b == true);
+		System.out.println(c == true);
+		System.out.println(b == c);
+
 		
-		System.out.println(taxId);
-		
-		
-//		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/mywork/nongkeyuan/rice_anno/RAP-MSU_2018-03-29.txt");
-//		Set<String> setMsuOnly = new HashSet<>();
-//		for (String content : txtRead.readlines()) {
-//			String[] ss = content.split("\t");
-//			if (ss[0].equals("None")) {
-//				setMsuOnly.add(GeneID.removeDot(ss[1]));
-//			}
-//		}
-//		
-//		TxtReadandWrite txtReadNcbi2Msu = new TxtReadandWrite("/home/novelbio/mywork/nongkeyuan/rice_anno/ncbi2tigr.txt");
-//		TxtReadandWrite txtWrite = new TxtReadandWrite("/home/novelbio/mywork/nongkeyuan/rice_anno/ncbi2tigr.simle.txt", true);
-//
-//		for (String content : txtReadNcbi2Msu.readlines()) {
-//			String[] ss = content.split("\t");
-//			if (setMsuOnly.contains(ss[1])) {
-//				txtWrite.writefileln(content);
-//			}
-//		}
-//		txtRead.close();
-//		txtReadNcbi2Msu.close();
-//		txtWrite.close();
-		
+	}
+	
+	public static void mergeVcf() {
+		TxtReadandWrite txtRead = new TxtReadandWrite("/home/novelbio/mywork/nongkeyuan/3k-rice/NB_final_snp.bim");
+		TxtReadandWrite txtRead2 = new TxtReadandWrite("/home/novelbio/mywork/nongkeyuan/3k-rice/Nipponbare_indel.bim");
+		TxtReadandWrite txtOut = new TxtReadandWrite("/home/novelbio/mywork/nongkeyuan/3k-rice/NB_final_all.bim", true);
+		for (String string : txtRead.readlines()) {
+			if (StringOperate.isRealNull(string)) {
+				continue;
+			}
+			txtOut.writefileln(string);
+		}
+		for (String string : txtRead2.readlines()) {
+			if (StringOperate.isRealNull(string)) {
+				continue;
+			}
+			txtOut.writefileln(string);
+		}
+		txtOut.close();
+		txtRead.close();
+		txtRead2.close();
 	}
 	
 	public static void main2(String[] args) throws IOException {
@@ -134,7 +100,6 @@ public class mytest {
 		txtReadMapNew.close();
 		txtReadPedPre.close();
 		txtReadPedPreNew.close();
-		
 	}
 	
 	private static void addGeneToMap(Map<String, String[]> mapGene2Info, String[] info) {
@@ -168,7 +133,7 @@ public class mytest {
 			GffCodGeneDU gffCodGeneDU = gffHashGene.searchLocation(chrId, posStart, posEnd);
 			Set<GffGene> lsGenes = gffCodGeneDU.getCoveredOverlapGffGene();
 			for (GffGene gffDetailGene : lsGenes) {
-				String geneName = gffDetailGene.getNameSingle();
+				String geneName = gffDetailGene.getName();
 				txtWrite.writefileln(geneName + "\t" + content);
 			}
 		}
