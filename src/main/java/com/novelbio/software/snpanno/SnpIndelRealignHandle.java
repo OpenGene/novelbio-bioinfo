@@ -51,6 +51,11 @@ public class SnpIndelRealignHandle {
 	String seqChangeRight;
 	String seqChangeShortRight;
 	
+	/** 偏移到最尾部的align */
+	Align alignLeft;
+	String seqChangeLeft;
+	String seqChangeShortLeft;
+	
 	/** 移动之后的realign，考虑了剪接位点等因素，移动到了最合适的位置
 	 * 譬如如果是正向转录本则右移
 	 * 反向转录本则左移
@@ -116,6 +121,19 @@ public class SnpIndelRealignHandle {
 		return varType == EnumHgvsVarType.Deletions ? "" : seqChangeRight;
 	}
 	
+	public String getSeqChangeLeft() {
+		return seqChangeLeft;
+	}
+	protected String getSeqHeadLeft() {
+		return seqChangeShortLeft;
+	}
+	protected String getSeqRefLeft() {
+		return varType == EnumHgvsVarType.Deletions ? seqChangeLeft : "";
+	}
+	protected String getSeqAltLeft() {
+		return varType == EnumHgvsVarType.Deletions ? "" : seqChangeLeft;
+	}
+	
 	public EnumHgvsVarType getVarType() {
 		return varType;
 	}
@@ -150,6 +168,9 @@ public class SnpIndelRealignHandle {
 	/** 移动到尾部的align，主要给hgvsc使用 */
 	public Align getAlignRight() {
 		return alignRight;
+	}
+	public Align getAlignLeft() {
+		return alignLeft;
 	}
 	/** 我们假定默认<b>align已经移动到最右端<b>，这样我们只需要将align
 	 * 向左端移动即可
@@ -194,6 +215,10 @@ public class SnpIndelRealignHandle {
 		int moveAfter = startBefore-startLoc;
 		changeSeq(moveAfter);
 		realign = generateNewAlign(moveAfter);
+		alignLeft = realign.clone();
+		seqChangeLeft = seqChange;
+		seqChangeShortLeft = seqChangeShort;
+		
 		return realign;
 	}
 	/**
@@ -442,18 +467,15 @@ public class SnpIndelRealignHandle {
 		
 		String seq = seqRef.length() > 0 ? seqRef : seqAlt;
 		int shiftNum = moveNumber%seq.length();
-		if (moveNumber == startBefore - startLoc) {
-			seqChangeShort = beforeBase+"";
-		}
-		if (shiftNum == 0) {
-			seqChange = seq;
-			return;
-		}
-		if (shiftNum < 0) {
+		if (shiftNum <= 0) {
 			shiftNum += seq.length();
 		}
+		
 		seqChange = seq.substring(shiftNum) + seq.substring(0, shiftNum);
-		if (moveNumber != startBefore - startLoc) {
+
+		if (moveNumber == startBefore - startLoc) {
+			seqChangeShort = beforeBase+"";
+		} else {
 			seqChangeShort = seq.substring(shiftNum-1, shiftNum);
 		}
 	}

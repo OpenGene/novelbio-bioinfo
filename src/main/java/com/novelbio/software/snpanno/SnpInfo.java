@@ -325,6 +325,7 @@ public class SnpInfo {
 		snpRealignHandler.setSeqLen(GetSeqLen);
 		snpRealignHandler.handleSeqAlign(seqHash);
 		varType = snpRealignHandler.getVarType();
+		snpRealignHandler.moveAlignToBefore();
 		snpRealignHandler.moveAlignToAfter();
 		isDup = snpRealignHandler.isDup();
 	}
@@ -415,6 +416,23 @@ public class SnpInfo {
 	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
 	public String getSeqHeadRight() {
 		return snpRealignHandler == null ? seqHead : snpRealignHandler.getSeqHeadRight();
+	}
+	
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
+	public Align getAlignRefLeft() {
+		return snpRealignHandler == null ? alignChange : snpRealignHandler.getAlignLeft();
+	}
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
+	public String getSeqRefLeft() {
+		return snpRealignHandler == null ? seqRef : snpRealignHandler.getSeqRefLeft();
+	}
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
+	public String getSeqAltLeft() {
+		return snpRealignHandler == null ? seqAlt : snpRealignHandler.getSeqAltLeft();
+	}
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
+	public String getSeqHeadLeft() {
+		return snpRealignHandler == null ? seqHead : snpRealignHandler.getSeqHeadLeft();
 	}
 	
 	/** 修正过的位点信息 */

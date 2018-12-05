@@ -46,6 +46,11 @@ public class TestSnpDuplicateHandle {
 		assertEquals("chr1:45-46", alignRealign.toString());
 		assertEquals("T", snpIndelRealignHandle.getSeqHead());
 		assertEquals("CAAGCTGAT", snpIndelRealignHandle.getSeqChangeRight());
+		
+		alignRealign = snpIndelRealignHandle.moveAlignToBefore();
+		assertEquals("chr1:11-12", alignRealign.toString());
+		assertEquals("C", snpIndelRealignHandle.getSeqHeadLeft());
+		assertEquals("AGCTGATCA", snpIndelRealignHandle.getSeqChangeLeft());
 	}
 	
 	private void testRealignDeletion(int seqLen) {
