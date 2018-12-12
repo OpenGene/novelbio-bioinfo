@@ -24,6 +24,12 @@ import com.novelbio.software.snpanno.SnpInfo.EnumHgvsVarType;
 public class MainIndelRigntAlign {
 	private static final Logger logger = LoggerFactory.getLogger(MainIndelRigntAlign.class);
 	public static void main(String[] args) {
+		if (args == null || args.length == 0 || args[0] == null 
+				|| args[0].equals("-h") || args[0].equals("--help")
+				) {
+			System.out.println(getHelp());
+			System.exit(0);
+		}
 		Options opts = new Options();
 		opts.addOption("chrseq", true, "chromosome file");
 		opts.addOption("direction", true, "align direction");
@@ -69,7 +75,10 @@ public class MainIndelRigntAlign {
 				continue;
 			}
 			String[] ss = content.split("\t");
-			if (ss[4].contains("/") || ss[4].contains("|")) {
+			if (ss[4].contains("/") || ss[4].contains("|")|| ss[4].contains(",")) {
+				logger.error("error on " + content +"\n"
+						+ ss[4] + " have more than 1 allele."
+						);
 				txtWrite.writefileln(content);
 				continue;
 			}

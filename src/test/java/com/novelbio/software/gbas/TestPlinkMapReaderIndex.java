@@ -14,36 +14,6 @@ import com.novelbio.software.gbas.PlinkMapReader;
 public class TestPlinkMapReaderIndex {
 	String plinkBim = "/tmp/test.plink.bim";
 	
-	@Before
-	public void prepare() {
-		TxtReadandWrite txtWrite = new TxtReadandWrite(plinkBim, true);
-		List<String> lsTmp = getLsMapInfo("chr2");
-		for (String content : lsTmp) {
-			txtWrite.writefileln(content);
-		}
-		lsTmp = getLsMapInfo("chr1");
-		for (String content : lsTmp) {
-			txtWrite.writefileln(content);
-		}
-		txtWrite.close();
-	}
-	protected static List<String> getLsMapInfo(String chrId) {
-		List<String> lsTmp = new ArrayList<>();
-		lsTmp.add(chrId + "\ta\tb\t15\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t25\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t50\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t80\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t100\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t200\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t250\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t280\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t300\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t330\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t720\tA\tG");
-		lsTmp.add(chrId + "\ta\tb\t850\tA\tG");
-		return lsTmp;
-	}
-	
 	@Test
 	public void testIndex() {
 		List<String[]> lsIndexs = PlinkMapReader.createPlinkMapIndexLs(plinkBim);
