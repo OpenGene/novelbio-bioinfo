@@ -1,4 +1,4 @@
-package com.novelbio.software.gbas.convertformat;
+package com.novelbio.bioinfo.gwas.convertformat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Set;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.bioinfo.fasta.SeqFasta;
 
 /**
  * 把plinkped中的位点过滤掉
@@ -18,13 +17,7 @@ import com.novelbio.bioinfo.fasta.SeqFasta;
  * @author novelbio
  *
  */
-public class PlinkPedFilter {
-	
-	String ped;
-	String mid;
-	
-	String pedNew;
-	String midNew;
+public class PlinkPedFilterHete extends PlinkPedFilterAbs {
 	
 	/**
 	 * 杂合率的指标，低于这个，则把杂合的样本删除
@@ -38,20 +31,6 @@ public class PlinkPedFilter {
 	 * 不过应该不含有N，因为之前一步需要做imputation
 	 */
 	Map<String, short[]> mapSeq2Site = new HashMap<>();
-	/** 需要删除的品种 */
-	Set<String> setStrainNeedDelete = new HashSet<>();
-	/** 需要删除的位点，从0开始计算 */
-	Set<Integer> setSiteNeedDelete = new HashSet<>();
-	
-	public void setPedMidRead(String ped, String mid) {
-		this.ped = ped;
-		this.mid = mid;
-	}
-	
-	public void setPedMidWrite(String ped, String mid) {
-		this.pedNew = ped;
-		this.midNew = mid;
-	}
 	
 	/**
 	 * 杂合率的指标，<= 这个，则把杂合的样本删除
@@ -114,45 +93,5 @@ public class PlinkPedFilter {
 		}
 	}
 	
-	protected void filter() {
-		TxtReadandWrite txtReadPed = new TxtReadandWrite(ped);
-		TxtReadandWrite txtWritePedNew = new TxtReadandWrite(pedNew, true);
-		for (String content : txtReadPed.readlines()) {
-			String[] ss = content.split("\t");
-			String strain = ss[0];
-			if (setStrainNeedDelete.contains(strain)) {
-				continue;
-			}
-			List<String> lsResult = new ArrayList<>();
-			for (int i = 0; i < 6; i++) {
-				lsResult.add(ss[i]);
-			}
-			for (int i = 6; i < ss.length; i++) {
-				if (setSiteNeedDelete.contains(i-6)) {
-					continue;
-				}
-				lsResult.add(ss[i]);
-			}
-			txtWritePedNew.writefileln(lsResult);
-		}
-		txtReadPed.close();
-		txtWritePedNew.close();
-		
-		TxtReadandWrite txtReadMid = new TxtReadandWrite(mid);
-		TxtReadandWrite txtWriteMidNew = new TxtReadandWrite(midNew, true);
-		int i = -1;
-		for (String content : txtReadMid.readlines()) {
-			if (content.startsWith("#")) {
-				txtWriteMidNew.writefileln(content);
-			}
-			i++;
-			if (setSiteNeedDelete.contains(i)) {
-				continue;
-			}
-			txtWriteMidNew.writefileln(content);
-		}
-		txtReadMid.close();
-		txtWriteMidNew.close();
-	}
 	
 }

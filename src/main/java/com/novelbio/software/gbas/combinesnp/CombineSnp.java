@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ArrayListMultimap;
 import com.novelbio.base.dataStructure.ArrayOperate;
+import com.novelbio.bioinfo.gwas.LDcalculate;
 import com.novelbio.software.gbas.Allele;
 import com.novelbio.software.gbas.Permutation;
 
@@ -172,8 +173,8 @@ public class CombineSnp {
 				Allele alleleRef = lsAlleles.get(i);
 				Allele alleleAlt = lsAlleles.get(j);
 
-				lDcalculate.setLsRef2AltSite1(lsRef);
-				lDcalculate.setLsRef2AltSite2(lsAlt);
+				lDcalculate.setLsSite1(lsRef);
+				lDcalculate.setLsSite2(lsAlt);
 
 				lDcalculate.calculate();
 				distance[i][j] = 1-lDcalculate.getMaxR2Ddot();
@@ -191,8 +192,8 @@ public class CombineSnp {
 					alleleRef = lsAlleles.get(i);
 					alleleAlt = lsAlleles.get(j);
 
-					lDcalculate.setLsRef2AltSite1(lsRef);
-					lDcalculate.setLsRef2AltSite2(lsAlt);
+					lDcalculate.setLsSite1(lsRef);
+					lDcalculate.setLsSite2(lsAlt);
 					lDcalculate.calculate();
 					distance[i][j] = 1-lDcalculate.getMaxR2Ddot();
 					distance[j][i] = 1-lDcalculate.getMaxR2Ddot();

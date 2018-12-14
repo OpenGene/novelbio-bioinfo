@@ -1,4 +1,4 @@
-package com.novelbio.software.gbas.convertformat;
+package com.novelbio.bioinfo.gwas.convertformat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,14 +9,14 @@ import org.junit.Test;
 
 import com.google.common.collect.Sets;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
-import com.novelbio.software.gbas.convertformat.PlinkPedFilter;
+import com.novelbio.bioinfo.gwas.convertformat.PlinkPedFilterHete;
 
 /**
  * 
  * @author zongjie
  *
  */
-public class TestPlinkPedFilter {
+public class TestPlinkPedFilterHete {
 	String plinkBim = "/tmp/test.plink.mid";
 	String plinkPed = "/tmp/test.plink.ped";
 	
@@ -52,16 +52,16 @@ public class TestPlinkPedFilter {
 		List<String> lsTmp = new ArrayList<>();
 		lsTmp.add(chrId + "\ta\tb\t15\tG\tC");
 		lsTmp.add(chrId + "\ta\tb\t25\tT\tA");
-		lsTmp.add(chrId + "\ta\tb\t50\tA\tT");//delete
-		lsTmp.add(chrId + "\ta\tb\t80\tT\tA");
-		lsTmp.add(chrId + "\ta\tb\t100\tT\tA");
-		lsTmp.add(chrId + "\ta\tb\t200\tA\tG");
+		lsTmp.add(chrId + "\ta\tb\t500\tA\tT");//delete
+		lsTmp.add(chrId + "\ta\tb\t550\tT\tA");
+		lsTmp.add(chrId + "\ta\tb\t1000\tT\tA");
+		lsTmp.add(chrId + "\ta\tb\t1100\tA\tG");
 		return lsTmp;
 	}
 	
 	@Test
 	public void test() {
-		PlinkPedFilter pedFilter = new PlinkPedFilter();
+		PlinkPedFilterHete pedFilter = new PlinkPedFilterHete();
 		pedFilter.setPedMidRead(plinkPed, plinkBim);
 		pedFilter.setPedMidWrite(plinkPed+"new", plinkBim+"new");
 		pedFilter.setHeteProp(0.2);
@@ -93,9 +93,10 @@ public class TestPlinkPedFilter {
 		List<String> lsMidExp = new ArrayList<>();
 		lsMidExp.add("chr1" + "\ta\tb\t15\tG\tC");
 		lsMidExp.add("chr1" + "\ta\tb\t25\tT\tA");
-		lsMidExp.add("chr1" + "\ta\tb\t80\tT\tA");
-		lsMidExp.add("chr1" + "\ta\tb\t100\tT\tA");
-		lsMidExp.add("chr1" + "\ta\tb\t200\tA\tG");
+		lsMidExp.add("chr1" + "\ta\tb\t550\tT\tA");
+		lsMidExp.add("chr1" + "\ta\tb\t1000\tT\tA");
+		lsMidExp.add("chr1" + "\ta\tb\t1100\tA\tG");
 		Assert.assertArrayEquals(lsMidExp.toArray(new String[0]), lsMid.toArray(new String[0]));
 	}
+	
 }

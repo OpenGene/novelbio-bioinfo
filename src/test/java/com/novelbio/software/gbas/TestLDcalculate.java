@@ -10,7 +10,7 @@ import java.util.Map;
 
 import org.junit.Test;
 
-import com.novelbio.software.gbas.combinesnp.LDcalculate;
+import com.novelbio.bioinfo.gwas.LDcalculate;
 
 import smile.clustering.HierarchicalClustering;
 import smile.clustering.SIB;
@@ -21,11 +21,12 @@ public class TestLDcalculate {
 	
 	@Test
 	public void testR21() {
-		List<String[]> lsRef2AltSite1 = getLsSnps("A A A A A A a a a a a a");
+		List<String[]> lsRef2AltSite1 = getLsSnps("A A A A A A a a a a a c");
 		List<String[]> lsRef2AltSite2 = getLsSnps("B B B b b b B B B b b b");
 		LDcalculate lDcalculate = generateLDinfo(lsRef2AltSite1, lsRef2AltSite2);
 		assertEquals(0, lDcalculate.getR2(), 0.01);
 		assertEquals(0, lDcalculate.getDdot(), 0.01);
+	
 	}
 	
 	@Test
@@ -133,8 +134,8 @@ public class TestLDcalculate {
 	
 	private LDcalculate generateLDinfo(List<String[]> lsRef2AltSite1, List<String[]> lsRef2AltSite2) {
 		LDcalculate lDcalculate = new LDcalculate();
-		lDcalculate.setLsRef2AltSite1(lsRef2AltSite1);
-		lDcalculate.setLsRef2AltSite2(lsRef2AltSite2);
+		lDcalculate.setLsSite1(lsRef2AltSite1);
+		lDcalculate.setLsSite2(lsRef2AltSite2);
 		lDcalculate.calculate();
 		return lDcalculate;
 	}

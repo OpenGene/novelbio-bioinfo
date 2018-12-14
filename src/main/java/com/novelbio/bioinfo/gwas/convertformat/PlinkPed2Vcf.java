@@ -1,4 +1,4 @@
-package com.novelbio.software.gbas.convertformat;
+package com.novelbio.bioinfo.gwas.convertformat;
 
 import java.util.ArrayList;
 import java.util.Collection;

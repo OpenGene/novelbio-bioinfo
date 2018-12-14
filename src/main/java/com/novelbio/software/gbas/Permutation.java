@@ -1,14 +1,17 @@
 package com.novelbio.software.gbas;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.google.common.collect.Lists;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.software.gbas.combinesnp.ClusterKmean;
 
+/**
+ * 排列组合，用于抽取snp然后聚类成单独的snp，并用于后面的gwas分析
+ * @author zong0jie
+ *
+ */
 public class Permutation {
 	/** 每一组就一个排列组合 */
 	List<List<Integer>> lsNumber = new ArrayList<>();

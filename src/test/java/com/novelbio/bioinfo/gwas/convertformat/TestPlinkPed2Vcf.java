@@ -1,4 +1,4 @@
-package com.novelbio.software.gbas.convertformat;
+package com.novelbio.bioinfo.gwas.convertformat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.bioinfo.gwas.convertformat.PlinkPed2Vcf;
 
 public class TestPlinkPed2Vcf {
 	String plinkBim = "/tmp/test.plink.mid";
