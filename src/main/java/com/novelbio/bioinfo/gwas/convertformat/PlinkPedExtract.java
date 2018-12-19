@@ -21,36 +21,6 @@ public class PlinkPedExtract {
 	 * @param fasta
 	 * @param 具体将哪几个标记拿出来分析--这个主要是用于haploview，从1开始计算
 	 */
-	public static void extractFasta(String plinkPed, String fasta, List<Integer> lsIndex) {
-		TxtReadandWrite txtRead = new TxtReadandWrite(plinkPed);
-		TxtReadandWrite txtWrite = new TxtReadandWrite(fasta, true);
-		for (String content : txtRead.readlines()) {
-			String[] ss = content.split("\t");
-			String seqName = ss[0];
-			StringBuilder seq = new StringBuilder(ss.length);
-			for (int index : lsIndex) {
-				String base = ss[index+5].split(" ")[0];
-				if (base.equalsIgnoreCase("N")) {
-					txtRead.close();
-					txtWrite.close();
-					throw new RuntimeException(seqName + " contains N");
-				}
-				seq.append(base);
-			}
-			SeqFasta seqFasta = new SeqFasta(seqName, seq.toString());
-			txtWrite.writefile(seqFasta.toStringNRfasta(100000));
-		}
-		txtRead.close();
-		txtWrite.close();
-	}
-	
-	/**
-	 * 将plinkped转化为fasta文件，注意plinkped中的位点不能太多
-	 * 主要给pegas使用
-	 * @param plinkPed
-	 * @param fasta
-	 * @param 具体将哪几个标记拿出来分析--这个主要是用于haploview，从1开始计算
-	 */
 	public static void extractPed(String plinkPedIn, String plinkPedOut, List<Integer> lsIndex) {
 		TxtReadandWrite txtRead = new TxtReadandWrite(plinkPedIn);
 		TxtReadandWrite txtWrite = new TxtReadandWrite(plinkPedOut, true);

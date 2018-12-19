@@ -3,7 +3,6 @@ package com.novelbio.bioinfo.gwas.convertformat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -15,7 +14,7 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 
 /**
- * 把plink文件转换成vcf文件，支持多位点的情况，也就是一个位点有多个基因型
+ * 把plinkped文件转换成vcf文件，以及把vcf转化为plinkped文件，支持多位点的情况，也就是一个位点有多个基因型
  * 注意这个非常占用内存，因此只能转小文件
  * @author novelbio
  *

@@ -27,6 +27,13 @@ public class PlinkPedFilterSite extends PlinkPedFilterAbs {
 	 */
 	Map<String, char[]> mapStrain2Site = new HashMap<>();
 	
+	public void setInterval(int interval) {
+		this.interval = interval;
+	}
+	public void setIdentity(double identity) {
+		this.identity = identity;
+	}
+	
 	/**
 	 * 把突变信息读取到内存中
 	 * @param plinkPed
