@@ -23,6 +23,18 @@ public class PlinkPed2Vcf {
 	
 	Map<String, char[]> mapSample2Snp = new LinkedHashMap<>();
 	
+	/**
+	 * @param pedFile
+	 * @param midFile  chr1	10100014147	0	14147	C	T<br>
+	 * 6 columns:<br>
+	 * 1: chrId<br>
+	 * 2: snp-marker<br>
+	 * 3: index<br>
+	 * 4: position<br>
+	 * 5: RefBase<br>
+	 * 6: AltBase<br>
+	 * @param outvcf
+	 */
 	public void convertPed2Vcf(String pedFile, String midFile, String outvcf) {
 		mapSample2Snp.clear();
 		TxtReadandWrite txtReadPed = new TxtReadandWrite(pedFile);
