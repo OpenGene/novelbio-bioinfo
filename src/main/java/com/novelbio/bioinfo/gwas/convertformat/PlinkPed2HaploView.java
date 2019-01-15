@@ -38,7 +38,7 @@ public class PlinkPed2HaploView {
 		txtReadMid.close();
 		
 		TxtReadandWrite txtReadPed = new TxtReadandWrite(ped);
-		TxtReadandWrite txtWritePed = new TxtReadandWrite(pedOut);
+		TxtReadandWrite txtWritePed = new TxtReadandWrite(pedOut, true);
 		int num = 1;
 		for (String content : txtReadPed.readlines()) {
 			String[] ss = content.split("\t");
@@ -47,16 +47,17 @@ public class PlinkPed2HaploView {
 			sBuilder.append(strainName);
 			sBuilder.append("\t").append(num).append("\t0\t0\t0\t0");
 			for (int i = 6; i < ss.length; i++) {
-				PlinkMid plinkMid = lsPlinkMids.get(num-1);
+				PlinkMid plinkMid = lsPlinkMids.get(i-6);
 				sBuilder.append("\t").append(getAlleleHaplo(plinkMid, ss[i]));
 			}
-			txtWritePed.writefileln(sBuilder.toString());
 			num++;
+			txtWritePed.writefileln(sBuilder.toString());
+		
 		}
 		txtReadPed.close();
 		txtWritePed.close();
 	}
-	
+	Map<String, Integer> mapBase2Int = getMapSnp2Value();
 	/**
 	 * 输入 A A 这种，返回可以个haploView使用的格式
 	 * @param allele
@@ -66,7 +67,9 @@ public class PlinkPed2HaploView {
 		String[] alleleUnit = allele.split(" ");
 		String allele1 = getAllelePed(plinkMid.getAlt(), alleleUnit[0], plinkMid.getRef());
 		String allele2 = getAllelePed(plinkMid.getAlt(), alleleUnit[1], plinkMid.getRef());
-		return allele1 + " " + allele2;
+		int intAllele1 = mapBase2Int.get(allele1);
+		int intAllele2 = mapBase2Int.get(allele2);
+		return intAllele1 + " " + intAllele2;
 	}
 	
 	private String getAllelePed(String alleleDefault, String allele, String ref) {

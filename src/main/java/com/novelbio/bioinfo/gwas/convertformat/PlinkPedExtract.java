@@ -36,7 +36,7 @@ public class PlinkPedExtract {
 			for (int index : lsIndex) {
 				seq.append("\t").append(ss[index+5]);
 			}
-			txtWrite.writefile(seq.toString());
+			txtWrite.writefileln(seq.toString());
 		}
 		txtRead.close();
 		txtWrite.close();

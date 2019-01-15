@@ -28,10 +28,8 @@ public class PlinkPedFastaConvertor {
 			StringBuilder seq = new StringBuilder(ss.length);
 			for (int i = 6; i < ss.length; i++) {
 				String base = ss[i].split(" ")[0];
-				if (base.equalsIgnoreCase("N")) {
-					txtRead.close();
-					txtWrite.close();
-					throw new RuntimeException(seqName + " contains N");
+				if (base.equals("0")) {
+					base = "N";
 				}
 				seq.append(base);
 			}
