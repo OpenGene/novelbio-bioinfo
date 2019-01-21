@@ -520,7 +520,18 @@ public class ListEle <E extends AlignExtend> implements Cloneable, Iterable<E> {
 	public E remove(int index) {
 		return lsElement.remove(index);
 	}
-
+	
+	/** 将第一个元素的头部向前延长 */
+	public void extendStart(int length) {
+		E element = lsElement.get(0);
+		element.extendStart(length);
+	}
+	/** 将最后一个元素的尾部向后延长 */
+	public void extendEnd(int length) {
+		E element = lsElement.get(lsElement.size()-1);
+		element.extendEnd(length);
+	}
+	
 	public int lastIndexOf(Object o) {
 		return lsElement.lastIndexOf(o);
 	}

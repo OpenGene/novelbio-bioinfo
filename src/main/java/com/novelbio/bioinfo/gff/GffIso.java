@@ -216,6 +216,18 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 		int codLoc = getCodLoc(coord);
 		return (codLoc != COD_LOC_OUT) || isCodInIsoTss(tss, coord) || isCodInIsoGenEnd(geneEnd, coord);
 	}
+	
+	/**
+	 * cod是否在编码区
+	 * 如果本转录本是非编码RNA，直接返回false；
+	 * @return
+	 */
+	public boolean isRegionOnIso(int start, int end) {
+		int startAbs = Math.min(start, end);
+		int endAbs = Math.max(start, end);
+		return startAbs <= getEndAbs() && endAbs >= getStartAbs();
+	}
+	
 	/**
 	 * cod是否在编码区
 	 * 如果本转录本是非编码RNA，直接返回false；

@@ -60,7 +60,7 @@ public class TestSnpHgvsp {
 		SnpIsoHgvsp snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 		snpRefAltHgvsp.setNeedAA3(false);
 		Assert.assertEquals("c.598_*8del", snpRefAltHgvsc.getHgvsc());
-		Assert.assertEquals("p.*200delext*?", snpRefAltHgvsp.getHgvsp());
+		Assert.assertEquals("p.*200Fext*?", snpRefAltHgvsp.fillAndGetHgvsp());
 		
 		iso = gffHashGene.searchISO("NM_178527");
 		snpRefAltInfo = new SnpInfo("chr1", 173470236, "A", "AC");
@@ -70,7 +70,7 @@ public class TestSnpHgvsp {
 		Assert.assertEquals("c.3372-1dup", snpRefAltHgvsc.getHgvsc());
 		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 		snpRefAltHgvsp.setNeedAA3(false);
-		Assert.assertEquals("p.S1124Rfs*13", snpRefAltHgvsp.getHgvsp());
+		Assert.assertEquals("p.S1124Rfs*13", snpRefAltHgvsp.fillAndGetHgvsp());
 		
 		iso = gffHashGene.searchISO("NM_178527");
 		snpRefAltInfo = new SnpInfo("chr1", 173472459, "A", "ACTGAGGC");
@@ -81,7 +81,7 @@ public class TestSnpHgvsp {
 		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 		snpRefAltHgvsp.setNeedAA3(false);
 		Assert.assertEquals("c.3311-1_3316dup", snpRefAltHgvsc.getHgvsc());
-		Assert.assertEquals("p.V1106Gfs*8", snpRefAltHgvsp.getHgvsp());
+		Assert.assertEquals("p.V1106Gfs*8", snpRefAltHgvsp.fillAndGetHgvsp());
 		
 		iso = gffHashGene.searchISO("NM_178527");
 		snpRefAltInfo = new SnpInfo("chr1", 173472457, "T", "TGACTGAGGC");
@@ -92,7 +92,7 @@ public class TestSnpHgvsp {
 		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 		snpRefAltHgvsp.setNeedAA3(false);
 		Assert.assertEquals("c.3311-1_3318dup", snpRefAltHgvsc.getHgvsc());
-		Assert.assertEquals("p.A1104_V1106dup", snpRefAltHgvsp.getHgvsp());
+		Assert.assertEquals("p.A1104_V1106dup", snpRefAltHgvsp.fillAndGetHgvsp());
 		
 		
 		iso = gffHashGene.searchISO("NM_001130440");
@@ -103,7 +103,7 @@ public class TestSnpHgvsp {
 		snpRefAltHgvsp.setNeedAA3(false);
 		snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 		snpRefAltHgvsp.setNeedAA3(false);
-		Assert.assertEquals("p.V28del", snpRefAltHgvsp.getHgvsp());
+		Assert.assertEquals("p.V28del", snpRefAltHgvsp.fillAndGetHgvsp());
 		
 		iso = gffHashGene.searchISO("NM_014458");
 		snpRefAltInfo = new SnpInfo("chr1", 173685183, "A", "AGCGA");
@@ -158,7 +158,7 @@ public class TestSnpHgvsp {
 			if (content.trim().startsWith("#") || content.trim().equals("")) {
 				continue;
 			}
-			if (content.contains("chr1	226180269	CTGGGGATGAGGGAGGAAGAGATATA")) {
+			if (content.contains("chr5	135277355	TG	T")) {
 				System.out.println();
 			}
 			String[] ss = content.split("\t");
@@ -182,7 +182,6 @@ public class TestSnpHgvsp {
 				}
 			}
 		
-
 			SnpIsoHgvsc snpRefAltHgvsc = new SnpIsoHgvsc(snpRefAltInfo, iso);
 			if (ss.length >= 5 && !StringOperate.isRealNull(ss[4])) {
 				Assert.assertEquals(ss[4], snpRefAltHgvsc.getHgvsc());
@@ -194,7 +193,7 @@ public class TestSnpHgvsp {
 			}
 			if (ss.length >= 6 && !StringOperate.isRealNull(ss[5])) {
 				Assert.assertTrue(snpRefAltHgvsp.isNeedHgvsp());
-				Assert.assertEquals(ss[5], snpRefAltHgvsp.getHgvsp());
+				Assert.assertEquals(ss[5], snpRefAltHgvsp.fillAndGetHgvsp());
 			}
 		}
 		txtRead.close();
@@ -241,7 +240,7 @@ public class TestSnpHgvsp {
 			SnpIsoHgvsp snpRefAltHgvsp = SnpIsoHgvsp.generateSnpRefAltHgvsp(snpRefAltInfo, iso, seqHash);
 			snpRefAltHgvsp.setNeedAA3(true);
 			if (snpRefAltHgvsp.isNeedHgvsp()) {
-				snpRefAltHgvsp.getHgvsp();
+				snpRefAltHgvsp.fillAndGetHgvsp();
 			}
 			Set<EnumVariantClass> setVarReal = VariantTypeDetector.getSetVarType(iso, snpRefAltInfo);
 			setVarReal.addAll(snpRefAltHgvsp.getSetVarType());

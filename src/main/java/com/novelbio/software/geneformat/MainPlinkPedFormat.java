@@ -14,25 +14,25 @@ public class MainPlinkPedFormat {
 			if (args[0].equals("ped2vcf")) {
 				if (args[1].equals("--help") || args[1].equals("-h")) {
 					System.out.println(getHelpPed2Vcf());
-					System.out.println(0);
+					System.exit(0);
 				}
 				runPed2Vcf(args);
 			} else if (args[0].equals("vcf2ped")) {
 				if (args[1].equals("--help") || args[1].equals("-h")) {
 					System.out.println(getHelpVcf2Ped());
-					System.out.println(0);
+					System.exit(0);
 				}
 				runVcf2Ped(args);
 			} else if (args[0].equals("ped2fasta")) {
 				if (args[1].equals("--help") || args[1].equals("-h")) {
 					System.out.println(getHelpPed2Fasta());
-					System.out.println(0);
+					System.exit(0);
 				}
 				runPed2Fasta(args);
 			} else if (args[0].equals("fasta2ped")) {
 				if (args[1].equals("--help") || args[1].equals("-h")) {
 					System.out.println(getHelpFasta2Ped());
-					System.out.println(0);
+					System.exit(0);
 				}
 				runFasta2Ped(args);
 			} else if (args[0].equals("--list")) {

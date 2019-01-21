@@ -218,7 +218,7 @@ class SpliceVariant extends VariantTypeDetector {
 					spliceRegion2 = new int[] {exonInfo.getStartCis()-8, exonInfo.getStartCis()-3};
 					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd, false , true) || isRegionOverlap(spliceRegion2, startEnd, true, false);
 				}
-				if (i < iso.getLen()-1) {
+				if (i < iso.size()-1) {
 					spliceDonor = new int[]{exonInfo.getEndCis()+1, exonInfo.getEndCis()+2};
 					spliceRegion1 = new int[] {exonInfo.getEndCis()-2, exonInfo.getEndCis()};
 					spliceRegion2 = new int[] {exonInfo.getEndCis()+3, exonInfo.getEndCis()+8};
@@ -231,7 +231,7 @@ class SpliceVariant extends VariantTypeDetector {
 					spliceRegion2 = new int[] {exonInfo.getStartAbs()-8, exonInfo.getStartAbs()-3};
 					isSpliceRegion = isSpliceRegion || isRegionOverlap(spliceRegion1, startEnd, false, true) || isRegionOverlap(spliceRegion2, startEnd, true, false);
 				}
-				if (i < iso.getLen()-1) {
+				if (i < iso.size()-1) {
 					spliceAcceptor = new int[]{exonInfo.getEndAbs()+1, exonInfo.getEndAbs()+2};
 					spliceRegion1 = new int[] {exonInfo.getEndAbs()-2, exonInfo.getEndAbs()};
 					spliceRegion2 = new int[] {exonInfo.getEndAbs()+3, exonInfo.getEndAbs()+8};

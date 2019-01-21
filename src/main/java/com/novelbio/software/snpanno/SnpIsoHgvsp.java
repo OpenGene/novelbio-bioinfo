@@ -3,6 +3,10 @@ package com.novelbio.software.snpanno;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+import org.slf4j.LoggerFactory;
+
+import org.slf4j.Logger;
+
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.fasta.CodeInfo;
@@ -11,11 +15,14 @@ import com.novelbio.bioinfo.fasta.SeqHashInt;
 import com.novelbio.bioinfo.gff.GffIso;
 
 public abstract class SnpIsoHgvsp {
+	private static final Logger logger = LoggerFactory.getLogger(SnpIsoHgvsp.class);
 	//TODO 可以对蛋白查找做缓存
 //	ConcurrentWeakKeyHashMap<K, V>
 	
 	Set<EnumVariantClass> setVarType = new LinkedHashSet<>();
-	SnpInfo snpRefAltInfo;
+	SnpInfo snpInfo;
+	RealignUnit realignUnit;
+	
 	GffIso iso;
 	
 	boolean isNeedAA3 = true;
@@ -38,7 +45,11 @@ public abstract class SnpIsoHgvsp {
 	SeqFasta altSeqNrForAA;
 	
 	public SnpIsoHgvsp(SnpInfo snpRefAltInfo, GffIso iso) {
-		this.snpRefAltInfo = snpRefAltInfo;
+		this.snpInfo = snpRefAltInfo;
+		RealignUnit realignUnit = snpRefAltInfo.getRealignUnit();
+		if (realignUnit != null) {
+			this.realignUnit = realignUnit.clone();
+		}
 		this.iso = iso;
 	}
 	
@@ -51,7 +62,11 @@ public abstract class SnpIsoHgvsp {
 	protected void realignByAA() {
 		int moveNumber = moveBeforeNum();
 		if (moveNumber > 0) {
-			snpRefAltInfo.moveAlign(moveNumber, iso.isCis5to3());
+			snpInfo.moveAlign(moveNumber, iso.isCis5to3());
+		}
+		RealignUnit realignUnit = snpInfo.getRealignUnit();
+		if (realignUnit != null) {
+			this.realignUnit = realignUnit.clone();
 		}
 	}
 	
@@ -59,23 +74,26 @@ public abstract class SnpIsoHgvsp {
 	public void setNeedAA3(boolean isNeedAA3) {
 		this.isNeedAA3 = isNeedAA3;
 	}
-	public int getStartCis() {
-		return iso.isCis5to3() ? snpRefAltInfo.getStartReal() : snpRefAltInfo.getEndReal();
+	protected int getStartCis() {
+		return iso.isCis5to3() ? snpInfo.getStartReal() : snpInfo.getEndReal();
 	}
-	public int getEndCis() {
-		return iso.isCis5to3() ? snpRefAltInfo.getEndReal() : snpRefAltInfo.getStartReal();
+	protected int getEndCis() {
+		return iso.isCis5to3() ? snpInfo.getEndReal() : snpInfo.getStartReal();
 	}
-	public int getStartAbs() {
-		return snpRefAltInfo.getStartReal();
+	protected int getStartAbs() {
+		return snpInfo.getStartReal();
 	}
-	public int getEndAbs() {
-		return snpRefAltInfo.getEndReal();
+	protected int getEndAbs() {
+		return snpInfo.getEndReal();
 	}
 	
 	/** 是否需要氨基酸变化注释，有些在内含子中的就不需要氨基酸变化注释 */
 	public boolean isNeedHgvsp() {
 		if (!iso.ismRNAFromCds()) {
 			return false;
+		}
+		if (realignUnit != null) {
+			snpInfo.setRealignUnit(realignUnit.clone());
 		}
 		return isNeedHgvspDetail();
 	}
@@ -88,11 +106,20 @@ public abstract class SnpIsoHgvsp {
 		fillRefAltNrForAA(seqHash);
 	}
 	
-	public String getHgvsp() {
+	/** 如果不需要hgvsp，则返回"" */
+	public String fillAndGetHgvsp() {
+		if (!isNeedHgvsp()) {
+			return ""; 
+		}
 		try {
 			return getSnpChange();
+		} catch(ExceptionNBCSnpHgvsIsoError e) {
+			logger.error("error on " + snpInfo.toString() +"\nerror msg: " + e.getMessage());
+			throw e;
+		} catch (ExceptionNBCSnpHgvs e) {
+			throw e;
 		} catch (Exception e) {
-			throw new ExceptionNBCSnpHgvs("get hgvsp error " + snpRefAltInfo.toString(), e);
+			throw new ExceptionNBCSnpHgvs("get hgvsp error " + snpInfo.toString(), e);
 		}
 	}
 	protected abstract String getSnpChange();
@@ -102,7 +129,7 @@ public abstract class SnpIsoHgvsp {
 	}
 
 	/**
-	 * 必须在 {@link #getHgvsp()} 调用之后再使用
+	 * 必须在 {@link #fillAndGetHgvsp()} 调用之后再使用
 	 * @return
 	 */
 	public Set<EnumVariantClass> getSetVarType() {
@@ -121,9 +148,9 @@ public abstract class SnpIsoHgvsp {
 
 	/** 把refNr和altNr都准备好 */
 	protected void fillRefAltNrForAA(SeqHashInt seqHash) {
-		GffIso isoSub = iso.getSubGffGeneIso(startCds, endCds);
+		GffIso isoSub = extractIsoSub(iso, startCds, endCds);
 		if (isoSub.isEmpty()) {
-			throw new ExceptionNBCSnpHgvs("snp error not in cds " + snpRefAltInfo.toString());
+			throw new ExceptionNBCSnpHgvs("snp error not in cds " + snpInfo.toString());
 		}
 		/** 很可能是蛋白层面的duplicate */
 		if (isGetAllLenAA()) {
@@ -136,6 +163,19 @@ public abstract class SnpIsoHgvsp {
 			refSeqNrForAA = seqHash.getSeq(isoSub, false);		
 		}
 		altSeqNrForAA = replaceSnpIndel(getSeqAltNrForAA(), snpOnReplaceLocStart, snpOnReplaceLocEnd);
+	}
+	
+	private GffIso extractIsoSub(GffIso iso, int startCds, int endCds) {
+		GffIso isoSub = iso.getSubGffGeneIso(startCds, endCds);
+		if (endCds > 0 &&
+				(isoSub.isCis5to3() && isoSub.getEnd() < endCds || !isoSub.isCis5to3() && isoSub.getEnd() > endCds)) {
+			int length = Math.abs(endCds-iso.getEnd());
+			if (length > 1000) {
+				throw new RuntimeException();
+			}
+			isoSub.extendEnd(length);
+		}
+		return isoSub;
 	}
 	
 	/** 必须在 {@link #setStartEndCis()} 运行之后调用
@@ -202,7 +242,11 @@ public abstract class SnpIsoHgvsp {
 		return seqFasta;
 	}
 	
-	/** 返回输入的位点在第几个氨基酸上，如果在cds前则返回负数 */
+	/** 返回输入的位点在第几个氨基酸上，如果在cds前则返回负数
+	 * 从1开始计算
+	 * @param coord
+	 * @return
+	 */
 	protected int getAffectAANum(int coord) {
 //		if (iso == null || iso.getCodLocUTRCDS(coord) != GffGeneIsoInfo.COD_LOCUTR_CDS) {
 //			return -1;
@@ -216,7 +260,7 @@ public abstract class SnpIsoHgvsp {
 	 * @return
 	 */
 	protected String getSeqAltNrForAA() {
-		String seq = snpRefAltInfo.getSeqAlt();
+		String seq = snpInfo.getSeqAlt();
 		if (!iso.isCis5to3()) {
 			seq = SeqFasta.reverseComplement(seq);
 		}
@@ -226,6 +270,7 @@ public abstract class SnpIsoHgvsp {
 	public static SnpIsoHgvsp generateSnpRefAltHgvsp(SnpInfo snpRefAltInfo, GffIso iso, SeqHashInt seqHash) {
 		SnpIsoHgvsp snpIsoHgvsp = generateSnpRefAltHgvsp(snpRefAltInfo, iso);
 		snpIsoHgvsp.realignByAA();
+		
 		if (snpIsoHgvsp.isNeedHgvsp()) {
 			snpIsoHgvsp.initial(seqHash);
 		}
@@ -239,13 +284,13 @@ public abstract class SnpIsoHgvsp {
 		int refLen = snpInfo.getSeqRef().length();
 		int altLen = snpInfo.getSeqAlt().length();
 		if (refLen == 1 && altLen == 1) {
-			snpIsoHgvsp = new SnpRefAltIsoSnp(snpInfo, iso);
+			snpIsoHgvsp = new SnpIsoHgvspSnp(snpInfo, iso);
 		} else if (refLen == 0 && altLen >= 1) {
-			snpIsoHgvsp = new SnpRefAltIsoIns(snpInfo, iso);
+			snpIsoHgvsp = new SnpIsoHgvspIns(snpInfo, iso);
 		} else if (refLen >= 1 && altLen == 0) {
-			snpIsoHgvsp = new SnpRefAltIsoDel(snpInfo, iso);
+			snpIsoHgvsp = new SnpIsoHgvspDel(snpInfo, iso);
 		} else if (refLen >= 1 && altLen >= 1) {
-			snpIsoHgvsp = new SnpRefAltIsoIndel(snpInfo, iso);
+			snpIsoHgvsp = new SnpIsoHgvspIndel(snpInfo, iso);
 		}
 		if (snpIsoHgvsp == null) {
 			throw new ExceptionNBCSnpHgvs("cannot find such indel conditon " + snpInfo.toString());
@@ -368,14 +413,12 @@ public abstract class SnpIsoHgvsp {
 		Align reAlign = snpIndelRealignHandle.getRealign();
 		StringBuilder sBuilderResult = new StringBuilder();
 		
-		int startDup = reAlign.getStartAbs()-indelAA.length()+1;
-		int endDup = reAlign.getStartAbs();
-		sBuilderResult.append(convertAA(aaChr[startDup-1]));
-		sBuilderResult.append(startDup);
-		if (endDup > startDup) {
+		sBuilderResult.append(convertAA(aaChr[reAlign.getStartAbs()-1]));
+		sBuilderResult.append(reAlign.getStartAbs());
+		if (reAlign.getLength() > 1) {
 			sBuilderResult.append("_");
-			sBuilderResult.append(convertAA(aaChr[endDup-1]));
-			sBuilderResult.append(endDup);
+			sBuilderResult.append(convertAA(aaChr[reAlign.getEndAbs()-1]));
+			sBuilderResult.append(reAlign.getEndAbs());
 		}
 		sBuilderResult.append("del");
 		return sBuilderResult.toString();
@@ -384,12 +427,17 @@ public abstract class SnpIsoHgvsp {
 	protected String getInsertionDuplicate(String indelAA, int startAA, int endAA) {
 		String aaSeq = aa.toStringAA1();
 		char[] aaChr = aaSeq.toCharArray();
-		SnpIndelRealignHandle snpIndelRealignHandle = new SnpIndelRealignHandle(new Align("", startAA, endAA), "", indelAA, "");
-		snpIndelRealignHandle.handleSeqAlign(new SeqHashAAforHgvs(aaSeq));
-		snpIndelRealignHandle.moveAlignToAfter();
-		Align reAlign = snpIndelRealignHandle.getRealign();
+		Align reAlign = new Align("", startAA, endAA);
+		SnpIndelRealignHandle snpIndelRealignHandle = null;
+		if (!indelAA.contains("*")) {
+			snpIndelRealignHandle = new SnpIndelRealignHandle(reAlign, "", indelAA, "");
+			snpIndelRealignHandle.handleSeqAlign(new SeqHashAAforHgvs(aaSeq));
+			snpIndelRealignHandle.moveAlignToAfter();
+			reAlign = snpIndelRealignHandle.getRealign();
+		}
+
 		StringBuilder sBuilderResult = new StringBuilder();
-		if (snpIndelRealignHandle.isDup()) {
+		if (snpIndelRealignHandle != null && snpIndelRealignHandle.isDup()) {
 			int startDup = reAlign.getStartAbs()-indelAA.length()+1;
 			int endDup = reAlign.getStartAbs();
 			sBuilderResult.append(convertAA(aaChr[startDup - 1]));

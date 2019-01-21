@@ -52,13 +52,7 @@ public class SnpAnno {
 		Set<String> setIsoName = new HashSet<>();
 		for (GffIso iso : snpInfo.getLsIsos()) {
 			SnpIsoHgvsp snpIsoHgvsp = snpInfo.getMapIso2Hgvsp().get(iso);
-			if (snpIsoHgvsp.isNeedHgvsp()) {
-				try {
-					snpIsoHgvsp.getHgvsp();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}
+			snpIsoHgvsp.fillAndGetHgvsp();
 			Set<EnumVariantClass> setVar = VariantTypeDetector.getSetVarType(iso, snpInfo);
 			setVar.addAll(snpIsoHgvsp.getSetVarType());
 			if (setVar.contains(EnumVariantClass.Five_prime_UTR_variant)

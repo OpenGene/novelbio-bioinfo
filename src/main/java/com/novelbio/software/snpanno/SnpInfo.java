@@ -11,6 +11,7 @@ import org.apache.log4j.Logger;
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.base.StringOperate;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.fasta.SeqHash;
 import com.novelbio.bioinfo.fasta.SeqHashInt;
 import com.novelbio.bioinfo.gff.GffCodGeneDU;
 import com.novelbio.bioinfo.gff.GffGene;
@@ -239,7 +240,21 @@ public class SnpInfo {
 			mapIso2Hgvsp.put(iso, snpIsoHgvsp);
 		}
 	}
-
+	
+	public RealignUnit getRealignUnit() {
+		if (snpRealignHandler == null) {
+			return null;
+		}
+		return snpRealignHandler.getRealignUnit();
+	}
+	
+	public void setRealignUnit(RealignUnit realignUnit) {
+		if (snpRealignHandler == null) {
+			return;
+		}
+		snpRealignHandler.setRealign(realignUnit);
+	}
+	
 	/**
 	 * 部分输入的indel类型如下：
 	 * chr1	1234	ATACTACTG	ATAGCATTG
@@ -450,22 +465,48 @@ public class SnpInfo {
 		INSERT, DELETION, MISMATCH, CORRECT
 	}
 	public String getAltInfo() {
-		return generateAltInfo(getSeqRef(), getSeqAlt());
+		return codeAltInfo(getSeqRef(), getSeqAlt());
 	}
 	public String getAltInfoRight() {
-		return generateAltInfo(getSeqRefRight(), getSeqAltRight());
+		return codeAltInfo(getSeqRefRight(), getSeqAltRight());
 	}
 	public String toString() {
 		return alignRefRaw.getChrId() + "\t" + alignRefRaw.getStartAbs() + "\t" + seqRefRaw + "\t" + seqAltRaw;
 	}
 	
 	/**
+	 * @param seqHash
+	 * @param chrId
+	 * @param position
+	 * @param ref A
+	 * @param code -2
+	 * @return String[2]
+	 * 0: refseq TAC
+	 * 1: altseq T
+	 */
+	public static String[] decodeAltInfo(SeqHash seqHash, String chrId, int position, String refbefore, String refbase, String code) {
+		if (code.length() == 1) {
+			return new String[] {refbase, code};
+		} else if (code.startsWith("+")) {
+			return new String[] {refbase, code.replace("+", refbase)};
+		} else if (code.startsWith("-")) {
+			int num = Integer.parseInt(code.substring(1));
+			String seq = seqHash.getSeq(chrId, position, position+num-1).toString();
+			if (!seq.toLowerCase().startsWith(refbase.toLowerCase())) {
+				throw new RuntimeException();
+			}
+			return new String[] {refbefore+seq, refbefore};
+		} else {
+			throw new RuntimeException();
+		}
+	}
+	/**
 	 * 要求输入大写，假设输入的refseq和altseq都已经掐头去尾
 	 * “” CT --> +CT
 	 * CT “” --> -2
 	 * @return
 	 */
-	public static String generateAltInfo(String refSeq, String altSeq) {
+	public static String codeAltInfo(String refSeq, String altSeq) {
 		if (StringOperate.isRealNull(refSeq) && StringOperate.isRealNull(altSeq)) {
 			throw new RuntimeException("cannot generateRefInfo");
 		}

@@ -224,6 +224,22 @@ public class Align implements Alignment, Cloneable, Serializable {
 		return isCis() ? coord - getStartAbs() : getEndAbs() - coord;
 	}
 	
+	public void extendStart(int length) {
+		if (isCis()) {
+			start = start-length;
+		} else {
+			end = end + length;
+		}
+	}
+	
+	public void extendEnd(int length) {
+		if (isCis()) {
+			end = end + length;
+		} else {
+			start = start-length;
+		}
+	}
+	
 	public void extendTo(int length) {
 		if (length <= 0) {
 			return;

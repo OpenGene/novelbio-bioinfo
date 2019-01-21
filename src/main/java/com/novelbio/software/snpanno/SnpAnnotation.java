@@ -124,7 +124,7 @@ public class SnpAnnotation extends RunProcess {
 		int refStartSite = Integer.parseInt(lsInfo.get(colRefStartSite).trim());
 
 		SnpInfo snpInfo = snpAnnoFactory.generateSnpInfo(lsInfo.get(colChrID), refStartSite, lsInfo.get(colRefNr), lsInfo.get(colThisNr));
-		List<List<String>> lsLsAnno = snpAnnoFactory.getLsAnnotation(snpInfo);
+		List<List<String>> lsLsAnno = SnpAnnoFactory.getLsAnnotation(snpInfo);
 		List<String> lsResult = new ArrayList<>();
 		if (lsLsAnno.isEmpty()) {
 			for (int i = 0; i < 5; i++) {
