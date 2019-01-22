@@ -48,10 +48,6 @@ class SnpIsoHgvspSnp extends SnpIsoHgvsp {
 	}
 	
 	public String getSnpChange() {
-		if (refSeqNrForAA.Length()<3) {
-			throw new ExceptionNBCSnpHgvsIsoError("aa anotation error on iso " + iso.getName()+ " due to site error! "
-					+ "reference is " + refSeqNrForAA.toString() + ", and alt is "+altSeqNrForAA.toString());
-		}
 		String ref = convertAA(refSeqNrForAA.toStringAA1().substring(0, 1));
 		String alt = convertAA(altSeqNrForAA.toStringAA1().substring(0, 1));
 		if (isUAG && !ref.equals(alt)) {
@@ -253,6 +249,9 @@ class SnpIsoHgvspIns extends SnpIsoHgvsp {
 		if (!isFrameShift()) {
 			startCds = iso.getLocAAbefore(startCds);
 			endCds = iso.getLocAAend(endCds);
+			if (startCds <= 0 || endCds <= 0) {
+				throw new ExceptionNBCSnpHgvsIsoError("aa anotation error on iso " + iso.getName()+ " due to site error! " + snpInfo.toString() );
+			}
 			if (isInsertInFrame) {
 				return;
 			}

@@ -163,6 +163,11 @@ public abstract class SnpIsoHgvsp {
 			refSeqNrForAA = seqHash.getSeq(isoSub, false);		
 		}
 		altSeqNrForAA = replaceSnpIndel(getSeqAltNrForAA(), snpOnReplaceLocStart, snpOnReplaceLocEnd);
+		
+		if (refSeqNrForAA.Length()<3) {
+			throw new ExceptionNBCSnpHgvsIsoError("aa anotation error on iso " + iso.getName()+ " due to site error!"
+					+ "\nsnpInfo: "+ snpInfo.toString() + " reference is " + refSeqNrForAA.toString() + ", and alt is "+altSeqNrForAA.toString());
+		}
 	}
 	
 	private GffIso extractIsoSub(GffIso iso, int startCds, int endCds) {
@@ -307,7 +312,8 @@ public abstract class SnpIsoHgvsp {
 	protected String getInDelChangeFrameShift(boolean isExtend, boolean isDelete) {
 		char[] refSeq = refSeqNrForAA.toStringAA1().toCharArray();
 		char[] altSeqChr = altSeqNrForAA.toStringAA1().toCharArray();
-		if (refSeq[0] == '*' && altSeqChr[0] == '*') {
+		
+		if (refSeq.length >0 && altSeqChr.length > 0 && refSeq[0] == '*' && altSeqChr[0] == '*') {
 			setVarType.remove(EnumVariantClass.stop_lost);
 			setVarType.add(EnumVariantClass.stop_retained_variant);
 			return convertAA(refSeq[0]) + getAffectAANum(startCds) + "=";
@@ -324,6 +330,28 @@ public abstract class SnpIsoHgvsp {
 				break;
 			}
 		}
+		/**
+		 * 发现了这种场景，是一个移码突变
+		 * ref : H *
+		 * alt : H * L
+		 * 就是说移码前和移码后结果一样
+		 * 这种情况单独拿出来处理
+		 */
+		if (num >= refSeq.length) {
+			if (refSeq[refSeq.length-1] == '*') {
+				setVarType.clear();
+				StringBuilder sBuilder = new StringBuilder();
+				sBuilder.append(convertAA(refSeq[0]));
+				sBuilder.append(getAffectAANum(startCds));
+				sBuilder.append("=");
+				return sBuilder.toString();
+			} else {
+				logger.error("aa anotation may error on iso " + iso.getName()
+						+ "\nsnpInfo: "+ snpInfo.toString());
+				num = num-1;
+			}
+		}
+		
 		int terNumAltReal = terNumAlt - num;
 		//如果是 TerfsTer3，则计算位点从Ter开始算1
 		//如果是Ter225TyrextTer3，则计算位点从原来Ter的后一位开始算1
@@ -404,9 +432,23 @@ public abstract class SnpIsoHgvsp {
 	}
 	
 	//============= 氨基酸层面的duplication =================
+	/**
+	 * @param indelAA
+	 * @param startAA 实际起点，从1开始计算
+	 * @param endAA 实际终点
+	 * @return
+	 */
 	protected String getDeletionDuplicate(String indelAA, int startAA, int endAA) {
 		String aaSeq = aa.toStringAA1();
 		char[] aaChr = aaSeq.toCharArray();
+		StringBuilder sBuilder = new StringBuilder(endAA-startAA+10);
+		for (int i = startAA-1; i < endAA; i++) {
+			sBuilder.append(aaChr[i]);
+		}
+		if (!indelAA.equals(sBuilder.toString())) {
+			throw new RuntimeException();
+		}
+		
 		SnpIndelRealignHandle snpIndelRealignHandle = new SnpIndelRealignHandle(new Align("", startAA, endAA), indelAA, "", "");
 		snpIndelRealignHandle.handleSeqAlign(new SeqHashAAforHgvs(aaSeq));
 		snpIndelRealignHandle.moveAlignToAfter();
@@ -427,6 +469,7 @@ public abstract class SnpIsoHgvsp {
 	protected String getInsertionDuplicate(String indelAA, int startAA, int endAA) {
 		String aaSeq = aa.toStringAA1();
 		char[] aaChr = aaSeq.toCharArray();
+		
 		Align reAlign = new Align("", startAA, endAA);
 		SnpIndelRealignHandle snpIndelRealignHandle = null;
 		if (!indelAA.contains("*")) {

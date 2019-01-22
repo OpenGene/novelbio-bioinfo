@@ -45,8 +45,7 @@ public class SeqHashAAforHgvs implements SeqHashInt {
 
 	@Override
 	public Long getChrLength(String chrID) {
-		// TODO Auto-generated method stub
-		return null;
+		return (long) seq.length();
 	}
 
 	@Override

@@ -318,7 +318,7 @@ class SnpIsoHgvspDel extends SnpIsoHgvsp {
 					break;
 				}
 			}
-			if (refAA[num] == '*' && isAffectUAG) {
+			if (refAA.length > 0 && refAA[num] == '*' && isAffectUAG) {
 				isExtend = true;
 			}
 		}
@@ -337,7 +337,7 @@ class SnpIsoHgvspDel extends SnpIsoHgvsp {
 			setVarType.add(EnumVariantClass.synonymous_variant);
 			//TODO 待验证
 			return convertAA(refAA[0]) + start + "_" + convertAA(refAA[refAA.length-1]) + end + "=";
-		} else if (refAA[0] == '*' && altAA[0] == '*') {
+		} else if (refAA.length > 0 && altAA.length > 0 && refAA[0] == '*' && altAA[0] == '*') {
 			//TODO 未测试
 			setVarType.remove(EnumVariantClass.stop_lost);
 			setVarType.add(EnumVariantClass.stop_retained_variant);

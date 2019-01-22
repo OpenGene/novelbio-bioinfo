@@ -77,11 +77,11 @@ public class SnpIndelRealignHandle {
 	public RealignUnit getRealignUnit() {
 		return realign;
 	}
-	/** 如果本align可以前后移动，则最后侧的坐标 */
+	/** 如果本align可以前后移动， 经过校正后，最靠右侧的起点 */
 	protected int getStartBefore() {
 		return startBefore;
 	}
-	/** 如果本align可以前后移动，则最前侧的坐标 */
+	/** 如果本align可以前后移动，经过校正后，最靠左侧的起点 */
 	protected int getStartAfter() {
 		return startAfter;
 	}
@@ -146,6 +146,19 @@ public class SnpIndelRealignHandle {
 		String seqIndel = seqRef.length() == 0 ? seqAlt : seqRef;
 		int startLocModify = seqRef.length() > 0 ? alignRef.getStartAbs() : alignRef.getStartAbs() + 1;
 		compareSeq(startLocModify, seqHash, seqIndel);
+		/** 如果一个片段移动到最左侧和最右侧的距离是该片段的2倍长度，那么该片段即为Dup
+		 * 如 ATC[AGATC]AG
+		 * 为 ATCAG-ATCAG
+		 */
+		if (startAfter - startBefore >= seqIndel.length()) {
+			isDup = true;
+		}
+		
+		if (isDup) {
+			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Duplications;
+		} else {
+			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Insertions;
+		}
 	}
 	
 	/** 可以向前移动几位，恒返回正数，从startAfter开始算 */
@@ -288,13 +301,21 @@ public class SnpIndelRealignHandle {
 				seq = seqRemain;
 				isFirst = false;
 			} else {
+				if (startLoc > seqHash.getChrLength(alignRef.getChrId())) {
+					isGetNextSeq = false;
+					continue;
+				}
 				seq = seqHash.getSeq(alignRef.getChrId(), startLoc, startLoc + lenStep).toString();
 				if (seq.length() < lenStep+1) {
 					seq = fillSeq(seq, lenStep+1, false);
 					isGetNextSeq = false;
 				}
 			}
-			isGetNextSeq = compareSeqAfter(seq, seqIndelChr, before);
+			if (seq.length() < seqIndelChr.length) {
+				isGetNextSeq = false;
+			} else {
+				isGetNextSeq = compareSeqAfter(seq, seqIndelChr, before);
+			}
 			startLoc = startLoc + lenStep + 1;
 		}
 		
@@ -317,12 +338,6 @@ public class SnpIndelRealignHandle {
 			if (startLoc < 0) {
 				break;
 			}
-		}
-		
-		if (isDup) {
-			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Duplications;
-		} else {
-			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Insertions;
 		}
 	}
 	
@@ -367,7 +382,6 @@ public class SnpIndelRealignHandle {
 				samNum++;
 			}
 			if (isSame) {
-				isDup = true;
 				startAfter = startAfter + samNum; 
 				samNum = 0;
 			} else {
@@ -380,18 +394,6 @@ public class SnpIndelRealignHandle {
 			startAfter = startAfter + samNum; 
 		}
 		
-		if (!isNext && (samNum > 0 || !isDup)) {
-			boolean isDupBefore = true;
-			for (int i = samNum; i < seqIndel.length; i++) {
-				if (seqIndel[i] != seqIndelBefore[i]) {
-					isDupBefore = false;
-					break;
-				}
-			}
-			if (isDupBefore) {
-				isDup = true;
-			}
-		}
 		return isNext;
 	}
 	
