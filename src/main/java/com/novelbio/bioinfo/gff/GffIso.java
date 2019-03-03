@@ -1659,6 +1659,44 @@ public abstract class GffIso extends ListEle<ExonInfo> {
 		result.UAGsite = UAGsite;
 		return result;
 	}
+	/** 坐标在iso上的比例，包括内含子，0-1，0表示在mRNA头部，1表示在mRNA尾部 */
+	public double calCoordProp(int coordStart, int coordEnd) {
+		int distanceHead = Math.abs(getStart()-coordStart);
+		return (double)distanceHead/getLen();
+	}
+	/** 坐标在mRNA上的比例，0-1，0表示在mRNA头部，1表示在mRNA尾部
+	 * -1表示不在exon上
+	 * @param coordStart
+	 * @param coordEnd
+	 * @return
+	 */
+	public double calCoordPropMRNA(int coordStart, int coordEnd) {
+		List<ExonInfo> lsExons = getSubExon(coordStart, coordEnd);
+		if (lsExons.isEmpty()) {
+			return -1;
+		}
+		int distanceHead = Math.abs(getStart() - lsExons.get(0).getStart());
+		return (double)distanceHead/getLenExon();
+	}
+	
+	/** 坐标在protein上的比例，0-1，0表示在mRNA头部，1表示在mRNA尾部
+	 * -1表示不在exon上
+	 * @param coordStart
+	 * @param coordEnd
+	 * @return
+	 */
+	public double calCoordPropPro(int coordStart, int coordEnd) {
+		if (!ismRNAFromCds()) {
+			return -1;
+		}
+		GffIso gffIso = getSubGffGeneIso(getATGsite(), getUAGsite());
+		List<ExonInfo> lsExons = gffIso.getSubExon(coordStart, coordEnd);
+		if (lsExons.isEmpty()) {
+			return -1;
+		}
+		int distanceHead = Math.abs(gffIso.getStart() - lsExons.get(0).getStart());
+		return (double)distanceHead/gffIso.getLenExon();
+	}
 	
 	public static GffIso createGffGeneIso(String isoName, String parentName, GffGene gffDetailGene, GeneType geneType, boolean cis5to3) {
 		GffIso gffGeneIsoInfo = null;

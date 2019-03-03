@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 
 import com.novelbio.base.dataOperate.TxtReadandWrite;
+import com.novelbio.base.fileOperate.FileOperate;
 
 /**
  * 把plinkped中的位点过滤掉
@@ -74,21 +75,24 @@ public abstract class PlinkPedFilterAbs {
 		txtReadPed.close();
 		txtWritePedNew.close();
 		
-		TxtReadandWrite txtReadMid = new TxtReadandWrite(mid);
-		TxtReadandWrite txtWriteMidNew = new TxtReadandWrite(midNew, true);
-		int i = -1;
-		for (String content : txtReadMid.readlines()) {
-			if (content.startsWith("#")) {
+		if (FileOperate.isFileExistAndBigThan0(mid)) {
+			TxtReadandWrite txtReadMid = new TxtReadandWrite(mid);
+			TxtReadandWrite txtWriteMidNew = new TxtReadandWrite(midNew, true);
+			int i = -1;
+			for (String content : txtReadMid.readlines()) {
+				if (content.startsWith("#")) {
+					txtWriteMidNew.writefileln(content);
+				}
+				i++;
+				if (setSiteNeedDelete.contains(i)) {
+					continue;
+				}
 				txtWriteMidNew.writefileln(content);
 			}
-			i++;
-			if (setSiteNeedDelete.contains(i)) {
-				continue;
-			}
-			txtWriteMidNew.writefileln(content);
+			txtReadMid.close();
+			txtWriteMidNew.close();
 		}
-		txtReadMid.close();
-		txtWriteMidNew.close();
+		
 	}
 	
 }

@@ -46,7 +46,12 @@ public class PlinkPed2Vcf {
 				String[] unit = ss[i].split(" ");
 				int num = i-6;
 				info[num*2] = unit[0].toCharArray()[0];
-				info[num*2+1] = unit[1].toCharArray()[0];
+				if (unit.length == 1) {
+					info[num*2+1] = info[num*2];
+				} else {
+					info[num*2+1] = unit[1].toCharArray()[0];
+				}
+				
 			}
 			mapSample2Snp.put(strain, info);
 		}

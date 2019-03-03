@@ -52,12 +52,7 @@ public class PlinkPedFilterHete extends PlinkPedFilterAbs {
 			short[] site = new short[ss.length-6];
 			for (int i = 6; i < ss.length; i++) {
 				String[] bases = ss[i].split(" ");
-				try {
-					site[i-6] = getBaseType(bases);
-				} catch (Exception e) {
-					site[i-6] = getBaseType(bases);
-				}
-			
+				site[i-6] = getBaseType(bases);
 			}
 			mapSeq2Site.put(strain, site);
 		}
@@ -69,7 +64,7 @@ public class PlinkPedFilterHete extends PlinkPedFilterAbs {
 		if (bases[0].equalsIgnoreCase("N")) {
 			return 2;
 		}
-		if (bases[0].equals(bases[1])) {
+		if (bases.length == 1 || bases[0].equals(bases[1])) {
 			return 0;
 		}
 		return 1;

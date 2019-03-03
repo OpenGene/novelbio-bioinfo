@@ -83,8 +83,6 @@ public enum EnumVariantClass {
 		setVarAffectGene.add(start_lost);
 		setVarAffectGene.add(splice_acceptor_variant);
 		setVarAffectGene.add(splice_donor_variant);
-		setVarAffectGene.add(disruptive_inframe_insertion);
-		setVarAffectGene.add(disruptive_inframe_deletion);
 		return setVarAffectGene;
 	}
 	

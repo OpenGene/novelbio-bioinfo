@@ -202,6 +202,8 @@ public abstract class SeqHashAbs implements SeqHashInt, Closeable {
 		SeqFasta seqFasta = null;
 		try {
 			seqFasta = getSeqInfo(chrID, startlocation, endlocation);
+		} catch (ExceptionSeqFastaNoChr e) {
+			throw e;
 		} catch (Exception e) {
 			logger.error("cannot get location: " + chrID + "\t" + startlocation + "\t"+ endlocation, e);
 			return null;

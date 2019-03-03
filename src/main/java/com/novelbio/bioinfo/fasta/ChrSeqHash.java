@@ -113,6 +113,9 @@ public class ChrSeqHash extends SeqHashAbs {
 			throw new ExceptionSeqFasta("no file exist: " + chrFile);
 		}
 		String chrIDLowcase = chrId.toLowerCase();
+		if (!mapChrID2Length.containsKey(chrIDLowcase)) {
+			throw new ExceptionSeqFastaNoChr("cannot find chrId " + chrId);
+		}
 		long chrLength = getChrLength(chrId);
 		if (startlocation <= 0) startlocation = 1;
 		if (endlocation <= 0 || endlocation > chrLength) endlocation = chrLength;

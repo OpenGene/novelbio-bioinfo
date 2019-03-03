@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.base.StringOperate;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.fasta.SeqHash;
 import com.novelbio.bioinfo.fasta.SeqHashInt;
@@ -207,6 +208,19 @@ public class SnpInfo {
 		return mapIso2Hgvsp;
 	}
 	
+	public SnpIsoHgvsc getHgvsc(GffIso iso) {
+		if (ArrayOperate.isEmpty(mapIso2Hgvsc)) {
+			return null;
+		}
+		return mapIso2Hgvsc.get(iso);
+	}
+	public SnpIsoHgvsp getHgvsp(GffIso iso) {
+		if (ArrayOperate.isEmpty(mapIso2Hgvsp)) {
+			return null;
+		}
+		return mapIso2Hgvsp.get(iso);
+	}
+	
 	/**
 	 * 
 	 * 包含realign功能
@@ -295,6 +309,11 @@ public class SnpInfo {
 		alignChange = new Align(alignRefRaw.toString());
 		
 		int startSiteSubSeq = startSameIndex > 0 ? startSameIndex-1 : seqLenMax - endSameIndex;
+		
+		
+		if (varType == EnumHgvsVarType.NOVAR && alignRefRaw.getLength() == 1) {
+			return;
+		}
 		
 		if (varType == EnumHgvsVarType.Insertions) {
 			alignChange.setStartEndLoc(alignRefRaw.getStartAbs() + startSameIndex-1, alignRefRaw.getStartAbs() + startSameIndex);
@@ -407,9 +426,15 @@ public class SnpInfo {
 		return snpRealignHandler == null ? alignChange : snpRealignHandler.getRealign();
 	}
 	public String getSeqRef() {
+		if (varType == EnumHgvsVarType.NOVAR && alignRefRaw.getLength() == 1) {
+			return seqRefRaw;
+		}
 		return snpRealignHandler == null ? seqRef : snpRealignHandler.getSeqRef();
 	}
 	public String getSeqAlt() {
+		if (varType == EnumHgvsVarType.NOVAR && alignRefRaw.getLength() == 1) {
+			return seqAltRaw;
+		}
 		return snpRealignHandler == null ? seqAlt : snpRealignHandler.getSeqAlt();
 	}
 	public String getSeqHead() {
@@ -509,6 +534,12 @@ public class SnpInfo {
 	public static String codeAltInfo(String refSeq, String altSeq) {
 		if (StringOperate.isRealNull(refSeq) && StringOperate.isRealNull(altSeq)) {
 			throw new RuntimeException("cannot generateRefInfo");
+		}
+		char[] tmpref = refSeq.toCharArray();
+		char[] tmpalt = altSeq.toCharArray();
+		if (tmpalt[0] == tmpref[0]) {
+			refSeq = "";
+			altSeq = altSeq.substring(1);
 		}
 		String altInfo = null;
 		//插入

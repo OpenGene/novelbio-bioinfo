@@ -142,6 +142,7 @@ public class PlinkPedConverter {
 			String[] ss = content.split("\t");
 			txtWrite.writefile(" " + ss[1]);
 		}
+		txtPlinkMapReader.close();
 	}
 	
 	private void writePlinkSample(InputStream inputStream, String sample, TxtReadandWrite txtWrite) {
@@ -155,11 +156,13 @@ public class PlinkPedConverter {
 			i++;
 			Allele allelePed = itPlinkPed.next();
 			if (alleleMap.getIndex() != allelePed.getIndex()) {
+				txtPlinkMapReader.close();
 				throw new ExceptionNBCPlink("index is not consistant! " + allelePed.toString() + " " + allelePed.toString());
 			}
 			int result = getResult(alleleMap.getRefBase(), allelePed.getRefBase(), allelePed.getAltBase());
 			txtWrite.writefile(" " + result);
 		}
+		txtPlinkMapReader.close();
 	}
 	
 	/**

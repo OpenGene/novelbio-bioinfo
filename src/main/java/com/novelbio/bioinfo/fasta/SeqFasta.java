@@ -83,6 +83,10 @@ public class SeqFasta implements Cloneable,Serializable {
 		 this.SeqName = SeqName;
 	}
 	/** 获得序列名 */
+	public String getName() {
+		return SeqName;
+	}
+	/** 获得序列名 */
 	public String getSeqName() {
 		return SeqName;
 	}
@@ -431,8 +435,8 @@ public class SeqFasta implements Cloneable,Serializable {
 	public FastaGetCDSFromProtein getCDSfromProtein(String proteinSeq) {
 		return new FastaGetCDSFromProtein(this, proteinSeq);
 	}
-	/** 根据TOLOWCASE返回序列 */
-	public String toString() {
+	
+	public String getSeq() {
 		if (SeqSequence == null) {
 			return "";
 		}
@@ -442,6 +446,11 @@ public class SeqFasta implements Cloneable,Serializable {
 		else {
 			return TOLOWCASE.equals(true) ?  SeqSequence.toLowerCase() :  SeqSequence.toUpperCase();
 		}
+	}
+	
+	/** 根据TOLOWCASE返回序列 */
+	public String toString() {
+		return getSeq();
 	}
 	/** 返回AA的fasta序列
 	 *  每行60个AA

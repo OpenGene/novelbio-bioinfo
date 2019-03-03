@@ -52,7 +52,13 @@ public abstract class SnpIsoHgvsp {
 		}
 		this.iso = iso;
 	}
-	
+	/** 不同的iso，其realign的结果是不一样的 */
+	public Align getAlign() {
+		if (realignUnit != null && realignUnit.getRealign() != null) {
+			return realignUnit.getRealign();
+		}
+		return snpInfo.getAlign();
+	}
 	/** 根据氨基酸的情况重新align
 	 * 主要用于 ref: CAC-ATG-ATA
 	 * CAC-AT[AT]G-ATA
