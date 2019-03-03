@@ -45,8 +45,9 @@ public class ConvertPed {
 	 * 这个仅用于最后写bim文件
 	 */
 	Map<String, Set<String>> mapChrPos2Alt = new HashMap<>();
+	
 
-	public static void main(String[] args) {
+	public static void main2(String[] args) {
 		String chain = "/media/winE/mywork/nongkeyuan/coordtransform/IRGSPv4_vs_IRGSP1/irgspvs_vs_irgsp1.changechr.chain";
 		String fastaQ = "/media/winE/mywork/nongkeyuan/coordtransform/reference/IRGSP-4.0.chrAll.fa";
 		String fastaS = "/media/winE/mywork/nongkeyuan/coordtransform/reference/IRGSP-1.0.chrAll.fasta";
@@ -73,10 +74,8 @@ public class ConvertPed {
 			convertPed.setMapIn(mapIn);
 			convertPed.run(seqHashQ, pedOut, bimOut);
 		}
-		
-		
-		
 	}
+	
 	public void setCoordTransformer(CoordTransformer coordTransformer) {
 		this.coordTransformer = coordTransformer;
 	}
