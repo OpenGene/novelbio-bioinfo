@@ -79,6 +79,7 @@ public class PedRemoveDuplicate {
 			setDuplicate.add(key);
 			lsPosFinal.add(chrId2Pos2Ref2Alt);
 		}
+		
 		TxtReadandWrite txtWrite = new TxtReadandWrite(midOut, true);
 		for (String[] ss : lsPosFinal) {
 			txtWrite.writefileln(ArrayOperate.cmbString(ss, "\t"));
