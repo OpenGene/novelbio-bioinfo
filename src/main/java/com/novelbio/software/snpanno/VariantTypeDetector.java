@@ -10,8 +10,6 @@ import com.novelbio.bioinfo.gff.ExonInfo;
 import com.novelbio.bioinfo.gff.GffIso;
 import com.novelbio.software.snpanno.SnpInfo.EnumHgvsVarType;
 
-import smile.math.Math;
-
 public abstract class VariantTypeDetector {
 	GffIso iso;
 	EnumHgvsVarType varType;

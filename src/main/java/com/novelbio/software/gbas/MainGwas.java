@@ -1,15 +1,10 @@
 package com.novelbio.software.gbas;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeMap;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.GnuParser;
@@ -17,22 +12,15 @@ import org.apache.commons.cli.Options;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.novelbio.base.StringOperate;
-import com.novelbio.base.dataOperate.DateUtil;
 import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.bioinfo.gff.GffHashGene;
 import com.novelbio.bioinfo.gffchr.GffChrAbs;
 import com.novelbio.bioinfo.gwas.convertformat.Mid2Ped;
-import com.novelbio.database.model.geneanno.Gene2Go;
 import com.novelbio.software.gbas.combinesnp.ClusterKmean;
 import com.novelbio.software.gbas.combinesnp.CombineSnp;
-import com.novelbio.software.snpanno.SnpAnnoFactory;
-import com.novelbio.software.snpanno.SnpInfo;
-
-import smile.clustering.KMeans;
 
 public class MainGwas {
 	private static final Logger logger = LoggerFactory.getLogger(MainGwas.class);

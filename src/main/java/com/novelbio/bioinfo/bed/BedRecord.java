@@ -7,7 +7,6 @@ import org.apache.log4j.Logger;
 
 import com.novelbio.base.StringOperate;
 import com.novelbio.base.dataStructure.ArrayOperate;
-import com.novelbio.base.util.ObjectUtil;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.AlignRecord;
 import com.novelbio.bioinfo.base.Alignment;
@@ -396,7 +395,9 @@ public class BedRecord implements AlignRecord,Serializable {
 	@Override
 	public BedRecord clone() {
 		try {
-			BedRecord bedRecord = ObjectUtil.deepClone(this);
+			BedRecord bedRecord = (BedRecord) super.clone();
+			bedRecord.align = align.clone();
+			bedRecord.seqFasta = seqFasta.clone();
 			bedRecord.CIGAR = CIGAR;
 			bedRecord.mappingNum = mappingNum;
 			bedRecord.mapQuality = mapQuality;

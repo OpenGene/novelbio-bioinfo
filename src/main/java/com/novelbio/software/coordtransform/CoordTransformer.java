@@ -14,8 +14,6 @@ import com.novelbio.bioinfo.fasta.SeqHashInt;
 import com.novelbio.software.snpanno.SnpInfo;
 import com.novelbio.software.snpanno.SnpInfo.EnumHgvsVarType;
 
-import lombok.experimental.var;
-
 public class CoordTransformer {
 		
 	SeqHashInt seqHashAlt;
