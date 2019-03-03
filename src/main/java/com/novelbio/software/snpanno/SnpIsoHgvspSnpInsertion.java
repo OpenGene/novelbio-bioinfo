@@ -3,11 +3,11 @@ package com.novelbio.software.snpanno;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 import com.novelbio.bioinfo.gff.GffIso;
 
-class SnpRefAltIsoSnp extends SnpIsoHgvsp {
+class SnpIsoHgvspSnp extends SnpIsoHgvsp {
 	boolean isATG = false;
 	boolean isUAG = false;
 
-	public SnpRefAltIsoSnp(SnpInfo snpRefAltInfo, GffIso iso) {
+	public SnpIsoHgvspSnp(SnpInfo snpRefAltInfo, GffIso iso) {
 		super(snpRefAltInfo, iso);
 	}
 	
@@ -38,7 +38,7 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 			endCds = iso.getEnd();
 		}
 		if (startCds <0) {
-			throw new ExceptionNBCSnpHgvs("snp error not in cds " + snpRefAltInfo.toString());
+			throw new ExceptionNBCSnpHgvs("snp error not in cds " + snpInfo.toString());
 		}
 	}
 	
@@ -48,10 +48,6 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 	}
 	
 	public String getSnpChange() {
-		if (refSeqNrForAA.Length()<3) {
-			throw new ExceptionNBCSnpHgvs("aa anotation error on iso " + iso.getName()+ " due to site error! "
-					+ "reference is " + refSeqNrForAA.toString() + ", and alt is "+altSeqNrForAA.toString());
-		}
 		String ref = convertAA(refSeqNrForAA.toStringAA1().substring(0, 1));
 		String alt = convertAA(altSeqNrForAA.toStringAA1().substring(0, 1));
 		if (isUAG && !ref.equals(alt)) {
@@ -66,7 +62,7 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 				setVarType.remove(EnumVariantClass.stop_lost);
 				setVarType.add(EnumVariantClass.stop_retained_variant);
 			}
-			return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + "="; 
+			return "p." + ref + getAffectAANum(snpInfo.getStartReal()) + "="; 
 		}
 		if (isATG) {
 			setVarType.add(EnumVariantClass.start_lost);
@@ -75,7 +71,7 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 			return "p." + ref + "1?";
 		}
 		setVarType.add(EnumVariantClass.missense_variant);
-		return "p." + ref + getAffectAANum(snpRefAltInfo.getStartReal()) + alt;
+		return "p." + ref + getAffectAANum(snpInfo.getStartReal()) + alt;
 	}
 	
 	/**
@@ -90,32 +86,34 @@ class SnpRefAltIsoSnp extends SnpIsoHgvsp {
 	
 }
 
-class SnpRefAltIsoIns extends SnpIsoHgvsp {
+class SnpIsoHgvspIns extends SnpIsoHgvsp {
 	/** 插入位置是否在两个aa中间 */
 	boolean isInsertInFrame = false;
 	/** 插入位置在atg，并且插入不引起移码 */
 	boolean isInsertInStartAndInFrame = false;
+	/** 是否插入到ATG的位置，就是没法获取前一个AA了 */
+	boolean isInsertATG = false;
 	
-	public SnpRefAltIsoIns(SnpInfo snpRefAltInfo, GffIso iso) {
+	public SnpIsoHgvspIns(SnpInfo snpRefAltInfo, GffIso iso) {
 		super(snpRefAltInfo, iso);
 	}
 	
 	protected boolean isGetAllLenAA() {
-		return snpRefAltInfo.getSeqAlt().length() %3 == 0;
+		return snpInfo.getSeqAlt().length() %3 == 0;
 	}
 
 	@Override
 	protected int moveBeforeNum() {
 		if (iso.isCis5to3()) {
-			snpRefAltInfo.moveToAfter();
+			snpInfo.moveToAfter();
 		} else {
-			snpRefAltInfo.moveToBefore();
+			snpInfo.moveToBefore();
 		}
-		int moveMax = snpRefAltInfo.moveNumMax();
+		int moveMax = snpInfo.moveNumMax();
 		if (moveMax == 0) {
 			return 0;
 		}
-		int site = snpRefAltInfo.getStartReal();
+		int site = snpInfo.getStartReal();
 		int coordExonNum = iso.getNumCodInEle(site);
 		if (coordExonNum == 0) {
 			return 0;
@@ -128,8 +126,8 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 					|| !iso.isCis5to3() && (coord2BoundStart == 2 || coord2BoundEnd == 1)
 					) {
 				moveNum = 1;
-				snpRefAltInfo.moveAlign(1, iso.isCis5to3());
-				site = snpRefAltInfo.getStartReal();
+				snpInfo.moveAlign(1, iso.isCis5to3());
+				site = snpInfo.getStartReal();
 				coordExonNum = iso.getNumCodInEle(site);
 			}
 		}
@@ -139,7 +137,7 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		//在氨基酸上
 		int beforeSite = iso.getLocAAbefore(site);
 		int afterSite = iso.getLocAAend(site);
-		boolean isInFrame = snpRefAltInfo.getSeqAlt().length() %3 == 0;
+		boolean isInFrame = snpInfo.getSeqAlt().length() %3 == 0;
 		//如果可以移动出iso，则移出去
 		int siteToAtg = iso.isCis5to3() ? site-iso.getATGsite() + 1 : iso.getATGsite() - site;
 		if ( siteToAtg > 0 && siteToAtg <= moveMax - moveNum) {
@@ -199,23 +197,35 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		int startCds = iso.getLocAAbefore(start);
 		int endCds = iso.getLocAAend(end);
 		boolean isInsertInATG = startCds == iso.getATGsite() && Math.abs(startCds-endCds) == 2;
-		
-		if (isInsertInATG) {
-			int len = 3 - (iso.getLocDistmRNA(end, endCds)+1);
-			char[] atg = {'a','t','g'};
-			char[] insertion = getSeqAltNrForAA().toLowerCase().toCharArray();
-			boolean isSame = true;
-			for (int i = 0; i < len; i++) {
-				if (atg[i] != insertion[insertion.length-len+i]) {
-					isSame = false;
-					break;
-				}
-			}
-			if (isSame) {
-				isInsertBeforeATG = true;
-			}
-		}
-		return !isInsertBeforeATG&&isInsertInATG;
+		return isInsertInATG;
+//		/**
+//		 * 如果插入在ATG附近，譬如插入为 AT[AT]G
+//		 * 那么这种实际上并不是插入在ATG上，而是插入在ATG之前
+//		 * 
+//		 * 所以我们做比较，首先获得插入位置之前有几个碱基，本例子 AT[AT]G，前面有两个碱基
+//		 * 因此我们就比较这两个碱基是否
+//		 */
+//		if (isInsertInATG) {
+//			int len = 3 - (iso.getLocDistmRNA(end, endCds)+1);
+//
+//			char[] atg = {'a','t','g'};
+//			char[] insertion = getSeqAltNrForAA().toLowerCase().toCharArray();
+//			boolean isSame = true;
+//			if (len > insertion.length) {
+//				isSame = false;
+//			} else {
+//				for (int i = 0; i < len; i++) {
+//					if (atg[i] != insertion[insertion.length-len+i]) {
+//						isSame = false;
+//						break;
+//					}
+//				}
+//			}
+//			if (isSame) {
+//				isInsertBeforeATG = true;
+//			}
+//		}
+//		return !isInsertBeforeATG&&isInsertInATG;
 	}
 	
 	protected void setStartEndCis() {
@@ -239,6 +249,9 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 		if (!isFrameShift()) {
 			startCds = iso.getLocAAbefore(startCds);
 			endCds = iso.getLocAAend(endCds);
+			if (startCds <= 0 || endCds <= 0) {
+				throw new ExceptionNBCSnpHgvsIsoError("aa anotation error on iso " + iso.getName()+ " due to site error! " + snpInfo.toString() );
+			}
 			if (isInsertInFrame) {
 				return;
 			}
@@ -261,7 +274,11 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 			 * 实际插入为 V-Q-L
 			 * 而正常取是不会把GTC(V)取到的，所以要向前取一个氨基酸
 			 */
-			startCds = iso.getLocAALastStart(startCds);
+			if(startCds != iso.getATGsite()) {
+				startCds = iso.getLocAALastStart(startCds);
+			} else {
+				isInsertATG = true;
+			}
 			return;
 		}
 		
@@ -295,13 +312,16 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 			snpOnReplaceLocEnd = 0;
 		} else if(!isFrameShift() && !isInsertInFrame) {
 			snpOnReplaceLocStart = -iso.getLocAAbeforeBias(startCds) + 1;
-			/**
-			 * 默认insertion都会向前提取一个氨基酸
-			 * 可能会出现场景 GTC-C[AGT]TG-AGC
-			 * 实际插入为 V-Q-L
-			 * 而正常取是不会把GTC(V)取到的，所以要向前取一个氨基酸，这时候这里就要加上3，意思往后偏移3
-			 */
-			snpOnReplaceLocStart = snpOnReplaceLocStart + 3;
+			
+			if (!isInsertATG) {
+				/**
+				 * 默认如果不是插入在ATG位置，insertion都会向前提取一个氨基酸
+				 * 可能会出现场景 GTC-C[AGT]TG-AGC
+				 * 实际插入为 V-Q-L
+				 * 而正常取是不会把GTC(V)取到的，所以要向前取一个氨基酸，这时候这里就要加上3，意思往后偏移3
+				 */
+				snpOnReplaceLocStart = snpOnReplaceLocStart + 3;
+			}
 			snpOnReplaceLocEnd = snpOnReplaceLocStart-1;
 		} else {
 			snpOnReplaceLocStart = -iso.getLocAAbeforeBias(startCds) + 1;
@@ -326,7 +346,7 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 			setVarType.add(EnumVariantClass.stop_lost);
 		} else if (stopNumRef == 0 && stopNumAlt > 0) {
 			setVarType.add(EnumVariantClass.stop_gained);
-		} else if (stopNumRef == 2 && stopNumAlt == 2) {
+		} else if (stopNumRef == stopNumAlt) {
 			setVarType.remove(EnumVariantClass.stop_lost);
 			setVarType.add(EnumVariantClass.stop_retained_variant);
 		} else if (stopNumRef == 2 && stopNumAlt > 0 && stopNumAlt < altAA.length - 1) {
@@ -444,7 +464,6 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 	private String getInsertionInAA(char[] refAA, char[] altAA) {
 		StringBuilder sBuilder = new StringBuilder();
 		int startNum = getAffectAANum(startCds);
-		System.out.println();
 		
 		//用来判定是否为duplicate
 		StringBuilder sBuilderInsertAA = new StringBuilder();
@@ -469,10 +488,18 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 			//譬如 ATC-CGC-CAG
 			//变为 ATC-CG[TAG]-CCAG
 		} else {
-			sBuilder.append(convertAA(refAA[1]) + (startNum +1) + "delins");	
-			for (int i = 1; i < altAA.length-1; i++) {
-				sBuilder.append(convertAA(altAA[i]));	
+			if (!isInsertATG) {
+				sBuilder.append(convertAA(refAA[1]) + (startNum +1) + "delins");	
+				for (int i = 1; i < altAA.length-1; i++) {
+					sBuilder.append(convertAA(altAA[i]));	
+				}
+			} else {
+				sBuilder.append(convertAA(refAA[0]) + (startNum) + "delins");	
+				for (int i = 0; i < altAA.length-1; i++) {
+					sBuilder.append(convertAA(altAA[i]));
+				}
 			}
+		
 			setVarType.add(EnumVariantClass.disruptive_inframe_insertion);
 		}
 		
@@ -486,7 +513,7 @@ class SnpRefAltIsoIns extends SnpIsoHgvsp {
 	
 	/** 插入是否引起了移码 */
 	private boolean isFrameShift() {
-		return snpRefAltInfo.getSeqAlt().length()%3 != 0;
+		return snpInfo.getSeqAlt().length()%3 != 0;
 	}
 	
 }

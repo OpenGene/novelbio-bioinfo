@@ -1,5 +1,8 @@
 package com.novelbio.software.snpanno;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import com.novelbio.base.StringOperate;
 /**
  * 这个是snpeff使用的变异类型，来源于
@@ -69,4 +72,18 @@ public enum EnumVariantClass {
 		}
 		return super.toString();
 	}
+	
+	/** 获取影响基因的突变，就是说这个突变可能会影响基因的表达 */
+	public static Set<EnumVariantClass> getVarAffectGene() {
+		Set<EnumVariantClass> setVarAffectGene = new HashSet<>();
+		setVarAffectGene.add(exon_loss_variant);
+		setVarAffectGene.add(frameshift_variant);
+		setVarAffectGene.add(stop_gained);
+		setVarAffectGene.add(stop_lost);
+		setVarAffectGene.add(start_lost);
+		setVarAffectGene.add(splice_acceptor_variant);
+		setVarAffectGene.add(splice_donor_variant);
+		return setVarAffectGene;
+	}
+	
 }

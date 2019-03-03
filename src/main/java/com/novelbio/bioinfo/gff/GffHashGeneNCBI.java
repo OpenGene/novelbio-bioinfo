@@ -256,11 +256,17 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 
 				thisRnaIDandName = addMRNA(thisGeneIDandName, ss);
 			} else if (ss[2].equals("exon")) {
+				
 				if (!addExon(thisGeneIDandName, thisRnaIDandName, ss)) {
 					continue;
 				}
 			} else if (ss[2].equals("CDS")) {
-				addCDS(thisGeneIDandName, thisRnaIDandName, ss);
+				try {
+					addCDS(thisGeneIDandName, thisRnaIDandName, ss);
+				} catch (Exception e) {
+					throw new ExceptionNbcGFF("line error on:\n" + content, e);
+				}
+				
 			} else if (ss[2].equals("STS") || ss[2].contains("gene_segment")
 					|| ss[2].contains("contig") || ss[2].contains("match")) {
 				continue;
@@ -507,6 +513,9 @@ public class GffHashGeneNCBI extends GffHashGeneAbs {
 		for (String rnaId : getRNAID(lastGeneID2Name, lastRnaID2Name, ss)) {
 			String geneID = getGeneID(rnaId);
 			GffIso gffGeneIsoInfo = getGffIso(rnaId, null);
+			if (gffGeneIsoInfo == null) {
+				throw new ExceptionNbcGFF("cannot locat gene iso on rnaId:" + rnaId);
+			}
 			gffGeneIsoInfo.setATGUAGauto(cdsStart, cdsEnd);
 			if (mapGeneName2IsHaveExon.get(geneID) == null) {
 				logger.error("没有找到相应的GeneID:" + geneID);

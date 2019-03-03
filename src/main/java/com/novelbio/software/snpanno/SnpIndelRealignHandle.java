@@ -47,26 +47,13 @@ public class SnpIndelRealignHandle {
 	boolean isDup;
 	
 	/** 偏移到最尾部的align */
-	Align alignRight;
-	String seqChangeRight;
-	String seqChangeShortRight;
+	RealignUnit realignRight = new RealignUnit();
 	
-	/** 移动之后的realign，考虑了剪接位点等因素，移动到了最合适的位置
-	 * 譬如如果是正向转录本则右移
-	 * 反向转录本则左移
-	 */
-	Align realign;
-	/**
-	 * 这里只可能是insertion或deletion，因此只有一条序列存在，另一条为空<br>
-	 * 根据 {@link #convertSeqNum} 来修改序列<br>
-	 * 最后获得 AGGC
-	 */
-	String seqChange;
-	/**
-	 * 同上
-	 * 最后获得 C
-	 */
-	String seqChangeShort;
+	/** 偏移到最头部的align */
+	RealignUnit realignLeft = new RealignUnit();
+	
+	/** 对于某个转录本的实际realign */
+	RealignUnit realign = new RealignUnit();
 	
 	public SnpIndelRealignHandle(Align alignRef, String seqRef, String seqAlt, String seqShort) {
 		this.alignRef = alignRef;
@@ -75,13 +62,26 @@ public class SnpIndelRealignHandle {
 		if (StringOperate.isRealNull(seqShort)) {
 			seqShort = "";
 		}
-		this.seqChangeShort = seqShort;
+		realign.setSeqChangeShort(seqShort);
 	}
-	/** 如果本align可以前后移动，则最后侧的坐标 */
+	
+	/**
+	 * 不同的转录本，其偏移是不一样的，所以这个记录在hgvsp中，
+	 * 每次使用不同的hgvsp的时候，加载不同的 {@link RealignUnit}
+	 * @param realign
+	 */
+	public void setRealign(RealignUnit realign) {
+		this.realign = realign;
+	}
+	/** 获得当前的偏移情况 */
+	public RealignUnit getRealignUnit() {
+		return realign;
+	}
+	/** 如果本align可以前后移动， 经过校正后，最靠右侧的起点 */
 	protected int getStartBefore() {
 		return startBefore;
 	}
-	/** 如果本align可以前后移动，则最前侧的坐标 */
+	/** 如果本align可以前后移动，经过校正后，最靠左侧的起点 */
 	protected int getStartAfter() {
 		return startAfter;
 	}
@@ -91,29 +91,42 @@ public class SnpIndelRealignHandle {
 	}
 	
 	protected String getSeqChange() {
-		return seqChange;
+		return realign.getSeqChange();
 	}
 	protected String getSeqHead() {
-		return seqChangeShort;
+		return realign.getSeqChangeShort();
 	}
 	protected String getSeqRef() {
-		return varType == EnumHgvsVarType.Deletions ? seqChange : "";
+		return varType == EnumHgvsVarType.Deletions ? realign.getSeqChange() : "";
 	}
 	protected String getSeqAlt() {
-		return varType == EnumHgvsVarType.Deletions ? "" : seqChange;
+		return varType == EnumHgvsVarType.Deletions ? "" : realign.getSeqChange();
 	}
 	
 	public String getSeqChangeRight() {
-		return seqChangeRight;
+		return realignRight.getSeqChange();//seqChangeRight;
 	}
 	protected String getSeqHeadRight() {
-		return seqChangeShortRight;
+		return realignRight.getSeqChangeShort();//seqChangeShortRight;
 	}
 	protected String getSeqRefRight() {
-		return varType == EnumHgvsVarType.Deletions ? seqChangeRight : "";
+		return varType == EnumHgvsVarType.Deletions ? realignRight.getSeqChange() : "";
 	}
 	protected String getSeqAltRight() {
-		return varType == EnumHgvsVarType.Deletions ? "" : seqChangeRight;
+		return varType == EnumHgvsVarType.Deletions ? "" : realignRight.getSeqChange();
+	}
+	
+	public String getSeqChangeLeft() {
+		return realignLeft.getSeqChange();//seqChangeLeft;
+	}
+	protected String getSeqHeadLeft() {
+		return realignLeft.getSeqChangeShort();//seqChangeShortLeft;
+	}
+	protected String getSeqRefLeft() {
+		return varType == EnumHgvsVarType.Deletions ? realignLeft.getSeqChange() : "";
+	}
+	protected String getSeqAltLeft() {
+		return varType == EnumHgvsVarType.Deletions ? "" : realignLeft.getSeqChange();
 	}
 	
 	public EnumHgvsVarType getVarType() {
@@ -133,6 +146,19 @@ public class SnpIndelRealignHandle {
 		String seqIndel = seqRef.length() == 0 ? seqAlt : seqRef;
 		int startLocModify = seqRef.length() > 0 ? alignRef.getStartAbs() : alignRef.getStartAbs() + 1;
 		compareSeq(startLocModify, seqHash, seqIndel);
+		/** 如果一个片段移动到最左侧和最右侧的距离是该片段的2倍长度，那么该片段即为Dup
+		 * 如 ATC[AGATC]AG
+		 * 为 ATCAG-ATCAG
+		 */
+		if (startAfter - startBefore >= seqIndel.length()) {
+			isDup = true;
+		}
+		
+		if (isDup) {
+			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Duplications;
+		} else {
+			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Insertions;
+		}
 	}
 	
 	/** 可以向前移动几位，恒返回正数，从startAfter开始算 */
@@ -145,11 +171,14 @@ public class SnpIndelRealignHandle {
 	 * @return
 	 */
 	public Align getRealign() {
-		return realign;
+		return realign.getRealign();
 	}
 	/** 移动到尾部的align，主要给hgvsc使用 */
 	public Align getAlignRight() {
-		return alignRight;
+		return realignRight.getRealign();
+	}
+	public Align getAlignLeft() {
+		return realignLeft.getRealign();
 	}
 	/** 我们假定默认<b>align已经移动到最右端<b>，这样我们只需要将align
 	 * 向左端移动即可
@@ -163,8 +192,9 @@ public class SnpIndelRealignHandle {
 			throw new ExceptionNBCSnpHgvs("cannot move to such before "+moveNum + ". Max move number is " + (startAfter-startBefore));
 		}
 		changeSeq(move);
-		realign = generateNewAlign(move);
-		return realign;
+		Align align = generateNewAlign(move);
+		realign.setRealign(align);
+		return align;
 	}
 	/** 我们假定默认<b>align已经移动到最左端<b>，这样我们只需要将align
 	 * 向右端移动即可
@@ -178,23 +208,25 @@ public class SnpIndelRealignHandle {
 			throw new ExceptionNBCSnpHgvs("cannot move to such before "+moveNum + ". Max move number is " + (startAfter-startBefore));
 		}
 		changeSeq(move);
-		realign = generateNewAlign(move);
-		return realign;
+		Align align = generateNewAlign(move);
+		realign.setRealign(align);
+		return align;
 	}
 	protected Align moveAlignToAfter() {
 		int moveEnd = startAfter-startLoc;
 		changeSeq(moveEnd);
-		realign = generateNewAlign(moveEnd);
-		alignRight = realign.clone();
-		seqChangeRight = seqChange;
-		seqChangeShortRight = seqChangeShort;
-		return alignRight;
+		Align align = generateNewAlign(moveEnd);
+		realign.setRealign(align);
+		realignRight = realign.clone();
+		return align;
 	}
 	protected Align moveAlignToBefore() {
 		int moveAfter = startBefore-startLoc;
 		changeSeq(moveAfter);
-		realign = generateNewAlign(moveAfter);
-		return realign;
+		Align align = generateNewAlign(moveAfter);
+		realign.setRealign(align);
+		realignLeft = realign.clone();
+		return align;
 	}
 	/**
 	 * indel有这种类型比较难处理（符号-主要用来断字，没什么实际意义）<br>
@@ -269,13 +301,21 @@ public class SnpIndelRealignHandle {
 				seq = seqRemain;
 				isFirst = false;
 			} else {
+				if (startLoc > seqHash.getChrLength(alignRef.getChrId())) {
+					isGetNextSeq = false;
+					continue;
+				}
 				seq = seqHash.getSeq(alignRef.getChrId(), startLoc, startLoc + lenStep).toString();
 				if (seq.length() < lenStep+1) {
 					seq = fillSeq(seq, lenStep+1, false);
 					isGetNextSeq = false;
 				}
 			}
-			isGetNextSeq = compareSeqAfter(seq, seqIndelChr, before);
+			if (seq.length() < seqIndelChr.length) {
+				isGetNextSeq = false;
+			} else {
+				isGetNextSeq = compareSeqAfter(seq, seqIndelChr, before);
+			}
 			startLoc = startLoc + lenStep + 1;
 		}
 		
@@ -298,12 +338,6 @@ public class SnpIndelRealignHandle {
 			if (startLoc < 0) {
 				break;
 			}
-		}
-		
-		if (isDup) {
-			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Duplications;
-		} else {
-			varType = seqRef.length() > 0 ? EnumHgvsVarType.Deletions : EnumHgvsVarType.Insertions;
 		}
 	}
 	
@@ -348,7 +382,6 @@ public class SnpIndelRealignHandle {
 				samNum++;
 			}
 			if (isSame) {
-				isDup = true;
 				startAfter = startAfter + samNum; 
 				samNum = 0;
 			} else {
@@ -361,18 +394,6 @@ public class SnpIndelRealignHandle {
 			startAfter = startAfter + samNum; 
 		}
 		
-		if (!isNext && (samNum > 0 || !isDup)) {
-			boolean isDupBefore = true;
-			for (int i = samNum; i < seqIndel.length; i++) {
-				if (seqIndel[i] != seqIndelBefore[i]) {
-					isDupBefore = false;
-					break;
-				}
-			}
-			if (isDupBefore) {
-				isDup = true;
-			}
-		}
 		return isNext;
 	}
 	
@@ -442,20 +463,66 @@ public class SnpIndelRealignHandle {
 		
 		String seq = seqRef.length() > 0 ? seqRef : seqAlt;
 		int shiftNum = moveNumber%seq.length();
-		if (moveNumber == startBefore - startLoc) {
-			seqChangeShort = beforeBase+"";
-		}
-		if (shiftNum == 0) {
-			seqChange = seq;
-			return;
-		}
-		if (shiftNum < 0) {
+		if (shiftNum <= 0) {
 			shiftNum += seq.length();
 		}
-		seqChange = seq.substring(shiftNum) + seq.substring(0, shiftNum);
-		if (moveNumber != startBefore - startLoc) {
+		
+		String seqChange = seq.substring(shiftNum) + seq.substring(0, shiftNum);
+		realign.setSeqChange(seqChange);
+		String seqChangeShort = null;
+		if (moveNumber == startBefore - startLoc) {
+			seqChangeShort = beforeBase+"";
+		} else {
 			seqChangeShort = seq.substring(shiftNum-1, shiftNum);
 		}
+		realign.setSeqChangeShort(seqChangeShort);
 	}
 	
+}
+
+
+class RealignUnit {
+	/** 移动之后的realign，考虑了剪接位点等因素，移动到了最合适的位置
+	 * 譬如如果是正向转录本则右移
+	 * 反向转录本则左移
+	 */
+	Align realign;
+	/**
+	 * 这里只可能是insertion或deletion，因此只有一条序列存在，另一条为空<br>
+	 * 根据 {@link #convertSeqNum} 来修改序列<br>
+	 * 最后获得 AGGC
+	 */
+	String seqChange;
+	/**
+	 * 同上
+	 * 最后获得 C
+	 */
+	String seqChangeShort;
+	
+	public void setRealign(Align realign) {
+		this.realign = realign;
+	}
+	public void setSeqChange(String seqChange) {
+		this.seqChange = seqChange;
+	}
+	public void setSeqChangeShort(String seqChangeShort) {
+		this.seqChangeShort = seqChangeShort;
+	}
+	public Align getRealign() {
+		return realign;
+	}
+	public String getSeqChange() {
+		return seqChange;
+	}
+	public String getSeqChangeShort() {
+		return seqChangeShort;
+	}
+	
+	public RealignUnit clone() {
+		RealignUnit realignUnit = new RealignUnit();
+		realignUnit.realign = this.realign.clone();
+		realignUnit.seqChange = this.seqChange;
+		realignUnit.seqChangeShort = this.seqChangeShort;
+		return realignUnit;
+	}
 }

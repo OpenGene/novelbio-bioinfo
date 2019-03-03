@@ -10,7 +10,9 @@ import org.apache.log4j.Logger;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.novelbio.base.StringOperate;
+import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.bioinfo.base.Align;
+import com.novelbio.bioinfo.fasta.SeqHash;
 import com.novelbio.bioinfo.fasta.SeqHashInt;
 import com.novelbio.bioinfo.gff.GffCodGeneDU;
 import com.novelbio.bioinfo.gff.GffGene;
@@ -206,6 +208,19 @@ public class SnpInfo {
 		return mapIso2Hgvsp;
 	}
 	
+	public SnpIsoHgvsc getHgvsc(GffIso iso) {
+		if (ArrayOperate.isEmpty(mapIso2Hgvsc)) {
+			return null;
+		}
+		return mapIso2Hgvsc.get(iso);
+	}
+	public SnpIsoHgvsp getHgvsp(GffIso iso) {
+		if (ArrayOperate.isEmpty(mapIso2Hgvsp)) {
+			return null;
+		}
+		return mapIso2Hgvsp.get(iso);
+	}
+	
 	/**
 	 * 
 	 * 包含realign功能
@@ -239,7 +254,21 @@ public class SnpInfo {
 			mapIso2Hgvsp.put(iso, snpIsoHgvsp);
 		}
 	}
-
+	
+	public RealignUnit getRealignUnit() {
+		if (snpRealignHandler == null) {
+			return null;
+		}
+		return snpRealignHandler.getRealignUnit();
+	}
+	
+	public void setRealignUnit(RealignUnit realignUnit) {
+		if (snpRealignHandler == null) {
+			return;
+		}
+		snpRealignHandler.setRealign(realignUnit);
+	}
+	
 	/**
 	 * 部分输入的indel类型如下：
 	 * chr1	1234	ATACTACTG	ATAGCATTG
@@ -280,6 +309,11 @@ public class SnpInfo {
 		alignChange = new Align(alignRefRaw.toString());
 		
 		int startSiteSubSeq = startSameIndex > 0 ? startSameIndex-1 : seqLenMax - endSameIndex;
+		
+		
+		if (varType == EnumHgvsVarType.NOVAR && alignRefRaw.getLength() == 1) {
+			return;
+		}
 		
 		if (varType == EnumHgvsVarType.Insertions) {
 			alignChange.setStartEndLoc(alignRefRaw.getStartAbs() + startSameIndex-1, alignRefRaw.getStartAbs() + startSameIndex);
@@ -325,6 +359,7 @@ public class SnpInfo {
 		snpRealignHandler.setSeqLen(GetSeqLen);
 		snpRealignHandler.handleSeqAlign(seqHash);
 		varType = snpRealignHandler.getVarType();
+		snpRealignHandler.moveAlignToBefore();
 		snpRealignHandler.moveAlignToAfter();
 		isDup = snpRealignHandler.isDup();
 	}
@@ -391,9 +426,15 @@ public class SnpInfo {
 		return snpRealignHandler == null ? alignChange : snpRealignHandler.getRealign();
 	}
 	public String getSeqRef() {
+		if (varType == EnumHgvsVarType.NOVAR && alignRefRaw.getLength() == 1) {
+			return seqRefRaw;
+		}
 		return snpRealignHandler == null ? seqRef : snpRealignHandler.getSeqRef();
 	}
 	public String getSeqAlt() {
+		if (varType == EnumHgvsVarType.NOVAR && alignRefRaw.getLength() == 1) {
+			return seqAltRaw;
+		}
 		return snpRealignHandler == null ? seqAlt : snpRealignHandler.getSeqAlt();
 	}
 	public String getSeqHead() {
@@ -417,6 +458,23 @@ public class SnpInfo {
 		return snpRealignHandler == null ? seqHead : snpRealignHandler.getSeqHeadRight();
 	}
 	
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
+	public Align getAlignRefLeft() {
+		return snpRealignHandler == null ? alignChange : snpRealignHandler.getAlignLeft();
+	}
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
+	public String getSeqRefLeft() {
+		return snpRealignHandler == null ? seqRef : snpRealignHandler.getSeqRefLeft();
+	}
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
+	public String getSeqAltLeft() {
+		return snpRealignHandler == null ? seqAlt : snpRealignHandler.getSeqAltLeft();
+	}
+	/** 一定是移动到最右侧的snp，因为如果基因为反向，然后位点处在GT-AT上，snp可能会左移 */
+	public String getSeqHeadLeft() {
+		return snpRealignHandler == null ? seqHead : snpRealignHandler.getSeqHeadLeft();
+	}
+	
 	/** 修正过的位点信息 */
 	public String toStringModify() {
 		StringBuilder sBuilder = new StringBuilder();
@@ -432,24 +490,56 @@ public class SnpInfo {
 		INSERT, DELETION, MISMATCH, CORRECT
 	}
 	public String getAltInfo() {
-		return generateAltInfo(getSeqRef(), getSeqAlt());
+		return codeAltInfo(getSeqRef(), getSeqAlt());
 	}
 	public String getAltInfoRight() {
-		return generateAltInfo(getSeqRefRight(), getSeqAltRight());
+		return codeAltInfo(getSeqRefRight(), getSeqAltRight());
 	}
 	public String toString() {
 		return alignRefRaw.getChrId() + "\t" + alignRefRaw.getStartAbs() + "\t" + seqRefRaw + "\t" + seqAltRaw;
 	}
 	
 	/**
+	 * @param seqHash
+	 * @param chrId
+	 * @param position
+	 * @param ref A
+	 * @param code -2
+	 * @return String[2]
+	 * 0: refseq TAC
+	 * 1: altseq T
+	 */
+	public static String[] decodeAltInfo(SeqHash seqHash, String chrId, int position, String refbefore, String refbase, String code) {
+		if (code.length() == 1) {
+			return new String[] {refbase, code};
+		} else if (code.startsWith("+")) {
+			return new String[] {refbase, code.replace("+", refbase)};
+		} else if (code.startsWith("-")) {
+			int num = Integer.parseInt(code.substring(1));
+			String seq = seqHash.getSeq(chrId, position, position+num-1).toString();
+			if (!seq.toLowerCase().startsWith(refbase.toLowerCase())) {
+				throw new RuntimeException();
+			}
+			return new String[] {refbefore+seq, refbefore};
+		} else {
+			throw new RuntimeException();
+		}
+	}
+	/**
 	 * 要求输入大写，假设输入的refseq和altseq都已经掐头去尾
 	 * “” CT --> +CT
 	 * CT “” --> -2
 	 * @return
 	 */
-	public static String generateAltInfo(String refSeq, String altSeq) {
+	public static String codeAltInfo(String refSeq, String altSeq) {
 		if (StringOperate.isRealNull(refSeq) && StringOperate.isRealNull(altSeq)) {
 			throw new RuntimeException("cannot generateRefInfo");
+		}
+		char[] tmpref = refSeq.toCharArray();
+		char[] tmpalt = altSeq.toCharArray();
+		if (tmpalt[0] == tmpref[0]) {
+			refSeq = "";
+			altSeq = altSeq.substring(1);
 		}
 		String altInfo = null;
 		//插入

@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 
 import com.novelbio.bioinfo.gff.GffIso;
 
-class SnpRefAltIsoIndel extends SnpIsoHgvsp {
-	private static final Logger logger = LoggerFactory.getLogger(SnpRefAltIsoIndel.class);
+class SnpIsoHgvspIndel extends SnpIsoHgvsp {
+	private static final Logger logger = LoggerFactory.getLogger(SnpIsoHgvspIndel.class);
 	
 	boolean isFrameShift = false;
 	/** indel的起点是否在一个氨基酸的三联密码子头部 */
@@ -42,7 +42,7 @@ class SnpRefAltIsoIndel extends SnpIsoHgvsp {
 		return true;
 	}
 	
-	public SnpRefAltIsoIndel(SnpInfo snpInfo, GffIso iso) {
+	public SnpIsoHgvspIndel(SnpInfo snpInfo, GffIso iso) {
 		super(snpInfo, iso);
 		int startCis = getStartCis();
 		int endCis = getEndCis();

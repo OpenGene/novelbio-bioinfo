@@ -8,10 +8,13 @@ import com.novelbio.base.dataOperate.TxtReadandWrite;
 import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.base.Alignment;
 import com.novelbio.bioinfo.bed.BedRecord;
+import com.novelbio.bioinfo.fasta.ExceptionSeqFastaNoChr;
 import com.novelbio.bioinfo.fasta.SeqFasta;
 import com.novelbio.bioinfo.fasta.SeqHashInt;
 import com.novelbio.software.snpanno.SnpInfo;
 import com.novelbio.software.snpanno.SnpInfo.EnumHgvsVarType;
+
+import lombok.experimental.var;
 
 public class CoordTransformer {
 		
@@ -68,10 +71,15 @@ public class CoordTransformer {
 	protected static SnpInfo transformSnpInfo(SnpInfo snpInfo, VarInfo varInfo, SeqHashInt seqHashAlt) {
 		String ref = snpInfo.getSeqRef();
 		String alt = snpInfo.getSeqAlt();
-
-		String refAlt, altAlt;
+		String refAlt = null, altAlt = null;
 		SnpInfo snpInfoAlt;
-		if (snpInfo.getVarType() == EnumHgvsVarType.Substitutions) {
+		if (snpInfo.getVarType() == EnumHgvsVarType.NOVAR || snpInfo.getVarType() == EnumHgvsVarType.Substitutions) {
+			try {
+				refAlt = seqHashAlt.getSeqCis(varInfo).toString();
+				altAlt = varInfo.isCis() ? alt : SeqFasta.reverseComplement(alt);
+			} catch (ExceptionSeqFastaNoChr e) {
+				return null;
+			}
 			refAlt = seqHashAlt.getSeqCis(varInfo).toString();
 			altAlt = varInfo.isCis() ? alt : SeqFasta.reverseComplement(alt);
 			snpInfoAlt = new SnpInfo(varInfo.getChrId(), varInfo.getStartAbs(), refAlt, altAlt);
@@ -95,6 +103,14 @@ public class CoordTransformer {
 		} else {
 			throw new ExceptionNBCCoordTransformer("unsupported type " + snpInfo.getVarType() + " " + snpInfo.toString());
 		}
+		if (snpInfoAlt != null) {
+			boolean correct = varInfo.isCis() && alt.equalsIgnoreCase(altAlt) 
+					|| !varInfo.isCis() && alt.equalsIgnoreCase(SeqFasta.reverseComplement(altAlt));
+			if (!correct) {
+				throw new ExceptionNBCCoordTransformer("incorrect snp! strand: " + varInfo.isCis() + " ref: " + snpInfo.toString() + " alt: " + snpInfoAlt.toString());
+			}
+		}
+		
 		return snpInfoAlt;
 	}
 	

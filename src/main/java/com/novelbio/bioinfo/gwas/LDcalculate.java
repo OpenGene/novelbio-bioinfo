@@ -1,4 +1,4 @@
-package com.novelbio.software.gbas.combinesnp;
+package com.novelbio.bioinfo.gwas;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -6,18 +6,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.novelbio.software.gbas.Allele;
-
-import smile.clustering.HierarchicalClustering;
-import smile.clustering.linkage.UPGMALinkage;
-
-/** ld计算 */
+/**
+ * 计算两个位点之间的ld，包括r^2和d‘
+ * @author zongjie
+ *
+ */
 public class LDcalculate {
-	String refa, alta;
-	String refb, altb;
+	String refa;
+	String refb;
 	
-	List<String[]> lsRef2AltSite1;
-	List<String[]> lsRef2AltSite2;
+	List<String> lsSite1;
+	List<String> lsSite2;
 	
 	int num;
 	double a1b1, a1b2, a2b1, a2b2;
@@ -26,18 +25,43 @@ public class LDcalculate {
 	double ddot;
 	double r2;
 	
-	public void setLsRef2AltSite1(List<String[]> lsRef2AltSite1) {
-		this.lsRef2AltSite1 = lsRef2AltSite1;
-		this.refa = getMaxRef(lsRef2AltSite1);
+	public void setLsSite1(List<String[]> lsRef2AltSite1) {
+		this.lsSite1 = new ArrayList<>();
+		for (String[] ref2alt : lsRef2AltSite1) {
+			this.lsSite1.add(ref2alt[0]);
+		}
+		this.refa = getMaxRef(lsSite1);
+	}
+	public void setLsSite1(char[] site1) {
+		this.lsSite1 = new ArrayList<>();
+		for (char c : site1) {
+			lsSite1.add(c+"");
+		}
+		this.refa = getMaxRef(lsSite1);
 	}
 	
-	private String getMaxRef(List<String[]> lsRef2AltSite) {
+	public void setLsSite2(List<String[]> lsRef2AltSite2) {
+		this.lsSite2 = new ArrayList<>();
+		for (String[] ref2alt : lsRef2AltSite2) {
+			this.lsSite2.add(ref2alt[0]);
+		}
+		this.refb = getMaxRef(lsSite2);
+	}
+	public void setLsSite2(char[] site1) {
+		this.lsSite2 = new ArrayList<>();
+		for (char c : site1) {
+			lsSite2.add(c+"");
+		}
+		this.refb = getMaxRef(lsSite2);
+	}
+	
+	private String getMaxRef(List<String> lsRef2AltSite) {
 		Map<String, int[]> mapAllele2Num = new HashMap<>();
-		for (String[] alleles : lsRef2AltSite) {
-			int[] num = mapAllele2Num.get(alleles[0]);
+		for (String allele : lsRef2AltSite) {
+			int[] num = mapAllele2Num.get(allele);
 			if (num == null) {
 				num = new int[]{0};
-				mapAllele2Num.put(alleles[0], num);
+				mapAllele2Num.put(allele, num);
 			}
 			num[0]++;
 		}
@@ -52,11 +76,7 @@ public class LDcalculate {
 		} );
 		return lsSite2Num.get(0)[0];
 	}
-	
-	public void setLsRef2AltSite2(List<String[]> lsRef2AltSite2) {
-		this.lsRef2AltSite2 = lsRef2AltSite2;
-		this.refb = getMaxRef(lsRef2AltSite2);
-	}
+
 	
 	public void calculate()  {
 		prepare();
@@ -74,22 +94,22 @@ public class LDcalculate {
 	private void prepare() {
 		num = 0;
 		int ia1b1 = 0, ia1b2 = 0, ia2b1 = 0, ia2b2 = 0;
-		for (int i = 0; i < lsRef2AltSite1.size(); i++) {
-			String[] aRef2Alt = lsRef2AltSite1.get(i);
-			String[] bRef2Alt = lsRef2AltSite2.get(i);
-			if (aRef2Alt[0].equals("N") || bRef2Alt[0].equals("N")) {
+		for (int i = 0; i < lsSite1.size(); i++) {
+			String aRef2Alt = lsSite1.get(i);
+			String bRef2Alt = lsSite2.get(i);
+			if (aRef2Alt.equals("N") || bRef2Alt.equals("N")) {
 				continue;
 			}
 			
 			num++;
-			if (aRef2Alt[0].equals(refa)) {
-				if (bRef2Alt[0].equals(refb)) {
+			if (aRef2Alt.equals(refa)) {
+				if (bRef2Alt.equals(refb)) {
 					ia1b1++;
 				} else {
 					ia1b2++;
 				}
 			} else {
-				if (bRef2Alt[0].equals(refb)) {
+				if (bRef2Alt.equals(refb)) {
 					ia2b1++;
 				} else {
 					ia2b2++;

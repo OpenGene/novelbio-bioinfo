@@ -25,10 +25,10 @@ import com.novelbio.base.dataStructure.ArrayOperate;
 import com.novelbio.base.fileOperate.FileOperate;
 import com.novelbio.bioinfo.gff.GffHashGene;
 import com.novelbio.bioinfo.gffchr.GffChrAbs;
+import com.novelbio.bioinfo.gwas.convertformat.Mid2Ped;
 import com.novelbio.database.model.geneanno.Gene2Go;
 import com.novelbio.software.gbas.combinesnp.ClusterKmean;
 import com.novelbio.software.gbas.combinesnp.CombineSnp;
-import com.novelbio.software.gbas.convertformat.Mid2Ped;
 import com.novelbio.software.snpanno.SnpAnnoFactory;
 import com.novelbio.software.snpanno.SnpInfo;
 

@@ -159,8 +159,8 @@ public class SamReader {
 				
 		samReader = SamReaderFactory.make()
         .enable(SamReaderFactory.Option.DONT_MEMORY_MAP_INDEX)
-        .enable(SamReaderFactory.Option.INCLUDE_SOURCE_IN_RECORDS)
-        .validationStringency(ValidationStringency.SILENT)
+//        .enable(SamReaderFactory.Option.INCLUDE_SOURCE_IN_RECORDS)
+//        .validationStringency(ValidationStringency.SILENT)
         .samRecordFactory(DefaultSAMRecordFactory.getInstance())
         .open(samInputResource);		
 		setSamHeader(inputStream);

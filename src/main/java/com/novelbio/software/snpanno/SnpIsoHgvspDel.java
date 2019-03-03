@@ -1,14 +1,12 @@
 package com.novelbio.software.snpanno;
 
-import com.novelbio.bioinfo.base.Align;
 import com.novelbio.bioinfo.gff.GffIso;
 
-class SnpRefAltIsoDel extends SnpIsoHgvsp {
+class SnpIsoHgvspDel extends SnpIsoHgvsp {
 	boolean isFrameShift = false;
 	/** del的起点是否在一个氨基酸的三联密码子头部 */
 	boolean isStartAtAAstart = false;
 	boolean isAffectUAG = false;
-	boolean isNeedAAanno = false;
 	
 	/** 有这个标记的直接返回Met1?或者Met1fs */
 	boolean isMetDel = false;
@@ -23,7 +21,7 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 		if (startExNum != endExNum || startExNum <= 0) {
 			return false;
 		}
-		if (siteStart < iso.getATGsite() || isFrameShift || isAffectUAG) {
+		if (iso.isCis5to3() && siteStart < iso.getATGsite() || !iso.isCis5to3() && siteStart > iso.getATGsite()  || isFrameShift || isAffectUAG) {
 			return false;
 		}
 		if ((Math.abs(siteEnd - siteStart) + 1) %3 != 0) {
@@ -32,35 +30,30 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 		return true;
 	}
 	
-	public SnpRefAltIsoDel(SnpInfo snpRefAltInfo, GffIso iso) {
+	public SnpIsoHgvspDel(SnpInfo snpRefAltInfo, GffIso iso) {
 		super(snpRefAltInfo, iso);
-		
-		int[] region = getValidRange(new int[]{getStartCis(), getEndCis()}, new int[]{iso.getATGsite(), iso.getUAGsite()});
-		if(region == null) return;
-		GffIso isoSub = iso.getSubGffGeneIso(region[0], region[1]);
-		isNeedAAanno = !isoSub.isEmpty();
-		isFrameShift = isoSub.getLenExon() % 3 != 0;
-		if (isNeedAAanno && isFrameShift) {
-			setVarType.add(EnumVariantClass.frameshift_variant);
-		}
 	}
-
+	
 	@Override
 	protected int moveBeforeNum() {
-		int moveMax = snpRefAltInfo.moveNumMax();
+		int moveMax = snpInfo.moveNumMax();
 		if (moveMax == 0) {
 			return 0;
 		}
 		
 		if (iso.isCis5to3()) {
-			snpRefAltInfo.moveToAfter();
+			snpInfo.moveToAfter();
 		} else {
-			snpRefAltInfo.moveToBefore();
+			snpInfo.moveToBefore();
 		}
 		
 		int siteStart = getStartCis();
 		int siteEnd = getEndCis();
+		if (!iso.isRegionOnIso(siteStart, siteEnd)) {
+			return 0;
+		}
 		GffIso isoSub = iso.getSubGffGeneIso(siteStart, siteEnd);
+
 		if (isoSub.size() > 1) {
 			return 0;
 		}
@@ -71,9 +64,12 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			if (moveNum == 0 || moveNum == moveMax) {
 				return moveNum;
 			}
-			snpRefAltInfo.moveAlign(moveNum, iso.isCis5to3());
+			snpInfo.moveAlign(moveNum, iso.isCis5to3());
 			siteStart = getStartCis();
 			siteEnd = getEndCis();
+			if (!iso.isRegionOnIso(siteStart, siteEnd)) {
+				return moveNum;
+			}
 			isoSub = iso.getSubGffGeneIso(siteStart, siteEnd);
 			if (isoSub.size() == 0) {
 				return moveNum;
@@ -91,7 +87,7 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			if (num == 0 || moveNum == moveMax) {
 				return moveNum;
 			}
-			snpRefAltInfo.moveAlign(moveNum, iso.isCis5to3());
+			snpInfo.moveAlign(moveNum, iso.isCis5to3());
 			siteStart = getStartCis();
 			siteEnd = getEndCis();
 		} else if (endExNum < 0) {
@@ -100,9 +96,12 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			if (num == 0 || moveNum == moveMax) {
 				return moveNum;
 			}
-			snpRefAltInfo.moveAlign(moveNum, iso.isCis5to3());
+			snpInfo.moveAlign(moveNum, iso.isCis5to3());
 			siteStart = getStartCis();
 			siteEnd = getEndCis();
+		}
+		if (!iso.isRegionOnIso(siteStart, siteEnd)) {
+			return moveNum;
 		}
 		isoSub = iso.getSubGffGeneIso(siteStart, siteEnd);
 		startExNum = iso.getNumCodInEle(siteStart);
@@ -117,9 +116,12 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			if (num == 0 || moveNum == moveMax) {
 				return moveNum;
 			}
-			snpRefAltInfo.moveAlign(moveNum, iso.isCis5to3());
+			snpInfo.moveAlign(moveNum, iso.isCis5to3());
 			siteStart = getStartCis();
 			siteEnd = getEndCis();
+			if (!iso.isRegionOnIso(siteStart, siteEnd)) {
+				return moveNum;
+			}
 			isoSub = iso.getSubGffGeneIso(siteStart, siteEnd);
 		}
 		
@@ -207,6 +209,16 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 		return 0;
 	}
 	public boolean isNeedHgvspDetail() {
+		boolean isNeedAAanno = false;
+		int[] region = getValidRange(new int[]{getStartCis(), getEndCis()}, new int[]{iso.getATGsite(), iso.getUAGsite()});
+		if(region == null) return isNeedAAanno;
+		
+		GffIso isoSub = iso.getSubGffGeneIso(region[0], region[1]);
+		isNeedAAanno = !isoSub.isEmpty();
+		isFrameShift = isoSub.getLenExon() % 3 != 0;
+		if (isNeedAAanno && isFrameShift) {
+			setVarType.add(EnumVariantClass.frameshift_variant);
+		}
 		return isNeedAAanno;
 	}
 	
@@ -214,7 +226,7 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 		int atgStart = iso.getATGsite();
 		int atgEnd = iso.getLocAAend(iso.getATGsite());
 		int uagEnd = iso.getUAGsite();
-		int uagStart = iso.getLocAAend(iso.getUAGsite());
+		int uagStart = iso.getLocAAbefore(iso.getUAGsite());
 
 		if (getStartAbs() <= Math.max(atgStart, atgEnd) && getEndAbs()>= Math.min(atgStart, atgEnd)) {
 			setVarType.add(EnumVariantClass.start_lost);
@@ -251,8 +263,21 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 		}
 		
 		endCds = iso.getLocAAend(endCds);
+		
+		/**
+		 * 如果是移码突变，则获取全长序列，这样可以知道多少位后终止
+		 * 但是如果endCds太靠近iso.getEnd，那么可能只知道丢失了终止密码子，具体后面多少距离终止密码子出现不知道
+		 * 这里就是往后面多取点，好歹知道最后终止密码子在多远出现了
+		 */
 		if (isFrameShift || isAffectUAG) {
-			endCds = iso.getEnd();
+			int distanceToEnd = Math.abs(endCds-iso.getEnd());
+			int minLen = 150;
+			if (distanceToEnd < 100) {
+				endCds = iso.isCis5to3() ? iso.getEnd() + minLen - distanceToEnd : iso.getEnd() - minLen + distanceToEnd;
+			} else {
+				endCds = iso.getEnd();
+			}
+			
 		} 
 		return;
 	}
@@ -283,8 +308,22 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 		if (isMetDel) {
 			return "p." + convertAA("M") +"1?";
 		}
+		boolean isExtend = false;
+		if (isFrameShift) {
+			char[] refAA = refSeqNrForAA.toStringAA1().toCharArray();
+			char[] altAA = altSeqNrForAA.toStringAA1().toCharArray();
+			int num = 0;
+			for (; num < Math.min(refAA.length, altAA.length); num++) {
+				if (refAA[num] != altAA[num]) {
+					break;
+				}
+			}
+			if (refAA.length > 0 && refAA[num] == '*' && isAffectUAG) {
+				isExtend = true;
+			}
+		}
 		
-		String info =  isFrameShift? getInDelChangeFrameShift(false, false) : getDelChangeInFrame();
+		String info =  isFrameShift? getInDelChangeFrameShift(isExtend, false) : getDelChangeInFrame();
 		return "p." + info;
 	}
 	
@@ -298,7 +337,7 @@ class SnpRefAltIsoDel extends SnpIsoHgvsp {
 			setVarType.add(EnumVariantClass.synonymous_variant);
 			//TODO 待验证
 			return convertAA(refAA[0]) + start + "_" + convertAA(refAA[refAA.length-1]) + end + "=";
-		} else if (refAA[0] == '*' && altAA[0] == '*') {
+		} else if (refAA.length > 0 && altAA.length > 0 && refAA[0] == '*' && altAA[0] == '*') {
 			//TODO 未测试
 			setVarType.remove(EnumVariantClass.stop_lost);
 			setVarType.add(EnumVariantClass.stop_retained_variant);

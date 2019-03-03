@@ -22,7 +22,7 @@ import com.novelbio.bioinfo.gffchr.GffChrAbs;
  * 原来是 
  * chrId marker	other	position Major Minor<br>
  * 1	10100001579	0	1579 A G<br>
- * 1	10100003044	0	3044 G A<br>
+ * 1	10100003044	0	3044 A C<br>
  * 要修改为
  * chrId marker	other	position	reference alt<br>
  * 1	10100001579	0	1579	A G<br>
@@ -33,8 +33,14 @@ import com.novelbio.bioinfo.gffchr.GffChrAbs;
 public class PlinkBimChangeBase {
 	
 	SnpAnno snpAnno = new SnpAnno();
-	/** 染色体文件 */
+	/** 染色体文件 */ 
 	String chrFile;
+	
+	public static void main(String[] args) {
+		PlinkBimChangeBase plinkBimChangeBase = new PlinkBimChangeBase("/media/winE/mywork/hongjun-gwas/chromosome/Oryza_sativa.IRGSP-1.0.39.gff3",
+				"/media/winE/mywork/hongjun-gwas/chromosome/oryza_sativa.IRGSP-1.0.dna.fa");
+		plinkBimChangeBase.addAnnoFromRef("/media/winE/mywork/hongjun-gwas/446wildtype_SNP/446wildoverlapsnptrans.bim", "/media/winE/mywork/hongjun-gwas/446wildtype_SNP/446wildoverlapsnptrans.new.bim");
+	}
 	
 	public PlinkBimChangeBase(String gffFile, String chrFile) {
 		this.chrFile = chrFile;
@@ -194,12 +200,23 @@ class AnnoFromRef implements Closeable {
 			base = itBase.next();
 		}
 		if (base.getPosition() == allele.getStartAbs()) {
+			if (allele.getRefBase().equals("0") || allele.getAltBase().equals("0")) {
+				if (allele.getRefBase().equals("0") && !allele.getAltBase().equalsIgnoreCase(base.getBase()+"")) {
+					allele.setRef(base.getBase());
+				} else if (allele.getAltBase().equals("0") && !allele.getRefBase().equalsIgnoreCase(base.getBase()+"")) {
+					allele.setAlt(base.getBase());
+				}
+			}
+			
+			
 			//本行开始到下面的if--功能是设置高频低频
 			allele.setIsRefMajor(!allele.getRefBase().equalsIgnoreCase(base.getBase()+""));
 			
 			if (!allele.getRefBase().equalsIgnoreCase(base.getBase() + "")) {
 				if (!allele.getAltBase().equalsIgnoreCase(base.getBase() + "")) {
-					throw new ExceptionNBCPlink("error! " + allele.toString() + " but ref is " + base.getBase());
+					System.out.println("error! " + allele.toString() + " but ref is " + base.getBase());
+					return allele;
+//					throw new ExceptionNBCPlink("error! " + allele.toString() + " but ref is " + base.getBase());
 				}
 				allele.changeRefAlt();
 			}
